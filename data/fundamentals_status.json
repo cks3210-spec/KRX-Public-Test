@@ -3,8 +3,11 @@
   "financial_year": 2025,
   "candidate_count": 30,
   "successful_responses": 29,
+  "valuation_per_count": 24,
+  "valuation_pbr_count": 27,
+  "valuation_roe_count": 27,
   "growth_comparable_count": 28,
   "growth_comparison_basis": "Previous-year comparative values in the current annual filing (frmtrm_amount)",
   "errors": {},
-  "note": "Top-30 technical candidates only. Annual YoY is from prior-year comparatives; missing values blank. No PER/PBR/verified ROE/flow or A/B grades."
+  "note": "Top-30 technical candidates only. Annual YoY is from prior-year comparatives; missing values blank. PER/PBR/ROE are historical estimates (not verified live ratios); no flow or A/B grades."
 }
