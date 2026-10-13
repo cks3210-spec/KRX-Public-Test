@@ -15,14 +15,39 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Check KRX trading date
+        id: trading_day
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
+          with open("data/summary.json", encoding="utf-8") as f:
+              summary = json.load(f)
+
+          latest = str(summary.get("latest_trading_date", ""))
+          allowed = latest == today
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"run_validation={'true' if allowed else 'false'}\n")
+
+          print(f"KRX latest={latest}, today={today}, run={allowed}")
+          PY
 
       - name: Build candidate records
+        if: steps.trading_day.outputs.run_validation == 'true'
         run: python trade_validation/build_records.py
 
       - name: Build followup records
+        if: steps.trading_day.outputs.run_validation == 'true'
         run: python trade_validation/build_followup.py
 
       - name: Commit updated records
+        if: steps.trading_day.outputs.run_validation == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
