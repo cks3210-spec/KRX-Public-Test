@@ -5,8 +5,6 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [krx_public_data_updated]
-  schedule:
-    - cron: '0 10 * * 1-5'
 
 permissions:
   contents: write
@@ -24,20 +22,29 @@ jobs:
           python - <<'PY'
           import json
           import os
-          from datetime import datetime
+          from datetime import datetime, timedelta
           from zoneinfo import ZoneInfo
 
-          today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
+          today = datetime.now(ZoneInfo("Asia/Seoul")).date()
           with open("data/summary.json", encoding="utf-8") as f:
               summary = json.load(f)
 
           latest = str(summary.get("latest_trading_date", ""))
-          allowed = latest == today
+          # KRX API may publish the prior trading session on the following day.
+          # Dispatch occurs after a changed public-data publication; allow a
+          # recent confirmed session, but reject stale and future snapshots.
+          try:
+              session_date = datetime.strptime(latest, "%Y%m%d").date()
+              age = (today - session_date).days
+              allowed = 0 <= age <= 7
+          except ValueError:
+              age = None
+              allowed = False
 
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               f.write(f"run_validation={'true' if allowed else 'false'}\n")
 
-          print(f"KRX latest={latest}, today={today}, run={allowed}")
+          print(f"KRX latest={latest}, today={today:%Y%m%d}, age_days={age}, run={allowed}")
           PY
 
       - name: Build candidate records
