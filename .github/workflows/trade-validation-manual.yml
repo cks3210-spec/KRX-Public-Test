@@ -4,7 +4,7 @@ name: Trade Validation Manual
 on:
   workflow_dispatch:
   repository_dispatch:
-   types: [krx_public_data_updated]
+    types: [krx_public_data_updated]
   schedule:
     - cron: '0 10 * * 1-5'
 
