@@ -57,7 +57,9 @@ jobs:
       - name: Build performance summary
         if: steps.trading_day.outputs.run_validation == 'true'
         run: python trade_validation/build_performance_summary.py
-
+      - name: Build failure analysis
+        if: steps.trading_day.outputs.run_validation == 'true'
+        run: python trade_validation/build_failure_analysis.py
       - name: Commit updated records
         if: steps.trading_day.outputs.run_validation == 'true'
         run: |
@@ -65,7 +67,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add trade_validation/candidate_history.csv
           git add trade_validation/trade_followup.csv
-          git add trade_validation/trade_performance_summary.csv
+          git add trade_validation/trade_performance_summary.csv  
+          git add trade_validation/trade_failure_analysis.csv
           if ! git diff --cached --quiet; then
             git commit -m "Update trade validation records"
             git push
