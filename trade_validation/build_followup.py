@@ -2,6 +2,8 @@
 """Read-only market archive -> candidate follow-up rows. No inferred prices or advice."""
 import csv
 import gzip
+import os
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 
@@ -40,6 +42,20 @@ def main():
         raise SystemExit('No valid trading days; output not changed')
     with CANDIDATES.open(encoding='utf-8-sig', newline='') as f:
         candidates = list(csv.DictReader(f))
+    # Preserve completed evaluations after the 70-session price archive rolls over.
+    # Never treat an older VERIFIED row as unverified merely because prices expired.
+    previous = {}
+    if OUT.exists():
+        with OUT.open(encoding='utf-8-sig', newline='') as f:
+            for old in csv.DictReader(f):
+                key = (old.get('recommendation_id', ''), old.get('horizon_trading_days', ''))
+                if old.get('status') == 'VERIFIED' and key[0] and key[1]:
+                    if not all(old.get(k) for k in
+                               ('evaluation_date', 'entry_reference', 'exit_close', 'raw_return_pct')):
+                        raise SystemExit(f'Incomplete prior VERIFIED result: {key}')
+                    if key in previous and previous[key] != old:
+                        raise SystemExit(f'Conflicting VERIFIED results: {key}')
+                    previous[key] = old
     output = []
     seen = set()
     for c in candidates:
@@ -82,11 +98,31 @@ def main():
                         worst = min(worst, (p / peak - 1) * 100)
                     row['max_drawdown_pct'] = f'{worst:.4f}'
                     row['status'] = 'VERIFIED'
+            key = (row['recommendation_id'], row['horizon_trading_days'])
+            prior = previous.get(key)
+            if prior:
+                if row['status'] == 'VERIFIED':
+                    # Never silently overwrite an already verified historical result.
+                    comparable = ('evaluation_date', 'entry_reference', 'exit_close',
+                                  'raw_return_pct', 'max_drawdown_pct')
+                    if any(row.get(k, '') != prior.get(k, '') for k in comparable):
+                        raise SystemExit(f'VERIFIED result conflict: {key}')
+                row = {field: prior.get(field, '') for field in FIELDS}
             output.append(row)
-    with OUT.open('w', encoding='utf-8-sig', newline='') as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        w.writeheader()
-        w.writerows(output)
+    # Atomic replacement: failures do not destroy previously verified results.
+    tmp_name = None
+    try:
+        with tempfile.NamedTemporaryFile('w', encoding='utf-8-sig', newline='',
+                                         dir=OUT.parent, prefix='.followup-', suffix='.csv',
+                                         delete=False) as f:
+            tmp_name = f.name
+            w = csv.DictWriter(f, fieldnames=FIELDS)
+            w.writeheader()
+            w.writerows(output)
+        os.replace(tmp_name, OUT)
+    finally:
+        if tmp_name and os.path.exists(tmp_name):
+            os.unlink(tmp_name)
     stats = {s: sum(r['status'] == s for r in output) for s in sorted(set(r['status'] for r in output))}
     print(f'Latest archive day: {days[-1]}; unique candidates: {len(seen)}; followup rows: {len(output)}; status: {stats}')
     print('Market benchmark, excess returns, trading costs intentionally blank until verified sources are provided.')
