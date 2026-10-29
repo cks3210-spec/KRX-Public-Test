@@ -7,7 +7,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
 HISTORY = ROOT / 'trade_validation/candidate_history.csv'
 FOLLOWUP = ROOT / 'trade_validation/trade_followup.csv'
 SUMMARY = ROOT / 'data/summary.json'
