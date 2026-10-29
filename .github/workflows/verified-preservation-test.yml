@@ -1,0 +1,29 @@
+name: KRX VERIFIED Preservation Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preservation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Save baseline
+        run: cp trade_validation/trade_followup.csv "$RUNNER_TEMP/followup_before.csv"
+      - name: Rebuild followup from local archived prices
+        run: python trade_validation/build_followup.py
+      - name: Verify all prior VERIFIED rows preserved
+        run: python check_verified_preservation.py "$RUNNER_TEMP/followup_before.csv" trade_validation/trade_followup.csv
+      - name: Verify output integrity
+        run: python check_validation_integrity.py
+      - name: Show changes without committing
+        run: git status --short && git diff --stat -- trade_validation/trade_followup.csv
