@@ -1,0 +1,15 @@
+name: KRX Group Transition Diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check group-dependent IDs
+        run: python test_group_transition.py
