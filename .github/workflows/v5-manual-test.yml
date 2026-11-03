@@ -1,0 +1,23 @@
+name: KRX v5 Manual Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v5-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run v5
+        run: python v5/v5_screen.py --data-dir data --out-dir v5_output
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-manual-test
+          path: v5_output/
