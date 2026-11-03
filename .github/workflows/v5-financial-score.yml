@@ -1,0 +1,26 @@
+name: KRX v5 Financial Score
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download independent v5-state snapshot
+        shell: bash
+        run: |
+          mkdir -p v5_state
+          curl --fail --location --retry 3 --silent --show-error \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v5-state/financial_latest.json" \
+            -o v5_state/financial_latest.json
+      - name: Run provisional financial scoring
+        run: python v5/v5_financial_score.py
+      - name: Upload v5 score files
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-financial-scores
+          path: v5_score_output/
+          retention-days: 30
