@@ -1,0 +1,39 @@
+name: KRX v5 Integrated Financial Growth Score
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch collector snapshot
+        run: |
+          mkdir -p v5_state
+          curl --fail --location --retry 3 --silent --show-error "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v5-state/financial_latest.json" -o v5_state/financial_latest.json
+      - name: Find latest successful growth run
+        id: growth
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/v5-growth-enrich.yml/runs?status=success&per_page=1" --jq '.workflow_runs[0].id')
+          if [ -z "$run_id" ] || [ "$run_id" = null ]; then echo 'No successful growth run'; exit 1; fi
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Download growth artifact from completed run
+        uses: actions/download-artifact@v4
+        with:
+          name: krx-v5-growth-comparatives
+          run-id: ${{ steps.growth.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: v5_growth_output
+      - name: Run integrated scoring
+        run: python v5/v5_integrated_score.py
+      - name: Upload integrated scoring
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-integrated-scores
+          path: v5_integrated_output/
+          retention-days: 30
