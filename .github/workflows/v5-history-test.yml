@@ -1,0 +1,45 @@
+name: KRX v5 History Test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  history-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore previous v5 history artifact if available
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          mkdir -p v5_prior
+          for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow v5-history-test.yml --status success --limit 10 --json databaseId --jq '.[].databaseId'); do
+            if [ "$run" != "$GITHUB_RUN_ID" ] && gh run download "$run" --repo "$GITHUB_REPOSITORY" --name krx-v5-history --dir v5_prior; then
+              echo "Prior history restored"
+              break
+            fi
+          done
+      - name: Collect validated 2025 annual figures
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python v5/dart_validate_v2.py
+      - name: Merge history without overwriting failed data
+        run: python v5/v5_history_merge.py
+      - name: Upload v5 history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-history
+          path: |
+            v5_output/financial_latest.csv
+            v5_output/financial_changes.csv
+            v5_output/financial_events.csv
+            v5_output/history_summary.json
+          retention-days: 90
+          if-no-files-found: warn
