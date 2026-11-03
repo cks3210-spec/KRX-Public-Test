@@ -1,0 +1,37 @@
+{
+  "asof_utc": "2026-11-03T08:05:17+00:00",
+  "universe_date": "20261102",
+  "cycle": "2026-W45",
+  "latest_report_candidates": [
+    [
+      "2026",
+      "11014",
+      "2026_Q3"
+    ],
+    [
+      "2026",
+      "11012",
+      "2026_H1"
+    ],
+    [
+      "2026",
+      "11013",
+      "2026_Q1"
+    ],
+    [
+      "2025",
+      "11011",
+      "2025_FY"
+    ]
+  ],
+  "universe_count": 1276,
+  "processed_this_universe": 20,
+  "remaining": 1256,
+  "verified_snapshot_count": 17,
+  "statuses": {
+    "VERIFIED": 17,
+    "CORP_CODE_MISSING_OR_SHARE_CLASS": 2,
+    "FINANCIAL_INCOMPLETE": 1
+  },
+  "note": "Dynamic fiscal years; recent financial filing checks reduce redundant full statements; 90-day forced refresh; quarterly amounts may be cumulative; no investment ratings; no filing-date certification"
+}
