@@ -1,0 +1,55 @@
+name: KRX v5 Full Collector
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 21 * * 0" # Monday 06:00 KST (Sunday 21:00 UTC)
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-full-collector
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare dedicated v5-state branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin v5-state >/dev/null; then
+            git fetch origin v5-state:v5-state
+            git worktree add v5_state v5-state
+          else
+            git worktree add --detach v5_state HEAD
+            cd v5_state
+            git switch --orphan v5-state
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+      - name: Collect all eligible stocks and save durable checkpoints
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          V5_STATE_DIR: v5_state
+          V5_MAX_STOCKS: '0'
+          V5_FLUSH_EVERY: '20'
+        run: python v5/v5_full_collector.py
+      - name: Upload summary and snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-full-collector
+          path: |
+            v5_state/summary.json
+            v5_state/financial_latest.json
+            v5_state/financial_changes.json
+            v5_state/checkpoint.json
+          retention-days: 30
+          if-no-files-found: warn
