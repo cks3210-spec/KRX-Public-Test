@@ -1,0 +1,26 @@
+name: KRX v5 Growth Enrichment
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch v5 collector snapshot
+        run: |
+          mkdir -p v5_state
+          curl --fail --location --retry 3 --silent --show-error "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v5-state/financial_latest.json" -o v5_state/financial_latest.json
+      - name: Enrich year-on-year growth from OpenDART
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python v5/v5_growth_enrich.py
+      - name: Upload growth data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-growth-comparatives
+          path: v5_growth_output/
+          retention-days: 30
