@@ -1,0 +1,17 @@
+name: KRX v5 History Failure Test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  failure-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run isolated failure injection checks
+        run: |
+          cp v5/v5_history_merge.py v5/v5_history_failure_test.py /tmp/
+          python /tmp/v5_history_failure_test.py
