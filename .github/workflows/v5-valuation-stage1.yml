@@ -1,0 +1,23 @@
+name: KRX v5 Valuation Diagnostics Stage 1
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  valuation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch independent financial snapshot
+        run: |
+          mkdir -p v5_state
+          curl --fail --location --retry 3 --silent --show-error "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v5-state/financial_latest.json" -o v5_state/financial_latest.json
+      - name: Calculate conservative valuation diagnostics
+        run: python v5/v5_valuation_stage1.py
+      - name: Upload valuation diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-valuation-stage1
+          path: v5_valuation_output/
+          retention-days: 30
