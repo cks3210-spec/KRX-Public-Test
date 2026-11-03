@@ -1,0 +1,32 @@
+name: KRX v5 Historical Financial Enrichment
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Number of companies to test (20 first; 0 for all)'
+        required: true
+        default: '20'
+permissions:
+  contents: read
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch verified snapshot
+        run: |
+          mkdir -p v5_state
+          curl --fail --location --retry 3 --silent --show-error "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v5-state/financial_latest.json" -o v5_state/financial_latest.json
+      - name: Collect history diagnostics
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python v5/v5_history_enrich.py --limit "${{ inputs.limit }}"
+      - name: Upload diagnostics even if collection fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-history-diagnostics
+          path: v5_history_output/
+          if-no-files-found: warn
+          retention-days: 30
