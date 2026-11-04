@@ -1,0 +1,38 @@
+{
+  "checked_kst": "2026-11-05T08:55:46.747269+09:00",
+  "status": "SHADOW_RECALCULATION_PASSED",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "history": {
+    "rows": 193476,
+    "sessions": 70,
+    "first_date": "20260722",
+    "last_date": "20261103",
+    "latest_key_count": 2768,
+    "latest_snapshot_key_count": 2768,
+    "latest_key_difference": 0
+  },
+  "reproduction": {
+    "counts": {
+      "compared_MA5": 1283,
+      "compared_MA10": 1281,
+      "compared_MA20": 1279,
+      "compared_MA60": 1272
+    },
+    "mismatch_examples": [],
+    "rounding_tolerance": 0.011
+  },
+  "extension": {
+    "source_date": "20261104",
+    "official_rows": 2769,
+    "market_counts": {
+      "KOSPI": 938,
+      "KOSDAQ": 1831
+    },
+    "marketcap_1000uk_with_ma": 1286,
+    "insufficient_ma_history": 7,
+    "ma5_cross_above_ma10": 71,
+    "ma5_above_ma10": 385,
+    "note": "Technical-only test; not production or investment recommendations"
+  }
+}
