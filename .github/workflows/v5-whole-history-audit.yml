@@ -1,0 +1,83 @@
+name: KRX v5 Whole History Audit (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download v5-state history and run standalone audit
+        shell: bash
+        run: |
+          python - <<'PYRUN'
+          import base64, json, pathlib, urllib.request
+          encoded = (
+              'IiIiUmVhZC1vbmx5IHF1YWxpdHkgYXVkaXQgZm9yIHY1LXN0YXRlL3Y1X2hpc3RvcnkvaGlzdG9yeV9tZXRyaWNzLmpzb24uCgpT'
+              'dG9yZWQgYXJpdGhtZXRpYyBjaGVja3MgYXJlIE5PVCBpbmRlcGVuZGVudCBPcGVuREFSVCBzb3VyY2UgcmVjb25jaWxpYXRpb24u'
+              'Ck5ldmVyIHByb2R1Y2VzIGludmVzdG1lbnQgZ3JhZGVzLgoiIiIKaW1wb3J0IGFyZ3BhcnNlCmltcG9ydCBqc29uCmltcG9ydCBt'
+              'YXRoCmZyb20gY29sbGVjdGlvbnMgaW1wb3J0IENvdW50ZXIKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgoKZGVmIHZhbGlkKHZh'
+              'bHVlKToKICAgIHJldHVybiBpc2luc3RhbmNlKHZhbHVlLCAoaW50LCBmbG9hdCkpIGFuZCBub3QgaXNpbnN0YW5jZSh2YWx1ZSwg'
+              'Ym9vbCkgYW5kIG1hdGguaXNmaW5pdGUodmFsdWUpCgoKZGVmIGF1ZGl0KGhpc3RvcnkpOgogICAgcm93cyA9IHt9CiAgICBmb3Ig'
+              'Y29kZSwgaCBpbiBzb3J0ZWQoaGlzdG9yeS5pdGVtcygpKToKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShoLCBkaWN0KToKICAg'
+              'ICAgICAgICAgcm93c1tjb2RlXSA9IHsnZmxhZ3MnOiBbJ0lOVkFMSURfUkVDT1JEJ10sICdpbnZlc3RtZW50X2dyYWRlJzogTm9u'
+              'ZSwgJ3NvdXJjZV9yZWNvbmNpbGVkJzogRmFsc2V9CiAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgZmxhZ3MgPSBbXQogICAg'
+              'ICAgIGlkZW50aXR5ID0gaC5nZXQoJ2lkZW50aXR5JykKICAgICAgICBpZiBub3QgaXNpbnN0YW5jZShpZGVudGl0eSwgbGlzdCkg'
+              'b3IgbGVuKGlkZW50aXR5KSA8IDMgb3IgaWRlbnRpdHlbMl0gbm90IGluICgnQ0ZTJywgJ09GUycpOgogICAgICAgICAgICBmbGFn'
+              'cy5hcHBlbmQoJ1NUQVRFTUVOVF9JREVOVElUWV9NSVNTSU5HJykKICAgICAgICBlbGlmIGlkZW50aXR5WzJdID09ICdPRlMnOgog'
+              'ICAgICAgICAgICBmbGFncy5hcHBlbmQoJ1NFUEFSQVRFX1NUQVRFTUVOVF9SRVZJRVcnKQogICAgICAgIGlmIGguZ2V0KCdzdGF0'
+              'dXMnKSAhPSAnQ09NUExFVEUnOgogICAgICAgICAgICBmbGFncy5hcHBlbmQoJ0lOQ09NUExFVEVfSElTVE9SWScpCiAgICAgICAg'
+              'aWYgbm90IHZhbGlkKGguZ2V0KCd0dG1fbmV0X2luY29tZV9rcncnKSk6CiAgICAgICAgICAgIGZsYWdzLmFwcGVuZCgnTkVUX0lO'
+              'Q09NRV9NSVNTSU5HJykKICAgICAgICBpZiBub3QgdmFsaWQoaC5nZXQoJ2Nmb190dG1fa3J3JykpOgogICAgICAgICAgICBmbGFn'
+              'cy5hcHBlbmQoJ0NGT19NSVNTSU5HJykKICAgICAgICBpZiBub3QgdmFsaWQoaC5nZXQoJ3JvZV90dG1fcGN0X2RpYWdub3N0aWMn'
+              'KSk6CiAgICAgICAgICAgIGZsYWdzLmFwcGVuZCgnUk9FX0RJQUdOT1NUSUNfTUlTU0lORycpCiAgICAgICAgaWYgdmFsaWQoaC5n'
+              'ZXQoJ2VxdWl0eV9lbmRfa3J3JykpIGFuZCBoWydlcXVpdHlfZW5kX2tydyddIDw9IDA6CiAgICAgICAgICAgIGZsYWdzLmFwcGVu'
+              'ZCgnTk9OUE9TSVRJVkVfRVFVSVRZJykKICAgICAgICBmb3JtdWxhID0gaC5nZXQoJ2Zvcm11bGEnKQogICAgICAgIGlmIGZvcm11'
+              'bGEgPT0gJ0ZZX3ByaW9yICsgY3VycmVudF9ZVEQgLSBwcmV2aW91c19ZVEQnOgogICAgICAgICAgICBrZXlzID0gKCdwcmlvcl9m'
+              'eV9uZXRfaW5jb21lX2tydycsJ2N1cnJlbnRfeXRkX25ldF9pbmNvbWVfa3J3JywncHJldmlvdXNfeXRkX25ldF9pbmNvbWVfa3J3'
+              'JywndHRtX25ldF9pbmNvbWVfa3J3JykKICAgICAgICAgICAgdmFsdWVzID0gW2guZ2V0KGspIGZvciBrIGluIGtleXNdCiAgICAg'
+              'ICAgICAgIGlmIGFsbCh2YWxpZCh2KSBmb3IgdiBpbiB2YWx1ZXMpOgogICAgICAgICAgICAgICAgaWYgdmFsdWVzWzBdICsgdmFs'
+              'dWVzWzFdIC0gdmFsdWVzWzJdICE9IHZhbHVlc1szXToKICAgICAgICAgICAgICAgICAgICBmbGFncy5hcHBlbmQoJ1RUTV9BUklU'
+              'SE1FVElDX01JU01BVENIJykKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIGZsYWdzLmFwcGVuZCgnVFRNX0FSSVRI'
+              'TUVUSUNfVU5WRVJJRklBQkxFJykKICAgICAgICBlbGlmIGZvcm11bGEgPT0gJ0ZZX2N1cnJlbnQnOgogICAgICAgICAgICBpZiBo'
+              'LmdldCgndHRtX25ldF9pbmNvbWVfa3J3JykgIT0gaC5nZXQoJ2N1cnJlbnRfeXRkX25ldF9pbmNvbWVfa3J3Jyk6CiAgICAgICAg'
+              'ICAgICAgICBmbGFncy5hcHBlbmQoJ0ZZX0FSSVRITUVUSUNfTUlTTUFUQ0gnKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIGZs'
+              'YWdzLmFwcGVuZCgnVU5LTk9XTl9UVE1fRk9STVVMQScpCiAgICAgICAgcm93c1tjb2RlXSA9IHsnbmFtZSc6IGguZ2V0KCdJU1Vf'
+              'Tk0nKSwgJ3BlcmlvZCc6IGguZ2V0KCdwZXJpb2QnKSwKICAgICAgICAgICAgICAgICAgICAgICdoaXN0b3J5X3N0YXR1cyc6IGgu'
+              'Z2V0KCdzdGF0dXMnKSwgJ2ZsYWdzJzogc29ydGVkKGZsYWdzKSwKICAgICAgICAgICAgICAgICAgICAgICdpbnZlc3RtZW50X2dy'
+              'YWRlJzogTm9uZSwgJ3NvdXJjZV9yZWNvbmNpbGVkJzogRmFsc2V9CiAgICBjb3VudHMgPSBDb3VudGVyKGZsYWcgZm9yIHIgaW4g'
+              'cm93cy52YWx1ZXMoKSBmb3IgZmxhZyBpbiByWydmbGFncyddKQogICAgc3VtbWFyeSA9IHsnY29tcGFuaWVzJzogbGVuKHJvd3Mp'
+              'LCAnY29tcGxldGUnOiBzdW0oci5nZXQoJ2hpc3Rvcnlfc3RhdHVzJykgPT0gJ0NPTVBMRVRFJyBmb3IgciBpbiByb3dzLnZhbHVl'
+              'cygpKSwKICAgICAgICAgICAgICAgJ3BhcnRpYWwnOiBzdW0oci5nZXQoJ2hpc3Rvcnlfc3RhdHVzJykgPT0gJ1BBUlRJQUwnIGZv'
+              'ciByIGluIHJvd3MudmFsdWVzKCkpLAogICAgICAgICAgICAgICAnZmxhZ3MnOiBkaWN0KHNvcnRlZChjb3VudHMuaXRlbXMoKSkp'
+              'LCAnaW52ZXN0bWVudF9ncmFkZXMnOiAwLAogICAgICAgICAgICAgICAnc291cmNlX3JlY29uY2lsZWQnOiBGYWxzZSwgJ2F1ZGl0'
+              'X3Njb3BlJzogJ3N0b3JlZC1kYXRhIGNvbnNpc3RlbmN5IG9ubHknfQogICAgcmV0dXJuIHN1bW1hcnksIHJvd3MKCgpkZWYgbWFp'
+              'bigpOgogICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgIHAuYWRkX2FyZ3VtZW50KCctLWlucHV0JywgcmVxdWly'
+              'ZWQ9VHJ1ZSkKICAgIHAuYWRkX2FyZ3VtZW50KCctLW91dHB1dCcsIGRlZmF1bHQ9J3N0YWdlMTNfaGlzdG9yeV9hdWRpdCcpCiAg'
+              'ICBhcmdzID0gcC5wYXJzZV9hcmdzKCkKICAgIHN1bW1hcnksIHJvd3MgPSBhdWRpdChqc29uLmxvYWRzKFBhdGgoYXJncy5pbnB1'
+              'dCkucmVhZF90ZXh0KGVuY29kaW5nPSd1dGYtOCcpKSkKICAgIG91dCA9IFBhdGgoYXJncy5vdXRwdXQpOyBvdXQubWtkaXIocGFy'
+              'ZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgKG91dC8nc3VtbWFyeS5qc29uJykud3JpdGVfdGV4dChqc29uLmR1bXBzKHN1'
+              'bW1hcnksIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpLCBlbmNvZGluZz0ndXRmLTgnKQogICAgKG91dC8nZGlhZ25vc3Rp'
+              'Y3MuanNvbicpLndyaXRlX3RleHQoanNvbi5kdW1wcyhyb3dzLCBlbnN1cmVfYXNjaWk9RmFsc2UsIGluZGVudD0yKSwgZW5jb2Rp'
+              'bmc9J3V0Zi04JykKICAgIHByaW50KGpzb24uZHVtcHMoc3VtbWFyeSwgZW5zdXJlX2FzY2lpPUZhbHNlKSkKCgppZiBfX25hbWVf'
+              'XyA9PSAnX19tYWluX18nOgogICAgbWFpbigpCg=='
+          )
+          pathlib.Path('v5_stage13_history_audit.py').write_bytes(base64.b64decode(encoded))
+          url = 'https://raw.githubusercontent.com/cks3210-spec/KRX-Public-Test/v5-state/v5_history/history_metrics.json'
+          with urllib.request.urlopen(url, timeout=60) as response:
+              data = response.read()
+          history = json.loads(data)
+          if not isinstance(history, dict) or not history:
+              raise SystemExit('History JSON empty or not an object')
+          pathlib.Path('history_metrics.json').write_bytes(data)
+          print('Downloaded company records:', len(history))
+          PYRUN
+          python v5_stage13_history_audit.py --input history_metrics.json --output v5_history_audit_output
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-whole-history-audit
+          path: v5_history_audit_output/
+          if-no-files-found: warn
