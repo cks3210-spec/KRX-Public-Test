@@ -1,0 +1,118 @@
+{
+  "checked_kst": "2026-11-05T06:26:40.353326+09:00",
+  "status": "API_NOT_READY",
+  "source": "KRX_OFFICIAL_OPEN_API",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "markets": {
+    "KOSPI": {
+      "attempts": [
+        {
+          "http_status": 200,
+          "date": "20261104",
+          "status": "EMPTY_DATE"
+        },
+        {
+          "http_status": 200,
+          "date": "20261103",
+          "row_count": 939,
+          "valid_rows": 912,
+          "invalid_rows": 27,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261102",
+          "row_count": 939,
+          "valid_rows": 912,
+          "invalid_rows": 27,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261030",
+          "row_count": 939,
+          "valid_rows": 912,
+          "invalid_rows": 27,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261029",
+          "row_count": 940,
+          "valid_rows": 913,
+          "invalid_rows": 27,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261028",
+          "row_count": 940,
+          "valid_rows": 913,
+          "invalid_rows": 27,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        }
+      ]
+    },
+    "KOSDAQ": {
+      "attempts": [
+        {
+          "http_status": 200,
+          "date": "20261104",
+          "status": "EMPTY_DATE"
+        },
+        {
+          "http_status": 200,
+          "date": "20261103",
+          "row_count": 1829,
+          "valid_rows": 1763,
+          "invalid_rows": 66,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261102",
+          "row_count": 1828,
+          "valid_rows": 1763,
+          "invalid_rows": 65,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261030",
+          "row_count": 1828,
+          "valid_rows": 1763,
+          "invalid_rows": 65,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261029",
+          "row_count": 1825,
+          "valid_rows": 1761,
+          "invalid_rows": 64,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        },
+        {
+          "http_status": 200,
+          "date": "20261028",
+          "row_count": 1824,
+          "valid_rows": 1761,
+          "invalid_rows": 63,
+          "date_mismatches": 0,
+          "status": "VALIDATION_FAILED"
+        }
+      ]
+    }
+  },
+  "note": "This workflow verifies access and schema only; it does not publish licensed raw data."
+}
