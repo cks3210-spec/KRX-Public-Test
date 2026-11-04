@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install independent market source clients
-        run: pip install --disable-pip-version-check pykrx FinanceDataReader pandas requests
+        run: pip install --disable-pip-version-check pykrx finance-datareader pandas requests
       - name: Recover KRX source with independent fallback
         shell: bash
         run: |
