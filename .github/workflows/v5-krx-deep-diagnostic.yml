@@ -1,0 +1,65 @@
+name: KRX v5 Deep Source Diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pykrx requests pandas
+      - name: Probe KRX upstream and pykrx safely
+        shell: bash
+        run: |
+          mkdir -p v5_reports/krx_deep_diagnostic
+          cat > /tmp/krx_deep.py <<'PY'
+          import datetime as dt, json, pathlib, traceback
+          from zoneinfo import ZoneInfo
+          import requests
+          from pykrx import stock
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          day=(now.date()-dt.timedelta(days=1)).strftime('%Y%m%d')
+          report={'checked_kst':now.isoformat(),'reference_date':day,'probes':[],'production_data_modified':False}
+          def add(name,fn):
+              try: report['probes'].append({'name':name,**fn()})
+              except Exception as e: report['probes'].append({'name':name,'error_type':type(e).__name__,'error':str(e)[:500],'traceback_tail':traceback.format_exc()[-900:]})
+          s=requests.Session();s.headers.update({'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36','Accept-Language':'ko-KR,ko;q=0.9'})
+          def homepage():
+              r=s.get('https://data.krx.co.kr/',timeout=15)
+              return {'http':r.status_code,'final_url':r.url,'content_type':r.headers.get('content-type'),'length':len(r.content),'preview':r.text[:160]}
+          add('krx_homepage',homepage)
+          def endpoint():
+              r=s.post('https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd',data={'bld':'dbms/MDC/STAT/standard/MDCSTAT01501','locale':'ko_KR','mktId':'ALL','trdDd':day,'share':'1','money':'1','csvxls_isNo':'false'},headers={'Referer':'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101','Origin':'https://data.krx.co.kr','X-Requested-With':'XMLHttpRequest'},timeout=20)
+              try: j=r.json(); keys=list(j)[:15] if isinstance(j,dict) else []
+              except ValueError:keys=[]
+              return {'http':r.status_code,'content_type':r.headers.get('content-type'),'length':len(r.content),'json_keys':keys,'preview':r.text[:160]}
+          add('krx_post_with_session',endpoint)
+          def pykrx_ohlcv():
+              df=stock.get_market_ohlcv_by_ticker(day,market='KOSPI')
+              return {'rows':len(df),'columns':[str(c) for c in df.columns],'sample_tickers':[str(x) for x in df.index[:3]]}
+          add('pykrx_ohlcv',pykrx_ohlcv)
+          def pykrx_cap():
+              df=stock.get_market_cap_by_ticker(day,market='KOSPI')
+              return {'rows':len(df),'columns':[str(c) for c in df.columns],'sample_tickers':[str(x) for x in df.index[:3]]}
+          add('pykrx_market_cap',pykrx_cap)
+          out=pathlib.Path('v5_reports/krx_deep_diagnostic/status.json')
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/krx_deep.py
+      - name: Save diagnosis only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/krx_deep_diagnostic/status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'diagnose KRX response and pykrx schema without modifying market data'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
