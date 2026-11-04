@@ -1,0 +1,53 @@
+name: KRX v5 History Origin Audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Inspect repository branches and past filenames
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          python - <<'PY'
+          import subprocess,json,datetime,pathlib,re
+          from zoneinfo import ZoneInfo
+          def git(*args):
+              p=subprocess.run(['git',*args],text=True,capture_output=True,timeout=90)
+              return p.stdout.splitlines() if p.returncode==0 else []
+          git('fetch','--all','--prune')
+          refs=git('for-each-ref','--format=%(refname:short)','refs/remotes/origin')
+          pattern=re.compile(r'(history|historical|archive|daily|snapshot|price|quote|krx|시세|이력)',re.I)
+          found=[]
+          for ref in refs:
+              if ref.endswith('/HEAD'):continue
+              paths=git('ls-tree','-r','--name-only',ref)
+              candidates=[p for p in paths if pattern.search(p) and p.lower().endswith(('.csv','.parquet','.json','.csv.gz','.zip','.sqlite','.db'))]
+              found.append({'branch':ref,'candidate_paths':candidates[:150],'candidate_count':len(candidates)})
+          past=git('log','--all','--name-only','--pretty=format:','--diff-filter=ADMR')
+          pastpaths=sorted({p for p in past if pattern.search(p) and p.lower().endswith(('.csv','.parquet','.json','.csv.gz','.zip','.sqlite','.db'))})
+          report={'checked_kst':datetime.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+            'status':'INVENTORY_COMPLETE','branches':found,'historical_candidate_paths':pastpaths[:250],
+            'historical_candidate_count':len(pastpaths),
+            'note':'Filename inventory only. File contents and 60-session continuity not verified. No raw KRX data is published.',
+            'production_data_modified':False}
+          pathlib.Path('v5_reports/official_api/history_origin_audit.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'branches':len(found),'past_candidates':len(pastpaths),'status':report['status']}))
+          PY
+      - name: Commit inventory report only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/history_origin_audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'audit historical source file locations'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
