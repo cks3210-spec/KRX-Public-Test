@@ -1,0 +1,121 @@
+name: KRX v5 Official API Publication Lag Tracker
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 0,4,9 * * 1-5' # 09:40, 13:40, 18:40 KST
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-publication-lag-tracker
+  cancel-in-progress: false
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests exchange-calendars
+      - name: Check fixed and rolling KRX dates, preserving historical checks
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/krx_lag_tracker.py <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import pathlib
+          import re
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as xcals
+          import requests
+
+          now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          path = pathlib.Path('v5_reports/official_api/publication_lag_history.json')
+          try:
+              history = json.loads(path.read_text(encoding='utf-8'))
+              if not isinstance(history, list): history = []
+          except (OSError, ValueError):
+              history = []
+          cal = xcals.get_calendar('XKRX')
+          prev = now.date() - dt.timedelta(days=1)
+          while not cal.is_session(prev.isoformat()):
+              prev -= dt.timedelta(days=1)
+          dates = sorted({'20261104', prev.strftime('%Y%m%d')})
+          key = os.getenv('KRX_API_KEY', '').strip()
+
+          def integer(value):
+              s = str(value).replace(',', '').strip()
+              return int(s) if re.fullmatch(r'-?\d+', s) else None
+
+          def probe(endpoint, day):
+              try:
+                  r = requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/' + endpoint,
+                      params={'basDd': day}, headers={'AUTH_KEY': key, 'Accept': 'application/json'}, timeout=25)
+                  if r.status_code != 200:
+                      return {'status': 'HTTP_ERROR', 'http_status': r.status_code}
+                  p = r.json()
+                  if not isinstance(p, dict) or not isinstance(p.get('OutBlock_1'), list):
+                      return {'status': 'SCHEMA_ERROR'}
+                  rows = p['OutBlock_1']
+                  if not rows: return {'status': 'EMPTY_DATE', 'rows': 0}
+                  seen = set()
+                  for row in rows:
+                      if not isinstance(row, dict): return {'status': 'INVALID_ROW'}
+                      code = str(row.get('ISU_CD', '')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}', code, re.ASCII):
+                          return {'status': 'INVALID_CODE'}
+                      if code in seen: return {'status': 'DUPLICATE_CODE'}
+                      seen.add(code)
+                      if str(row.get('BAS_DD', '')).strip() != day: return {'status': 'DATE_MISMATCH'}
+                      price, cap, vol = (integer(row.get(f)) for f in ('TDD_CLSPRC', 'MKTCAP', 'ACC_TRDVOL'))
+                      if price is None or price <= 0 or cap is None or cap <= 0 or vol is None or vol < 0:
+                          return {'status': 'INVALID_NUMERIC'}
+                  if len(rows) < 400: return {'status': 'LOW_COVERAGE', 'rows': len(rows)}
+                  return {'status': 'VALID', 'rows': len(rows)}
+              except requests.RequestException as exc:
+                  return {'status': 'NETWORK_ERROR', 'error_type': type(exc).__name__}
+              except ValueError:
+                  return {'status': 'INVALID_JSON'}
+
+          record = {'checked_kst': now.isoformat(), 'source': 'KRX_OFFICIAL_OPEN_API',
+                    'calendar': 'exchange_calendars XKRX (third-party)',
+                    'fixed_date': '20261104', 'rolling_previous_session': prev.strftime('%Y%m%d'),
+                    'raw_market_data_published': False, 'production_data_modified': False,
+                    'dates': {}}
+          if not key:
+              record['status'] = 'MISSING_SECRET'
+          else:
+              for day in dates:
+                  markets = {'KOSPI': probe('stk_bydd_trd', day),
+                             'KOSDAQ': probe('ksq_bydd_trd', day)}
+                  states = [m['status'] for m in markets.values()]
+                  label = ('VERIFIED' if all(s == 'VALID' for s in states)
+                           else 'PENDING' if all(s == 'EMPTY_DATE' for s in states)
+                           else 'PARTIAL' if 'VALID' in states and 'EMPTY_DATE' in states
+                           else 'ERROR')
+                  record['dates'][day] = {'status': label, 'markets': markets}
+              record['status'] = 'CHECK_COMPLETE'
+          history = [item for item in history if item.get('checked_kst') != record['checked_kst']]
+          history.append(record)
+          history = history[-120:]
+          path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(record, ensure_ascii=False))
+          PY
+          python /tmp/krx_lag_tracker.py
+      - name: Commit aggregate check history only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/publication_lag_history.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: track official KRX data publication lag'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
