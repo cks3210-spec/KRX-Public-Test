@@ -1,0 +1,95 @@
+name: KRX v5 Official API Daily Source Gate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 0 * * 1-5' # 09:20 KST, previous trading day
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-official-daily-gate
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install --disable-pip-version-check requests
+      - name: Verify official KRX daily data, without publishing raw rows
+        id: probe
+        continue-on-error: true
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/official_daily.py <<'PY'
+          import datetime as dt, json, os, pathlib, re, sys
+          from zoneinfo import ZoneInfo
+          import requests
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          key=os.getenv('KRX_API_KEY','').strip()
+          result={'checked_kst':now.isoformat(),'source':'KRX_OFFICIAL_OPEN_API','status':'NOT_RUN','production_data_modified':False,'raw_market_data_published':False,'attempts':[]}
+          def integer(v):
+              s=str(v).replace(',','').strip()
+              return int(s) if re.fullmatch(r'-?\d+',s) else None
+          def fetch(market,endpoint,day):
+              r=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+              r.raise_for_status()
+              p=r.json()
+              if not isinstance(p,dict) or not isinstance(p.get('OutBlock_1'),list):raise ValueError('SCHEMA_ERROR')
+              rows=p['OutBlock_1']
+              if not rows:return None
+              if len(rows)<400:raise ValueError('LOW_ROW_COUNT')
+              seen=set()
+              for row in rows:
+                  if not isinstance(row,dict):raise ValueError('NON_OBJECT_ROW')
+                  code=str(row.get('ISU_CD','')).strip()
+                  if not re.fullmatch(r'[A-Za-z0-9]{6}',code,flags=re.ASCII):raise ValueError('INVALID_CODE')
+                  if code in seen:raise ValueError('DUPLICATE_CODE')
+                  seen.add(code)
+                  if str(row.get('BAS_DD','')).strip()!=day:raise ValueError('DATE_MISMATCH')
+                  price=integer(row.get('TDD_CLSPRC'))
+                  cap=integer(row.get('MKTCAP'))
+                  vol=integer(row.get('ACC_TRDVOL'))
+                  if price is None or price<=0 or cap is None or cap<=0 or vol is None or vol<0:raise ValueError('INVALID_NUMERIC_DATA')
+              return len(rows)
+          if not key:result['status']='MISSING_SECRET'
+          else:
+              dates=[(now.date()-dt.timedelta(days=i)).strftime('%Y%m%d') for i in range(1,11) if (now.date()-dt.timedelta(days=i)).weekday()<5]
+              for day in dates:
+                  counts={};errors={}
+                  for market,ep in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                      try:
+                          n=fetch(market,ep,day)
+                          if n is None:errors[market]='EMPTY_DATE'
+                          else:counts[market]=n
+                      except Exception as e:errors[market]=type(e).__name__+':'+str(e)[:50]
+                  result['attempts'].append({'date':day,'counts':counts,'errors':errors})
+                  if len(counts)==2:
+                      result.update(status='SOURCE_VERIFIED',source_date=day,market_counts=counts,total_rows=sum(counts.values()),fresh_for_latest_expected_date=day==dates[0]);break
+              if result['status']=='NOT_RUN':result['status']='SOURCE_UNAVAILABLE'
+          result['note']='Validation only. Raw KRX data is not saved. Existing v4 and golden-cross production pipelines are not modified or connected.'
+          pathlib.Path('v5_reports/official_api/collector_status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps({k:v for k,v in result.items() if k!='attempts'},ensure_ascii=False))
+          if result['status']!='SOURCE_VERIFIED':sys.exit(1)
+          PY
+          python /tmp/official_daily.py
+      - name: Commit status only
+        if: always()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/collector_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: verify official KRX daily source safely'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Fail if collection did not verify
+        if: steps.probe.outcome != 'success'
+        run: exit 1
