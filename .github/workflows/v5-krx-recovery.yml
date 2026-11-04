@@ -1,0 +1,97 @@
+name: KRX v5 Source Recovery
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 10 * * 1-5' # 19:00 KST
+permissions:
+  contents: write
+concurrency:
+  group: v5-source-recovery
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent market source clients
+        run: pip install --disable-pip-version-check pykrx FinanceDataReader pandas requests
+      - name: Recover KRX source with independent fallback
+        shell: bash
+        run: |
+          mkdir -p v5_sources/krx
+          cat > /tmp/krx_recovery.py <<'PY'
+          import csv, datetime as dt, json, pathlib, traceback
+          from zoneinfo import ZoneInfo
+          ROOT=pathlib.Path('v5_sources/krx');ROOT.mkdir(parents=True,exist_ok=True)
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          today=now.strftime('%Y%m%d')
+          issues=[]
+          def number(v):
+              try:return int(float(str(v).replace(',','')))
+              except (ValueError,TypeError):return 0
+          def valid(rows):
+              codes=[r['ISU_CD'] for r in rows]
+              return len(rows)>=1500 and len(codes)==len(set(codes)) and all(len(c)==6 and r['TDD_CLSPRC']>0 and r['MKTCAP']>0 for r in rows)
+          def pykrx_rows(day):
+              from pykrx import stock
+              rows=[]
+              for market in ('KOSPI','KOSDAQ'):
+                  df=stock.get_market_ohlcv_by_ticker(day,market=market)
+                  if df is None or df.empty:continue
+                  caps=stock.get_market_cap_by_ticker(day,market=market)
+                  for ticker,r in df.iterrows():
+                      cap=number(caps.loc[ticker,'시가총액']) if ticker in caps.index else 0
+                      price=number(r.get('종가'));volume=number(r.get('거래량'))
+                      if price<=0 or cap<=0:continue
+                      rows.append(dict(BAS_DD=day,ISU_CD=str(ticker).zfill(6),ISU_NM=stock.get_market_ticker_name(ticker),TDD_CLSPRC=price,ACC_TRDVOL=volume,MKTCAP=cap,MARKET=market))
+              return rows
+          def fdr_rows(day):
+              import FinanceDataReader as fdr
+              # DataReader does not supply a reliable whole-market same-day snapshot;
+              # never substitute a listing or an older date for actual daily prices.
+              listing=fdr.StockListing('KRX')
+              if listing is None or listing.empty:raise RuntimeError('FDR listing empty')
+              raise RuntimeError('FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked')
+          candidates=[(now.date()-dt.timedelta(days=n)).strftime('%Y%m%d') for n in range(8) if (now.date()-dt.timedelta(days=n)).weekday()<5]
+          selected=None
+          for day in candidates:
+              for name,collector in (('pykrx',pykrx_rows),('FDR',fdr_rows)):
+                  try:
+                      rows=collector(day)
+                      if not valid(rows):raise ValueError(f'Incomplete snapshot: {len(rows)} rows')
+                      selected=(day,name,rows);break
+                  except Exception as e:issues.append({'day':day,'source':name,'error':str(e)[:180]})
+              if selected:break
+          state={'checked_kst':now.isoformat(),'expected_today':today,'attempts':issues[-12:],'production_data_modified':False}
+          if selected:
+              day,source,rows=selected
+              path=ROOT/f'krx_{day}.csv'
+              with path.open('w',encoding='utf-8-sig',newline='') as f:
+                  writer=csv.DictWriter(f,fieldnames=['BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP','MARKET'])
+                  writer.writeheader();writer.writerows(sorted(rows,key=lambda x:x['ISU_CD']))
+              state.update(status='COLLECTED' if day==today else 'HISTORICAL_SNAPSHOT',source=source,source_date=day,rows=len(rows),file=str(path),fresh_for_today=day==today)
+          else:state.update(status='SOURCE_UNAVAILABLE',fresh_for_today=False)
+          (ROOT/'recovery_status.json').write_text(json.dumps(state,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps({k:v for k,v in state.items() if k!='attempts'},ensure_ascii=False))
+          PY
+          python /tmp/krx_recovery.py
+      - name: Commit isolated source snapshots and status
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_sources/krx/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: recover isolated KRX source with safe fallback'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-krx-recovery
+          path: v5_sources/krx/
+          if-no-files-found: warn
