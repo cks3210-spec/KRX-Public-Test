@@ -1,0 +1,86 @@
+name: KRX v5 Stage25 Fundamental Engine
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fundamental-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Stage25 fundamental research
+        shell: bash
+        run: |
+          mkdir -p v5_reports/stage25
+          cat > /tmp/stage25.py <<'PY'
+          import csv,datetime,json,math,pathlib
+          from collections import Counter
+          root=pathlib.Path('v5_reports/stage25');root.mkdir(parents=True,exist_ok=True)
+          def number(v):
+              try:
+                  x=float(str(v).replace(',','').strip())
+                  return x if math.isfinite(x) else None
+              except (ValueError,TypeError):return None
+          def read(path):
+              if not path.exists():return []
+              with path.open(encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          base=pathlib.Path('data')
+          financials=read(base/'fundamentals.csv')
+          prices=read(base/'latest.csv')
+          px={r.get('ISU_CD',''):r for r in prices if r.get('ISU_CD')}
+          output=[];status=Counter()
+          for f in financials:
+              code=f.get('ISU_CD','');p=px.get(code)
+              if not code or not p:continue
+              cap=number(p.get('MKTCAP'))
+              if cap is None or cap<100_000_000_000:continue
+              rev=number(f.get('revenue_yoy_pct'));op=number(f.get('operating_profit_yoy_pct'))
+              debt=number(f.get('debt_ratio_pct'));roe=number(f.get('roe_avg_equity_est_pct'))
+              per=number(f.get('per_annual_est'));pbr=number(f.get('pbr_yearend_est'))
+              fiscal=f.get('fiscal_year','');source=f.get('source','');dart=f.get('dart_status','')
+              missing=[k for k,v in [('revenue_yoy_pct',rev),('operating_profit_yoy_pct',op),('debt_ratio_pct',debt),('roe_avg_equity_est_pct',roe)] if v is None]
+              if missing:status['incomplete']+=1
+              score=0
+              if rev is not None:score+=25 if rev>=15 else 15 if rev>=5 else 5 if rev>=0 else 0
+              if op is not None:score+=25 if op>=20 else 15 if op>=5 else 5 if op>=0 else 0
+              if debt is not None:score+=20 if debt<=100 else 12 if debt<=200 else 4 if debt<=300 else 0
+              if roe is not None:score+=20 if roe>=15 else 12 if roe>=8 else 4 if roe>0 else 0
+              if per is not None and per>0:score+=5 if per<=15 else 2 if per<=25 else 0
+              if pbr is not None and pbr>0:score+=5 if pbr<=1.5 else 2 if pbr<=3 else 0
+              # Incomplete, historical or unverified inputs must not become an investment recommendation.
+              research_tier='A_RESEARCH' if score>=75 and not missing else 'B_RESEARCH' if score>=55 and not missing else 'UNRATED'
+              if research_tier=='UNRATED':status['unrated']+=1
+              else:status[research_tier]+=1
+              output.append({'ISU_CD':code,'ISU_NM':f.get('ISU_NM') or p.get('ISU_NM',''),
+                'market_date':p.get('BAS_DD',''),'fiscal_year':fiscal,'source':source,'dart_status':dart,
+                'market_cap_krw':int(cap),'score_research':score,'research_tier':research_tier,
+                'missing_fields':';'.join(missing),'investment_grade':'NOT_VERIFIED',
+                'trade_signal':'NONE','reason':'Research-only; source freshness and reconciliation pending'})
+          output.sort(key=lambda r:(-r['score_research'],r['ISU_CD']))
+          cols=['ISU_CD','ISU_NM','market_date','fiscal_year','source','dart_status','market_cap_krw','score_research','research_tier','missing_fields','investment_grade','trade_signal','reason']
+          with (root/'fundamental_research.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=cols);w.writeheader();w.writerows(output)
+          meta={'status':'RESEARCH_ONLY' if output else 'WAITING_FOR_SOURCE_DATA','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                'market_date':max((r.get('BAS_DD','') for r in prices),default=''),
+                'source_rows':len(financials),'eligible_rows':len(output),'tiers':dict(status),
+                'verified_investment_recommendations':0,'note':'Research ranking only. No confirmed A/B investment grades or buy signals.'}
+          (root/'status.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(meta,ensure_ascii=False))
+          PY
+          python /tmp/stage25.py
+      - name: Commit Stage25 outputs
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/stage25/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 stage25: fundamental research outputs'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage25-fundamental-research
+          path: v5_reports/stage25/
