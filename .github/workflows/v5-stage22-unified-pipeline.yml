@@ -1,0 +1,52 @@
+name: KRX v5 Stage22 Unified Daily Pipeline
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 11 * * 1-5' # 20:10 KST; after expected KRX publisher
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage22-unified
+  cancel-in-progress: false
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Restore unified orchestration
+        run: |
+          mkdir -p stage22
+          python - <<'PYCODE'
+          import base64,pathlib
+          pathlib.Path('stage22/prepare_stage22.py').write_bytes(base64.b64decode('IiIiUmVzdG9yZSB0aGUgYWxyZWFkeS1idWlsdCBTdGFnZTIwLzIxIFB5dGhvbiBlbmdpbmVzIGZyb20gdGhlIGNoZWNrZWQtaW4gU3RhZ2UyMSB3b3JrZmxvdy4iIiIKaW1wb3J0IGJhc2U2NCxwYXRobGliLHJlCnNyYz1wYXRobGliLlBhdGgoJy5naXRodWIvd29ya2Zsb3dzL3Y1LXN0YWdlMjEtZGFpbHktYXV0b21hdGlvbi55bWwnKS5yZWFkX3RleHQoKQpvdXQ9cGF0aGxpYi5QYXRoKCdzdGFnZTIyJyk7b3V0Lm1rZGlyKGV4aXN0X29rPVRydWUpCmV4cGVjdGVkPVsnc3RhZ2UxOV9lbmdpbmUucHknLCdidWlsZF9zdGFnZTIwLnB5JywndGVzdF9zdGFnZTIwLnB5JywncGVyc2lzdF9zdGFnZTIxLnB5JywndGVzdF9zdGFnZTIxLnB5J10KZm9yIG5hbWUgaW4gZXhwZWN0ZWQ6CiAgICBwYXQ9ciJcKHJvb3QvJyIrcmUuZXNjYXBlKG5hbWUpK3IiJ1wpXC53cml0ZV9ieXRlc1woYmFzZTY0XC5iNjRkZWNvZGVcKCcoW0EtWmEtejAtOSsvPV0rKSdcKVwpIgogICAgbT1yZS5zZWFyY2gocGF0LHNyYykKICAgIGlmIG5vdCBtOnJhaXNlIFJ1bnRpbWVFcnJvcignTWlzc2luZyBzb3VyY2UgaW4gU3RhZ2UyMSB3b3JrZmxvdzogJytuYW1lKQogICAgZGF0YT1iYXNlNjQuYjY0ZGVjb2RlKG0uZ3JvdXAoMSksdmFsaWRhdGU9VHJ1ZSkKICAgIChvdXQvbmFtZSkud3JpdGVfYnl0ZXMoZGF0YSkKICAgIHByaW50KCdSZXN0b3JlZCcsbmFtZSxsZW4oZGF0YSkpCg=='))
+          pathlib.Path('stage22/run_stage22.py').write_bytes(base64.b64decode('IiIiU3RhZ2UyMiBvcmNoZXN0cmF0aW9uLiBEbyBub3QgY2xhaW0gZnJlc2ggZGF0YSB3aGVuIHVwc3RyZWFtIHB1Ymxpc2hlciBpcyBzdGFsZS4iIiIKaW1wb3J0IGRhdGV0aW1lLGpzb24scGF0aGxpYixzdWJwcm9jZXNzLHN5cyx1cmxsaWIucmVxdWVzdApLU1Q9ZGF0ZXRpbWUudGltZXpvbmUoZGF0ZXRpbWUudGltZWRlbHRhKGhvdXJzPTkpKQpST09UPXBhdGhsaWIuUGF0aCgndjVfcmVwb3J0cycpClNUQVRVUz1ST09ULydwaXBlbGluZV9zdGF0dXMuanNvbicKZGVmIG1haW4oKToKICAgIG5vdz1kYXRldGltZS5kYXRldGltZS5ub3coS1NUKQogICAgdG9kYXk9bm93LnN0cmZ0aW1lKCclWSVtJWQnKQogICAgIyBDb21wYXJlIHRoZSBhY3R1YWwgS1JYIGxhdGVzdCB0cmFkaW5nIHNlc3Npb24gYWdhaW5zdCBhIEtSWCBjYWxlbmRhci4KICAgICMgV2Vla2VuZCBza2lwOyBob2xpZGF5IHNhZmV0eSBpcyBoYW5kbGVkIGJ5IHJlZnVzaW5nIHN0YWxlIG1hcmtldCBkYXRhLgogICAgaWYgbm93LndlZWtkYXkoKT49NToKICAgICAgICBwcmludCgnU0tJUF9XRUVLRU5EJyk7cmV0dXJuIDAKICAgIHVybD0naHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NrczMyMTAtc3BlYy9LUlgtUHVibGljLVRlc3QvbWFpbi9kYXRhL2xhdGVzdC5jc3YnCiAgICB3aXRoIHVybGxpYi5yZXF1ZXN0LnVybG9wZW4odXJsLHRpbWVvdXQ9NDUpIGFzIHI6CiAgICAgICAgaGVhZGVyPXIucmVhZGxpbmUoKS5kZWNvZGUoJ3V0Zi04LXNpZycpLnN0cmlwKCkuc3BsaXQoJywnKQogICAgICAgIGZpcnN0PXIucmVhZGxpbmUoKS5kZWNvZGUoJ3V0Zi04LXNpZycpLnN0cmlwKCkuc3BsaXQoJywnKQogICAgYXNvZj1maXJzdFtoZWFkZXIuaW5kZXgoJ0JBU19ERCcpXQogICAgaWYgbm90KGFzb2YuaXNkaWdpdCgpIGFuZCBsZW4oYXNvZik9PTgpOnJhaXNlIFJ1bnRpbWVFcnJvcignSW52YWxpZCBLUlggc291cmNlIGRhdGUnKQogICAgaWYgYXNvZiE9dG9kYXk6CiAgICAgICAgIyBObyBzdGFsZSBjYW5kaWRhdGUgcHVibGlzaGluZywgbm8gZmFsc2UgJ2ZyZXNoJyByZXBvcnRzLgogICAgICAgIHByaW50KCdXQUlUSU5HX0ZPUl9VUFNUUkVBTV9LUlhfREFUQScsanNvbi5kdW1wcyh7J2Fzb2YnOmFzb2YsJ3RvZGF5Jzp0b2RheX0pKQogICAgICAgIHJldHVybiAwCiAgICBzdWJwcm9jZXNzLnJ1bihbc3lzLmV4ZWN1dGFibGUsJ3N0YWdlMjIvdGVzdF9zdGFnZTIwLnB5J10sY2hlY2s9VHJ1ZSkKICAgIHN1YnByb2Nlc3MucnVuKFtzeXMuZXhlY3V0YWJsZSwnc3RhZ2UyMi90ZXN0X3N0YWdlMjEucHknXSxjaGVjaz1UcnVlKQogICAgc3VicHJvY2Vzcy5ydW4oW3N5cy5leGVjdXRhYmxlLCdzdGFnZTIyL2J1aWxkX3N0YWdlMjAucHknLCctLW91dHB1dCcsJ3N0YWdlMjBfb3V0cHV0J10sY2hlY2s9VHJ1ZSkKICAgICMgU3RhZ2UyMSBsZWRnZXIncyBmb3J3YXJkIFYgb3V0Y29tZXMgcmVxdWlyZSB0aGUgNzAtZGF5IEtSWCBwcmljZSBmaWxlLgogICAgdXJsPSdodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vY2tzMzIxMC1zcGVjL0tSWC1QdWJsaWMtVGVzdC9tYWluL2RhdGEvZGFpbHlfNzBkLmNzdi5neicKICAgIHdpdGggdXJsbGliLnJlcXVlc3QudXJsb3Blbih1cmwsdGltZW91dD0xMjApIGFzIHI6CiAgICAgICAgcGF0aGxpYi5QYXRoKCdzdGFnZTIwX291dHB1dC9kYWlseV83MGQuY3N2Lmd6Jykud3JpdGVfYnl0ZXMoci5yZWFkKCkpCiAgICBzdWJwcm9jZXNzLnJ1bihbc3lzLmV4ZWN1dGFibGUsJ3N0YWdlMjIvcGVyc2lzdF9zdGFnZTIxLnB5JywnLS1zb3VyY2UnLCdzdGFnZTIwX291dHB1dCcsJy0tcm9vdCcsJ3Y1X3JlcG9ydHMnXSxjaGVjaz1UcnVlKQogICAgUk9PVC5ta2RpcihleGlzdF9vaz1UcnVlKQogICAgU1RBVFVTLndyaXRlX3RleHQoanNvbi5kdW1wcyh7J2Fzb2Zfa3J4Jzphc29mLCdydW5fa3N0Jzpub3cuaXNvZm9ybWF0KCksJ3N0YXR1cyc6J1BVQkxJU0hFRCcsJ3NvdXJjZSc6J2V4aXN0aW5nIEtSWCBwdWJsaWMgcHVibGlzaGVyJywnY29sbGVjdG9yX2Nvbm5lY3RlZCc6RmFsc2V9LGVuc3VyZV9hc2NpaT1GYWxzZSxpbmRlbnQ9MikpCiAgICBwcmludCgnUFVCTElTSEVEJyxhc29mKQogICAgcmV0dXJuIDAKaWYgX19uYW1lX189PSdfX21haW5fXyc6c3lzLmV4aXQobWFpbigpKQo='))
+          PYCODE
+      - name: Run KRX v5 pipeline
+        run: |
+          python stage22/prepare_stage22.py
+          python stage22/run_stage22.py
+      - name: Commit v5 reports only
+        run: |
+          if [ -d v5_reports ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add v5_reports/
+            if ! git diff --cached --quiet; then
+              git commit -m "v5 stage22: publish daily research ledger"
+              git push
+            fi
+          fi
+      - name: Upload research artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage22-unified
+          path: |
+            stage20_output/summary.json
+            stage20_output/candidates.csv
+            v5_reports/latest_status.json
+            v5_reports/pipeline_status.json
+          if-no-files-found: warn
