@@ -1,0 +1,31 @@
+name: KRX v5 ROE Source Pilot
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  roe-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read existing snapshots and history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v5_state v5_history_output
+          git fetch origin v5-state
+          git show origin/v5-state:financial_latest.json > v5_state/financial_latest.json
+          git show origin/v5-state:v5_history/history_metrics.json > v5_history_output/history_metrics.json
+      - name: Pilot OpenDART ownership and aligned equity
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python v5/v5_roe_source_pilot.py --limit 5
+      - name: Preserve read-only diagnostic output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-roe-source-pilot
+          path: v5_roe_pilot_output/
+          if-no-files-found: warn
+          retention-days: 30
