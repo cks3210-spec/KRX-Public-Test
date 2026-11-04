@@ -1,0 +1,70 @@
+{
+  "checked_kst": "2026-11-05T08:42:47.196519+09:00",
+  "status": "INVENTORY_COMPLETE",
+  "branches": [
+    {
+      "branch": "origin",
+      "candidate_paths": [
+        "data/daily_70d.csv.gz",
+        "data/daily_indicators.csv",
+        "trade_validation/candidate_history.csv",
+        "v5_reports/krx_deep_diagnostic/status.json",
+        "v5_reports/official_api/history_continuity_gate.json",
+        "v5_reports/official_api/publication_lag_history.json",
+        "v5_sources/krx/fallback_status.json",
+        "v5_sources/krx/recovery_status.json",
+        "v5_sources/krx/status.json"
+      ],
+      "candidate_count": 9
+    },
+    {
+      "branch": "origin/backup/before-validation-improvements-20261029",
+      "candidate_paths": [
+        "data/daily_70d.csv.gz",
+        "data/daily_indicators.csv",
+        "trade_validation/candidate_history.csv"
+      ],
+      "candidate_count": 3
+    },
+    {
+      "branch": "origin/main",
+      "candidate_paths": [
+        "data/daily_70d.csv.gz",
+        "data/daily_indicators.csv",
+        "trade_validation/candidate_history.csv",
+        "v5_reports/krx_deep_diagnostic/status.json",
+        "v5_reports/official_api/history_continuity_gate.json",
+        "v5_reports/official_api/publication_lag_history.json",
+        "v5_sources/krx/fallback_status.json",
+        "v5_sources/krx/recovery_status.json",
+        "v5_sources/krx/status.json"
+      ],
+      "candidate_count": 9
+    },
+    {
+      "branch": "origin/v5-state",
+      "candidate_paths": [
+        "v5_history/history_metrics.json",
+        "v5_history/history_summary.json"
+      ],
+      "candidate_count": 2
+    }
+  ],
+  "historical_candidate_paths": [
+    ".github/workflows/KRX_v5_integrated_engine_stage16_dev.zip",
+    "data/daily_70d.csv.gz",
+    "data/daily_indicators.csv",
+    "trade_validation/candidate_history.csv",
+    "v5_history/history_metrics.json",
+    "v5_history/history_summary.json",
+    "v5_reports/krx_deep_diagnostic/status.json",
+    "v5_reports/official_api/history_continuity_gate.json",
+    "v5_reports/official_api/publication_lag_history.json",
+    "v5_sources/krx/fallback_status.json",
+    "v5_sources/krx/recovery_status.json",
+    "v5_sources/krx/status.json"
+  ],
+  "historical_candidate_count": 12,
+  "note": "Filename inventory only. File contents and 60-session continuity not verified. No raw KRX data is published.",
+  "production_data_modified": false
+}
