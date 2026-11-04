@@ -1,0 +1,21 @@
+{
+  "checked_kst": "2026-11-05T08:23:16.583444+09:00",
+  "status": "READY_FOR_SHADOW_INTEGRATION",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "authorized_to_replace_production": false,
+  "existing_date": "20261103",
+  "probed_dates": [
+    {
+      "date": "20261104",
+      "kospi_rows": 938,
+      "kosdaq_rows": 1831
+    }
+  ],
+  "validated_date": "20261104",
+  "validated_counts": {
+    "KOSPI": 938,
+    "KOSDAQ": 1831,
+    "total": 2769
+  }
+}
