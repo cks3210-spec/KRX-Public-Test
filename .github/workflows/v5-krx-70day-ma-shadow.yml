@@ -1,0 +1,125 @@
+name: KRX v5 70-Day MA Shadow Recalculation
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  recalculate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Recalculate without changing production data
+        shell: bash
+        run: |
+          cat > /tmp/recalculate.py <<'PY'
+          import csv, gzip, json, os, pathlib, time, datetime as dt
+          from collections import defaultdict, Counter
+          from zoneinfo import ZoneInfo
+          import requests
+          OUT=pathlib.Path('v5_reports/official_api/indicator_recalculation.json');OUT.parent.mkdir(parents=True,exist_ok=True)
+          report={'checked_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),'status':'NOT_RUN','production_data_modified':False,'raw_market_data_published':False}
+          def readcsv(path, gz=False):
+              opener=gzip.open if gz else open
+              with opener(path,'rt',encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def num(v):return int(str(v).replace(',','').strip())
+          def key(r):return (r['MARKET'],r['ISU_CD'])
+          def ma(rows,n):return sum(num(x['TDD_CLSPRC']) for x in rows[-n:])/n if len(rows)>=n else None
+          def summary(rows):
+              groups=defaultdict(list)
+              for r in rows:groups[key(r)].append(r)
+              for v in groups.values():v.sort(key=lambda x:x['BAS_DD'])
+              return groups
+          try:
+              path=pathlib.Path('data/daily_70d.csv.gz')
+              if not path.exists():raise ValueError('HISTORY_FILE_MISSING')
+              old=readcsv(path,True)
+              if not old:raise ValueError('EMPTY_HISTORY')
+              days=sorted(set(x['BAS_DD'] for x in old))
+              if len(days)<60:raise ValueError('LESS_THAN_60_SESSIONS')
+              if len({(x['BAS_DD'],*key(x)) for x in old})!=len(old):raise ValueError('DUPLICATE_HISTORY_KEYS')
+              last=days[-1]
+              existing=readcsv('data/latest.csv')
+              if len(set(x['BAS_DD'] for x in existing))!=1 or existing[0]['BAS_DD']!=last:raise ValueError('LATEST_DATE_NOT_HISTORY_END')
+              oldgroups=summary(old)
+              existing_keys={key(x) for x in existing}
+              last_keys={key(x) for x in old if x['BAS_DD']==last}
+              report['history']={'rows':len(old),'sessions':len(days),'first_date':days[0],'last_date':last,'latest_key_count':len(last_keys),'latest_snapshot_key_count':len(existing_keys),'latest_key_difference':len(last_keys^existing_keys)}
+              if last_keys!=existing_keys:raise ValueError('HISTORY_LATEST_KEYS_DIFFER')
+              checks=Counter();examples=[]
+              for x in readcsv('data/daily_indicators.csv'):
+                  rows=oldgroups.get(key(x),[])
+                  if not rows or rows[-1]['BAS_DD']!=last:continue
+                  for n in (5,10,20,60):
+                      col='MA'+str(n); actual=ma(rows,n)
+                      if actual is None or not x.get(col):continue
+                      checks['compared_'+col]+=1
+                      if abs(actual-float(x[col]))>0.011:
+                          checks['mismatch_'+col]+=1
+                          if len(examples)<5:examples.append({'code':x['ISU_CD'],'field':col})
+              report['reproduction']={'counts':dict(checks),'mismatch_examples':examples,'rounding_tolerance':0.011}
+              if sum(checks['compared_MA'+str(n)] for n in (5,10,20,60))==0:raise ValueError('NO_MA_COMPARISONS')
+              if sum(checks['mismatch_MA'+str(n)] for n in (5,10,20,60))>0:
+                  report['status']='HISTORICAL_INDICATOR_MISMATCH'
+              else:report['status']='HISTORICAL_INDICATORS_MATCH'
+              secret=os.environ.get('KRX_API_KEY','').strip()
+              if not secret:raise ValueError('MISSING_KRX_API_KEY')
+              day='20261104'
+              fresh=[]
+              for market,ep in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  response=None
+                  for attempt in range(3):
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+ep,params={'basDd':day},headers={'AUTH_KEY':secret},timeout=35)
+                          response.raise_for_status();break
+                      except requests.RequestException:
+                          if attempt==2:raise
+                          time.sleep(3*(attempt+1))
+                  payload=response.json();rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                  if not isinstance(rows,list) or len(rows)<400:raise ValueError('API_MISSING_OR_INVALID_'+market)
+                  for x in rows:
+                      if str(x.get('BAS_DD',''))!=day:raise ValueError('API_DATE_MISMATCH')
+                      x=dict(x);x['MARKET']=market
+                      if not x.get('ISU_CD') or len(x['ISU_CD'])!=6:raise ValueError('BAD_CODE')
+                      for field in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):num(x[field])
+                      fresh.append(x)
+              if len({key(x) for x in fresh})!=len(fresh):raise ValueError('DUPLICATE_NEW_KEYS')
+              if day<=last:raise ValueError('NEW_DATE_NOT_AFTER_HISTORY')
+              new_groups=summary(old+fresh)
+              eligible=0;new_cross=0;maintained=0;insufficient=0
+              for x in fresh:
+                  if num(x['MKTCAP'])<100_000_000_000:continue
+                  rows=new_groups[key(x)]
+                  if len(rows)<11:insufficient+=1;continue
+                  eligible+=1
+                  now5,now10=ma(rows,5),ma(rows,10)
+                  prev5,prev10=ma(rows[:-1],5),ma(rows[:-1],10)
+                  if prev5<=prev10 and now5>now10:new_cross+=1
+                  if now5>now10:maintained+=1
+              report['extension']={'source_date':day,'official_rows':len(fresh),'market_counts':dict(Counter(x['MARKET'] for x in fresh)),'marketcap_1000uk_with_ma':eligible,'insufficient_ma_history':insufficient,'ma5_cross_above_ma10':new_cross,'ma5_above_ma10':maintained,'note':'Technical-only test; not production or investment recommendations'}
+              if report['status']=='HISTORICAL_INDICATORS_MATCH':report['status']='SHADOW_RECALCULATION_PASSED'
+          except Exception as e:
+              report['error_type']=type(e).__name__
+              report['error_code']=str(e)[:100] if isinstance(e,ValueError) else 'API_OR_RUNTIME_ERROR'
+              if report['status'] in ('NOT_RUN','HISTORICAL_INDICATORS_MATCH'):report['status']='CHECK_FAILED'
+          OUT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/recalculate.py
+      - name: Save aggregate diagnostic only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/indicator_recalculation.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: audit 70-day moving average continuity'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
