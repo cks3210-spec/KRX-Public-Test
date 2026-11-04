@@ -1,0 +1,99 @@
+{
+  "checked_kst": "2026-11-05T06:31:43.520856+09:00",
+  "source": "KRX_OFFICIAL_OPEN_API",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "markets": {
+    "KOSPI": {
+      "attempts": [
+        {
+          "date": "20261104",
+          "http_status": 200,
+          "status": "EMPTY_DATE"
+        },
+        {
+          "date": "20261103",
+          "http_status": 200,
+          "status": "CLASSIFIED",
+          "total_rows": 939,
+          "strict_valid_rows": 912,
+          "rows_with_issues": 27,
+          "issue_counts": {
+            "non_six_digit_code": 27
+          },
+          "example_field_shapes": {
+            "non_six_digit_code": {
+              "field_names": [
+                "ACC_TRDVAL",
+                "ACC_TRDVOL",
+                "BAS_DD",
+                "CMPPREVDD_PRC",
+                "FLUC_RT",
+                "ISU_CD",
+                "ISU_NM",
+                "LIST_SHRS",
+                "MKTCAP",
+                "MKT_NM",
+                "SECT_TP_NM",
+                "TDD_CLSPRC",
+                "TDD_HGPRC",
+                "TDD_LWPRC",
+                "TDD_OPNPRC"
+              ],
+              "code_length": 6,
+              "close": "112600",
+              "volume": "3404",
+              "cap": "475905251200"
+            }
+          }
+        }
+      ]
+    },
+    "KOSDAQ": {
+      "attempts": [
+        {
+          "date": "20261104",
+          "http_status": 200,
+          "status": "EMPTY_DATE"
+        },
+        {
+          "date": "20261103",
+          "http_status": 200,
+          "status": "CLASSIFIED",
+          "total_rows": 1829,
+          "strict_valid_rows": 1763,
+          "rows_with_issues": 66,
+          "issue_counts": {
+            "non_six_digit_code": 66
+          },
+          "example_field_shapes": {
+            "non_six_digit_code": {
+              "field_names": [
+                "ACC_TRDVAL",
+                "ACC_TRDVOL",
+                "BAS_DD",
+                "CMPPREVDD_PRC",
+                "FLUC_RT",
+                "ISU_CD",
+                "ISU_NM",
+                "LIST_SHRS",
+                "MKTCAP",
+                "MKT_NM",
+                "SECT_TP_NM",
+                "TDD_CLSPRC",
+                "TDD_HGPRC",
+                "TDD_LWPRC",
+                "TDD_OPNPRC"
+              ],
+              "code_length": 6,
+              "close": "2055",
+              "volume": "30352",
+              "cap": "12288900000"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
