@@ -1,0 +1,47 @@
+{
+  "status": "DIAGNOSTIC_ONLY",
+  "checked_kst": "2026-11-05T06:10:25.429895+09:00",
+  "attempted_reference_dates": [
+    "20261104",
+    "20261103",
+    "20261102",
+    "20261101",
+    "20261031"
+  ],
+  "checks": [
+    {
+      "source": "krx_main",
+      "status_code": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "response_bytes": 474,
+      "response_preview": "<html lang=\"ko\">\r <head>\r   <meta charset=\"utf-8\">\r   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\r   <title>정보데이터시스템</title>\r   <script type=\"text/javascrip",
+      "json_keys": []
+    },
+    {
+      "source": "krx_json",
+      "status_code": 400,
+      "content_type": "text/html; charset=utf-8",
+      "response_bytes": 6,
+      "response_preview": "LOGOUT",
+      "json_keys": []
+    },
+    {
+      "source": "naver_market",
+      "status_code": 200,
+      "content_type": "text/html; charset=utf-8",
+      "response_bytes": 131373,
+      "response_preview": "<!DOCTYPE html><html lang=\"ko\" class=\"\" data-theme=\"light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=1366, initial-scale=1.0, user-scalable=yes\"/><meta name",
+      "json_keys": []
+    },
+    {
+      "source": "fdr_listing",
+      "status_code": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "response_bytes": 13534,
+      "response_preview": "# FinanceDataReader Open Source Financial data reader  **2018-2026 [FinanceData.KR]()**  # Overview The FinanceDataReader is financial data reader(crawler) for finance. <br> The ma",
+      "json_keys": []
+    }
+  ],
+  "production_data_modified": false,
+  "next_step": "Choose validated source only after examining HTTP responses; no fabricated prices."
+}
