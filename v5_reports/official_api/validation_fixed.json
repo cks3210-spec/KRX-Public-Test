@@ -1,0 +1,48 @@
+{
+  "checked_kst": "2026-11-05T06:35:19.700246+09:00",
+  "source": "KRX_OFFICIAL_OPEN_API",
+  "status": "API_VALIDATED",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "markets": {
+    "KOSPI": {
+      "attempts": [
+        {
+          "date": "20261104",
+          "http_status": 200,
+          "status": "EMPTY_DATE"
+        },
+        {
+          "date": "20261103",
+          "http_status": 200,
+          "status": "VERIFIED",
+          "total_rows": 939,
+          "valid_rows": 939,
+          "invalid_rows": 0,
+          "issue_counts": {}
+        }
+      ]
+    },
+    "KOSDAQ": {
+      "attempts": [
+        {
+          "date": "20261104",
+          "http_status": 200,
+          "status": "EMPTY_DATE"
+        },
+        {
+          "date": "20261103",
+          "http_status": 200,
+          "status": "VERIFIED",
+          "total_rows": 1829,
+          "valid_rows": 1829,
+          "invalid_rows": 0,
+          "issue_counts": {}
+        }
+      ]
+    }
+  },
+  "rule": "Six ASCII alphanumeric characters; price > 0; cap > 0; volume >= 0; exact date; no duplicates",
+  "source_date": "20261103",
+  "total_rows": 2768
+}
