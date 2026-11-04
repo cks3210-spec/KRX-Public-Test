@@ -1,0 +1,108 @@
+name: KRX v5 Official API Shadow Comparison
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-shadow-compare
+  cancel-in-progress: false
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Compare existing snapshot with official API in memory
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/shadow_compare.py <<'PY'
+          import csv, datetime as dt, json, os, pathlib, re
+          from collections import Counter
+          from zoneinfo import ZoneInfo
+          import requests
+          out=pathlib.Path('v5_reports/official_api/shadow_compare.json')
+          report={'checked_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                  'status':'NOT_RUN','production_data_modified':False,
+                  'raw_market_data_published':False,'comparison':{}}
+          key=os.getenv('KRX_API_KEY','').strip()
+          source=pathlib.Path('data/latest.csv')
+          fields=('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')
+          def integer(x):
+              s=str(x).replace(',','').strip()
+              return int(s) if re.fullmatch(r'-?\d+',s) else None
+          try:
+              if not key:raise ValueError('MISSING_SECRET')
+              if not source.exists():raise ValueError('MISSING_EXISTING_SNAPSHOT')
+              with source.open(encoding='utf-8-sig',newline='') as f:
+                  existing=list(csv.DictReader(f))
+              if not existing:raise ValueError('EMPTY_EXISTING_SNAPSHOT')
+              dates={r.get('BAS_DD','').strip() for r in existing}
+              if len(dates)!=1:raise ValueError('EXISTING_MIXED_DATES')
+              day=next(iter(dates))
+              if not re.fullmatch(r'\d{8}',day):raise ValueError('INVALID_EXISTING_DATE')
+              existing_map={}
+              for r in existing:
+                  market=r.get('MARKET','').strip().upper()
+                  code=r.get('ISU_CD','').strip()
+                  if market not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'[A-Za-z0-9]{6}',code):
+                      raise ValueError('INVALID_EXISTING_KEY')
+                  k=(market,code)
+                  if k in existing_map:raise ValueError('DUPLICATE_EXISTING_KEY')
+                  existing_map[k]=r
+              api_map={}
+              market_counts={}
+              for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,
+                       params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=30)
+                  response.raise_for_status()
+                  payload=response.json()
+                  rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                  if not isinstance(rows,list) or len(rows)<400:raise ValueError('API_EMPTY_OR_BAD_SCHEMA_'+market)
+                  market_counts[market]=len(rows)
+                  for r in rows:
+                      code=str(r.get('ISU_CD','')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}',code):raise ValueError('INVALID_API_CODE')
+                      if str(r.get('BAS_DD','')).strip()!=day:raise ValueError('API_DATE_MISMATCH')
+                      k=(market,code)
+                      if k in api_map:raise ValueError('DUPLICATE_API_KEY')
+                      api_map[k]=r
+              overlap=set(existing_map)&set(api_map)
+              mismatches=Counter()
+              matched=0
+              for k in overlap:
+                  differences=[f for f in fields if integer(existing_map[k].get(f))!=integer(api_map[k].get(f))]
+                  if differences:mismatches.update(differences)
+                  else:matched+=1
+              report['comparison']={'source_date':day,'existing_rows':len(existing),
+                 'official_rows':len(api_map),'market_counts':market_counts,
+                 'overlapping_codes':len(overlap),'fully_matching_rows':matched,
+                 'existing_only_codes':len(set(existing_map)-set(api_map)),
+                 'official_only_codes':len(set(api_map)-set(existing_map)),
+                 'field_mismatch_counts':dict(mismatches)}
+              report['status']='EXACT_MATCH' if matched==len(existing_map)==len(api_map) else 'DIFFERENCES_FOUND'
+          except Exception as e:
+              report['status']='CHECK_FAILED'
+              report['error_type']=type(e).__name__
+              report['error_code']=str(e)[:90] if isinstance(e,ValueError) else 'REQUEST_OR_RUNTIME_ERROR'
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/shadow_compare.py
+      - name: Commit comparison counts only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/shadow_compare.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: compare official KRX source with existing snapshot'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
