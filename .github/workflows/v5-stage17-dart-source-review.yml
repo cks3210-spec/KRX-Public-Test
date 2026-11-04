@@ -1,0 +1,103 @@
+name: KRX v5 Stage17 DART Source Review (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check DART key
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          if [ -z "$DART_API_KEY" ]; then echo "DART_API_KEY secret missing"; exit 1; fi
+      - name: Review source statements for 4 partial and OFS companies
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          cat > /tmp/v5_stage17.py <<'PYCODE'
+          import os,io,json,zipfile,urllib.request,urllib.parse,time,datetime,traceback
+          from pathlib import Path
+          KEY=os.environ.get('DART_API_KEY','').strip()
+          BASE='https://opendart.fss.or.kr/api/'
+          REPO='https://raw.githubusercontent.com/cks3210-spec/KRX-Public-Test/'
+          OUT=Path('stage17_results');OUT.mkdir(exist_ok=True)
+          def get(url,timeout=35):
+              req=urllib.request.Request(url,headers={'User-Agent':'KRX-v5-stage17-source-review/1.0'})
+              with urllib.request.urlopen(req,timeout=timeout) as resp:return resp.read()
+          def api(path,params):
+              url=BASE+path+'?'+urllib.parse.urlencode(dict(crtfc_key=KEY,**params))
+              for attempt in range(3):
+                  try:return json.loads(get(url))
+                  except Exception:
+                      if attempt==2:raise
+                      time.sleep(2*(attempt+1))
+          def corp_map():
+              data=get(BASE+'corpCode.xml?'+urllib.parse.urlencode({'crtfc_key':KEY}))
+              with zipfile.ZipFile(io.BytesIO(data)) as z:xml=z.read(z.namelist()[0])
+              import xml.etree.ElementTree as ET
+              root=ET.fromstring(xml)
+              return {e.findtext('stock_code').strip():e.findtext('corp_code').strip() for e in root.findall('.//list') if e.findtext('stock_code') and e.findtext('stock_code').strip()}
+          def metric_lines(items):
+              result=[]
+              for x in items:
+                  aid=x.get('account_id','') or ''
+                  nm=x.get('account_nm','') or ''
+                  sj=x.get('sj_div','') or ''
+                  if (sj=='CF' and ('CashFlowsFromUsedInOperatingActivities' in aid or ('영업활동' in nm and '현금흐름' in nm))) or (sj=='IS' and ('ProfitLoss' in aid or '당기순이익' in nm)) or (sj=='BS' and ('Equity' in aid or '자본총계' in nm)):
+                      result.append({'sj_div':sj,'account_id':aid,'account_nm':nm,'thstrm_amount':x.get('thstrm_amount'),'thstrm_add_amount':x.get('thstrm_add_amount'),'frmtrm_amount':x.get('frmtrm_amount'),'frmtrm_add_amount':x.get('frmtrm_add_amount')})
+              return result[:60]
+          def main():
+              if not KEY:raise RuntimeError('Missing DART_API_KEY repository secret')
+              history=json.loads(get(REPO+'v5-state/v5_history/history_metrics.json'))
+              targets=['001470','003620','004960','011810']
+              ofs=[k for k,v in history.items() if isinstance(v,dict) and isinstance(v.get('identity'),list) and len(v['identity'])>=3 and v['identity'][2]=='OFS']
+              codes=sorted(set(targets+ofs));mapping=corp_map()
+              results={};counts={}
+              for idx,code in enumerate(codes,1):
+                  h=history.get(code,{})
+                  ident=h.get('identity') or []
+                  year=str(ident[0]) if len(ident)>0 else '2026'
+                  report=str(ident[1]) if len(ident)>1 else '11012'
+                  stored_basis=str(ident[2]) if len(ident)>2 else None
+                  item={'code':code,'name':h.get('ISU_NM'),'stored_status':h.get('status'),'stored_basis':stored_basis,'year':year,'report_code':report,'corp_code_found':code in mapping,'source_reconciled':False,'investment_grade':None,'statements':{},'flags':[]}
+                  if code not in mapping:item['flags'].append('DART_CORP_CODE_NOT_FOUND')
+                  else:
+                      for basis in ('CFS','OFS'):
+                          try:
+                              d=api('fnlttSinglAcntAll.json',{'corp_code':mapping[code],'bsns_year':year,'reprt_code':report,'fs_div':basis})
+                              status=str(d.get('status',''))
+                              lines=d.get('list',[]) if status=='000' else []
+                              item['statements'][basis]={'api_status':status,'api_message':d.get('message'),'account_rows':len(lines),'metric_candidates':metric_lines(lines)}
+                              if status!='000':item['flags'].append(basis+'_API_'+status)
+                              elif not lines:item['flags'].append(basis+'_EMPTY')
+                          except Exception as e:
+                              item['statements'][basis]={'error':str(e)[:200]};item['flags'].append(basis+'_FETCH_ERROR')
+                          time.sleep(0.15)
+                  if code in targets:item['flags'].append('PARTIAL_RECOLLECT_REVIEW')
+                  if stored_basis=='OFS':
+                      cfs=item['statements'].get('CFS',{})
+                      if cfs.get('api_status')=='000' and cfs.get('account_rows',0)>0:item['flags'].append('CFS_AVAILABLE_REVIEW_BASIS')
+                      elif cfs.get('api_status')=='013':item['flags'].append('CFS_NO_DATA_OFS_MAY_BE_APPROPRIATE')
+                      else:item['flags'].append('OFS_BASIS_UNRESOLVED')
+                  results[code]=item
+                  for f in item['flags']:counts[f]=counts.get(f,0)+1
+                  print(f'[{idx}/{len(codes)}] {code} {item["name"]} {item["flags"]}',flush=True)
+              summary={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_branch':'v5-state','history_companies':len(history),'targeted_partial':len(targets),'ofs_review':len(ofs),'unique_reviewed':len(codes),'flags':counts,'source_reconciled':False,'investment_grades_created':0,'caveat':'API source availability and selected line candidates only; no independent TTM or restatement reconciliation. OFS is not automatically an error.'}
+              (OUT/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
+              (OUT/'source_review.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
+              print(json.dumps(summary,ensure_ascii=False,indent=2))
+          if __name__=='__main__':main()
+          PYCODE
+          python /tmp/v5_stage17.py
+      - name: Upload diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage17-dart-source-review
+          path: stage17_results/*.json
+          if-no-files-found: warn
