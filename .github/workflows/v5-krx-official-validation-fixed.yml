@@ -1,0 +1,126 @@
+name: KRX v5 Official API Validation Fixed
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-official-validation-fixed
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Validate official KRX market snapshots without publishing raw rows
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/krx_validation_fixed.py <<'PY'
+          import collections, datetime as dt, json, os, pathlib, re, time
+          from zoneinfo import ZoneInfo
+          import requests
+
+          now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          key = os.getenv('KRX_API_KEY', '').strip()
+          report = {'checked_kst': now.isoformat(), 'source': 'KRX_OFFICIAL_OPEN_API',
+                    'status': 'NOT_RUN', 'production_data_modified': False,
+                    'raw_market_data_published': False, 'markets': {},
+                    'rule': 'Six ASCII alphanumeric characters; price > 0; cap > 0; volume >= 0; exact date; no duplicates'}
+          endpoints = {'KOSPI': 'stk_bydd_trd', 'KOSDAQ': 'ksq_bydd_trd'}
+          session = requests.Session()
+
+          def integer(v):
+              try:
+                  s = str(v).replace(',', '').strip()
+                  return int(s) if re.fullmatch(r'-?\d+', s) else None
+              except (TypeError, ValueError):
+                  return None
+
+          def probe(market, endpoint, day):
+              try:
+                  response = session.get('https://data-dbg.krx.co.kr/svc/apis/sto/' + endpoint,
+                                         params={'basDd': day}, headers={'AUTH_KEY': key, 'Accept': 'application/json'},
+                                         timeout=30)
+                  state = {'date': day, 'http_status': response.status_code}
+                  if response.status_code != 200:
+                      return dict(state, status='HTTP_ERROR')
+                  payload = response.json()
+                  if not isinstance(payload, dict) or not isinstance(payload.get('OutBlock_1'), list):
+                      return dict(state, status='SCHEMA_ERROR', response_keys=list(payload)[:10] if isinstance(payload, dict) else [])
+                  rows = payload['OutBlock_1']
+                  if not rows:
+                      return dict(state, status='EMPTY_DATE')
+                  counts = collections.Counter()
+                  seen = set()
+                  valid = 0
+                  required = {'BAS_DD', 'ISU_CD', 'TDD_CLSPRC', 'ACC_TRDVOL', 'MKTCAP'}
+                  for row in rows:
+                      reasons = []
+                      if not isinstance(row, dict):
+                          reasons.append('not_object')
+                      else:
+                          if not required.issubset(row): reasons.append('missing_fields')
+                          code = str(row.get('ISU_CD', '')).strip()
+                          if not re.fullmatch(r'[A-Za-z0-9]{6}', code, flags=re.ASCII): reasons.append('invalid_code')
+                          if code in seen: reasons.append('duplicate_code')
+                          seen.add(code)
+                          if str(row.get('BAS_DD', '')).strip() != day: reasons.append('date_mismatch')
+                          close, cap, volume = (integer(row.get(f)) for f in ('TDD_CLSPRC', 'MKTCAP', 'ACC_TRDVOL'))
+                          if close is None or close <= 0: reasons.append('invalid_close')
+                          if cap is None or cap <= 0: reasons.append('invalid_market_cap')
+                          if volume is None or volume < 0: reasons.append('invalid_volume')
+                      if reasons: counts.update(set(reasons))
+                      else: valid += 1
+                  state.update(status='VERIFIED' if valid == len(rows) and len(rows) >= 400 else 'VALIDATION_FAILED',
+                               total_rows=len(rows), valid_rows=valid, invalid_rows=len(rows)-valid,
+                               issue_counts=dict(counts))
+                  return state
+              except (requests.RequestException, ValueError) as exc:
+                  return {'date': day, 'status': 'REQUEST_OR_JSON_ERROR', 'error_type': type(exc).__name__}
+
+          if not key:
+              report['status'] = 'MISSING_SECRET'
+          else:
+              dates = [(now.date()-dt.timedelta(days=i)).strftime('%Y%m%d') for i in range(1,11)
+                       if (now.date()-dt.timedelta(days=i)).weekday() < 5]
+              for market, endpoint in endpoints.items():
+                  attempts = []
+                  for day in dates:
+                      state = probe(market, endpoint, day)
+                      attempts.append(state)
+                      if state['status'] in ('VERIFIED', 'VALIDATION_FAILED', 'HTTP_ERROR', 'SCHEMA_ERROR', 'REQUEST_OR_JSON_ERROR'):
+                          break
+                      time.sleep(0.3)
+                  report['markets'][market] = {'attempts': attempts}
+              verified = {m: next((x for x in v['attempts'] if x['status']=='VERIFIED'), None)
+                          for m,v in report['markets'].items()}
+              if all(verified.values()) and len({x['date'] for x in verified.values()}) == 1:
+                  report.update(status='API_VALIDATED', source_date=verified['KOSPI']['date'],
+                                total_rows=sum(x['valid_rows'] for x in verified.values()))
+              elif all(verified.values()):
+                  report['status'] = 'MARKET_DATE_MISMATCH'
+              else:
+                  report['status'] = 'VALIDATION_INCOMPLETE'
+          target = pathlib.Path('v5_reports/official_api/validation_fixed.json')
+          target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+          python /tmp/krx_validation_fixed.py
+      - name: Commit validation summary only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/validation_fixed.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: validate KRX alphanumeric stock codes safely'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
