@@ -1,0 +1,110 @@
+name: KRX v5 Official API Freshness Gate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 0 * * 1-5' # 09:40 KST, weekdays; check latest completed session
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-freshness-gate
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Check date freshness and validate both markets without saving licensed rows
+        id: probe
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/krx_freshness.py <<'PY'
+          import datetime as dt, json, os, pathlib, re
+          from zoneinfo import ZoneInfo
+          import requests
+
+          now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          key = os.getenv('KRX_API_KEY', '').strip()
+          # Calendar weekdays are candidates only, NOT proof of a KRX trading session.
+          candidates = [(now.date()-dt.timedelta(days=i)).strftime('%Y%m%d')
+                        for i in range(1, 12)
+                        if (now.date()-dt.timedelta(days=i)).weekday() < 5]
+          report = {'checked_kst': now.isoformat(), 'source':'KRX_OFFICIAL_OPEN_API',
+                    'status':'NOT_RUN', 'latest_weekday_candidate':candidates[0],
+                    'production_data_modified':False, 'raw_market_data_published':False,
+                    'markets':{}, 'date_checks':[],
+                    'note':'A weekday is not necessarily a KRX trading day. No v4/GC integration or licensed raw data publishing.'}
+          def number(v):
+              s=str(v).replace(',','').strip()
+              return int(s) if re.fullmatch(r'-?\d+',s) else None
+          def query(market, ep, day):
+              try:
+                  r=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+ep,
+                      params={'basDd':day}, headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+                  if r.status_code != 200: return {'status':'HTTP_ERROR','http_status':r.status_code}
+                  p=r.json()
+                  if not isinstance(p,dict) or not isinstance(p.get('OutBlock_1'),list):
+                      return {'status':'SCHEMA_ERROR'}
+                  rows=p['OutBlock_1']
+                  if not rows:return {'status':'EMPTY_DATE'}
+                  seen=set()
+                  for row in rows:
+                      if not isinstance(row,dict):return {'status':'INVALID_ROW'}
+                      code=str(row.get('ISU_CD','')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}',code,flags=re.ASCII):return {'status':'INVALID_CODE'}
+                      if code in seen:return {'status':'DUPLICATE_CODE'}
+                      seen.add(code)
+                      if str(row.get('BAS_DD','')).strip()!=day:return {'status':'DATE_MISMATCH'}
+                      close,cap,volume=(number(row.get(f)) for f in ('TDD_CLSPRC','MKTCAP','ACC_TRDVOL'))
+                      if close is None or close<=0 or cap is None or cap<=0 or volume is None or volume<0:
+                          return {'status':'INVALID_NUMERIC'}
+                  if len(rows)<400:return {'status':'LOW_COVERAGE','rows':len(rows)}
+                  return {'status':'VALID','rows':len(rows)}
+              except (requests.RequestException,ValueError) as e:
+                  return {'status':'REQUEST_ERROR','error_type':type(e).__name__}
+          if not key:
+              report['status']='MISSING_SECRET'
+          else:
+              for day in candidates:
+                  results={market:query(market,ep,day) for market,ep in
+                           [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]}
+                  report['date_checks'].append({'date':day,'markets':results})
+                  if all(v['status']=='VALID' for v in results.values()):
+                      report['source_date']=day
+                      report['market_counts']={m:v['rows'] for m,v in results.items()}
+                      report['total_rows']=sum(report['market_counts'].values())
+                      # A gap can mean an exchange holiday OR delayed API data.
+                      # Do not assert freshness until a verified exchange calendar is integrated.
+                      report['status']='LATEST_AVAILABLE_VERIFIED'
+                      report['calendar_verified']=False
+                      report['matches_latest_weekday_candidate']=(day==candidates[0])
+                      break
+                  if any(v['status'] not in ('EMPTY_DATE',) for v in results.values()):
+                      report['status']='SOURCE_ERROR'
+                      break
+              else:
+                  report['status']='WAITING_FOR_DATA'
+              if report['status']=='LATEST_AVAILABLE_VERIFIED' and not report['matches_latest_weekday_candidate']:
+                  report['status']='LATEST_AVAILABLE_OLDER_THAN_WEEKDAY'
+          path=pathlib.Path('v5_reports/official_api/freshness_status.json')
+          path.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps({k:v for k,v in report.items() if k!='date_checks'},ensure_ascii=False))
+          PY
+          python /tmp/krx_freshness.py
+      - name: Commit status only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/freshness_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: report KRX source freshness separately from availability'
+            git pull --rebase origin main
+            git push origin HEAD:main
