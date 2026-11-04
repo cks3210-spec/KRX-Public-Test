@@ -1,0 +1,134 @@
+name: KRX v5 Official API Retry Monitor
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 0,4,9 * * 1-5' # 09:40, 13:40, 18:40 KST
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-api-retry-monitor
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests exchange-calendars
+      - name: Probe most recent completed KRX session
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/krx_retry.py <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import pathlib
+          import re
+          from zoneinfo import ZoneInfo
+
+          import exchange_calendars as xcals
+          import requests
+
+          now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          cal = xcals.get_calendar('XKRX')
+          today = now.date()
+          # Never query today's incomplete daily close. Find latest prior exchange session.
+          d = today - dt.timedelta(days=1)
+          while not cal.is_session(d.isoformat()):
+              d -= dt.timedelta(days=1)
+          expected = d.strftime('%Y%m%d')
+          result = {
+              'checked_kst': now.isoformat(),
+              'source': 'KRX_OFFICIAL_OPEN_API',
+              'calendar': 'exchange_calendars XKRX (third-party)',
+              'expected_completed_session': expected,
+              'status': 'NOT_RUN',
+              'markets': {},
+              'production_data_modified': False,
+              'raw_market_data_published': False,
+              'ready_for_downstream': False,
+          }
+          key = os.environ.get('KRX_API_KEY', '').strip()
+          def integer(v):
+              s = str(v).replace(',', '').strip()
+              return int(s) if re.fullmatch(r'-?\d+', s) else None
+          def check(endpoint):
+              try:
+                  r = requests.get(
+                      'https://data-dbg.krx.co.kr/svc/apis/sto/' + endpoint,
+                      params={'basDd': expected},
+                      headers={'AUTH_KEY': key, 'Accept': 'application/json'},
+                      timeout=30,
+                  )
+                  if r.status_code != 200:
+                      return {'status': 'HTTP_ERROR', 'http_status': r.status_code}
+                  data = r.json()
+                  if not isinstance(data, dict) or not isinstance(data.get('OutBlock_1'), list):
+                      return {'status': 'SCHEMA_ERROR'}
+                  rows = data['OutBlock_1']
+                  if not rows:
+                      return {'status': 'EMPTY_DATE'}
+                  if len(rows) < 400:
+                      return {'status': 'LOW_COVERAGE', 'rows': len(rows)}
+                  seen = set()
+                  for row in rows:
+                      if not isinstance(row, dict):
+                          return {'status': 'NON_OBJECT_ROW'}
+                      code = str(row.get('ISU_CD', '')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}', code, re.ASCII):
+                          return {'status': 'INVALID_CODE'}
+                      if code in seen:
+                          return {'status': 'DUPLICATE_CODE'}
+                      seen.add(code)
+                      if str(row.get('BAS_DD', '')).strip() != expected:
+                          return {'status': 'DATE_MISMATCH'}
+                      close, cap, volume = [integer(row.get(k)) for k in ('TDD_CLSPRC', 'MKTCAP', 'ACC_TRDVOL')]
+                      if close is None or close <= 0 or cap is None or cap <= 0 or volume is None or volume < 0:
+                          return {'status': 'INVALID_NUMERIC'}
+                  return {'status': 'VALID', 'rows': len(rows)}
+              except requests.RequestException as exc:
+                  return {'status': 'NETWORK_ERROR', 'error_type': type(exc).__name__}
+              except ValueError:
+                  return {'status': 'JSON_ERROR'}
+          if not key:
+              result['status'] = 'MISSING_SECRET'
+          else:
+              result['markets'] = {
+                  'KOSPI': check('stk_bydd_trd'),
+                  'KOSDAQ': check('ksq_bydd_trd'),
+              }
+              states = [v['status'] for v in result['markets'].values()]
+              if all(s == 'VALID' for s in states):
+                  result['status'] = 'EXPECTED_SESSION_VERIFIED'
+                  result['total_rows'] = sum(v['rows'] for v in result['markets'].values())
+                  result['ready_for_downstream'] = False  # No licensed data transport exists yet.
+              elif all(s == 'EMPTY_DATE' for s in states):
+                  result['status'] = 'EXPECTED_SESSION_DATA_PENDING'
+              elif 'VALID' in states and 'EMPTY_DATE' in states:
+                  result['status'] = 'PARTIAL_MARKET_DATA'
+              else:
+                  result['status'] = 'SOURCE_OR_VALIDATION_ERROR'
+          pathlib.Path('v5_reports/official_api/retry_status.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(result, ensure_ascii=False))
+          PY
+          python /tmp/krx_retry.py
+      - name: Commit status only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/retry_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: monitor KRX official API data lag'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
