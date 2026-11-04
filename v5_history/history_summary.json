@@ -1,13 +1,13 @@
 {
-  "asof_utc": "2026-11-04T01:27:29+00:00",
+  "asof_utc": "2026-11-04T02:14:50+00:00",
   "snapshot_count": 1215,
   "eligible": 1215,
-  "verified_records": 132,
+  "verified_records": 176,
   "attempted_this_run": 45,
   "errors_this_run": 1,
-  "remaining": 1083,
-  "ttm_net_income_available": 131,
-  "roe_diagnostic_available": 130,
-  "cfo_ttm_available": 131,
+  "remaining": 1039,
+  "ttm_net_income_available": 174,
+  "roe_diagnostic_available": 173,
+  "cfo_ttm_available": 174,
   "note": "Diagnostics only. Failures retry on subsequent runs; no v4/GC or scoring changes."
 }
