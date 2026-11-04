@@ -1,0 +1,19 @@
+{
+  "stage": 26,
+  "status": "RESEARCH_ONLY",
+  "generated_utc": "2026-11-04T14:47:53.065914+00:00",
+  "market_date": "20261103",
+  "stage25_input_rows": 18,
+  "candidate_rows": 4,
+  "signal_groups": {
+    "VG": 2,
+    "G": 2
+  },
+  "verified_buy_signals": 0,
+  "notes": [
+    "A_RESEARCH/B_RESEARCH are provisional research tiers, not verified investment grades.",
+    "No actual buy/sell order or target price is issued.",
+    "Market dates are taken from source files; stale dates are not represented as current.",
+    "Existing v4 and golden-cross production workflows are not modified."
+  ]
+}

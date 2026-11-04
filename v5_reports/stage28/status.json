@@ -1,0 +1,77 @@
+{
+  "development_phase": "STAGE28_INTEGRATED",
+  "generated_kst": "2026-11-04T23:47:53.824554+09:00",
+  "component_results": {
+    "COLLECT": "success",
+    "FUNDAMENTAL": "success",
+    "DECISION": "success",
+    "PERFORMANCE": "success"
+  },
+  "source_date_in_existing_data": "20261103",
+  "existing_data_fresh_for_today": false,
+  "component_status": {
+    "stage24": {
+      "status": "SOURCE_UNAVAILABLE",
+      "checked_kst": "2026-11-04T23:47:48.825972+09:00",
+      "source": "pykrx/KRX",
+      "production_data_modified": false,
+      "attempted_dates": [
+        "20261104",
+        "20261103",
+        "20261102",
+        "20261101",
+        "20261031",
+        "20261030",
+        "20261029",
+        "20261028"
+      ]
+    },
+    "stage25": {
+      "status": "RESEARCH_ONLY",
+      "generated_utc": "2026-11-04T14:47:53.001134+00:00",
+      "market_date": "20261103",
+      "source_rows": 18,
+      "eligible_rows": 18,
+      "tiers": {
+        "unrated": 14,
+        "B_RESEARCH": 4,
+        "incomplete": 5
+      },
+      "verified_investment_recommendations": 0,
+      "note": "Research ranking only. No confirmed A/B investment grades or buy signals."
+    },
+    "stage26": {
+      "stage": 26,
+      "status": "RESEARCH_ONLY",
+      "generated_utc": "2026-11-04T14:47:53.065914+00:00",
+      "market_date": "20261103",
+      "stage25_input_rows": 18,
+      "candidate_rows": 4,
+      "signal_groups": {
+        "VG": 2,
+        "G": 2
+      },
+      "verified_buy_signals": 0,
+      "notes": [
+        "A_RESEARCH/B_RESEARCH are provisional research tiers, not verified investment grades.",
+        "No actual buy/sell order or target price is issued.",
+        "Market dates are taken from source files; stale dates are not represented as current.",
+        "Existing v4 and golden-cross production workflows are not modified."
+      ]
+    },
+    "stage27": {
+      "stage": 27,
+      "generated_utc": "2026-11-04T14:47:53.115177+00:00",
+      "status": "TRACKING",
+      "new_signals": 4,
+      "ledger_events": 4,
+      "matured_horizon_observations": 0,
+      "historical_tickers": 2796,
+      "history_note": "",
+      "method": "Trading-day forward close-to-close returns; gross of fees and taxes; no inferred price; research signals only, not executed orders."
+    }
+  },
+  "verified_investment_recommendations": 0,
+  "investment_decisions_authorized": false,
+  "notice": "Stage28 completes orchestration development; integration errors and source reconciliation are deferred to the agreed consolidated validation. Isolated Stage24 data do not automatically replace data/latest.csv."
+}
