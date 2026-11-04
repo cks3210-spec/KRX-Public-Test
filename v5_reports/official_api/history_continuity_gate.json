@@ -1,0 +1,49 @@
+{
+  "checked_kst": "2026-11-05T08:40:14.612296+09:00",
+  "status": "HISTORY_SOURCE_MISSING_OR_INSUFFICIENT",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "candidate_files": [
+    {
+      "path": "data/daily_indicators.csv",
+      "rows": 1287,
+      "distinct_dates": 1,
+      "earliest_date": "20261103",
+      "latest_date": "20261103",
+      "duplicate_keys": 0,
+      "invalid_keys": 0
+    },
+    {
+      "path": "data/golden_cross_candidates.csv",
+      "rows": 364,
+      "distinct_dates": 1,
+      "earliest_date": "20261103",
+      "latest_date": "20261103",
+      "duplicate_keys": 0,
+      "invalid_keys": 0
+    },
+    {
+      "path": "data/latest.csv",
+      "rows": 2768,
+      "distinct_dates": 1,
+      "earliest_date": "20261103",
+      "latest_date": "20261103",
+      "duplicate_keys": 0,
+      "invalid_keys": 0
+    },
+    {
+      "path": "data/v4_indicators.csv",
+      "rows": 1287,
+      "distinct_dates": 1,
+      "earliest_date": "20261103",
+      "latest_date": "20261103",
+      "duplicate_keys": 0,
+      "invalid_keys": 0
+    }
+  ],
+  "source_date": "20261103",
+  "required_sessions": 60,
+  "eligible_history_files": [],
+  "indicator_recalculation_performed": false,
+  "next_step": "Locate or restore at least 60 sessions of validated historical prices before indicator recalculation."
+}
