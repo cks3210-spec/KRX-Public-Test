@@ -1,0 +1,143 @@
+name: KRX v5 Stage28 Unified Development Pipeline
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 11 * * 1-5' # 20:40 KST; research pipeline, not trade notification
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage28-integration
+  cancel-in-progress: false
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing KRX collector dependencies
+        run: python -m pip install --disable-pip-version-check 'pykrx>=1.0.48,<2' pandas requests
+      - name: Restore already-developed Stage24-27 modules
+        shell: bash
+        run: |
+          mkdir -p stage28 v5_reports/stage28
+          cat > stage28/restore.py <<'PY'
+          import base64, pathlib, re
+          W=pathlib.Path('.github/workflows')
+          def source(n):
+              p=W/n
+              if not p.exists():raise FileNotFoundError(f'Required existing workflow: {p}')
+              return p.read_text(encoding='utf-8')
+          def embedded(n,output):
+              s=source(n)
+              m=re.search(r"write_bytes\(base64\.b64decode\('([A-Za-z0-9+/=]+)'\)\)",s)
+              if not m:raise ValueError('Embedded Python missing: '+n)
+              pathlib.Path(output).write_bytes(base64.b64decode(m.group(1),validate=True))
+          embedded('v5-stage24-krx-source.yml','stage28/stage24.py')
+          embedded('v5-stage26-decision-engine.yml','stage28/stage26.py')
+          embedded('v5-stage27-performance.yml','stage28/stage27.py')
+          s=source('v5-stage25-fundamental-engine.yml')
+          m=re.search(r"cat > /tmp/stage25\.py <<'PY'\n(.*?)\n\s*PY\n",s,re.S)
+          if not m:raise ValueError('Stage25 source missing')
+          lines=m.group(1).splitlines()
+          indent=min(len(x)-len(x.lstrip()) for x in lines if x.strip())
+          pathlib.Path('stage28/stage25.py').write_text('\n'.join(x[indent:] for x in lines)+'\n',encoding='utf-8')
+          for n in (24,25,26,27):
+              compile(pathlib.Path(f'stage28/stage{n}.py').read_text(encoding='utf-8'),f'stage{n}.py','exec')
+          print('All four existing engines restored; source files unchanged')
+          PY
+          python stage28/restore.py
+      - name: Run Stage24 source collector (isolated snapshot)
+        id: collect
+        continue-on-error: true
+        run: python stage28/stage24.py
+      - name: Run Stage25 fundamental research
+        id: fundamental
+        continue-on-error: true
+        run: python stage28/stage25.py
+      - name: Run Stage26 investment decision research
+        id: decision
+        continue-on-error: true
+        run: python stage28/stage26.py
+      - name: Run Stage27 performance ledger
+        id: performance
+        continue-on-error: true
+        run: python stage28/stage27.py
+      - name: Write unified run status and development completion marker
+        if: always()
+        env:
+          COLLECT_RESULT: ${{ steps.collect.outcome }}
+          FUNDAMENTAL_RESULT: ${{ steps.fundamental.outcome }}
+          DECISION_RESULT: ${{ steps.decision.outcome }}
+          PERFORMANCE_RESULT: ${{ steps.performance.outcome }}
+        run: |
+          python - <<'PY'
+          import datetime,json,os,pathlib,csv
+          root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE')}
+          status_files={
+            'stage24':'v5_sources/krx/status.json',
+            'stage25':'v5_reports/stage25/status.json',
+            'stage26':'v5_reports/stage26/status.json',
+            'stage27':'v5_reports/stage27/status.json'
+          }
+          details={}
+          for name,p in status_files.items():
+              f=pathlib.Path(p)
+              if f.exists():
+                  try:details[name]=json.loads(f.read_text(encoding='utf-8'))
+                  except Exception as e:details[name]={'parse_error':str(e)}
+              else:details[name]={'status_file':'not_present'}
+          def market_date(path):
+              p=pathlib.Path(path)
+              if not p.exists():return None
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  r=csv.DictReader(f)
+                  return next((x.get('BAS_DD') for x in r if x.get('BAS_DD')),None)
+          source_date=market_date('data/latest.csv')
+          now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+          freshness=(source_date==now.strftime('%Y%m%d'))
+          report={
+            'development_phase':'STAGE28_INTEGRATED',
+            'generated_kst':now.isoformat(),
+            'component_results':statuses,
+            'source_date_in_existing_data':source_date,
+            'existing_data_fresh_for_today':freshness,
+            'component_status':details,
+            'verified_investment_recommendations':0,
+            'investment_decisions_authorized':False,
+            'notice':'Stage28 completes orchestration development; integration errors and source reconciliation are deferred to the agreed consolidated validation. Isolated Stage24 data do not automatically replace data/latest.csv.'
+          }
+          (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps({'component_results':statuses,'source_date':source_date,'fresh':freshness},ensure_ascii=False))
+          PY
+      - name: Commit isolated research results and unified status
+        if: always()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for p in v5_sources/krx v5_reports/stage25 v5_reports/stage26 v5_reports/stage27 v5_reports/stage28; do
+            if [ -d "$p" ]; then git add "$p"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 stage28: integrate research pipeline outputs'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload development integration artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage28-integration
+          path: |
+            v5_reports/stage28/
+            v5_reports/stage25/
+            v5_reports/stage26/
+            v5_reports/stage27/
+            v5_sources/krx/
+          if-no-files-found: warn
