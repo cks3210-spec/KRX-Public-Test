@@ -1,0 +1,66 @@
+name: KRX v5 Historical Continuity Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  continuity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect history and technical continuity without modifying production
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, datetime, json, pathlib, collections
+          from zoneinfo import ZoneInfo
+          root=pathlib.Path('data')
+          required={'BAS_DD','ISU_CD','TDD_CLSPRC','ACC_TRDVOL','MKTCAP'}
+          result={'checked_kst':datetime.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                  'status':'HISTORY_NOT_VERIFIED','production_data_modified':False,
+                  'raw_market_data_published':False,'candidate_files':[],
+                  'source_date':'20261103','required_sessions':60}
+          for p in sorted(root.rglob('*.csv')):
+              try:
+                  with p.open(encoding='utf-8-sig',newline='') as f:
+                      reader=csv.DictReader(f)
+                      if not required.issubset(set(reader.fieldnames or [])):continue
+                      dates=collections.Counter()
+                      keys=set(); duplicate=0; invalid=0; rows=0
+                      for row in reader:
+                          rows+=1
+                          d=(row.get('BAS_DD') or '').strip(); c=(row.get('ISU_CD') or '').strip()
+                          if len(d)!=8 or not d.isdigit() or len(c)!=6:invalid+=1;continue
+                          dates[d]+=1
+                          k=(d,c,row.get('MARKET',''))
+                          if k in keys:duplicate+=1
+                          keys.add(k)
+                      result['candidate_files'].append({'path':str(p),'rows':rows,
+                         'distinct_dates':len(dates),'earliest_date':min(dates) if dates else None,
+                         'latest_date':max(dates) if dates else None,
+                         'duplicate_keys':duplicate,'invalid_keys':invalid})
+              except (UnicodeError,csv.Error,OSError) as e:
+                  result['candidate_files'].append({'path':str(p),'read_error':type(e).__name__})
+          eligible=[x for x in result['candidate_files'] if x.get('distinct_dates',0)>=60
+                    and x.get('duplicate_keys',1)==0 and x.get('invalid_keys',1)==0]
+          result['status']='HISTORY_SOURCE_IDENTIFIED' if eligible else 'HISTORY_SOURCE_MISSING_OR_INSUFFICIENT'
+          result['eligible_history_files']=[x['path'] for x in eligible]
+          result['indicator_recalculation_performed']=False
+          result['next_step']='Inspect selected historical file and calculate per-stock 5/10/20/60-session indicators in an isolated test.' if eligible else 'Locate or restore at least 60 sessions of validated historical prices before indicator recalculation.'
+          out=pathlib.Path('v5_reports/official_api/history_continuity_gate.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - name: Commit diagnostic report only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/history_continuity_gate.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: inspect historical continuity prerequisites'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
