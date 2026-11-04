@@ -1,0 +1,61 @@
+name: KRX v5 Stage16 Source Readiness (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Audit latest v5-state history
+        shell: bash
+        run: |
+          python - <<'PYRUN'
+          import base64,urllib.request,pathlib
+          encoded=(
+              'IiIiU3RhZ2UgMTYgcmVhZC1vbmx5IHNvdXJjZS1yZWFkaW5lc3MgYW5kIHJlY292ZXJ5IHRyaWFnZS4gTm90IGEgREFSVCByZWNv'
+              'bmNpbGlhdGlvbi4iIiIKaW1wb3J0IGpzb24sYXJncGFyc2UKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gY29sbGVjdGlv'
+              'bnMgaW1wb3J0IENvdW50ZXIKCmRlZiByZXZpZXcoaGlzdG9yeSk6CiAgICByb3dzPVtdCiAgICBmb3IgY29kZSxoIGluIHNvcnRl'
+              'ZChoaXN0b3J5Lml0ZW1zKCkpOgogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKGgsZGljdCk6CiAgICAgICAgICAgIHJvd3MuYXBw'
+              'ZW5kKGRpY3QoY29kZT1jb2RlLGNhdGVnb3J5PSdJTlZBTElEX1JFQ09SRCcscmVhc29uPSdOb3QgYW4gb2JqZWN0JyxncmFkZT1O'
+              'b25lLHNvdXJjZV9yZWNvbmNpbGVkPUZhbHNlKSk7Y29udGludWUKICAgICAgICBpZGVudD1oLmdldCgnaWRlbnRpdHknKTtiYXNp'
+              'cz1pZGVudFsyXSBpZiBpc2luc3RhbmNlKGlkZW50LGxpc3QpIGFuZCBsZW4oaWRlbnQpPj0zIGVsc2UgTm9uZQogICAgICAgIGZs'
+              'YWdzPVtdCiAgICAgICAgaWYgaC5nZXQoJ3N0YXR1cycpIT0nQ09NUExFVEUnOiBmbGFncy5hcHBlbmQoJ1BBUlRJQUxfUkVDT0xM'
+              'RUNUX1JFUVVJUkVEJykKICAgICAgICBpZiBiYXNpcz09J09GUyc6IGZsYWdzLmFwcGVuZCgnT0ZTX1NPVVJDRV9QUk9PRl9SRVFV'
+              'SVJFRCcpCiAgICAgICAgaWYgYmFzaXMgbm90IGluICgnQ0ZTJywnT0ZTJyk6IGZsYWdzLmFwcGVuZCgnU1RBVEVNRU5UX0JBU0lT'
+              'X1VOS05PV04nKQogICAgICAgIGlmIGguZ2V0KCdlcXVpdHlfZW5kX2tydycpIGlzIG5vdCBOb25lIGFuZCBoWydlcXVpdHlfZW5k'
+              'X2tydyddPD0wOiBmbGFncy5hcHBlbmQoJ05PTlBPU0lUSVZFX0VRVUlUWScpCiAgICAgICAgaWYgaC5nZXQoJ3R0bV9uZXRfaW5j'
+              'b21lX2tydycpIGlzIE5vbmU6IGZsYWdzLmFwcGVuZCgnTkVUX0lOQ09NRV9NSVNTSU5HJykKICAgICAgICBpZiBoLmdldCgnY2Zv'
+              'X3R0bV9rcncnKSBpcyBOb25lOiBmbGFncy5hcHBlbmQoJ0NGT19NSVNTSU5HJykKICAgICAgICBpZiBoLmdldCgncm9lX3R0bV9w'
+              'Y3RfZGlhZ25vc3RpYycpIGlzIE5vbmU6IGZsYWdzLmFwcGVuZCgnUk9FX01JU1NJTkcnKQogICAgICAgIGlmIGguZ2V0KCdwZXJp'
+              'b2QnKSBub3QgaW4gKCcyMDI2X0gxJywnMjAyNl9RMycsJzIwMjZfUTEnLCcyMDI1X0gxJywnMjAyNV9RMScpOmZsYWdzLmFwcGVu'
+              'ZCgnUEVSSU9EX1JFVklFVycpCiAgICAgICAgaWYgZmxhZ3M6CiAgICAgICAgICAgIGNhdGVnb3J5PSdSRUNPTExFQ1QnIGlmICdQ'
+              'QVJUSUFMX1JFQ09MTEVDVF9SRVFVSVJFRCcgaW4gZmxhZ3MgZWxzZSAnT0ZTX1BST09GJyBpZiAnT0ZTX1NPVVJDRV9QUk9PRl9S'
+              'RVFVSVJFRCcgaW4gZmxhZ3MgZWxzZSAnUkVWSUVXJwogICAgICAgICAgICByb3dzLmFwcGVuZChkaWN0KGNvZGU9Y29kZSxuYW1l'
+              'PWguZ2V0KCdJU1VfTk0nKSxwZXJpb2Q9aC5nZXQoJ3BlcmlvZCcpLGJhc2lzPWJhc2lzLGNhdGVnb3J5PWNhdGVnb3J5LGZsYWdz'
+              'PWZsYWdzLGdyYWRlPU5vbmUsc291cmNlX3JlY29uY2lsZWQ9RmFsc2UpKQogICAgc3VtbWFyeT17J3RvdGFsJzpsZW4oaGlzdG9y'
+              'eSksJ2NvbXBsZXRlJzpzdW0oaXNpbnN0YW5jZSh2LGRpY3QpIGFuZCB2LmdldCgnc3RhdHVzJyk9PSdDT01QTEVURScgZm9yIHYg'
+              'aW4gaGlzdG9yeS52YWx1ZXMoKSksJ3BhcnRpYWwnOnN1bShpc2luc3RhbmNlKHYsZGljdCkgYW5kIHYuZ2V0KCdzdGF0dXMnKSE9'
+              'J0NPTVBMRVRFJyBmb3IgdiBpbiBoaXN0b3J5LnZhbHVlcygpKSwnZmxhZ2dlZF9jb21wYW5pZXMnOmxlbihyb3dzKSwnY2F0ZWdv'
+              'cmllcyc6ZGljdChDb3VudGVyKHhbJ2NhdGVnb3J5J10gZm9yIHggaW4gcm93cykpLCdzb3VyY2VfcmVjb25jaWxlZCc6RmFsc2Us'
+              'J2ludmVzdG1lbnRfZ3JhZGVzX2NyZWF0ZWQnOjAsJ3NvdXJjZV9wcm9vZl9yZXF1aXJlZCc6VHJ1ZX0KICAgIHJldHVybiBzdW1t'
+              'YXJ5LHJvd3MKCmRlZiBtYWluKCk6CiAgICBwPWFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCk7cC5hZGRfYXJndW1lbnQoJy0taW5w'
+              'dXQnLHJlcXVpcmVkPVRydWUpO3AuYWRkX2FyZ3VtZW50KCctLW91dHB1dCcsZGVmYXVsdD0nc3RhZ2UxNl9yZXBvcnQnKTthPXAu'
+              'cGFyc2VfYXJncygpO2g9anNvbi5sb2FkcyhQYXRoKGEuaW5wdXQpLnJlYWRfdGV4dChlbmNvZGluZz0ndXRmLTgnKSk7cyxyPXJl'
+              'dmlldyhoKTtvdXQ9UGF0aChhLm91dHB1dCk7b3V0Lm1rZGlyKHBhcmVudHM9VHJ1ZSxleGlzdF9vaz1UcnVlKQogICAgZm9yIG4s'
+              'eCBpbiBbKCdzdW1tYXJ5JyxzKSwoJ3NvdXJjZV9yZWFkaW5lc3MnLHIpXTogKG91dC8obisnLmpzb24nKSkud3JpdGVfdGV4dChq'
+              'c29uLmR1bXBzKHgsZW5zdXJlX2FzY2lpPUZhbHNlLGluZGVudD0yKSxlbmNvZGluZz0ndXRmLTgnKQogICAgcHJpbnQoanNvbi5k'
+              'dW1wcyhzLGVuc3VyZV9hc2NpaT1GYWxzZSkpCmlmIF9fbmFtZV9fPT0nX19tYWluX18nOm1haW4oKQo='
+          )
+          pathlib.Path('audit16.py').write_bytes(base64.b64decode(encoded))
+          url='https://raw.githubusercontent.com/cks3210-spec/KRX-Public-Test/v5-state/v5_history/history_metrics.json'
+          with urllib.request.urlopen(url,timeout=60) as response:
+              pathlib.Path('history_metrics.json').write_bytes(response.read())
+          PYRUN
+          python audit16.py --input history_metrics.json --output stage16_report
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage16-source-readiness
+          path: stage16_report/*.json
+          if-no-files-found: error
