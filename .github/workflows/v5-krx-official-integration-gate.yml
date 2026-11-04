@@ -1,0 +1,113 @@
+name: KRX v5 Official API Integration Readiness Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-official-integration-gate
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install requests
+        run: python -m pip install --disable-pip-version-check requests
+      - name: Validate API snapshot without changing production data
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/integration_gate.py <<'PY'
+          import csv, datetime, json, os, pathlib, re, time
+          from zoneinfo import ZoneInfo
+          import requests
+          output=pathlib.Path('v5_reports/official_api/integration_gate.json')
+          report={'checked_kst':datetime.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                  'status':'BLOCKED','production_data_modified':False,
+                  'raw_market_data_published':False,'authorized_to_replace_production':False}
+          try:
+              key=os.getenv('KRX_API_KEY','').strip()
+              if not key: raise ValueError('MISSING_API_KEY')
+              with open('data/latest.csv',encoding='utf-8-sig',newline='') as f:
+                  old=list(csv.DictReader(f))
+              if not old: raise ValueError('EMPTY_PRODUCTION_SNAPSHOT')
+              old_dates={r.get('BAS_DD','').strip() for r in old}
+              if len(old_dates)!=1: raise ValueError('MIXED_PRODUCTION_DATES')
+              old_date=next(iter(old_dates))
+              if not re.fullmatch(r'\d{8}',old_date): raise ValueError('BAD_PRODUCTION_DATE')
+              # Probe today and preceding calendar days; never assume yesterday was a trading day.
+              today=datetime.datetime.now(ZoneInfo('Asia/Seoul')).date()
+              candidate_days=[(today-datetime.timedelta(days=i)).strftime('%Y%m%d') for i in range(1,8)]
+              def fetch(market,endpoint,day):
+                  last_error=None
+                  for attempt in range(2):
+                      try:
+                          resp=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,
+                              params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=35)
+                          resp.raise_for_status()
+                          data=resp.json()
+                          rows=data.get('OutBlock_1') if isinstance(data,dict) else None
+                          if not isinstance(rows,list): raise ValueError('BAD_SCHEMA_'+market)
+                          return rows
+                      except (requests.RequestException,ValueError) as exc:
+                          last_error=exc
+                          if attempt==0: time.sleep(2)
+                  raise RuntimeError('API_REQUEST_FAILED_'+market+'_'+type(last_error).__name__)
+              selected=None
+              probes=[]
+              for day in candidate_days:
+                  if day<old_date:break
+                  kospi=fetch('KOSPI','stk_bydd_trd',day)
+                  kosdaq=fetch('KOSDAQ','ksq_bydd_trd',day)
+                  probes.append({'date':day,'kospi_rows':len(kospi),'kosdaq_rows':len(kosdaq)})
+                  if len(kospi)>=400 and len(kosdaq)>=400:
+                      selected=(day,kospi,kosdaq)
+                      break
+                  if bool(kospi)!=bool(kosdaq):
+                      raise ValueError('PARTIAL_MARKET_DATA_'+day)
+              report['existing_date']=old_date
+              report['probed_dates']=probes
+              if selected is None:raise ValueError('NO_COMPLETE_NEW_OR_EQUAL_SESSION')
+              day,kospi,kosdaq=selected
+              keys=set()
+              for market,rows in [('KOSPI',kospi),('KOSDAQ',kosdaq)]:
+                  for row in rows:
+                      code=str(row.get('ISU_CD','')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}',code):raise ValueError('BAD_CODE')
+                      if str(row.get('BAS_DD','')).strip()!=day:raise ValueError('BAD_DATE')
+                      pair=(market,code)
+                      if pair in keys:raise ValueError('DUPLICATE_CODE')
+                      keys.add(pair)
+                      for field in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):
+                          value=str(row.get(field,'')).replace(',','').strip()
+                          if not re.fullmatch(r'\d+',value):raise ValueError('BAD_NUMBER_'+field)
+                          if field!='ACC_TRDVOL' and int(value)<=0:raise ValueError('NONPOSITIVE_'+field)
+              report['validated_date']=day
+              report['validated_counts']={'KOSPI':len(kospi),'KOSDAQ':len(kosdaq),'total':len(keys)}
+              report['status']='READY_FOR_SHADOW_INTEGRATION' if day>=old_date else 'BLOCKED_STALE'
+              # Readiness is informational; this workflow never replaces operational data.
+          except Exception as exc:
+              report['status']='BLOCKED'
+              report['error_type']=type(exc).__name__
+              report['error_code']=str(exc)[:110] if isinstance(exc,ValueError) else 'API_OR_RUNTIME_FAILURE'
+          output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/integration_gate.py
+      - name: Commit validation summary only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/integration_gate.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: validate official API integration readiness'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
