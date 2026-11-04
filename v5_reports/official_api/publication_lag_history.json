@@ -1,0 +1,27 @@
+[
+  {
+    "checked_kst": "2026-11-05T07:52:57.282089+09:00",
+    "source": "KRX_OFFICIAL_OPEN_API",
+    "calendar": "exchange_calendars XKRX (third-party)",
+    "fixed_date": "20261104",
+    "rolling_previous_session": "20261104",
+    "raw_market_data_published": false,
+    "production_data_modified": false,
+    "dates": {
+      "20261104": {
+        "status": "PENDING",
+        "markets": {
+          "KOSPI": {
+            "status": "EMPTY_DATE",
+            "rows": 0
+          },
+          "KOSDAQ": {
+            "status": "EMPTY_DATE",
+            "rows": 0
+          }
+        }
+      }
+    },
+    "status": "CHECK_COMPLETE"
+  }
+]
