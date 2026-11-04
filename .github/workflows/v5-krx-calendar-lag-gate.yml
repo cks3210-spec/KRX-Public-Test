@@ -1,0 +1,129 @@
+name: KRX v5 Calendar and Data Lag Gate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 1 * * 1-5' # 10:10 KST
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-calendar-lag-gate
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install calendar and HTTP client
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars==4.13.1' requests
+      - name: Verify KRX calendar and API lag
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/krx_calendar_lag.py <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import pathlib
+          import re
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as xc
+          import pandas as pd
+          import requests
+
+          now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          calendar = xc.get_calendar('XKRX')
+          today = pd.Timestamp(now.date())
+          is_session_today = bool(calendar.is_session(today))
+          # At 10:10 KST the previous session is the most recent completed session.
+          previous = calendar.previous_session(today) if is_session_today else calendar.date_to_session(today, direction='previous')
+          expected = previous.strftime('%Y%m%d')
+          key = os.getenv('KRX_API_KEY', '').strip()
+          report = {
+              'checked_kst': now.isoformat(),
+              'calendar': 'exchange_calendars XKRX',
+              'calendar_library_version': xc.__version__,
+              'is_krx_session_today': is_session_today,
+              'expected_completed_session': expected,
+              'source': 'KRX_OFFICIAL_OPEN_API',
+              'status': 'NOT_RUN',
+              'production_data_modified': False,
+              'raw_market_data_published': False,
+              'markets': {},
+              'note': 'Calendar is a third-party schedule, not the KRX official holiday calendar. API raw rows are never persisted.',
+          }
+          def integer(v):
+              s = str(v).replace(',', '').strip()
+              return int(s) if re.fullmatch(r'-?\d+', s) else None
+          def check(market, endpoint, date):
+              try:
+                  r = requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/' + endpoint,
+                                   params={'basDd': date},
+                                   headers={'AUTH_KEY': key, 'Accept': 'application/json'}, timeout=25)
+                  if r.status_code != 200:
+                      return {'status': 'HTTP_ERROR', 'http_status': r.status_code}
+                  data = r.json()
+                  if not isinstance(data, dict) or not isinstance(data.get('OutBlock_1'), list):
+                      return {'status': 'SCHEMA_ERROR'}
+                  rows = data['OutBlock_1']
+                  if not rows:
+                      return {'status': 'EMPTY_DATE'}
+                  seen = set()
+                  for row in rows:
+                      if not isinstance(row, dict):
+                          return {'status': 'INVALID_ROW'}
+                      code = str(row.get('ISU_CD', '')).strip()
+                      if not re.fullmatch(r'[A-Za-z0-9]{6}', code, re.ASCII) or code in seen:
+                          return {'status': 'INVALID_OR_DUPLICATE_CODE'}
+                      seen.add(code)
+                      if str(row.get('BAS_DD', '')).strip() != date:
+                          return {'status': 'DATE_MISMATCH'}
+                      close, cap, vol = (integer(row.get(f)) for f in ('TDD_CLSPRC', 'MKTCAP', 'ACC_TRDVOL'))
+                      if close is None or close <= 0 or cap is None or cap <= 0 or vol is None or vol < 0:
+                          return {'status': 'INVALID_NUMERIC'}
+                  if len(rows) < 400:
+                      return {'status': 'LOW_COVERAGE', 'rows': len(rows)}
+                  return {'status': 'VALID', 'rows': len(rows)}
+              except requests.RequestException as exc:
+                  return {'status': 'NETWORK_ERROR', 'error_type': type(exc).__name__}
+              except ValueError:
+                  return {'status': 'JSON_ERROR'}
+          if not key:
+              report['status'] = 'MISSING_SECRET'
+          elif not is_session_today:
+              report['status'] = 'KRX_CLOSED_TODAY'
+          else:
+              markets = [('KOSPI', 'stk_bydd_trd'), ('KOSDAQ', 'ksq_bydd_trd')]
+              results = {m: check(m, ep, expected) for m, ep in markets}
+              report['markets'] = results
+              states = [r['status'] for r in results.values()]
+              if all(s == 'VALID' for s in states):
+                  report['status'] = 'EXPECTED_SESSION_VERIFIED'
+                  report['total_rows'] = sum(r['rows'] for r in results.values())
+              elif all(s == 'EMPTY_DATE' for s in states):
+                  report['status'] = 'EXPECTED_SESSION_DATA_PENDING'
+              elif 'EMPTY_DATE' in states and 'VALID' in states:
+                  report['status'] = 'PARTIAL_MARKET_DATA'
+              else:
+                  report['status'] = 'SOURCE_OR_VALIDATION_ERROR'
+          out = pathlib.Path('v5_reports/official_api/calendar_lag_status.json')
+          out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(report, ensure_ascii=False))
+          PY
+          python /tmp/krx_calendar_lag.py
+      - name: Commit non-sensitive status only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/calendar_lag_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: distinguish KRX sessions from API data lag'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
