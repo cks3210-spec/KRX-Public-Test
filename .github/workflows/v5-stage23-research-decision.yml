@@ -1,0 +1,57 @@
+name: KRX v5 Stage23 Research Decision Integration
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage23-research
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore Stage22 engine and Stage23 decision module
+        shell: bash
+        run: |
+          mkdir -p stage22 stage23
+          python - <<'PYCODE'
+          import base64,pathlib,re
+          src=pathlib.Path('.github/workflows/v5-stage22-unified-pipeline.yml').read_text()
+          for name in ('prepare_stage22.py','run_stage22.py'):
+              pattern=r"pathlib\.Path\('stage22/"+name+r"'\)\.write_bytes\(base64\.b64decode\('([A-Za-z0-9+/=]+)'\)\)"
+              match=re.search(pattern,src)
+              if not match: raise RuntimeError('Missing Stage22 engine: '+name)
+              pathlib.Path('stage22',name).write_bytes(base64.b64decode(match.group(1)))
+          pathlib.Path('stage23/build_stage23.py').write_bytes(base64.b64decode('IiIiU3RhZ2UyMzogcmVzZWFyY2ggZGVjaXNpb24gZW5naW5lLCBub3QgdmVyaWZpZWQgYnV5IGFkdmljZS4iIiIKaW1wb3J0IGFyZ3BhcnNlLGNzdixkYXRldGltZSxqc29uLG1hdGgscGF0aGxpYgoKZGVmIGZpbml0ZSh2KToKICAgIHRyeToKICAgICAgICB4PWZsb2F0KHYpCiAgICAgICAgcmV0dXJuIHggaWYgbWF0aC5pc2Zpbml0ZSh4KSBlbHNlIE5vbmUKICAgIGV4Y2VwdCAoVmFsdWVFcnJvcixUeXBlRXJyb3IpOnJldHVybiBOb25lCgpkZWYgYXNzZXNzKHIpOgogICAgeD1kaWN0KHIpCiAgICBzY29yZT1maW5pdGUoci5nZXQoJ3Jlc2VhcmNoX3Njb3JlJykpCiAgICBwZT1maW5pdGUoci5nZXQoJ3BlX3R0bV9wcm94eScpKQogICAgcGI9ZmluaXRlKHIuZ2V0KCdwYl9wcm94eScpKQogICAgcHJpY2U9ZmluaXRlKHIuZ2V0KCdwcmljZV9rcncnKSkKICAgIGNlaWxpbmc9ZmluaXRlKHIuZ2V0KCdpbGx1c3RyYXRpdmVfcHJpY2VfY2VpbGluZ19rcncnKSkKICAgIHNpZ25hbD1yLmdldCgnc2lnbmFsX3ZlcmlmaWVkX3R5cGUnLCcnKQogICAgaXNzdWVzPVtdCiAgICBpZiBzY29yZSBpcyBOb25lOmlzc3Vlcy5hcHBlbmQoJ05PX1JFU0VBUkNIX1NDT1JFJykKICAgIGlmIHBlIGlzIE5vbmUgb3IgcGIgaXMgTm9uZTppc3N1ZXMuYXBwZW5kKCdOT19QT1NJVElWRV9FQVJOSU5HU19PUl9FUVVJVFlfVkFMVUFUSU9OJykKICAgIGlmIHByaWNlIGlzIE5vbmUgb3IgcHJpY2U8PTA6aXNzdWVzLmFwcGVuZCgnTk9fVkFMSURfUFJJQ0UnKQogICAgaWYgY2VpbGluZyBpcyBOb25lIG9yIGNlaWxpbmc8PTA6aXNzdWVzLmFwcGVuZCgnTk9fSUxMVVNUUkFUSVZFX1BSSUNFJykKICAgIGlmIHNpZ25hbCBub3QgaW4gKCdWJywnRycsJ1ZHJyk6aXNzdWVzLmFwcGVuZCgnTk9fQ09ORklSTUVEX1RFQ0hOSUNBTF9FVkVOVCcpCiAgICBpZiByLmdldCgnZGVjaXNpb25fc3RhdHVzJykhPSdWRVJJRklFRF9TT1VSQ0VfUkVDT05DSUxFRCc6aXNzdWVzLmFwcGVuZCgnRklOQU5DSUFMX1NPVVJDRV9VTlZFUklGSUVEJykKICAgICMgQS9CIGhlcmUgYXJlIE5PVCBpc3N1ZWQ6IGlucHV0IGhhcyBub3QgcGFzc2VkIHNvdXJjZSByZWNvbmNpbGlhdGlvbi4KICAgIHhbJ2ludmVzdG1lbnRfZ3JhZGUnXT0nJwogICAgeFsnYnV5X3NpZ25hbCddPUZhbHNlCiAgICB4WydyZXNlYXJjaF90aWVyJ109J1JFU0VBUkNIX0FfQ0FORElEQVRFJyBpZiBzY29yZSBpcyBub3QgTm9uZSBhbmQgc2NvcmU+PTcwIGVsc2UgJ1JFU0VBUkNIX0JfQ0FORElEQVRFJyBpZiBzY29yZSBpcyBub3QgTm9uZSBhbmQgc2NvcmU+PTQ1IGVsc2UgJ1JFU0VBUkNIX09USEVSJwogICAgeFsndmFsdWF0aW9uX3JlZmVyZW5jZV9vbmx5J109cm91bmQoY2VpbGluZywyKSBpZiBjZWlsaW5nIGVsc2UgTm9uZQogICAgeFsncmVmZXJlbmNlX2Rpc2NvdW50X3BjdCddPXJvdW5kKCgxLXByaWNlL2NlaWxpbmcpKjEwMCwyKSBpZiBwcmljZSBhbmQgY2VpbGluZyBlbHNlIE5vbmUKICAgIHhbJ3NvdXJjZV92ZXJpZmllZCddPUZhbHNlCiAgICB4WydkZWNpc2lvbl9zdGF0dXMnXT0nUkVTRUFSQ0hfT05MWV9OT1RfVFJBREVfUkVBRFknCiAgICB4WydibG9ja2luZ19yZWFzb25zJ109aXNzdWVzCiAgICByZXR1cm4geAoKZGVmIG1haW4oKToKICAgIHA9YXJncGFyc2UuQXJndW1lbnRQYXJzZXIoKTtwLmFkZF9hcmd1bWVudCgnLS1zb3VyY2UnLGRlZmF1bHQ9J3N0YWdlMjBfb3V0cHV0Jyk7cC5hZGRfYXJndW1lbnQoJy0tb3V0JyxkZWZhdWx0PSd2NV9yZXBvcnRzL3N0YWdlMjMnKTthPXAucGFyc2VfYXJncygpCiAgICBzb3VyY2U9cGF0aGxpYi5QYXRoKGEuc291cmNlKTtvdXQ9cGF0aGxpYi5QYXRoKGEub3V0KTtvdXQubWtkaXIocGFyZW50cz1UcnVlLGV4aXN0X29rPVRydWUpCiAgICBzdW1tYXJ5X3BhdGg9c291cmNlLydzdW1tYXJ5Lmpzb24nO2NhbmRfcGF0aD1zb3VyY2UvJ2NhbmRpZGF0ZXMuanNvbicKICAgIGlmIG5vdCBzdW1tYXJ5X3BhdGguZXhpc3RzKCkgb3Igbm90IGNhbmRfcGF0aC5leGlzdHMoKToKICAgICAgICBzdGF0dXM9eydzdGF0dXMnOidXQUlUSU5HX0ZPUl9GUkVTSF9LUlhfREFUQScsJ3Jlc2VhcmNoX29ubHknOlRydWUsJ3NvdXJjZV9maWxlc19wcmVzZW50JzpGYWxzZSwnZ2VuZXJhdGVkX3V0Yyc6ZGF0ZXRpbWUuZGF0ZXRpbWUubm93KGRhdGV0aW1lLnRpbWV6b25lLnV0YykuaXNvZm9ybWF0KCl9CiAgICAgICAgKG91dC8nc3RhdHVzLmpzb24nKS53cml0ZV90ZXh0KGpzb24uZHVtcHMoc3RhdHVzLGVuc3VyZV9hc2NpaT1GYWxzZSxpbmRlbnQ9MiksZW5jb2Rpbmc9J3V0Zi04JykKICAgICAgICBwcmludChqc29uLmR1bXBzKHN0YXR1cykpO3JldHVybgogICAgc3JjPWpzb24ubG9hZHMoc3VtbWFyeV9wYXRoLnJlYWRfdGV4dChlbmNvZGluZz0ndXRmLTgnKSkKICAgIHJvd3M9anNvbi5sb2FkcyhjYW5kX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSd1dGYtOCcpKQogICAgYXNzZXNzZWQ9W2Fzc2VzcyhyKSBmb3IgciBpbiByb3dzXQogICAgYXNzZXNzZWQuc29ydChrZXk9bGFtYmRhIHI6KGZpbml0ZShyLmdldCgncmVzZWFyY2hfc2NvcmUnKSkgb3IgLTEpLHJldmVyc2U9VHJ1ZSkKICAgIHN0YXR1cz17J3N0YXR1cyc6J1JFU0VBUkNIX0dFTkVSQVRFRCcsJ2Fzb2Zfa3J4JzpzcmMuZ2V0KCdhc29mX2tyeCcpLCdjYW5kaWRhdGVfY291bnQnOmxlbihhc3Nlc3NlZCksCiAgICAgICdyZXNlYXJjaF9hX2NhbmRpZGF0ZXMnOnN1bShyWydyZXNlYXJjaF90aWVyJ109PSdSRVNFQVJDSF9BX0NBTkRJREFURScgZm9yIHIgaW4gYXNzZXNzZWQpLAogICAgICAncmVzZWFyY2hfYl9jYW5kaWRhdGVzJzpzdW0oclsncmVzZWFyY2hfdGllciddPT0nUkVTRUFSQ0hfQl9DQU5ESURBVEUnIGZvciByIGluIGFzc2Vzc2VkKSwKICAgICAgJ3ZlcmlmaWVkX2ludmVzdG1lbnRfZ3JhZGVzJzowLCdidXlfc2lnbmFscyc6MCwnc291cmNlX3JlY29uY2lsZWQnOkZhbHNlLAogICAgICAnY2F2ZWF0JzonUmVzZWFyY2ggdGllcnMgYXJlIG5vdCBpbnZlc3RtZW50IGdyYWRlcy4gSWxsdXN0cmF0aXZlIHByaWNlIGlzIG5vdCBhIGZhaXIgdmFsdWUgb3Igb3JkZXIgcHJpY2UuJywKICAgICAgJ2dlbmVyYXRlZF91dGMnOmRhdGV0aW1lLmRhdGV0aW1lLm5vdyhkYXRldGltZS50aW1lem9uZS51dGMpLmlzb2Zvcm1hdCgpfQogICAgKG91dC8nc3RhdHVzLmpzb24nKS53cml0ZV90ZXh0KGpzb24uZHVtcHMoc3RhdHVzLGVuc3VyZV9hc2NpaT1GYWxzZSxpbmRlbnQ9MiksZW5jb2Rpbmc9J3V0Zi04JykKICAgIChvdXQvJ3Jlc2VhcmNoX2RlY2lzaW9ucy5qc29uJykud3JpdGVfdGV4dChqc29uLmR1bXBzKGFzc2Vzc2VkLGVuc3VyZV9hc2NpaT1GYWxzZSxpbmRlbnQ9MiksZW5jb2Rpbmc9J3V0Zi04JykKICAgIGZpZWxkcz1bJ2NvZGUnLCduYW1lJywncmVzZWFyY2hfc2NvcmUnLCdyZXNlYXJjaF90aWVyJywnc2lnbmFsX3ZlcmlmaWVkX3R5cGUnLCdwcmljZV9rcncnLCdwZV90dG1fcHJveHknLCdwYl9wcm94eScsJ3ZhbHVhdGlvbl9yZWZlcmVuY2Vfb25seScsJ3JlZmVyZW5jZV9kaXNjb3VudF9wY3QnLCdpbnZlc3RtZW50X2dyYWRlJywnYnV5X3NpZ25hbCcsJ2RlY2lzaW9uX3N0YXR1cyddCiAgICB3aXRoIChvdXQvJ3Jlc2VhcmNoX2RlY2lzaW9ucy5jc3YnKS5vcGVuKCd3JyxlbmNvZGluZz0ndXRmLTgtc2lnJyxuZXdsaW5lPScnKSBhcyBmOgogICAgICAgIHc9Y3N2LkRpY3RXcml0ZXIoZixmaWVsZG5hbWVzPWZpZWxkcyxleHRyYXNhY3Rpb249J2lnbm9yZScpO3cud3JpdGVoZWFkZXIoKTt3LndyaXRlcm93cyhhc3Nlc3NlZCkKICAgIHByaW50KGpzb24uZHVtcHMoc3RhdHVzLGVuc3VyZV9hc2NpaT1GYWxzZSkpCmlmIF9fbmFtZV9fPT0nX19tYWluX18nOm1haW4oKQo='))
+          PYCODE
+      - name: Run Stage22 integrated research
+        run: |
+          python stage22/prepare_stage22.py
+          python stage22/run_stage22.py
+      - name: Build Stage23 research decisions or explicit waiting status
+        if: success()
+        run: python stage23/build_stage23.py
+      - name: Commit v5 research records only
+        if: success()
+        run: |
+          if [ -d v5_reports ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add v5_reports/
+            if ! git diff --cached --quiet; then
+              git commit -m "v5 stage23: record research decision state"
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Upload Stage23 output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage23-research-decisions
+          path: |
+            v5_reports/stage23/
+            v5_reports/pipeline_status.json
+          if-no-files-found: warn
