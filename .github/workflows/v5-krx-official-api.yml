@@ -1,0 +1,112 @@
+name: KRX v5 Official Open API Verification
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-krx-official-api-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install HTTP client
+        run: python -m pip install --disable-pip-version-check requests
+      - name: Verify approved official KRX API without publishing licensed raw data
+        shell: bash
+        run: |
+          mkdir -p v5_reports/official_api
+          cat > /tmp/verify_krx_official.py <<'PY'
+          import datetime as dt, json, os, pathlib, re, time
+          from zoneinfo import ZoneInfo
+          import requests
+
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          root=pathlib.Path('v5_reports/official_api')
+          root.mkdir(parents=True,exist_ok=True)
+          key=os.getenv('KRX_API_KEY','').strip()
+          result={'checked_kst':now.isoformat(),'status':'NOT_VERIFIED','source':'KRX_OFFICIAL_OPEN_API',
+                  'production_data_modified':False,'raw_market_data_published':False,'markets':{},
+                  'note':'This workflow verifies access and schema only; it does not publish licensed raw data.'}
+          def integer(value):
+              try:return int(str(value).replace(',','').strip())
+              except (TypeError,ValueError):return -1
+          def probe(market,api,day):
+              url=f'https://data-dbg.krx.co.kr/svc/apis/sto/{api}'
+              try:
+                  response=requests.get(url,params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+                  state={'http_status':response.status_code,'date':day}
+                  if response.status_code!=200:
+                      state['status']='HTTP_ERROR'
+                      return state
+                  try: payload=response.json()
+                  except ValueError:
+                      state['status']='NON_JSON_RESPONSE';return state
+                  if not isinstance(payload,dict):
+                      state['status']='UNEXPECTED_RESPONSE';return state
+                  if payload.get('respCode') not in (None,'','0','00','000','0000'):
+                      state['status']='API_ERROR';state['response_code']=str(payload['respCode'])[:40];return state
+                  rows=payload.get('OutBlock_1')
+                  if not isinstance(rows,list):
+                      state['status']='UNEXPECTED_SCHEMA';state['response_fields']=list(payload.keys())[:12];return state
+                  if not rows:
+                      state['status']='EMPTY_DATE';return state
+                  required={'BAS_DD','ISU_CD','TDD_CLSPRC','ACC_TRDVOL','MKTCAP'}
+                  codes=set();good=0;bad=0;date_mismatch=0
+                  for row in rows:
+                      if not isinstance(row,dict) or not required.issubset(row):bad+=1;continue
+                      code=str(row['ISU_CD']).strip()
+                      if not re.fullmatch(r'\d{6}',code):bad+=1;continue
+                      if code in codes:bad+=1;continue
+                      codes.add(code)
+                      if str(row['BAS_DD']).strip()!=day:date_mismatch+=1
+                      if integer(row['TDD_CLSPRC'])<=0 or integer(row['MKTCAP'])<=0 or integer(row['ACC_TRDVOL'])<0:
+                          bad+=1;continue
+                      good+=1
+                  state.update(row_count=len(rows),valid_rows=good,invalid_rows=bad,date_mismatches=date_mismatch,
+                               status='VERIFIED' if good>=400 and bad==0 and date_mismatch==0 else 'VALIDATION_FAILED')
+                  return state
+              except requests.RequestException as exc:
+                  return {'status':'NETWORK_ERROR','date':day,'error_type':type(exc).__name__}
+          if not key:
+              result['status']='MISSING_SECRET'
+          else:
+              dates=[(now.date()-dt.timedelta(days=i)).strftime('%Y%m%d') for i in range(1,9)
+                     if (now.date()-dt.timedelta(days=i)).weekday()<5]
+              for market,api in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  attempts=[]
+                  for day in dates:
+                      state=probe(market,api,day);attempts.append(state)
+                      if state['status'] in ('VERIFIED','API_ERROR','HTTP_ERROR','UNEXPECTED_SCHEMA','NON_JSON_RESPONSE'):
+                          break
+                      time.sleep(.4)
+                  result['markets'][market]={'attempts':attempts}
+              verified={m:next((x for x in v['attempts'] if x['status']=='VERIFIED'),None)
+                        for m,v in result['markets'].items()}
+              if all(verified.values()):
+                  result['status']='API_VERIFIED'
+                  result['source_dates']={m:v['date'] for m,v in verified.items()}
+                  result['total_rows']=sum(v['valid_rows'] for v in verified.values())
+              else:result['status']='API_NOT_READY'
+          (root/'status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/verify_krx_official.py
+      - name: Commit non-sensitive verification status only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: verify official KRX API access without publishing raw data'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
