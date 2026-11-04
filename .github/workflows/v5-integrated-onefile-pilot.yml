@@ -1,0 +1,73 @@
+name: KRX v5 One-File DART Pilot
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Read-only DART sample verification
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request, urllib.parse, zipfile, io, xml.etree.ElementTree as ET, pathlib, collections
+          key=os.getenv('DART_API_KEY')
+          if not key: raise SystemExit('Missing DART_API_KEY repository secret')
+          def req(path, args={}, binary=False):
+              url='https://opendart.fss.or.kr/api/'+path+'?'+urllib.parse.urlencode({'crtfc_key':key,**args})
+              with urllib.request.urlopen(url,timeout=45) as f: data=f.read()
+              if binary:return data
+              obj=json.loads(data)
+              if obj.get('status')!='000':raise RuntimeError('DART status '+str(obj.get('status')))
+              return obj['list']
+          raw=urllib.request.urlopen('https://raw.githubusercontent.com/cks3210-spec/KRX-Public-Test/v5-state/v5_history/history_metrics.json',timeout=45).read()
+          history=json.loads(raw)
+          with zipfile.ZipFile(io.BytesIO(req('corpCode.xml',binary=True))) as z:
+              root=ET.fromstring(z.read(next(x for x in z.namelist() if x.endswith('.xml'))))
+          mapping={x.findtext('stock_code','').strip():x.findtext('corp_code','').strip() for x in root.findall('list') if x.findtext('stock_code','').strip()}
+          ids={'assets':'ifrs-full_Assets','liabilities':'ifrs-full_Liabilities','equity':'ifrs-full_Equity','owner_equity':'ifrs-full_EquityAttributableToOwnersOfParent','revenue':'ifrs-full_Revenue','owner_profit':'ifrs-full_ProfitLossAttributableToOwnersOfParent'}
+          results={}
+          for code,h in list(sorted(history.items())):
+              if len(results)>=10:break
+              ident=h.get('identity') or []
+              if len(ident)<3 or ident[1] not in ('11013','11012','11014') or ident[2] not in ('CFS','OFS') or code not in mapping:continue
+              year,report,fs=str(ident[0]),ident[1],ident[2]
+              entry={'name':h.get('ISU_NM'),'period':h.get('period'),'status':'PROVISIONAL','investment_grade':None,'source_verified':False}
+              try:
+                  rows=req('fnlttSinglAcntAll.json',{'corp_code':mapping[code],'bsns_year':year,'reprt_code':report,'fs_div':fs})
+                  extracted={}
+                  for k,account in ids.items():
+                      section='BS' if k in ('assets','liabilities','equity','owner_equity') else None
+                      matches=[]
+                      for row in rows:
+                          if row.get('account_id') not in (account,account.replace('ifrs-full_','ifrs_')):continue
+                          if section and row.get('sj_div')!=section:continue
+                          if not section and row.get('sj_div') not in ('IS','CIS'):continue
+                          if row.get('account_detail') not in ('','-',None):continue
+                          field='thstrm_add_amount' if k in ('revenue','owner_profit') else 'thstrm_amount'
+                          val=row.get(field)
+                          if val not in ('',None):
+                              try:matches.append(int(str(val).replace(',','')))
+                              except ValueError:pass
+                      extracted[k]=matches[0] if matches and len(set(matches))==1 else None
+                  entry['metrics']=extracted
+                  entry['missing']=[k for k,v in extracted.items() if v is None]
+              except Exception as e:
+                  entry['status']='FETCH_ERROR';entry['error']=type(e).__name__+': '+str(e)[:100]
+              results[code]=entry
+          out=pathlib.Path('v5_pilot_output');out.mkdir(exist_ok=True)
+          summary={'sample_count':len(results),'status_counts':dict(collections.Counter(x['status'] for x in results.values())),'investment_grades_created':0,'note':'Read-only sample, not independently reconciled against source filings'}
+          (out/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
+          (out/'sample.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+          print(json.dumps(summary,ensure_ascii=False))
+          if not results:raise SystemExit('No eligible companies in history')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-dart-onefile-pilot
+          path: v5_pilot_output/
+          if-no-files-found: warn
