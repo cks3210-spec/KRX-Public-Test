@@ -108,3 +108,4 @@ jobs:
             git commit -m 'v5: report KRX source freshness separately from availability'
             git pull --rebase origin main
             git push origin HEAD:main
+           fi
