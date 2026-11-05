@@ -1,0 +1,81 @@
+name: KRX Official Source Preflight (Safe, No Production Writes)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Check whether official API can supply the next verified snapshot
+        shell: bash
+        run: |
+          cat > /tmp/source_preflight.py <<'PY'
+          import csv,datetime as dt,json,os,pathlib,time
+          from zoneinfo import ZoneInfo
+          import requests
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          report={'checked_kst':now.isoformat(),'status':'NOT_RUN','decision':'KEEP_EXISTING_UNCHANGED','production_data_modified':False,'raw_market_data_published':False}
+          def norm(v): return int(str(v).replace(',','').strip())
+          try:
+              with open('data/latest.csv',encoding='utf-8-sig',newline='') as f: old=list(csv.DictReader(f))
+              dates={r['BAS_DD'].strip() for r in old}
+              if len(dates)!=1:raise ValueError('EXISTING_DATE_INVALID')
+              previous=dates.pop(); report['existing_date']=previous
+              key=os.environ.get('KRX_API_KEY','').strip()
+              if not key:raise ValueError('MISSING_KRX_API_KEY')
+              # Only inspect today's or yesterday's session; never guess a trading holiday.
+              candidates=sorted({now.strftime('%Y%m%d'),(now-dt.timedelta(days=1)).strftime('%Y%m%d')},reverse=True)
+              snapshots={}
+              for day in candidates:
+                  combined={}; counts={}; valid=True
+                  for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+                          response.raise_for_status(); payload=response.json()
+                          rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                          if not isinstance(rows,list) or len(rows)<400:valid=False;break
+                          counts[market]=len(rows)
+                          for r in rows:
+                              if str(r.get('BAS_DD','')).strip()!=day:raise ValueError('API_DATE_MISMATCH')
+                              code=str(r.get('ISU_CD','')).strip(); k=(market,code)
+                              if k in combined:raise ValueError('DUPLICATE_API_KEY')
+                              for col in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):norm(r[col])
+                              combined[k]=r
+                      except (requests.RequestException,ValueError,KeyError,TypeError):valid=False;break
+                  if valid:snapshots[day]=(combined,counts)
+              if not snapshots:
+                  report.update(status='API_NOT_YET_AVAILABLE',reason='NO_COMPLETE_CANDIDATE_DATE')
+              else:
+                  newest=max(snapshots); data,counts=snapshots[newest]
+                  report.update(candidate_date=newest,api_rows=len(data),market_counts=counts)
+                  if newest<previous:
+                      report.update(status='API_OLDER_THAN_EXISTING',reason='STALE_API')
+                  elif newest==previous:
+                      existing={(r['MARKET'].strip(),r['ISU_CD'].strip()):r for r in old}
+                      if len(existing)!=len(old):raise ValueError('DUPLICATE_EXISTING_KEY')
+                      missing=len(set(existing)-set(data));extra=len(set(data)-set(existing))
+                      conflicts=sum(any(norm(existing[k][col])!=norm(data[k][col]) for col in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')) for k in set(existing)&set(data))
+                      report.update(missing_keys=missing,extra_keys=extra,conflicting_keys=conflicts)
+                      report.update(status='API_MATCHED_EXISTING' if not(missing or extra or conflicts) else 'API_CONFLICT_WITH_EXISTING',reason='SAME_DATE_COMPARISON')
+                  else:
+                      report.update(status='NEW_OFFICIAL_SNAPSHOT_READY_FOR_REVIEW',decision='SHADOW_CANDIDATE_ONLY',reason='NEWER_COMPLETE_API_SNAPSHOT')
+          except Exception as e:
+              report.update(status='PREFLIGHT_FAILED',reason=type(e).__name__+': '+str(e)[:120])
+          path=pathlib.Path('v5_reports/official_api/source_preflight.json');path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/source_preflight.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-official-source-preflight
+          path: v5_reports/official_api/source_preflight.json
