@@ -1,0 +1,112 @@
+name: KRX Official Primary Source Staging (No Production Writes)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 10 * * 1-5' # 19:10 KST; UTC schedule
+permissions:
+  contents: read
+concurrency:
+  group: krx-official-primary-staging
+  cancel-in-progress: false
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependency
+        run: python -m pip install --disable-pip-version-check requests
+      - name: Fetch official data, validate, and stage only
+        shell: bash
+        run: |
+          cat > /tmp/stage_krx.py <<'PY'
+          import csv, datetime as dt, json, os, pathlib, re, time
+          from zoneinfo import ZoneInfo
+          import requests
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          out=pathlib.Path('v5_reports/official_api/primary_staging.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          report={'checked_kst':now.isoformat(),'status':'NOT_RUN','decision':'KEEP_EXISTING_UNCHANGED','production_data_modified':False,'raw_market_data_published':False}
+          def number(v):
+              s=str(v).replace(',','').strip()
+              if not re.fullmatch(r'-?\d+',s):raise ValueError('INVALID_NUMERIC_FIELD')
+              return int(s)
+          try:
+              with open('data/latest.csv',encoding='utf-8-sig',newline='') as f: old=list(csv.DictReader(f))
+              dates={r['BAS_DD'].strip() for r in old}
+              if len(dates)!=1 or not old:raise ValueError('INVALID_EXISTING_SNAPSHOT_DATE')
+              existing_date=dates.pop();report['existing_date']=existing_date
+              key=os.environ.get('KRX_API_KEY','').strip()
+              if not key:raise ValueError('MISSING_KRX_API_KEY')
+              # Candidate dates include today and the previous six calendar days.
+              # This does not assume that weekdays are trading sessions.
+              candidates=[(now.date()-dt.timedelta(days=i)).strftime('%Y%m%d') for i in range(7)]
+              latest=None; attempted=[]
+              for day in candidates:
+                  combined={};counts={};error=None
+                  for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                      payload=None
+                      for attempt in range(2):
+                          try:
+                              response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+                              response.raise_for_status();payload=response.json();break
+                          except (requests.RequestException,ValueError) as e:
+                              error=type(e).__name__
+                              if attempt==0:time.sleep(2)
+                      if payload is None:break
+                      rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                      if not isinstance(rows,list) or len(rows)<400:
+                          error='INCOMPLETE_OR_EMPTY_'+market;break
+                      counts[market]=len(rows)
+                      for r in rows:
+                          if str(r.get('BAS_DD','')).strip()!=day:raise ValueError('API_DATE_MISMATCH')
+                          code=str(r.get('ISU_CD','')).strip()
+                          if not re.fullmatch(r'[A-Za-z0-9]{6}',code):raise ValueError('INVALID_CODE')
+                          k=(market,code)
+                          if k in combined:raise ValueError('DUPLICATE_API_KEY')
+                          for col in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):
+                              if number(r[col])<0:raise ValueError('NEGATIVE_MARKET_FIELD')
+                          combined[k]=r
+                  attempted.append({'date':day,'complete':error is None,'reason':error})
+                  if error is None:
+                      latest=(day,combined,counts)
+                      break
+              report['attempted_dates']=attempted
+              if latest is None:
+                  report.update(status='API_NOT_READY_OR_UNAVAILABLE',reason='NO_COMPLETE_SNAPSHOT_IN_7_DAYS')
+              else:
+                  day,api,counts=latest
+                  report.update(candidate_date=day,api_rows=len(api),market_counts=counts)
+                  if day<existing_date:
+                      report.update(status='API_OLDER_THAN_EXISTING',reason='STALE_OFFICIAL_SNAPSHOT')
+                  elif day==existing_date:
+                      existing={}
+                      for r in old:
+                          k=(r['MARKET'].strip(),r['ISU_CD'].strip())
+                          if k in existing:raise ValueError('DUPLICATE_EXISTING_KEY')
+                          existing[k]=r
+                      missing=len(set(existing)-set(api));extra=len(set(api)-set(existing))
+                      conflicts=sum(any(number(existing[k][c])!=number(api[k][c]) for c in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')) for k in set(existing)&set(api))
+                      report.update(missing_keys=missing,extra_keys=extra,conflicting_keys=conflicts)
+                      report.update(status='API_MATCHED_EXISTING' if not (missing or extra or conflicts) else 'API_CONFLICT_WITH_EXISTING',reason='SAME_DATE_VERIFICATION')
+                  else:
+                      # No raw data is persisted or published. Full snapshot passes only structural validation.
+                      # Promotion into production needs a separate controlled workflow.
+                      report.update(status='NEW_OFFICIAL_SNAPSHOT_STAGED',decision='READY_FOR_CONTROLLED_PROMOTION_REVIEW',reason='COMPLETE_NEWER_OFFICIAL_SNAPSHOT')
+          except Exception as e:
+              report.update(status='STAGING_FAILED',reason=type(e).__name__+': '+str(e)[:140])
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/stage_krx.py
+      - name: Upload aggregate validation result
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-official-primary-staging
+          path: v5_reports/official_api/primary_staging.json
+          if-no-files-found: error
