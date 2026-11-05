@@ -1,0 +1,128 @@
+name: KRX v5 v4 Safe Merge Validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Compare official snapshot and recalculate without changing production
+        shell: bash
+        run: |
+          cat > /tmp/v4_safe_merge.py <<'PY'
+          import csv, gzip, json, os, re, time, datetime as dt
+          from pathlib import Path
+          from collections import defaultdict, Counter
+          from zoneinfo import ZoneInfo
+          import requests
+          root=Path('data'); out=Path('v5_reports/official_api/v4_safe_merge_validation.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          report={'checked_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),'status':'NOT_RUN','production_data_modified':False,'raw_market_data_published':False,'comparison':{},'extension':{}}
+          def number(x):
+              try:return float(str(x).replace(',','').strip())
+              except:return None
+          def read(path,compressed=False):
+              op=gzip.open if compressed else open
+              with op(path,'rt',encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def key(r):return (r['BAS_DD'].strip(),r['MARKET'].strip(),r['ISU_CD'].strip())
+          def validate(rows):
+              index={}
+              for r in rows:
+                  k=key(r)
+                  if not re.fullmatch(r'\d{8}',k[0]) or k[1] not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'[A-Za-z0-9]{6}',k[2]):raise ValueError('INVALID_KEY')
+                  if k in index:raise ValueError('DUPLICATE_HISTORY_KEY')
+                  if any(number(r.get(f)) is None for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')):raise ValueError('INVALID_NUMERIC')
+                  index[k]=r
+              return index
+          def calculate(rows,day):
+              by=defaultdict(list)
+              for r in rows:
+                  if r['BAS_DD']<=day:by[(r['MARKET'],r['ISU_CD'])].append(r)
+              result={}
+              for k,series in by.items():
+                  series.sort(key=lambda r:r['BAS_DD'])
+                  if series[-1]['BAS_DD']!=day or len(series)<41:continue
+                  close=[number(r['TDD_CLSPRC']) for r in series]
+                  vol=[number(r['ACC_TRDVOL']) for r in series]
+                  early=sum(vol[-40:-20])/20
+                  if early<=0 or close[-21]<=0:continue
+                  result[k]={'ratio':(sum(vol[-20:])/20)/early,'return':(close[-1]/close[-21]-1)*100,'marketcap':number(series[-1]['MKTCAP'])}
+              return result
+          try:
+              history=read(root/'daily_70d.csv.gz',True); old=validate(history)
+              days=sorted({r['BAS_DD'] for r in history})
+              if len(days)<60:raise ValueError('INSUFFICIENT_SESSIONS')
+              latest=days[-1]; baseline=calculate(history,latest)
+              saved=read(root/'v4_indicators.csv'); mismatches=Counter(); examples=[]; not_calc=0; compared=0
+              for r in saved:
+                  if r['BAS_DD']!=latest:raise ValueError('V4_SNAPSHOT_DATE_MISMATCH')
+                  k=(r['MARKET'],r['ISU_CD']); calc=baseline.get(k)
+                  if calc is None:not_calc+=1;continue
+                  compared+=1
+                  for col,expected in [('VOLUME_RATIO_20V20',calc['ratio']),('RETURN_20D_PCT',calc['return'])]:
+                      val=number(r.get(col))
+                      if val is None or abs(val-expected)>0.0001:
+                          mismatches[col]+=1
+                          if len(examples)<8:examples.append({'market':k[0],'code':k[1],'field':col})
+              report['comparison']={'source_date':latest,'history_rows':len(history),'history_sessions':len(days),'existing_v4_rows':len(saved),'compared_rows':compared,'not_calculable':not_calc,'mismatch_counts':dict(mismatches),'mismatch_examples':examples,'tolerance':0.0001}
+              report['status']='BASELINE_REPRODUCED' if not mismatches and not not_calc else 'BASELINE_PARTIAL'
+              token=os.environ.get('KRX_API_KEY','').strip()
+              if not token:raise ValueError('MISSING_KRX_API_KEY')
+              target='20261104'; fetched=[]
+              for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  for attempt in range(3):
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':target},headers={'AUTH_KEY':token,'Accept':'application/json'},timeout=35)
+                          response.raise_for_status();break
+                      except requests.RequestException:
+                          if attempt==2:raise
+                          time.sleep(3*(attempt+1))
+                  payload=response.json(); items=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                  if not isinstance(items,list) or len(items)<400:raise ValueError('API_EMPTY_OR_BAD_SCHEMA_'+market)
+                  for row in items:
+                      r={f:str(row.get(f,'')).strip() for f in ('BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')}
+                      r['MARKET']=market
+                      if r['BAS_DD']!=target:raise ValueError('API_DATE_MISMATCH')
+                      fetched.append(r)
+              fresh=validate(fetched); matched=0; conflicts=[]; additions=[]
+              for k,r in fresh.items():
+                  if k not in old:additions.append(r);continue
+                  original=old[k]
+                  if all(number(original[f])==number(r[f]) for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')):matched+=1
+                  else:
+                      if len(conflicts)<12:conflicts.append({'date':k[0],'market':k[1],'code':k[2],'fields':[f for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP') if number(original[f])!=number(r[f])]})
+              report['extension']={'source_date':target,'official_rows':len(fetched),'already_present_matching':matched,'new_keys':len(additions),'conflict_count_sample':len(conflicts),'conflict_examples':conflicts}
+              if conflicts:raise ValueError('OFFICIAL_HISTORY_CONFLICT')
+              merged=history+additions; validate(merged)
+              calc=calculate(merged,target)
+              cap={k:v for k,v in calc.items() if v['marketcap']>=100_000_000_000}
+              eligible={k:v for k,v in cap.items() if -5<=v['return']<=3}
+              report['extension'].update({'calculated_with_40_day_volume_history':len(calc),'marketcap_1000uk':len(cap),'return_minus5_to_plus3':len(eligible),'volume_threshold_applied':False,'note':'Aggregate technical counts only. No buy ratings.'})
+              report['status']='V4_SAFE_MERGE_PASSED' if not mismatches and not not_calc else 'V4_SAFE_MERGE_PASSED_BASELINE_PARTIAL'
+          except Exception as e:
+              report['error_type']=type(e).__name__;report['error_code']=str(e)[:160] if isinstance(e,ValueError) else 'REQUEST_OR_RUNTIME_ERROR'
+              report['status']='VALIDATION_FAILED'
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/v4_safe_merge.py
+      - name: Commit aggregate report only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/v4_safe_merge_validation.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: safe merge validation report'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
