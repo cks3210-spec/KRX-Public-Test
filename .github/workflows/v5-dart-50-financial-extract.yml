@@ -1,0 +1,136 @@
+name: KRX v5 DART 50 Financial Extraction Audit (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract and reconcile candidate accounts
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          mkdir -p v5_reports/dart_50_extract
+          cat > /tmp/dart50_extract.py <<'PY'
+          import csv,io,json,math,os,pathlib,time,urllib.parse,urllib.request,zipfile,xml.etree.ElementTree as ET,datetime
+          from collections import Counter
+          out=pathlib.Path('v5_reports/dart_50_extract');out.mkdir(parents=True,exist_ok=True)
+          key=os.environ.get('DART_API_KEY','').strip()
+          if not key:raise RuntimeError('DART_API_KEY missing')
+          def readcsv(p):
+              with open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def number(x):
+              try:
+                  v=float(str(x).replace(',','').strip());return v if math.isfinite(v) else None
+              except (ValueError,TypeError):return None
+          def api(path,params):
+              url='https://opendart.fss.or.kr/api/'+path+'?'+urllib.parse.urlencode(dict(crtfc_key=key,**params))
+              for i in range(3):
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'KRX-v5-financial-extraction-audit/1.0'}),timeout=40) as response:return response.read()
+                  except Exception:
+                      if i==2:raise
+                      time.sleep(2*(i+1))
+          raw=readcsv('data/v4_indicators.csv')
+          dates={r['BAS_DD'] for r in raw}
+          if len(dates)!=1:raise RuntimeError('MULTIPLE_MARKET_DATES')
+          candidates=[r for r in raw if (number(r.get('MKTCAP')) or 0)>=100_000_000_000 and (number(r.get('VOLUME_RATIO_20V20')) or 0)>=3]
+          if len({r['ISU_CD'] for r in candidates})!=len(candidates):raise RuntimeError('DUPLICATE_CANDIDATES')
+          with zipfile.ZipFile(io.BytesIO(api('corpCode.xml',{}))) as z:xml=z.read(z.namelist()[0])
+          corp={e.findtext('stock_code').strip():e.findtext('corp_code').strip() for e in ET.fromstring(xml).findall('.//list') if (e.findtext('stock_code') or '').strip()}
+          # Exact XBRL account IDs and statement section required; do not infer arbitrary Korean-name matches.
+          IDS={
+           'revenue':{'ifrs-full_Revenue','ifrs_Revenue','ifrs-full_RevenueFromContractsWithCustomers'},
+           'operating_profit':{'dart_OperatingIncomeLoss'},
+           'net_income':{'ifrs-full_ProfitLoss','ifrs_ProfitLoss'},
+           'assets':{'ifrs-full_Assets','ifrs_Assets'},
+           'liabilities':{'ifrs-full_Liabilities','ifrs_Liabilities'},
+           'equity':{'ifrs-full_Equity','ifrs_Equity'}
+          }
+          SECTIONS={'revenue':{'IS','CIS'},'operating_profit':{'IS','CIS'},'net_income':{'IS','CIS'},'assets':{'BS'},'liabilities':{'BS'},'equity':{'BS'}}
+          def extract(lines,period):
+              found={};issues=[]
+              for field,ids in IDS.items():
+                  matches=[]
+                  for a in lines:
+                      if a.get('sj_div') not in SECTIONS[field] or a.get('account_id') not in ids:continue
+                      # Avoid non-total detailed components and member-specific rows.
+                      if a.get('account_detail','-').strip() not in ('','-'):continue
+                      v=number(a.get('thstrm_amount'))
+                      if v is not None:matches.append((v,a.get('account_id',''),a.get('account_nm','')))
+                  vals={m[0] for m in matches}
+                  if len(vals)==1:found[field]=matches[0][0]
+                  elif len(vals)>1:issues.append(field+':AMBIGUOUS_VALUES')
+                  else:issues.append(field+':MISSING')
+              return found,issues
+          def statement(corpcode,year,report,basis):
+              try:
+                  obj=json.loads(api('fnlttSinglAcntAll.json',{'corp_code':corpcode,'bsns_year':str(year),'reprt_code':report,'fs_div':basis}))
+                  if str(obj.get('status'))!='000':return None,'API_'+str(obj.get('status'))
+                  rows=obj.get('list',[])
+                  if not rows:return None,'EMPTY'
+                  return rows,'OK'
+              except Exception as exc:return None,'ERROR_'+type(exc).__name__
+          rows=[];counter=Counter()
+          for i,r in enumerate(candidates,1):
+              code=r['ISU_CD'];cc=corp.get(code);flags=[];periods={};basis=''
+              if not cc:flags.append('CORP_CODE_NOT_FOUND')
+              else:
+                  # Select CFS when it is available for 2026 H1, otherwise OFS.
+                  for b in ('CFS','OFS'):
+                      lines,state=statement(cc,2026,'11012',b)
+                      if lines is not None:
+                          basis=b;periods['2026_H1']=extract(lines,'2026_H1');break
+                      flags.append('2026_H1_'+b+'_'+state)
+                      time.sleep(.12)
+                  if basis:
+                      for label,year,report in [('2025_H1',2025,'11012'),('2025_ANNUAL',2025,'11011')]:
+                          lines,state=statement(cc,year,report,basis)
+                          if lines is None:flags.append(label+'_'+basis+'_'+state)
+                          else:periods[label]=extract(lines,label)
+                          time.sleep(.12)
+              d={label:periods.get(label,({},['PERIOD_UNAVAILABLE']))[0] for label in ('2026_H1','2025_H1','2025_ANNUAL')}
+              for label,(values,problems) in periods.items():flags.extend(label+'_'+x for x in problems)
+              def yoy(k):
+                  a=d['2026_H1'].get(k);b=d['2025_H1'].get(k)
+                  return round((a-b)/abs(b)*100,3) if a is not None and b not in (None,0) else None
+              assets=d['2026_H1'].get('assets');liab=d['2026_H1'].get('liabilities');eq=d['2026_H1'].get('equity')
+              debt=round(liab/eq*100,3) if liab is not None and eq not in (None,0) else None
+              # Equity and assets are interim balance sheet values; ROE requires comparative period equity and valid TTM earnings.
+              required=['revenue','operating_profit','net_income','assets','liabilities','equity']
+              completeness=all(k in d['2026_H1'] for k in required) and all(k in d['2025_H1'] for k in ('revenue','operating_profit','net_income'))
+              record={'BAS_DD':r['BAS_DD'],'ISU_CD':code,'ISU_NM':r['ISU_NM'],'statement_basis':basis or 'NONE',
+                'revenue_2026_H1_krw':d['2026_H1'].get('revenue'),'revenue_2025_H1_krw':d['2025_H1'].get('revenue'),
+                'revenue_yoy_pct':yoy('revenue'),'operating_profit_2026_H1_krw':d['2026_H1'].get('operating_profit'),
+                'operating_profit_2025_H1_krw':d['2025_H1'].get('operating_profit'),'operating_profit_yoy_pct':yoy('operating_profit'),
+                'net_income_2026_H1_krw':d['2026_H1'].get('net_income'),'net_income_2025_H1_krw':d['2025_H1'].get('net_income'),
+                'net_income_yoy_pct':yoy('net_income'),'assets_2026_H1_krw':assets,'liabilities_2026_H1_krw':liab,
+                'equity_2026_H1_krw':eq,'debt_ratio_pct':debt,'annual_2025_revenue_krw':d['2025_ANNUAL'].get('revenue'),
+                'annual_2025_operating_profit_krw':d['2025_ANNUAL'].get('operating_profit'),
+                'annual_2025_net_income_krw':d['2025_ANNUAL'].get('net_income'),
+                'required_accounts_complete':completeness,'issues':';'.join(sorted(set(flags))),
+                'investment_grade':'NOT_VERIFIED','trade_signal':'NONE'}
+              rows.append(record);counter['complete' if completeness else 'incomplete']+=1
+              counter['CFS' if basis=='CFS' else 'OFS' if basis=='OFS' else 'NO_BASIS']+=1
+              print(f'[{i}/{len(candidates)}] {code} {r["ISU_NM"]} basis={basis or "NONE"} complete={completeness}',flush=True)
+          fields=list(rows[0]) if rows else []
+          with (out/'candidate_financial_extract.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader();writer.writerows(rows)
+          status={'market_date':next(iter(dates)),'candidate_count':len(candidates),'counts':dict(counter),
+           'investment_grades_created':0,'production_data_modified':False,'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'notes':['Read-only account extraction; exact XBRL IDs, no inferred names','Same statement basis used for 2026 H1, 2025 H1, and 2025 annual','YoY on half-year figures; negative prior-year denominators use absolute base; turnaround must be reviewed','ROE, PER, PBR and final A/B grades are not computed; unresolved accounts remain missing','Only 2026 H1, 2025 H1, and 2025 annual; do not label as latest if newer filings exist']}
+          (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False),flush=True)
+          PY
+          python /tmp/dart50_extract.py
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-dart-50-financial-extract
+          path: v5_reports/dart_50_extract/
+          if-no-files-found: warn
