@@ -1,0 +1,78 @@
+name: KRX 20261104 Historical Technical Verification (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recalculate 20261104 from stored 70 sessions
+        shell: bash
+        run: |
+          cat > /tmp/verify.py <<'PY'
+          import csv,gzip,json,collections,pathlib,math
+          DATE='20261104'
+          out=pathlib.Path('v5_reports/verification_20261104.json');out.parent.mkdir(parents=True,exist_ok=True)
+          report={'date':DATE,'status':'NOT_RUN','production_data_modified':False}
+          def read(path,gz=False):
+              op=gzip.open if gz else open
+              with op(path,'rt',encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def num(x):return float(str(x).replace(',',''))
+          try:
+              history=read('data/daily_70d.csv.gz',True)
+              daily=read('data/daily_indicators.csv')
+              v4=read('data/v4_indicators.csv')
+              groups=collections.defaultdict(list)
+              for r in history:groups[(r['MARKET'],r['ISU_CD'])].append(r)
+              for rs in groups.values():rs.sort(key=lambda r:r['BAS_DD'])
+              stored_daily={(r['MARKET'],r['ISU_CD']):r for r in daily if r['BAS_DD']==DATE}
+              stored_v4={(r['MARKET'],r['ISU_CD']):r for r in v4 if r['BAS_DD']==DATE}
+              stats=collections.Counter();mismatches=[];unavailable=collections.Counter()
+              for k,rs in groups.items():
+                  if rs[-1]['BAS_DD']!=DATE:continue
+                  stats['latest_rows']+=1
+                  dr=stored_daily.get(k)
+                  if dr is None:
+                      unavailable['daily_missing']+=1;continue
+                  close=[num(r['TDD_CLSPRC']) for r in rs]
+                  for n in (5,10,20,60):
+                      if len(close)<n:continue
+                      actual=sum(close[-n:])/n
+                      val=dr.get('MA'+str(n),'')
+                      if val and abs(actual-num(val))>0.011:
+                          mismatches.append({'key':k,'field':'MA'+str(n),'expected':round(actual,4),'stored':val})
+                      else:stats['ma'+str(n)+'_checked']+=1
+                  vr=stored_v4.get(k)
+                  if len(rs)<41:
+                      unavailable['v4_short_history']+=1;continue
+                  vols=[num(r['ACC_TRDVOL']) for r in rs]
+                  prior=sum(vols[-40:-20])/20
+                  if prior==0 or close[-21]<=0:
+                      unavailable['v4_zero_denominator']+=1;continue
+                  ratio=(sum(vols[-20:])/20)/prior
+                  ret=(close[-1]/close[-21]-1)*100
+                  stats['v4_computable']+=1
+                  if vr:
+                      stats['v4_stored_rows']+=1
+                      for field,actual,tol in [('VOLUME_RATIO_20V20',ratio,1e-7),('RETURN_20D_PCT',ret,1e-7)]:
+                          if abs(num(vr[field])-actual)>tol:
+                              mismatches.append({'key':k,'field':field,'expected':round(actual,8),'stored':vr[field]})
+                      stats['v4_stored_compared']+=1
+                  if -5<=ret<=3:stats['v4_return_band_only']+=1
+              report.update(status='PASS' if not mismatches else 'MISMATCH',stats=dict(stats),unavailable=dict(unavailable),mismatch_count=len(mismatches),mismatch_examples=mismatches[:20],note='Read-only technical consistency test. Not a complete V4 volume filter, financial grade, or live API update test.')
+          except Exception as e:
+              report.update(status='ERROR',reason=type(e).__name__+': '+str(e)[:200])
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          if report['status']!='PASS':raise SystemExit(1)
+          PY
+          python /tmp/verify.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: krx-20261104-verification
+          path: v5_reports/verification_20261104.json
+          if-no-files-found: warn
