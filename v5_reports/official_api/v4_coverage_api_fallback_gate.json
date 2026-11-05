@@ -1,0 +1,119 @@
+{
+  "checked_kst": "2026-11-05T09:15:35.273357+09:00",
+  "status": "COVERAGE_DIAGNOSED_API_SHADOW_VERIFIED",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "coverage": {
+    "latest_date": "20261104",
+    "history_sessions": 70,
+    "existing_v4_rows": 1293,
+    "calculable": 1262,
+    "not_calculable": 31,
+    "reason_counts": {
+      "UNDER_41_OBSERVED_SESSIONS": 14,
+      "ZERO_EARLIER_20D_VOLUME": 17
+    },
+    "reason_examples": {
+      "UNDER_41_OBSERVED_SESSIONS": [
+        {
+          "market": "KOSDAQ",
+          "code": "386380",
+          "observed_sessions": 40,
+          "first_observed": "20260904"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "0013Y0",
+          "observed_sessions": 10,
+          "first_observed": "20261022"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "0015M0",
+          "observed_sessions": 9,
+          "first_observed": "20261023"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "0035S0",
+          "observed_sessions": 25,
+          "first_observed": "20260929"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "0053F0",
+          "observed_sessions": 5,
+          "first_observed": "20261029"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "0147B0",
+          "observed_sessions": 2,
+          "first_observed": "20261103"
+        }
+      ],
+      "ZERO_EARLIER_20D_VOLUME": [
+        {
+          "market": "KOSPI",
+          "code": "000300",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        },
+        {
+          "market": "KOSPI",
+          "code": "001470",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        },
+        {
+          "market": "KOSPI",
+          "code": "001570",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        },
+        {
+          "market": "KOSPI",
+          "code": "011810",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "016790",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        },
+        {
+          "market": "KOSDAQ",
+          "code": "036690",
+          "observed_sessions": 70,
+          "first_observed": "20260723"
+        }
+      ]
+    },
+    "note": "Observed history length is not necessarily listing age."
+  },
+  "api_guard": {
+    "target_date": "20261104",
+    "history_latest_date": "20261104",
+    "api_key_configured": true,
+    "decision": "API_VERIFIED_SHADOW_ONLY",
+    "source": "official_api",
+    "reason": "FULL_EXACT_MATCH",
+    "market_counts": {
+      "KOSPI": 938,
+      "KOSDAQ": 1831
+    },
+    "matched_rows": 2769,
+    "conflicts": 0,
+    "missing_keys": 0,
+    "extra_keys": 0,
+    "duplicate_api_keys": 0,
+    "failure_simulation": {
+      "simulated_api_error": "TIMEOUT",
+      "expected_decision": "KEEP_EXISTING_UNCHANGED",
+      "pass": true,
+      "note": "Policy simulation only, not a live network outage test"
+    }
+  }
+}
