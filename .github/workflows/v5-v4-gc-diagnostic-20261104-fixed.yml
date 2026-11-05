@@ -1,0 +1,53 @@
+name: KRX 20261104 V4 and Golden Cross Diagnostic (Read Only)
+on:
+  workflow_dispatch: null
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check V4 and Golden Cross on 20261104
+      shell: bash
+      run: "cat > /tmp/diagnose.py <<'PY'\nimport csv,gzip,json,collections,pathlib,math\nDATE='20261104'\nout=pathlib.Path('v5_reports/v4_gc_diagnostic_20261104.json')\n\
+        out.parent.mkdir(parents=True,exist_ok=True)\nreport={'date':DATE,'status':'NOT_RUN','production_data_modified':False,'raw_market_data_published':False}\n\
+        def read(path,compressed=False):\n    op=gzip.open if compressed else open\n    with op(path,'rt',encoding='utf-8-sig',newline='')\
+        \ as f:return list(csv.DictReader(f))\ndef n(x):return float(str(x).replace(',','').strip())\ndef flag(x):return\
+        \ str(x).strip().lower()=='true'\ntry:\n    history=read('data/daily_70d.csv.gz',True)\n    v4=read('data/v4_indicators.csv')\n\
+        \    summary=json.loads(pathlib.Path('data/summary.json').read_text(encoding='utf-8-sig'))\n    groups=collections.defaultdict(list)\n\
+        \    for r in history:groups[(r['MARKET'],r['ISU_CD'])].append(r)\n    for rows in groups.values():rows.sort(key=lambda\
+        \ r:r['BAS_DD'])\n    stored={(r['MARKET'],r['ISU_CD']):r for r in v4 if r['BAS_DD']==DATE}\n    issues=[];stats=collections.Counter();ratios=[];cross_examples=[]\n\
+        \    for key,rows in groups.items():\n        if rows[-1]['BAS_DD']!=DATE:continue\n        cap=n(rows[-1]['MKTCAP'])\n\
+        \        if cap<100_000_000_000:continue\n        stats['cap_eligible']+=1\n        closes=[n(r['TDD_CLSPRC'])\
+        \ for r in rows]\n        vols=[n(r['ACC_TRDVOL']) for r in rows]\n        if len(closes)>=11:\n       \
+        \     prev5=sum(closes[-6:-1])/5\n            prev10=sum(closes[-11:-1])/10\n            now5=sum(closes[-5:])/5\n\
+        \            now10=sum(closes[-10:])/10\n            if prev5<=prev10 and now5>now10:\n                stats['new_gc_on_date']+=1\n\
+        \                if len(cross_examples)<10:cross_examples.append({'market':key[0],'code':key[1]})\n    \
+        \        if now5>now10:stats['ma5_above_ma10']+=1\n        else:stats['gc_insufficient_history']+=1\n  \
+        \      if len(closes)<41:\n            stats['v4_insufficient_history']+=1\n            continue\n     \
+        \   prevvol=sum(vols[-40:-20])/20\n        if prevvol<=0 or closes[-21]<=0:\n            stats['v4_invalid_denominator']+=1\n\
+        \            continue\n        stats['v4_computable']+=1\n        ratio=(sum(vols[-20:])/20)/prevvol\n \
+        \       ret=(closes[-1]/closes[-21]-1)*100\n        band=-5<=ret<=3\n        if band:stats['return_band_pass']+=1\n\
+        \        vr=stored.get(key)\n        if vr:\n            stats['stored_v4_rows']+=1\n            ratios.append(ratio)\n\
+        \            if abs(n(vr['VOLUME_RATIO_20V20'])-ratio)>1e-7:issues.append({'key':key,'issue':'ratio_mismatch'})\n\
+        \            if abs(n(vr['RETURN_20D_PCT'])-ret)>1e-7:issues.append({'key':key,'issue':'return_mismatch'})\n\
+        \            if flag(vr['V4_SCREEN']) and not band:issues.append({'key':key,'issue':'screen_true_outside_return_band'})\n\
+        \            if not flag(vr['V4_SCREEN']):stats['stored_screen_false']+=1\n            else:stats['stored_screen_true']+=1\n\
+        \        elif band:stats['band_pass_not_in_stored_v4']+=1\n    for key in stored:\n        if key not in\
+        \ groups or groups[key][-1]['BAS_DD']!=DATE:issues.append({'key':key,'issue':'stored_key_not_in_latest_history'})\n\
+        \    report.update(status='PASS_TECHNICAL_CONSISTENCY' if not issues else 'REVIEW_REQUIRED',\n        stats=dict(stats),issues_count=len(issues),issue_examples=issues[:20],\n\
+        \        stored_v4_ratio_min=min(ratios) if ratios else None,\n        stored_v4_ratio_max=max(ratios) if\
+        \ ratios else None,\n        new_gc_examples=cross_examples,\n        summary_golden_cross_3d=summary.get('golden_cross_3d'),\n\
+        \        note='One-day fresh cross is not comparable to three-day cross count. V4 volume cutoff and financial\
+        \ grades NOT validated; report is diagnostic only.')\nexcept Exception as e:\n    report.update(status='ERROR',reason=type(e).__name__+':\
+        \ '+str(e)[:200])\nout.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n',encoding='utf-8')\n\
+        print(json.dumps(report,ensure_ascii=False))\nif report['status']=='ERROR':raise SystemExit(1)\nPY\npython\
+        \ /tmp/diagnose.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: krx-v4-gc-diagnostic-20261104
+        path: v5_reports/v4_gc_diagnostic_20261104.json
+        if-no-files-found: warn
