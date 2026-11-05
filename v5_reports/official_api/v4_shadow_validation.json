@@ -1,26 +1,20 @@
 {
-  "checked_kst": "2026-11-05T09:00:22.966361+09:00",
-  "status": "BASELINE_DIFFERENCES_FOUND",
+  "checked_kst": "2026-11-05T09:02:09.414355+09:00",
+  "status": "EXTENSION_FAILED_BASELINE_BASELINE_DIFFERENCES_FOUND",
   "production_data_modified": false,
   "raw_market_data_published": false,
   "comparison": {
-    "source_date": "20261103",
+    "source_date": "20261104",
     "history_sessions": 70,
-    "history_rows": 193476,
-    "existing_v4_rows": 1287,
-    "compared_rows": 1257,
-    "not_calculable": 30,
+    "history_rows": 193481,
+    "existing_v4_rows": 1293,
+    "compared_rows": 1262,
+    "not_calculable": 31,
     "mismatch_counts": {},
     "mismatch_examples": [],
     "tolerance": 0.0001
   },
-  "extension": {
-    "source_date": "20261104",
-    "official_rows": 2769,
-    "calculated_with_40_day_volume_history": 2668,
-    "marketcap_1000uk": 1262,
-    "return_minus5_to_plus3": 234,
-    "v4_volume_threshold_applied": false,
-    "note": "Counts only; volume threshold and other production v4 conditions not asserted. No individual ticker data published."
-  }
+  "extension": {},
+  "error_type": "ValueError",
+  "error_code": "DUPLICATE_HISTORY_KEY"
 }
