@@ -1,0 +1,104 @@
+name: KRX Official API Operational Canary (No Production Writes)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 9 * * 1-5' # 18:47 KST; GitHub may delay scheduled runs
+permissions:
+  contents: write
+concurrency:
+  group: krx-official-operational-canary
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Check official API against existing snapshot (read-only)
+        shell: bash
+        run: |
+          cat > /tmp/canary.py <<'PY'
+          import csv,datetime as dt,json,os,pathlib,time
+          from collections import Counter
+          from zoneinfo import ZoneInfo
+          import requests
+          out=pathlib.Path('v5_reports/official_api/operational_canary.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          report={'checked_kst':now.isoformat(),'status':'NOT_RUN','decision':'KEEP_EXISTING_UNCHANGED','production_data_modified':False,'raw_market_data_published':False,'api_rows':0,'existing_rows':0,'comparison':{},'reason':None}
+          def load_existing():
+              with open('data/latest.csv',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+              if not rows: raise ValueError('EMPTY_EXISTING_SNAPSHOT')
+              dates={r['BAS_DD'].strip() for r in rows}
+              if len(dates)!=1:raise ValueError('MIXED_EXISTING_DATES')
+              day=dates.pop()
+              keyed={}
+              for r in rows:
+                  k=(r['MARKET'].strip(),r['ISU_CD'].strip())
+                  if k in keyed:raise ValueError('DUPLICATE_EXISTING_KEY')
+                  keyed[k]=r
+              return day,keyed
+          def norm(x):
+              return int(str(x).replace(',','').strip())
+          try:
+              existing_day,existing=load_existing()
+              report['existing_date']=existing_day
+              report['existing_rows']=len(existing)
+              key=os.environ.get('KRX_API_KEY','').strip()
+              if not key:raise ValueError('MISSING_KRX_API_KEY')
+              # Query the latest existing snapshot date. Do not guess a trading day from weekdays.
+              api={}; counts={}
+              for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  payload=None
+                  for attempt in range(3):
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':existing_day},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=25)
+                          response.raise_for_status()
+                          payload=response.json()
+                          break
+                      except (requests.RequestException,ValueError):
+                          if attempt==2:raise
+                          time.sleep(2*(attempt+1))
+                  rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                  if not isinstance(rows,list) or len(rows)<400:raise ValueError('API_EMPTY_OR_BAD_SCHEMA_'+market)
+                  counts[market]=len(rows)
+                  for r in rows:
+                      if str(r.get('BAS_DD','')).strip()!=existing_day:raise ValueError('API_DATE_MISMATCH')
+                      k=(market,str(r.get('ISU_CD','')).strip())
+                      if k in api:raise ValueError('DUPLICATE_API_KEY')
+                      api[k]=r
+              missing=set(existing)-set(api);extra=set(api)-set(existing)
+              conflicts=0;examples=[]
+              for k in set(existing)&set(api):
+                  for col in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):
+                      if norm(existing[k][col])!=norm(api[k][col]):
+                          conflicts+=1
+                          if len(examples)<5:examples.append({'market':k[0],'code':k[1],'field':col})
+              report.update(api_rows=len(api),market_counts=counts,comparison={'missing_keys':len(missing),'extra_keys':len(extra),'field_conflicts':conflicts,'conflict_examples':examples})
+              if missing or extra or conflicts:
+                  report.update(status='SOURCE_MISMATCH',reason='KEY_OR_VALUE_DIFFERENCE')
+              else:
+                  report.update(status='API_MATCHED_EXISTING',decision='SHADOW_VERIFIED_ONLY',reason='FULL_EXACT_MATCH')
+          except Exception as e:
+              report.update(status='API_UNAVAILABLE_OR_INVALID',reason=type(e).__name__+': '+str(e)[:100])
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/canary.py
+      - name: Commit diagnostic only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/operational_canary.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: official API operational canary diagnostic'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
