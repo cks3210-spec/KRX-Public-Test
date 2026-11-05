@@ -1,0 +1,55 @@
+name: KRX v5 Candidate Fundamental Coverage (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit v5 candidates and financial coverage
+        shell: bash
+        run: |
+          cat > /tmp/v5_candidate_coverage.py <<'PY'
+          import csv, json, math, pathlib, datetime
+          from collections import Counter
+          root=pathlib.Path('data'); dest=pathlib.Path('v5_reports/candidate_coverage');dest.mkdir(parents=True,exist_ok=True)
+          def load(name):
+              with (root/name).open(encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def number(v):
+              try:
+                  x=float(str(v).replace(',','').strip());return x if math.isfinite(x) else None
+              except (TypeError,ValueError):return None
+          v4=load('v4_indicators.csv');fin=load('fundamentals.csv');latest=load('latest.csv')
+          dates={r['BAS_DD'] for r in v4}; market_dates={r['BAS_DD'] for r in latest}
+          if len(dates)!=1 or dates!=market_dates:raise RuntimeError('SNAPSHOT_DATE_MISMATCH')
+          date=next(iter(dates)); financials={}
+          for r in fin:
+              k=r.get('ISU_CD','').strip()
+              if k in financials:raise RuntimeError('DUPLICATE_FUNDAMENTAL_CODE')
+              financials[k]=r
+          result=[]; counts=Counter()
+          for r in v4:
+              cap=number(r.get('MKTCAP'));ratio=number(r.get('VOLUME_RATIO_20V20'))
+              if cap is None or ratio is None or cap<100_000_000_000 or ratio<3:continue
+              code=r['ISU_CD'].strip();f=financials.get(code)
+              required=('revenue_yoy_pct','operating_profit_yoy_pct','debt_ratio_pct','roe_avg_equity_est_pct')
+              missing=required if f is None else tuple(k for k in required if number(f.get(k)) is None)
+              state='NO_FINANCIAL_RECORD' if f is None else 'FINANCIAL_FIELDS_MISSING' if missing else 'RESEARCH_INPUT_PRESENT'
+              counts[state]+=1
+              result.append({'BAS_DD':date,'MARKET':r['MARKET'],'ISU_CD':code,'ISU_NM':r['ISU_NM'],'VOLUME_RATIO_20V20':r['VOLUME_RATIO_20V20'],'RETURN_20D_PCT':r['RETURN_20D_PCT'],'financial_status':state,'missing_fields':';'.join(missing),'research_grade':'NOT_VERIFIED','investment_grade':'NOT_VERIFIED','trade_signal':'NONE'})
+          result.sort(key=lambda r:-float(r['VOLUME_RATIO_20V20']))
+          columns=['BAS_DD','MARKET','ISU_CD','ISU_NM','VOLUME_RATIO_20V20','RETURN_20D_PCT','financial_status','missing_fields','research_grade','investment_grade','trade_signal']
+          with (dest/'v5_candidate_coverage.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=columns);w.writeheader();w.writerows(result)
+          summary={'market_date':date,'v5_candidate_count':len(result),'financial_status_counts':dict(counts),'verified_investment_grades':0,'note':'Read-only v5 candidate coverage; not a trading recommendation. Production screening unchanged.'}
+          (dest/'status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(summary,ensure_ascii=False))
+          PY
+          python /tmp/v5_candidate_coverage.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-candidate-financial-coverage
+          path: v5_reports/candidate_coverage/
