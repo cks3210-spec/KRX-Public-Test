@@ -1,0 +1,117 @@
+name: KRX Official Promotion Readiness Gate (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Validate newest official session against existing history
+        shell: bash
+        run: |
+          cat > /tmp/promotion_gate.py <<'PY'
+          import csv,gzip,json,os,re,datetime as dt,pathlib,time
+          from collections import Counter,defaultdict
+          from zoneinfo import ZoneInfo
+          import requests
+          now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          output=pathlib.Path('v5_reports/official_api/promotion_gate.json')
+          output.parent.mkdir(parents=True,exist_ok=True)
+          report={'checked_kst':now.isoformat(),'status':'NOT_RUN','decision':'NO_PRODUCTION_WRITES','production_data_modified':False,'raw_market_data_published':False}
+          def integer(v):
+              s=str(v).replace(',','').strip()
+              if not re.fullmatch(r'\d+',s):raise ValueError('INVALID_NUMERIC_VALUE')
+              return int(s)
+          def key(r):return (r['BAS_DD'].strip(),r['MARKET'].strip(),r['ISU_CD'].strip())
+          try:
+              with gzip.open('data/daily_70d.csv.gz','rt',encoding='utf-8-sig',newline='') as f: history=list(csv.DictReader(f))
+              with open('data/latest.csv',encoding='utf-8-sig',newline='') as f: latest=list(csv.DictReader(f))
+              dates=sorted(set(r['BAS_DD'] for r in history))
+              if len(dates)!=70:raise ValueError('HISTORY_NOT_70_SESSIONS')
+              existing_date=dates[-1]
+              if {r['BAS_DD'] for r in latest}!={existing_date}:raise ValueError('LATEST_HISTORY_DATE_MISMATCH')
+              existing={}
+              for r in history:
+                  k=key(r)
+                  if k in existing:raise ValueError('DUPLICATE_HISTORY_KEY')
+                  existing[k]=r
+              last={key(r):r for r in latest}
+              if len(last)!=len(latest) or any(k not in existing for k in last):raise ValueError('LATEST_HISTORY_KEYS_MISMATCH')
+              report.update(existing_date=existing_date,history_rows=len(history),history_sessions=len(dates))
+              token=os.environ.get('KRX_API_KEY','').strip()
+              if not token:raise ValueError('MISSING_KRX_API_KEY')
+              chosen=None;attempted=[]
+              for offset in range(7):
+                  day=(now.date()-dt.timedelta(days=offset)).strftime('%Y%m%d')
+                  api={}; counts={};reason=None
+                  for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':day},headers={'AUTH_KEY':token,'Accept':'application/json'},timeout=25)
+                          response.raise_for_status(); payload=response.json()
+                          rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                          if not isinstance(rows,list) or len(rows)<400:reason='INCOMPLETE_'+market;break
+                          counts[market]=len(rows)
+                          for r in rows:
+                              code=str(r.get('ISU_CD','')).strip()
+                              if str(r.get('BAS_DD','')).strip()!=day or not re.fullmatch(r'[A-Za-z0-9]{6}',code):raise ValueError('BAD_API_KEY')
+                              k=(day,market,code)
+                              if k in api:raise ValueError('DUPLICATE_API_KEY')
+                              api[k]={'BAS_DD':day,'MARKET':market,'ISU_CD':code,**{c:str(r[c]).strip() for c in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')}}
+                              for c in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):integer(api[k][c])
+                      except (requests.RequestException,ValueError,KeyError,TypeError) as e:
+                          reason=type(e).__name__;break
+                  attempted.append({'date':day,'complete':reason is None,'reason':reason})
+                  if reason is None:
+                      chosen=(day,api,counts);break
+              report['attempted_dates']=attempted
+              if chosen is None:
+                  report.update(status='OFFICIAL_NOT_READY',reason='NO_COMPLETE_API_SESSION')
+              else:
+                  day,api,counts=chosen
+                  report.update(candidate_date=day,api_rows=len(api),market_counts=counts)
+                  if day<existing_date:report.update(status='OFFICIAL_STALE')
+                  elif day==existing_date:
+                      oldkeys={k for k in existing if k[0]==day}
+                      missing=len(oldkeys-set(api));extra=len(set(api)-oldkeys)
+                      conflicts=sum(any(integer(existing[k][c])!=integer(api[k][c]) for c in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')) for k in oldkeys&set(api))
+                      report.update(missing_keys=missing,extra_keys=extra,conflicting_keys=conflicts,status='EXISTING_MATCHED' if not(missing or extra or conflicts) else 'EXISTING_CONFLICT')
+                  else:
+                      if day>now.strftime('%Y%m%d'):raise ValueError('FUTURE_SESSION')
+                      # Count history coverage and indicator candidates without persisting market rows.
+                      by=defaultdict(list)
+                      for r in history:by[(r['MARKET'],r['ISU_CD'])].append(r)
+                      for k,r in api.items():by[(k[1],k[2])].append(r)
+                      eligible=0;cap=0;cross=0;v4return=0;insufficient=0
+                      for k,rows in by.items():
+                          rows=sorted(rows,key=lambda x:x['BAS_DD'])
+                          if rows[-1]['BAS_DD']!=day:continue
+                          if integer(rows[-1]['MKTCAP'])<100_000_000_000:continue
+                          cap+=1
+                          if len(rows)<41:insufficient+=1;continue
+                          close=[integer(r['TDD_CLSPRC']) for r in rows]
+                          vols=[integer(r['ACC_TRDVOL']) for r in rows]
+                          if close[-21]<=0 or sum(vols[-40:-20])==0:insufficient+=1;continue
+                          eligible+=1
+                          if -5<=(close[-1]/close[-21]-1)*100<=3:v4return+=1
+                          if sum(close[-5:])/5>sum(close[-10:])/10 and sum(close[-6:-1])/5<=sum(close[-11:-1])/10:cross+=1
+                      report.update(status='NEW_SNAPSHOT_PROMOTION_REVIEW_READY',decision='MANUAL_REVIEW_REQUIRED',marketcap_1000uk=cap,technical_history_eligible=eligible,insufficient_history_or_zero_volume=insufficient,v4_return_band_count=v4return,new_ma5_ma10_cross_count=cross,notes='No volume threshold or financial grades applied; not investment recommendations. New raw rows not saved.')
+          except Exception as e:
+              report.update(status='GATE_FAILED',reason=type(e).__name__+': '+str(e)[:150])
+          output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/promotion_gate.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-official-promotion-gate
+          path: v5_reports/official_api/promotion_gate.json
+          if-no-files-found: error
