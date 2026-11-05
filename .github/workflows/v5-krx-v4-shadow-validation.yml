@@ -1,5 +1,5 @@
 name: KRX v5 Official API v4 Shadow Validation
-on:
+'on':
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,10 +15,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install --disable-pip-version-check requests
-      - name: Validate v4 baseline and official API extension in memory
+      - name: Validate baseline and v5 shadow without changing production
         shell: bash
         run: |
-          cat > /tmp/v4_shadow.py <<'PY'
+          cat > /tmp/v5_shadow.py <<'PYCODE'
           import csv,gzip,json,os,re,datetime as dt,time
           from pathlib import Path
           from collections import defaultdict,Counter
@@ -33,13 +33,13 @@ jobs:
               opener=gzip.open if compressed else open
               with opener(p,'rt',encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
           def build(rows):
-              by=defaultdict(list); seen=set()
+              by=defaultdict(list);seen=set()
               for r in rows:
                   date=r.get('BAS_DD','').strip();market=r.get('MARKET','').strip();code=r.get('ISU_CD','').strip()
                   if not re.fullmatch(r'\d{8}',date) or market not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'[A-Za-z0-9]{6}',code):raise ValueError('INVALID_HISTORY_KEY')
-                  key=(date,market,code)
-                  if key in seen:raise ValueError('DUPLICATE_HISTORY_KEY')
-                  seen.add(key)
+                  k=(date,market,code)
+                  if k in seen:raise ValueError('DUPLICATE_HISTORY_KEY')
+                  seen.add(k)
                   if any(num(r.get(f)) is None for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')):raise ValueError('INVALID_NUMERIC_FIELD')
                   by[(market,code)].append(r)
               return by
@@ -48,22 +48,17 @@ jobs:
               for k,rows in by.items():
                   rows=sorted((r for r in rows if r['BAS_DD']<=day),key=lambda x:x['BAS_DD'])
                   if not rows or rows[-1]['BAS_DD']!=day or len(rows)<41:continue
-                  now=rows[-1]; vol=[num(r['ACC_TRDVOL']) for r in rows];close=[num(r['TDD_CLSPRC']) for r in rows]
+                  now=rows[-1];vol=[num(r['ACC_TRDVOL']) for r in rows];close=[num(r['TDD_CLSPRC']) for r in rows]
                   if close[-21]<=0:continue
                   recent=sum(vol[-20:])/20;earlier=sum(vol[-40:-20])/20
-                  ratio=recent/earlier if earlier>0 else None
-                  ret=(close[-1]/close[-21]-1)*100
-                  if ratio is None:continue
-                  result[k]={'ratio':ratio,'return':ret,'marketcap':num(now['MKTCAP']),'recent':recent,'earlier':earlier}
+                  if earlier<=0:continue
+                  result[k]={'ratio':recent/earlier,'return':(close[-1]/close[-21]-1)*100,'marketcap':num(now['MKTCAP'])}
               return result
           try:
               history=load(root/'daily_70d.csv.gz',True)
-              dates=sorted(set(r['BAS_DD'] for r in history))
+              dates=sorted({r['BAS_DD'] for r in history})
               if len(dates)<60:raise ValueError('HISTORY_UNDER_60_SESSIONS')
-              latest=dates[-1]
-              by=build(history); baseline=calc(by,latest)
-              saved=load(root/'v4_indicators.csv')
-              fields=('VOLUME_RATIO_20V20','RETURN_20D_PCT')
+              latest=dates[-1];baseline=calc(build(history),latest);saved=load(root/'v4_indicators.csv')
               mismatches=Counter();examples=[];compared=0;not_calculable=0
               for r in saved:
                   k=(r.get('MARKET','').strip(),r.get('ISU_CD','').strip())
@@ -71,20 +66,17 @@ jobs:
                   v=baseline.get(k)
                   if not v:not_calculable+=1;continue
                   compared+=1
-                  diffs=[]
                   for field,actual in [('VOLUME_RATIO_20V20',v['ratio']),('RETURN_20D_PCT',v['return'])]:
                       recorded=num(r.get(field))
                       if recorded is None or abs(recorded-actual)>0.0001:
-                          mismatches[field]+=1;diffs.append(field)
-                  if diffs and len(examples)<8:examples.append({'code':k[1],'market':k[0],'fields':diffs})
+                          mismatches[field]+=1
+                          if len(examples)<8:examples.append({'market':k[0],'code':k[1],'field':field})
               report['comparison']={'source_date':latest,'history_sessions':len(dates),'history_rows':len(history),'existing_v4_rows':len(saved),'compared_rows':compared,'not_calculable':not_calculable,'mismatch_counts':dict(mismatches),'mismatch_examples':examples,'tolerance':0.0001}
-              if mismatches or not_calculable:report['status']='BASELINE_DIFFERENCES_FOUND'
-              else:report['status']='BASELINE_REPRODUCED'
+              if mismatches:raise ValueError('BASELINE_INDICATOR_MISMATCH')
               key=os.environ.get('KRX_API_KEY','').strip()
               if not key:raise ValueError('MISSING_KRX_API_KEY')
-              target='20261104';new=[]
+              target=latest;new=[]
               for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
-                  response=None
                   for attempt in range(3):
                       try:
                           response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':target},headers={'AUTH_KEY':key,'Accept':'application/json'},timeout=35)
@@ -95,31 +87,45 @@ jobs:
                   payload=response.json();items=payload.get('OutBlock_1') if isinstance(payload,dict) else None
                   if not isinstance(items,list) or len(items)<400:raise ValueError('API_EMPTY_OR_BAD_SCHEMA_'+market)
                   for row in items:
-                      r={k:str(row.get(k,'')).strip() for k in ('BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')};r['MARKET']=market
+                      r={f:str(row.get(f,'')).strip() for f in ('BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')};r['MARKET']=market
                       if r['BAS_DD']!=target:raise ValueError('API_DATE_MISMATCH')
                       new.append(r)
-              extended=build(history+new);result=calc(extended,target)
+              old_today={(r['MARKET'],r['ISU_CD']):r for r in history if r['BAS_DD']==target}
+              official={}
+              for r in new:
+                  k=(r['MARKET'],r['ISU_CD'])
+                  if k in official:raise ValueError('DUPLICATE_OFFICIAL_API_KEY')
+                  official[k]=r
+              if old_today.keys()!=official.keys():raise ValueError('OFFICIAL_API_HISTORY_KEY_MISMATCH')
+              for k,old in old_today.items():
+                  fresh=official[k]
+                  if any(num(old[f])!=num(fresh[f]) for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')):
+                      raise ValueError('OFFICIAL_API_HISTORY_VALUE_MISMATCH')
+              # Replace existing target date, never append a duplicate date.
+              prior=[r for r in history if r['BAS_DD']!=target]
+              result=calc(build(prior+new),target)
               cap={k:v for k,v in result.items() if v['marketcap']>=100_000_000_000}
-              eligible={k:v for k,v in cap.items() if -5<=v['return']<=3}
-              report['extension']={'source_date':target,'official_rows':len(new),'calculated_with_40_day_volume_history':len(result),'marketcap_1000uk':len(cap),'return_minus5_to_plus3':len(eligible),'v4_volume_threshold_applied':False,'note':'Counts only; volume threshold and other production v4 conditions not asserted. No individual ticker data published.'}
-              if report['status']=='BASELINE_REPRODUCED':report['status']='V4_SHADOW_PASSED'
+              old_v4={k:v for k,v in cap.items() if v['ratio']>=3 and -5<=v['return']<=3}
+              v5={k:v for k,v in cap.items() if v['ratio']>=3}
+              report['extension']={'source_date':target,'official_rows':len(new),'calculated_with_40_day_volume_history':len(result),'marketcap_1000uk':len(cap),'v4_old_return_band_candidates':len(old_v4),'v5_no_return_band_candidates':len(v5),'additional_v5_candidates':len(v5.keys()-old_v4.keys()),'v5_volume_ratio_threshold':3,'note':'Read-only shadow comparison; production screening and grades unchanged.'}
+              report['status']='V5_SHADOW_PASSED'
           except Exception as e:
-              report['error_type']=type(e).__name__
-              report['error_code']=str(e)[:120] if isinstance(e,ValueError) else 'REQUEST_OR_RUNTIME_ERROR'
-              if report['status']=='NOT_RUN':report['status']='CHECK_FAILED'
-              else:report['status']='EXTENSION_FAILED_BASELINE_'+report['status']
+              report['status']='CHECK_FAILED';report['error_type']=type(e).__name__;report['error_code']=str(e)[:120]
           out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(report,ensure_ascii=False))
-          PY
-          python /tmp/v4_shadow.py
+          if report['status']!='V5_SHADOW_PASSED':raise SystemExit(1)
+          PYCODE
+          python /tmp/v5_shadow.py
       - name: Commit aggregate diagnostics only
+        if: always()
         shell: bash
         run: |
+          if [ ! -f v5_reports/official_api/v4_shadow_validation.json ]; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add v5_reports/official_api/v4_shadow_validation.json
           if ! git diff --cached --quiet; then
-            git commit -m 'v5: validate v4 shadow calculations'
+            git commit -m 'v5: validate corrected official API shadow and unrestricted volume screen'
             git pull --rebase origin main
             git push origin HEAD:main
           fi
