@@ -1,0 +1,21 @@
+{
+  "checked_kst": "2026-11-05T09:26:18.103864+09:00",
+  "status": "API_MATCHED_EXISTING",
+  "decision": "SHADOW_VERIFIED_ONLY",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "api_rows": 2769,
+  "existing_rows": 2769,
+  "comparison": {
+    "missing_keys": 0,
+    "extra_keys": 0,
+    "field_conflicts": 0,
+    "conflict_examples": []
+  },
+  "reason": "FULL_EXACT_MATCH",
+  "existing_date": "20261104",
+  "market_counts": {
+    "KOSPI": 938,
+    "KOSDAQ": 1831
+  }
+}
