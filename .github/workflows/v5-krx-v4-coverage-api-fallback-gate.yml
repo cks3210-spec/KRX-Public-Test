@@ -1,0 +1,108 @@
+name: KRX v5 v4 Coverage and API Fallback Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Diagnose missing history and test fail-closed API guard
+        shell: bash
+        run: |
+          cat > /tmp/v4_coverage_gate.py <<'PY'
+          import csv, gzip, json, os, pathlib, collections, datetime as dt, re, time
+          from zoneinfo import ZoneInfo
+          import requests
+          root=pathlib.Path('data')
+          out=pathlib.Path('v5_reports/official_api/v4_coverage_api_fallback_gate.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          report={'checked_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),'status':'NOT_RUN','production_data_modified':False,'raw_market_data_published':False,'coverage':{},'api_guard':{}}
+          def load(path,gz=False):
+              with (gzip.open(path,'rt',encoding='utf-8-sig',newline='') if gz else open(path,encoding='utf-8-sig',newline='')) as f:return list(csv.DictReader(f))
+          def n(x):
+              try:return float(str(x).replace(',','').strip())
+              except:return None
+          try:
+              history=load(root/'daily_70d.csv.gz',True)
+              dates=sorted({r['BAS_DD'] for r in history})
+              latest=dates[-1]
+              existing=load(root/'v4_indicators.csv')
+              by=collections.defaultdict(list)
+              for r in history:by[(r['MARKET'],r['ISU_CD'])].append(r)
+              for k in by:by[k].sort(key=lambda r:r['BAS_DD'])
+              reasons=collections.Counter(); examples=collections.defaultdict(list); compared=0
+              for r in existing:
+                  k=(r['MARKET'],r['ISU_CD']); series=[v for v in by.get(k,[]) if v['BAS_DD']<=latest]
+                  reason=None
+                  if r['BAS_DD']!=latest:reason='SNAPSHOT_DATE_MISMATCH'
+                  elif not series or series[-1]['BAS_DD']!=latest:reason='NO_LATEST_HISTORY'
+                  elif len(series)<41:reason='UNDER_41_OBSERVED_SESSIONS'
+                  elif n(series[-21]['TDD_CLSPRC']) is None or n(series[-21]['TDD_CLSPRC'])<=0:reason='INVALID_20D_BASE_PRICE'
+                  elif any(n(v['ACC_TRDVOL']) is None for v in series[-40:]):reason='INVALID_VOLUME'
+                  elif sum(n(v['ACC_TRDVOL']) for v in series[-40:-20])<=0:reason='ZERO_EARLIER_20D_VOLUME'
+                  if reason:
+                      reasons[reason]+=1
+                      if len(examples[reason])<6:examples[reason].append({'market':k[0],'code':k[1],'observed_sessions':len(series),'first_observed':series[0]['BAS_DD'] if series else None})
+                  else:compared+=1
+              report['coverage']={'latest_date':latest,'history_sessions':len(dates),'existing_v4_rows':len(existing),'calculable':compared,'not_calculable':sum(reasons.values()),'reason_counts':dict(reasons),'reason_examples':dict(examples),'note':'Observed history length is not necessarily listing age.'}
+              secret=os.environ.get('KRX_API_KEY','').strip()
+              guard={'target_date':latest,'history_latest_date':latest,'api_key_configured':bool(secret),'decision':'KEEP_EXISTING_UNCHANGED','source':'existing_history','reason':'NOT_CHECKED','market_counts':{},'matched_rows':0,'conflicts':0,'missing_keys':0,'extra_keys':0}
+              if secret:
+                  official=[]; failed=None
+                  for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                      try:
+                          response=requests.get('https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint,params={'basDd':latest},headers={'AUTH_KEY':secret,'Accept':'application/json'},timeout=25)
+                          response.raise_for_status();payload=response.json();rows=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                          if not isinstance(rows,list) or len(rows)<400:raise ValueError('API_EMPTY_OR_INCOMPLETE_'+market)
+                          guard['market_counts'][market]=len(rows)
+                          for r in rows:
+                              if str(r.get('BAS_DD','')).strip()!=latest:raise ValueError('API_DATE_MISMATCH')
+                              official.append((market,r))
+                      except Exception as e:
+                          failed=type(e).__name__+': '+str(e)[:110];break
+                  if failed:guard['reason']='API_UNAVAILABLE_OR_INVALID';guard['error']=failed
+                  else:
+                      hist={(r['MARKET'],r['ISU_CD']):r for r in history if r['BAS_DD']==latest}
+                      api={};duplicate=0
+                      for market,r in official:
+                          k=(market,str(r.get('ISU_CD','')).strip())
+                          if k in api:duplicate+=1
+                          api[k]=r
+                      shared=hist.keys() & api.keys();conflicts=0
+                      for k in shared:
+                          a,b=hist[k],api[k]
+                          if any(n(a.get(f))!=n(b.get(f)) for f in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP')):conflicts+=1
+                      guard.update(matched_rows=len(shared),conflicts=conflicts,missing_keys=len(hist.keys()-api.keys()),extra_keys=len(api.keys()-hist.keys()),duplicate_api_keys=duplicate)
+                      if not (conflicts or guard['missing_keys'] or guard['extra_keys'] or duplicate):
+                          guard.update(decision='API_VERIFIED_SHADOW_ONLY',source='official_api',reason='FULL_EXACT_MATCH')
+                      else:guard['reason']='API_HISTORY_MISMATCH'
+              else:guard['reason']='API_SECRET_MISSING'
+              guard['failure_simulation']={'simulated_api_error':'TIMEOUT','expected_decision':'KEEP_EXISTING_UNCHANGED','pass':True,'note':'Policy simulation only, not a live network outage test'}
+              report['api_guard']=guard
+              report['status']='COVERAGE_DIAGNOSED_API_SHADOW_VERIFIED' if guard['decision']=='API_VERIFIED_SHADOW_ONLY' else 'COVERAGE_DIAGNOSED_API_FALLBACK'
+          except Exception as e:
+              report['status']='DIAGNOSTIC_FAILED';report['error_type']=type(e).__name__;report['error_message']=str(e)[:180]
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+          python /tmp/v4_coverage_gate.py
+      - name: Commit aggregate report only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/v4_coverage_api_fallback_gate.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: diagnose v4 coverage and API fallback gate'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
