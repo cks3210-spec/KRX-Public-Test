@@ -1,0 +1,81 @@
+name: KRX v5 DART 50 Candidate Source Audit (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify DART source availability for all v5 candidates
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          mkdir -p v5_reports/dart_50_source_audit
+          cat > /tmp/dart50.py <<'PY'
+          import csv,io,json,math,os,pathlib,time,urllib.parse,urllib.request,zipfile,xml.etree.ElementTree as ET
+          from collections import Counter
+          out=pathlib.Path('v5_reports/dart_50_source_audit')
+          key=os.environ.get('DART_API_KEY','').strip()
+          if not key: raise RuntimeError('DART_API_KEY secret missing; no production data changed')
+          def read_csv(p):
+              with open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def num(v):
+              try:
+                  x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+              except (TypeError,ValueError):return None
+          raw=read_csv('data/v4_indicators.csv')
+          dates={r['BAS_DD'] for r in raw}
+          if len(dates)!=1:raise RuntimeError('MULTIPLE_MARKET_DATES')
+          candidates=[r for r in raw if (num(r.get('MKTCAP')) or 0)>=100_000_000_000 and (num(r.get('VOLUME_RATIO_20V20')) or 0)>=3]
+          if len({r['ISU_CD'] for r in candidates})!=len(candidates):raise RuntimeError('DUPLICATE_CANDIDATE_CODE')
+          def fetch(path,params):
+              url='https://opendart.fss.or.kr/api/'+path+'?'+urllib.parse.urlencode(dict(crtfc_key=key,**params))
+              for attempt in range(3):
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'KRX-v5-source-audit/1.0'}),timeout=30) as res:return res.read()
+                  except Exception:
+                      if attempt==2:raise
+                      time.sleep(attempt+1)
+          blob=fetch('corpCode.xml',{})
+          with zipfile.ZipFile(io.BytesIO(blob)) as z:xml=z.read(z.namelist()[0])
+          mapping={e.findtext('stock_code').strip():e.findtext('corp_code').strip() for e in ET.fromstring(xml).findall('.//list') if (e.findtext('stock_code') or '').strip()}
+          fin={r['ISU_CD']:r for r in read_csv('data/fundamentals.csv')}
+          rows=[];counts=Counter()
+          # 2026 Q3 filing may not yet exist on Nov 6; use latest filed interim (H1) and 2025 annual.
+          reports=[('2026','11012','2026_H1'),('2025','11011','2025_ANNUAL')]
+          for idx,r in enumerate(candidates,1):
+              code=r['ISU_CD'];corp=mapping.get(code);statuses=[];best='NONE';basis='';report='';accounts=0
+              if corp:
+                  for year,report_code,label in reports:
+                      for fs in ('CFS','OFS'):
+                          try:
+                              response=json.loads(fetch('fnlttSinglAcntAll.json',{'corp_code':corp,'bsns_year':year,'reprt_code':report_code,'fs_div':fs}))
+                              status=str(response.get('status',''));n=len(response.get('list',[])) if status=='000' else 0
+                              statuses.append(label+':'+fs+':'+status+':'+str(n))
+                              if n and best=='NONE':best=label;basis=fs;report=report_code;accounts=n
+                          except Exception as exc:statuses.append(label+':'+fs+':ERROR:'+type(exc).__name__)
+                          time.sleep(.12)
+                      if best!='NONE':break
+              state='DART_SOURCE_AVAILABLE' if best!='NONE' else 'CORP_CODE_NOT_FOUND' if not corp else 'DART_SOURCE_UNAVAILABLE'
+              counts[state]+=1
+              rows.append({'BAS_DD':r['BAS_DD'],'ISU_CD':code,'ISU_NM':r['ISU_NM'],'existing_financial_record':str(code in fin),'source_status':state,'latest_checked_period':best,'statement_basis':basis,'account_rows':accounts,'api_status_details':' | '.join(statuses),'investment_grade':'NOT_VERIFIED'})
+              print(f'[{idx}/{len(candidates)}] {code} {r["ISU_NM"]} {state} {best}',flush=True)
+          cols=list(rows[0]) if rows else ['BAS_DD','ISU_CD','ISU_NM','existing_financial_record','source_status','latest_checked_period','statement_basis','account_rows','api_status_details','investment_grade']
+          with (out/'candidate_dart_source_audit.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=cols);w.writeheader();w.writerows(rows)
+          summary={'market_date':next(iter(dates)),'candidate_count':len(candidates),'source_counts':dict(counts),'existing_financial_records':sum(x['existing_financial_record']=='True' for x in rows),'investment_grades_created':0,'production_data_modified':False,'note':'Source availability only; statement accounts not yet reconciled or scored. 2026 H1 and 2025 annual checked.'}
+          (out/'status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(summary,ensure_ascii=False),flush=True)
+          PY
+          python /tmp/dart50.py
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-dart-50-source-audit
+          path: v5_reports/dart_50_source_audit/
+          if-no-files-found: warn
