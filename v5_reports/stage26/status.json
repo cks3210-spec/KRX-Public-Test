@@ -1,13 +1,15 @@
 {
   "stage": 26,
   "status": "RESEARCH_ONLY",
-  "generated_utc": "2026-11-04T14:47:53.065914+00:00",
-  "market_date": "20261103",
-  "stage25_input_rows": 18,
-  "candidate_rows": 4,
+  "generated_utc": "2026-11-05T12:34:06.550844+00:00",
+  "market_date": "20261104",
+  "stage25_input_rows": 21,
+  "candidate_rows": 5,
   "signal_groups": {
-    "VG": 2,
-    "G": 2
+    "VG": 1,
+    "G": 2,
+    "NONE": 1,
+    "V": 1
   },
   "verified_buy_signals": 0,
   "notes": [
