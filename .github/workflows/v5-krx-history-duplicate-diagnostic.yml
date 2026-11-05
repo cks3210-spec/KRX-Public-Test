@@ -1,0 +1,47 @@
+name: KRX v5 History Duplicate Diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect historical source and baseline metadata only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv,gzip,json,hashlib,collections,datetime,pathlib
+          from zoneinfo import ZoneInfo
+          root=pathlib.Path('data'); src=root/'daily_70d.csv.gz'
+          output=pathlib.Path('v5_reports/official_api/history_duplicate_diagnostic.json')
+          output.parent.mkdir(parents=True,exist_ok=True)
+          result={'checked_kst':datetime.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),'status':'NOT_CHECKED','production_data_modified':False,'raw_market_data_published':False}
+          try:
+              with gzip.open(src,'rt',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+              keys=collections.Counter((r.get('BAS_DD','').strip(),r.get('MARKET','').strip(),r.get('ISU_CD','').strip()) for r in rows)
+              duplicates=[{'date':k[0],'market':k[1],'code':k[2],'count':v} for k,v in keys.items() if v>1]
+              dates=collections.Counter(r.get('BAS_DD','').strip() for r in rows)
+              latest=max(dates) if dates else None
+              baseline=root/'latest.csv'
+              with baseline.open(encoding='utf-8-sig',newline='') as f: latest_rows=list(csv.DictReader(f))
+              latest_date=max((r.get('BAS_DD','') for r in latest_rows),default=None)
+              result.update(status='DUPLICATES_FOUND' if duplicates else 'NO_DUPLICATES_IN_SOURCE',source_path=str(src),compressed_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),history_rows=len(rows),unique_keys=len(keys),distinct_dates=len(dates),earliest_date=min(dates) if dates else None,latest_date=latest,latest_date_rows=dates.get(latest,0),baseline_date=latest_date,baseline_rows=len(latest_rows),duplicate_key_count=len(duplicates),duplicate_excess_rows=sum(v-1 for v in keys.values() if v>1),duplicate_examples=duplicates[:12],expected_prior_rows=193476,delta_from_prior_rows=len(rows)-193476,dates_after_baseline={k:v for k,v in sorted(dates.items()) if latest_date and k>latest_date})
+          except Exception as e:
+              result.update(status='DIAGNOSTIC_FAILED',error_type=type(e).__name__,error_message=str(e)[:180])
+          output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - name: Save aggregate diagnostic
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/official_api/history_duplicate_diagnostic.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: inspect history duplicate source'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
