@@ -1,0 +1,30 @@
+{
+  "checked_kst": "2026-11-05T09:11:22.671450+09:00",
+  "status": "V4_SAFE_MERGE_PASSED_BASELINE_PARTIAL",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "comparison": {
+    "source_date": "20261104",
+    "history_rows": 193481,
+    "history_sessions": 70,
+    "existing_v4_rows": 1293,
+    "compared_rows": 1262,
+    "not_calculable": 31,
+    "mismatch_counts": {},
+    "mismatch_examples": [],
+    "tolerance": 0.0001
+  },
+  "extension": {
+    "source_date": "20261104",
+    "official_rows": 2769,
+    "already_present_matching": 2769,
+    "new_keys": 0,
+    "conflict_count_sample": 0,
+    "conflict_examples": [],
+    "calculated_with_40_day_volume_history": 2668,
+    "marketcap_1000uk": 1262,
+    "return_minus5_to_plus3": 234,
+    "volume_threshold_applied": false,
+    "note": "Aggregate technical counts only. No buy ratings."
+  }
+}
