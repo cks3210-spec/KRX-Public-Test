@@ -1,0 +1,64 @@
+name: KRX v5 Two Company DART Account Diagnostic (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect DART source account identifiers and filing freshness
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          cat > /tmp/v5_two_accounts.py <<'PY'
+          import os,io,zipfile,urllib.request,urllib.parse,json,csv,datetime,time,xml.etree.ElementTree as ET,pathlib
+          key=os.environ.get('DART_API_KEY','').strip()
+          if not key: raise SystemExit('DART_API_KEY missing')
+          base='https://opendart.fss.or.kr/api/'
+          out=pathlib.Path('v5_two_account_diagnostic');out.mkdir(exist_ok=True)
+          def get(path,params):
+              url=base+path+'?'+urllib.parse.urlencode(dict(crtfc_key=key,**params))
+              for attempt in range(3):
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'KRX-v5-audit/1.0'}),timeout=40) as resp:return resp.read()
+                  except Exception:
+                      if attempt==2:raise
+                      time.sleep(attempt+1)
+          xml=zipfile.ZipFile(io.BytesIO(get('corpCode.xml',{})))
+          root=ET.fromstring(xml.read(xml.namelist()[0]))
+          targets={'000400':'롯데손해보험','026890':'스틱인베스트먼트'}
+          mapping={e.findtext('stock_code','').strip():e.findtext('corp_code','').strip() for e in root.findall('.//list')}
+          rows=[];status=[]
+          for code,name in targets.items():
+              corp=mapping.get(code)
+              if not corp:
+                  status.append({'code':code,'name':name,'error':'CORP_CODE_MISSING'});continue
+              filings=json.loads(get('list.json',{'corp_code':corp,'bgn_de':'20250101','end_de':datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime('%Y%m%d'),'page_count':100}))
+              latest=[{'report_nm':x.get('report_nm'),'rcept_dt':x.get('rcept_dt'),'rcept_no':x.get('rcept_no')} for x in filings.get('list',[]) if any(s in x.get('report_nm','') for s in ['사업보고서','반기보고서','분기보고서'])][:12]
+              info={'code':code,'name':name,'corp_code_found':True,'filings_status':filings.get('status'),'recent_reports':latest,'statements':[]}
+              for year,report in [('2025','11011'),('2025','11012'),('2026','11012'),('2026','11014')]:
+                  for basis in ('CFS','OFS'):
+                      d=json.loads(get('fnlttSinglAcntAll.json',{'corp_code':corp,'bsns_year':year,'reprt_code':report,'fs_div':basis}))
+                      entries=d.get('list',[]) if d.get('status')=='000' else []
+                      info['statements'].append({'year':year,'report':report,'basis':basis,'api_status':d.get('status'),'rows':len(entries)})
+                      for x in entries:
+                          if x.get('sj_div') not in ('IS','CIS'):continue
+                          rows.append({'code':code,'name':name,'year':year,'report':report,'basis':basis,'sj_div':x.get('sj_div',''),'account_id':x.get('account_id',''),'account_nm':x.get('account_nm',''),'account_detail':x.get('account_detail',''),'thstrm_amount':x.get('thstrm_amount',''),'thstrm_add_amount':x.get('thstrm_add_amount',''),'frmtrm_amount':x.get('frmtrm_amount',''),'frmtrm_add_amount':x.get('frmtrm_add_amount','')})
+              status.append(info)
+          fields=['code','name','year','report','basis','sj_div','account_id','account_nm','account_detail','thstrm_amount','thstrm_add_amount','frmtrm_amount','frmtrm_add_amount']
+          with (out/'income_statement_accounts.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
+          (out/'status.json').write_text(json.dumps({'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'companies':status,'account_rows':len(rows),'production_data_modified':False,'investment_grades_created':0,'note':'Diagnostic raw accounts only. No account substitution, scoring, or recommendation.'},ensure_ascii=False,indent=2),encoding='utf-8')
+          print('ACCOUNT_DIAGNOSTIC_DONE',len(rows))
+          PY
+          python /tmp/v5_two_accounts.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-two-company-account-diagnostic
+          path: v5_two_account_diagnostic/
+          if-no-files-found: warn
