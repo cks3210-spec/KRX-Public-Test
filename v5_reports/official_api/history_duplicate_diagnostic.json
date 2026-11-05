@@ -1,0 +1,22 @@
+{
+  "checked_kst": "2026-11-05T09:06:46.920099+09:00",
+  "status": "NO_DUPLICATES_IN_SOURCE",
+  "production_data_modified": false,
+  "raw_market_data_published": false,
+  "source_path": "data/daily_70d.csv.gz",
+  "compressed_sha256": "4cac6bc5cadad7222c5133863e328844cb9697ab0b57b74c64dd5963ce009853",
+  "history_rows": 193481,
+  "unique_keys": 193481,
+  "distinct_dates": 70,
+  "earliest_date": "20260723",
+  "latest_date": "20261104",
+  "latest_date_rows": 2769,
+  "baseline_date": "20261104",
+  "baseline_rows": 2769,
+  "duplicate_key_count": 0,
+  "duplicate_excess_rows": 0,
+  "duplicate_examples": [],
+  "expected_prior_rows": 193476,
+  "delta_from_prior_rows": 5,
+  "dates_after_baseline": {}
+}
