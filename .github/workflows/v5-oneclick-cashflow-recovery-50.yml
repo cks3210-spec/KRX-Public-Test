@@ -1,0 +1,226 @@
+name: KRX v5 Cashflow Recovery Trial 50 (One Click)
+on:
+  workflow_dispatch: null
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run growth and quality trial
+      env:
+        DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        OPEN_DART_API_KEY: ${{ secrets.OPEN_DART_API_KEY }}
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      shell: bash
+      run: |-
+        python - <<'PYCODE'
+        import os,csv,json,io,zipfile,urllib.request,urllib.parse,datetime,time,base64,gzip,pathlib,collections,math,xml.etree.ElementTree as ET,re
+        OUT=pathlib.Path('v5_cashflow_50_result');OUT.mkdir(exist_ok=True)
+        KST=datetime.timezone(datetime.timedelta(hours=9));TODAY=datetime.datetime.now(KST).date()
+        CAND=json.loads(gzip.decompress(base64.b64decode('H4sIAIhA7WoC/3WWzW7TQBDHX6XKmcP62+YGQiDEpQcOSIgDAo7AAyCkJDgh5ENNqd04qo0cNU1SRFU3SSVXuC+UnX0HZlupaGfTSxRF/52d+c9vZvP6S+3d5/cfag93agZjpsNqD3Zqn95+vPkF5iEc7otxnUen0J3Wvj7Y+S9nzPaYKp8Um/W+iCqRNKjWMk1Fy/t1OBpCnkJ8rWqtwMXAStyjvuiWRMUY8xWViPp89ke0cyL0A9OlV/PfLRgNediBeZ1kihaoVb3YfQVVnZ+XcFWR0Jbv22qm4zpka15E+AnJlE9SmDd052zTMdSUsgqSBfRS0RjC4VqVG8wILPWarBTjCPJ4s7okWtvxiNGDtegVcETrZMwlzV6mkFWbVQ7tAfXa81Tt5vIM8lBVma7nk4hxiCXhJ28mz5+8JJlavuUSuTSMrzDfC80zwzZIX/hViKERDD4hLTcNw1QJerQLaQjhBYlp+r5OZXgBzQJGLeKXhcWp6TYrsZ9igfw00fDEUTJUM/heKHs2ihA53utgl/m8QRvtWKTRleQJD/FBxMsI0lxDg5o4GsJ1JK08SPmMAGt4LmkkP6hDNbwDVpXbDh5Qo/9diNaAuui6qjOPnz29TYMvSmQPpxIOK5h1SJcs0/W3TMH9DDBmeD5Bps+PF3iTBrdNYJmc80EB7aGI1zL6KKFj7/qBGro7lTlkJV/m8jtytqi0Ppu2RVdALxfZiay/O5WmRguNDEuFTsS4JUKqCgJSAa6sXr4NTWTd1SDgpdyGfP2dAkOXNt4up3mZb4qYemIz1RMeRVgPjAiFiK1PZiPu8F+nhCYjYA6doE1Z3C1iaEeyma1EQwUxdyyS9Vp8S/H52Kwq6GXiJzlh2w6BCzerBDE5wb7c8S7XE/a2lWpX4o4mpqJRcoDxUCvRcQu0J2ZvTFR+4BDE8PU7rkR8pq9xw6ZY4S7N1qK/4EVd1nHLlwaXFfjksWsmvFXiBtHnNgjI9pP54AhmFc9/SN5nZ+SES3cwxPlmeX3P88gCzyEXjHJMmYcn+mi7HnnO0cKbN07/g4APv29tsVuypL2dPnPtLdN2k+ybf5H1gLT9CAAA')).decode())
+        DKEY=next((os.getenv(x,'').strip() for x in ('DART_API_KEY','OPENDART_API_KEY','OPEN_DART_API_KEY') if os.getenv(x,'').strip()),'')
+        KKEY=os.getenv('KRX_API_KEY','').strip()
+        status={'run_date_kst':str(TODAY),'candidate_count':len(CAND),'production_data_modified':False,'final_investment_grades_created':0,'official_market_verified':False,'warnings':[],'method':'growth_quality_trial_v1','grade_policy':'TRIAL_ONLY'}
+        def request(url,params=None,headers=None,binary=False):
+            if params:url+='?'+urllib.parse.urlencode(params)
+            for attempt in range(3):
+                try:
+                    with urllib.request.urlopen(urllib.request.Request(url,headers=headers or {'User-Agent':'KRX-v5-audit/1.0'}),timeout=28) as res:data=res.read()
+                    return data if binary else json.loads(data.decode('utf-8-sig'))
+                except Exception:
+                    if attempt==2:raise
+                    time.sleep(1.5*(attempt+1))
+        def dart(ep,**params):
+            obj=request('https://opendart.fss.or.kr/api/'+ep+'.json',dict(crtfc_key=DKEY,**params))
+            if obj.get('status') not in ('000','013'):raise RuntimeError('DART_'+ep+'_'+str(obj.get('status')))
+            return obj
+
+        def num(s):
+            try:
+                if s is None or str(s).strip() in ('','-'):return None
+                v=float(str(s).replace(',',''))
+                return v if math.isfinite(v) else None
+            except (ValueError,TypeError):return None
+
+        def pick(items,ids,section):
+            for aid in ids:
+                matches=[r for r in items if r.get('sj_div') in section and r.get('account_id')==aid and r.get('account_detail','-') in ('-','')]
+                if len(matches)==1:return matches[0]
+            return None
+        ACCOUNTS={
+        'revenue':(['ifrs-full_Revenue','ifrs_Revenue','ifrs-full_RevenueFromContractsWithCustomers'],['IS','CIS']),
+        'operating_profit':(['dart_OperatingIncomeLoss'],['IS','CIS']),
+        'net_parent':(['ifrs-full_ProfitLossAttributableToOwnersOfParent','ifrs_ProfitLossAttributableToOwnersOfParent'],['IS','CIS']),
+        'net_total':(['ifrs-full_ProfitLoss','ifrs_ProfitLoss'],['IS','CIS']),
+        'equity_parent':(['ifrs-full_EquityAttributableToOwnersOfParent','ifrs_EquityAttributableToOwnersOfParent'],['BS']),
+        'equity_total':(['ifrs-full_Equity','ifrs_Equity'],['BS']),
+        'liabilities':(['ifrs-full_Liabilities','ifrs_Liabilities'],['BS']),
+        'current_assets':(['ifrs-full_CurrentAssets','ifrs_CurrentAssets'],['BS']),
+        'current_liabilities':(['ifrs-full_CurrentLiabilities','ifrs_CurrentLiabilities'],['BS']),
+        'cashflow':(['ifrs-full_CashFlowsFromUsedInOperatingActivities','ifrs_CashFlowsFromUsedInOperatingActivities','ifrs-full_CashFlowsFromUsedInOperations','ifrs_CashFlowsFromUsedInOperations'],['CF'])}
+        def extract(items,field='thstrm_amount',interim=False):
+            result={}
+            for key,(ids,sections) in ACCOUNTS.items():
+                item=pick(items,ids,sections)
+                if key=='cashflow' and item is None:
+                    # Standard taxonomy IDs vary; use a narrowly defined Korean label fallback.
+                    # Ambiguous matches are deliberately rejected, never guessed.
+                    aliases={'영업활동현금흐름','영업활동으로인한현금흐름','영업활동으로부터의현금흐름','영업활동으로인한현금흐름(순액)'}
+                    matches=[r for r in items if r.get('sj_div')=='CF' and re.sub(r'\s+','',r.get('account_nm','')) in aliases and r.get('account_detail','-') in ('-','')]
+                    if len(matches)==1:item=matches[0]
+                amountfield=('thstrm_add_amount' if interim and key in ('revenue','operating_profit','net_parent','net_total','cashflow') else field)
+                # Never silently use quarterly 3-month amount as YTD.
+                value=num(item.get(amountfield)) if item else None
+                if key=='cashflow' and item is not None and value is None and interim:
+                    # CF in interim statements is cumulative YTD; some filings only populate thstrm_amount.
+                    value=num(item.get('thstrm_amount'))
+                result[key]=value
+            return result
+
+        def growth(a,b):return None if a is None or b is None or b<=0 else (a/b-1)*100
+        def ratio(a,b):return None if a is None or b is None or b<=0 else a/b
+        def clamp(x,lo,hi):return max(lo,min(hi,x))
+        def scale(v,lo,hi):return None if v is None else round(clamp((v-lo)/(hi-lo),0,1)*100,2)
+        market={};date=''
+        try:
+            with open('data/latest.csv',encoding='utf-8-sig',newline='') as f:allrows=list(csv.DictReader(f))
+            dates=sorted({r.get('BAS_DD','') for r in allrows if re.fullmatch(r'\d{8}',r.get('BAS_DD',''))})
+            date=dates[-1]
+            market={r['ISU_CD'].strip().zfill(6):r for r in allrows if r.get('BAS_DD')==date}
+            status.update(market_date=date,market_rows=len(market),market_age_days=(TODAY-datetime.datetime.strptime(date,'%Y%m%d').date()).days)
+        except Exception as e:status['warnings'].append('MARKET_INPUT_ERROR:'+str(e)[:100])
+        if KKEY and date:
+            try:
+                official={}
+                for ep in ('sto/stk_bydd_trd','sto/ksq_bydd_trd'):
+                    obj=request('https://data-dbg.krx.co.kr/svc/apis/'+ep,{'basDd':date},{'AUTH_KEY':KKEY,'User-Agent':'KRX-v5-audit/1.0'})
+                    for x in obj.get('OutBlock_1',[]):
+                        k=x.get('ISU_CD','').strip().zfill(6)
+                        if k in official:raise ValueError('OFFICIAL_DUPLICATE_CODE')
+                        official[k]=x
+                diff=[k for k,x in market.items() if k not in official or num(x.get('MKTCAP'))!=num(official[k].get('MKTCAP')) or num(x.get('TDD_CLSPRC'))!=num(official[k].get('TDD_CLSPRC'))]
+                status.update(official_rows=len(official),market_mismatch_count=len(diff),official_market_verified=bool(market) and set(official)==set(market) and not diff)
+            except Exception as e:status['warnings'].append('KRX_API_ERROR:'+str(e)[:120])
+        else:status['warnings'].append('KRX_KEY_MISSING_OR_MARKET_MISSING')
+        corp={}
+        if DKEY:
+            try:
+                raw=request('https://opendart.fss.or.kr/api/corpCode.xml',{'crtfc_key':DKEY},binary=True)
+                with zipfile.ZipFile(io.BytesIO(raw)) as zz:root=ET.fromstring(zz.read('CORPCODE.xml'))
+                corp={x.findtext('stock_code'):x.findtext('corp_code') for x in root.findall('list') if x.findtext('stock_code')}
+            except Exception as e:status['warnings'].append('DART_CORP_ERROR:'+str(e)[:120])
+        else:status['warnings'].append('DART_KEY_MISSING')
+
+        rows=[]
+        for i,c in enumerate(CAND):
+            code=c['code'].zfill(6);m=market.get(code,{});cap=num(m.get('MKTCAP'))
+            record={'code':code,'name':c['name'],'market_date':date,'marketcap_krw':cap,'fs_div':'','latest_period':'','filing_date':'','revenue_growth_yoy_pct':None,'operating_profit_growth_yoy_pct':None,'revenue_cagr_2yr_pct':None,'operating_margin_pct':None,'roe_ttm_pct':None,'debt_to_equity_pct':None,'current_ratio_pct':None,'operating_cashflow_ttm_krw':None,'cash_conversion_ratio':None,'per_ttm':None,'pbr':None,'growth_score':None,'profitability_score':None,'stability_score':None,'valuation_score':None,'cashflow_score':None,'total_trial_score':None,'data_coverage_pct':0,'trial_grade':'NOT_RATED','flags':''}
+            flags=[];cc=corp.get(code)
+            if not cc:flags.append('CORP_NOT_FOUND')
+            if not m or cap is None or cap<100000000000:flags.append('MARKETCAP_BELOW_100B_OR_MISSING')
+            if cc and DKEY:
+                try:
+                    filings=dart('list',corp_code=cc,bgn_de=str(TODAY.year-3)+'0101',end_de=TODAY.strftime('%Y%m%d'),pblntf_ty='A',page_count='100',last_reprt_at='Y').get('list',[])
+                    opts=[]
+                    for f in filings:
+                        match=re.search(r'(사업보고서|반기보고서|분기보고서).*?\((\d{4})\.(\d{2})\)',f.get('report_nm',''))
+                        if not match:continue
+                        typ,yr,mo=match.groups();rc='11011' if typ=='사업보고서' else '11012' if typ=='반기보고서' else ('11013' if mo=='03' else '11014' if mo=='09' else '')
+                        if rc:opts.append((int(yr),int(mo),rc,f))
+                    opts.sort(key=lambda x:(x[0],x[1],x[3].get('rcept_dt','')),reverse=True)
+                    if not opts:flags.append('NO_PERIODIC_REPORT')
+                    else:
+                        yr,mo,rc,f=opts[0];record['latest_period']=str(yr)+'-'+str(mo).zfill(2);record['filing_date']=f.get('rcept_dt','')
+                        cache={}
+                        def fetch(y,report,basis):
+                            k=(y,report,basis)
+                            if k not in cache:
+                                obj=dart('fnlttSinglAcntAll',corp_code=cc,bsns_year=str(y),reprt_code=report,fs_div=basis)
+                                cache[k]=obj.get('list',[]) if obj.get('status')=='000' else []
+                            return cache[k]
+                        for basis in ('CFS','OFS'):
+                            curr=fetch(yr,rc,basis)
+                            if not curr:continue
+                            current=extract(curr,interim=(rc!='11011'))
+                            if current['revenue'] is None or current['operating_profit'] is None:continue
+                            record['fs_div']=basis
+                            if basis=='OFS':flags.append('OFS_BASIS')
+                            annual={y:extract(fetch(y,'11011',basis)) for y in (yr-3,yr-2,yr-1)}
+                            latestannual=extract(curr) if rc=='11011' else annual[yr-1]
+                            prevannual=annual[yr-1] if rc=='11011' else annual[yr-2]
+                            prior2=annual[yr-2] if rc=='11011' else annual[yr-3]
+                            if rc!='11011':
+                                # Prior same-period YTD comes from the comparable prior-year report, not a 3-month field.
+                                previous=extract(fetch(yr-1,rc,basis),interim=True)
+                                ttm={k:(latestannual[k]+current[k]-previous[k] if all(v is not None for v in (latestannual[k],current[k],previous[k])) else None) for k in ('revenue','operating_profit','net_parent','net_total','cashflow')}
+                                record['revenue_growth_yoy_pct']=growth(current['revenue'],previous['revenue'])
+                                record['operating_profit_growth_yoy_pct']=growth(current['operating_profit'],previous['operating_profit'])
+                            else:
+                                ttm={k:current[k] for k in ('revenue','operating_profit','net_parent','net_total','cashflow')}
+                                record['revenue_growth_yoy_pct']=growth(current['revenue'],prevannual['revenue'])
+                                record['operating_profit_growth_yoy_pct']=growth(current['operating_profit'],prevannual['operating_profit'])
+                            if latestannual['revenue'] is not None and prior2['revenue'] is not None and prior2['revenue']>0:record['revenue_cagr_2yr_pct']=((latestannual['revenue']/prior2['revenue'])**0.5-1)*100
+                            record['operating_margin_pct']=ratio(ttm['operating_profit'],ttm['revenue'])*100 if ratio(ttm['operating_profit'],ttm['revenue']) is not None else None
+                            net=ttm['net_parent'] if basis=='CFS' else ttm['net_total']
+                            equity=current['equity_parent'] if basis=='CFS' else current['equity_total']
+                            prev_eq=latestannual['equity_parent'] if basis=='CFS' else latestannual['equity_total']
+                            if rc=='11011':prev_eq=prevannual['equity_parent'] if basis=='CFS' else prevannual['equity_total']
+                            if basis=='CFS' and (net is None or equity is None):flags.append('PARENT_ATTRIBUTION_MISSING')
+                            if net is not None and equity is not None and prev_eq is not None and (equity+prev_eq)>0:record['roe_ttm_pct']=net/((equity+prev_eq)/2)*100
+                            if equity is not None and equity>0:
+                                record['debt_to_equity_pct']=ratio(current['liabilities'],equity)*100 if current['liabilities'] is not None else None
+                                record['pbr']=cap/equity if cap else None
+                            if current['current_assets'] is not None and current['current_liabilities'] is not None and current['current_liabilities']>0:record['current_ratio_pct']=current['current_assets']/current['current_liabilities']*100
+                            if net is not None and net>0 and cap:record['per_ttm']=cap/net
+                            if net is not None and net<=0:flags.append('PER_NM_NEGATIVE_EARNINGS')
+                            record['operating_cashflow_ttm_krw']=ttm['cashflow']
+                            if net is not None and net>0 and ttm['cashflow'] is not None:record['cash_conversion_ratio']=ttm['cashflow']/net
+                            break
+                        if not record['fs_div']:flags.append('CORE_ACCOUNTS_MISSING')
+                except Exception as e:flags.append('DART_ERROR:'+str(e)[:100])
+            # 30 growth, 25 profitability, 20 stability, 15 valuation, 10 cashflow.
+            groups={
+                'growth_score':[(record['revenue_growth_yoy_pct'],0,20,12),(record['operating_profit_growth_yoy_pct'],0,30,12),(record['revenue_cagr_2yr_pct'],0,15,6)],
+                'profitability_score':[(record['roe_ttm_pct'],0,20,15),(record['operating_margin_pct'],0,20,10)],
+                'stability_score':[(None if record['debt_to_equity_pct'] is None else -record['debt_to_equity_pct'],-200,-30,12),(record['current_ratio_pct'],80,200,8)],
+                'valuation_score':[(None if record['per_ttm'] is None else -record['per_ttm'],-30,-8,9),(None if record['pbr'] is None else -record['pbr'],-3,-0.8,6)],
+                'cashflow_score':[(record['cash_conversion_ratio'],0,1.2,10)]}
+            total=0;available=0
+            for name,metrics in groups.items():
+                available_weight=sum(w for v,lo,hi,w in metrics if v is not None)
+                if available_weight:
+                    value=sum(scale(v,lo,hi)*w/100 for v,lo,hi,w in metrics if v is not None)
+                    record[name]=round(value/sum(w for _,_,_,w in metrics)*100,2)
+                    total+=value;available+=available_weight
+            record['data_coverage_pct']=round(available,2)
+            if available>=70 and status['official_market_verified'] and record['fs_div'] and cap is not None and cap>=100000000000:
+                record['total_trial_score']=round(total/available*100,2)
+                if record['total_trial_score']>=80:record['trial_grade']='A (TRIAL)'
+                elif record['total_trial_score']>=65:record['trial_grade']='B (TRIAL)'
+            else:flags.append('INSUFFICIENT_COVERAGE_OR_MARKET_VERIFICATION')
+            # A/B only trial output; NOT investment grades.
+            if record['revenue_growth_yoy_pct'] is None:flags.append('GROWTH_COMPARABLE_MISSING')
+            if record['cashflow_score'] is None:flags.append('CASHFLOW_METRIC_MISSING')
+            record['flags']=';'.join(flags);rows.append(record)
+            if (i+1)%10==0:print('processed',i+1,'/',len(CAND),flush=True)
+        fields=list(rows[0])
+        def writecsv(name,items):
+            with (OUT/name).open('w',encoding='utf-8-sig',newline='') as f:
+                w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(items)
+        writecsv('v5_cashflow_recovery_all_50.csv',rows)
+        writecsv('v5_cashflow_recovery_AB_only.csv',sorted((r for r in rows if r['trial_grade']!='NOT_RATED'),key=lambda r:-r['total_trial_score']))
+        status.update(financial_rows=sum(bool(r['fs_div']) for r in rows),trial_grade_counts=dict(collections.Counter(r['trial_grade'] for r in rows)),growth_data_count=sum(r['revenue_growth_yoy_pct'] is not None for r in rows),cashflow_data_count=sum(r['operating_cashflow_ttm_krw'] is not None for r in rows),cashflow_missing_count=sum(r['operating_cashflow_ttm_krw'] is None for r in rows),status='CASHFLOW_RECOVERY_TRIAL_COMPLETE' if any(r['fs_div'] for r in rows) else 'BLOCKED')
+        (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+        print(json.dumps(status,ensure_ascii=False,indent=2))
+        PYCODE
+    - name: Upload one result ZIP
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-cashflow-recovery-50-result
+        path: v5_cashflow_50_result/
+        if-no-files-found: warn
