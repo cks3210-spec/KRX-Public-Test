@@ -1,0 +1,117 @@
+name: KRX v5 Stage34 Official Common Stock Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve preserved full collector snapshots
+        run: |
+          git fetch --depth=1 origin v5-state
+          git show FETCH_HEAD:financial_latest.json > /tmp/v5_financial_latest.json
+          git show FETCH_HEAD:summary.json > /tmp/v5_source_summary.json
+      - name: Audit official share classes and research readiness
+        run: |
+          mkdir -p v5_stage34
+          cat > /tmp/stage34.py <<'PY'
+          import csv,json,pathlib,collections,re,datetime,math
+          out=pathlib.Path('v5_stage34')
+          def rows(path):
+              with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def save(name,data,cols):
+              with (out/name).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(data)
+          def number(v):
+              try:
+                  x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+              except (TypeError,ValueError):return None
+          def code(v):
+              s=str(v or '').strip();return s.zfill(6) if s else ''
+          market=rows('data/latest.csv')
+          fin=json.loads(pathlib.Path('/tmp/v5_financial_latest.json').read_text(encoding='utf-8-sig'))
+          source=json.loads(pathlib.Path('/tmp/v5_source_summary.json').read_text(encoding='utf-8-sig'))
+          # The input MUST explicitly document KRX provenance. A filename alone is not proof.
+          # Expected columns: ISU_CD,share_type,source,asof_date. Only source=KRX_OFFICIAL is trusted.
+          official={};errors=[];source_path=None
+          for candidate in ('data/krx_share_types.csv','data/share_types.csv','data/stock_types.csv'):
+              p=pathlib.Path(candidate)
+              if p.exists():source_path=str(p);break
+          if source_path:
+              data=rows(source_path)
+              for idx,r in enumerate(data,2):
+                  c=code(r.get('ISU_CD') or r.get('isu_cd') or r.get('code'))
+                  kind=str(r.get('share_type') or r.get('STK_KIND') or r.get('stock_type') or r.get('주식종류') or '').strip()
+                  provenance=str(r.get('source') or r.get('SOURCE') or '').strip().upper()
+                  asof=str(r.get('asof_date') or r.get('BAS_DD') or '').strip().replace('-','')
+                  if not c or provenance!='KRX_OFFICIAL' or not re.fullmatch(r'20\d{6}',asof):
+                      errors.append(f'row {idx}: invalid code/provenance/date');continue
+                  if c in official and official[c][0]!=kind:
+                      errors.append(f'row {idx}: conflicting share class for {c}');official.pop(c,None);continue
+                  official[c]=(kind,asof)
+          common={'보통주','보통','COMMON','COMMON STOCK'}
+          preferred={'우선주','PREFERRED','PREFERRED STOCK','종류주','종류주식'}
+          cols=['ISU_CD','ISU_NM','market_date','market_cap_krw','share_class_status','share_class_source','share_class_asof','financial_period','statement_type','financial_complete','filing_receipt_present','financial_status','investment_grade','buy_decision','notes']
+          audit=[];confirmed=[];unconfirmed=[];excluded=[];financial_gap=[];counts=collections.Counter()
+          for p in market:
+              cap=number(p.get('MKTCAP'));c=code(p.get('ISU_CD'))
+              if not c or cap is None or cap<100_000_000_000:continue
+              name=p.get('ISU_NM','');kind,date=official.get(c,('',''))
+              normalized=kind.strip().upper()
+              if normalized in common:status='COMMON_VERIFIED'
+              elif normalized in preferred:status='NONCOMMON_EXCLUDED'
+              elif kind:status='UNKNOWN_TYPE_QUARANTINED'
+              else:status='UNVERIFIED_QUARANTINED'
+              # Name patterns are safety vetoes, never positive proof.
+              if re.search(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.sub(r'\s+','',name),re.I):
+                  status='NONCOMMON_EXCLUDED'
+              f=fin.get(c,{});f=f if isinstance(f,dict) else {}
+              core=['revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw']
+              complete=all(number(f.get(k)) is not None for k in core)
+              receipt=bool(f.get('latest_filing_receipt'))
+              eq=number(f.get('equity_krw'))
+              ready=complete and receipt and eq is not None and eq>0 and bool(f.get('period')) and bool(f.get('statement_type'))
+              note=[]
+              if status!='COMMON_VERIFIED':note.append('NOT_OFFICIALLY_VERIFIED_COMMON')
+              if not ready:note.append('FINANCIAL_REVIEW_REQUIRED')
+              if f.get('period','').endswith(('_Q1','_H1','_Q3')):note.append('INTERIM_CUMULATIVE_NO_ANNUALIZATION')
+              row={'ISU_CD':c,'ISU_NM':name,'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),
+                   'share_class_status':status,'share_class_source':source_path if c in official else '',
+                   'share_class_asof':date,'financial_period':f.get('period',''),'statement_type':f.get('statement_type',''),
+                   'financial_complete':int(complete),'filing_receipt_present':int(receipt),
+                   'financial_status':'REVIEW_READY' if ready else 'INCOMPLETE','investment_grade':'NOT_VERIFIED',
+                   'buy_decision':'ON_HOLD','notes':';'.join(note)}
+              audit.append(row);counts[status]+=1
+              if status=='COMMON_VERIFIED':confirmed.append(row)
+              elif status=='NONCOMMON_EXCLUDED':excluded.append(row)
+              else:unconfirmed.append(row)
+              if status=='COMMON_VERIFIED' and not ready:financial_gap.append(row)
+          save('all_share_class_audit.csv',audit,cols)
+          save('official_common_verified_NOT_GRADED.csv',confirmed,cols)
+          save('preferred_and_noncommon_excluded.csv',excluded,cols)
+          save('unverified_share_classes_quarantine.csv',unconfirmed,cols)
+          save('verified_common_financial_recovery.csv',financial_gap,cols)
+          report={'status':'OFFICIAL_GATE_AUDIT_ONLY','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  'market_universe':len(audit),'source_universe_date':source.get('universe_date'),
+                  'official_type_file':source_path,'official_records_accepted':len(official),
+                  'classification_counts':dict(counts),'verified_common_financial_review_ready':sum(r['financial_status']=='REVIEW_READY' for r in confirmed),
+                  'verified_common_financial_recovery':len(financial_gap),'source_validation_errors':errors[:50],
+                  'investment_grades_issued':0,'buy_signals_issued':0,
+                  'blocking_issue':None if official else 'No validated official KRX share-type records. Cannot certify common stocks.',
+                  'notes':['No guessing of common status from a name or absence of preferred suffix.',
+                           'A local file claiming KRX_OFFICIAL is not independently authenticated; provenance and dates must be independently checked before investment use.',
+                           'No YoY or valuation grade until comparable period and price basis are verified.',
+                           'Existing v4 and Golden Cross workflows unchanged.']}
+          (out/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/stage34.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage34-official-common-gate
+          path: v5_stage34/
+          if-no-files-found: warn
