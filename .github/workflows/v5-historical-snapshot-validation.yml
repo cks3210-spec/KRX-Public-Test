@@ -1,0 +1,86 @@
+name: KRX v5 Historical Snapshot Validation (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Historical market date (YYYYMMDD)'
+        required: true
+        default: '20261104'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate historical market snapshot and export audit evidence
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os,csv,io,json,re,hashlib,subprocess,pathlib,collections,datetime
+          target=os.environ['TARGET_DATE']
+          if not re.fullmatch(r'\d{8}',target): raise ValueError('Invalid YYYYMMDD')
+          datetime.datetime.strptime(target,'%Y%m%d')
+          out=pathlib.Path('v5_historical_snapshot_validation');out.mkdir(exist_ok=True)
+          paths=['data/latest.csv','data/daily_indicators.csv','data/v4_indicators.csv','data/golden_cross_candidates.csv']
+          result={'target_date':target,'status':'NOT_FOUND','source':'git historical repository CSV (upstream KRX provenance NOT independently verified)','production_data_modified':False,'files':{},'cross_file_checks':{}}
+          extracted={}
+          for path in paths:
+            log=subprocess.run(['git','log','--format=%H','--',path],capture_output=True,text=True,check=True).stdout.splitlines()
+            info={'commits_checked':len(log),'found':False}
+            for sha in log:
+              raw=subprocess.run(['git','show',f'{sha}:{path}'],capture_output=True)
+              if raw.returncode:continue
+              try:
+                reader=csv.DictReader(io.StringIO(raw.stdout.decode('utf-8-sig')))
+                cols=reader.fieldnames or []
+                required=['BAS_DD','ISU_CD','TDD_CLSPRC','MKTCAP']
+                if not all(c in cols for c in required):continue
+                rows=[r for r in reader if str(r['BAS_DD']).replace('-','')==target]
+                if not rows:continue
+                codes=[r['ISU_CD'].strip() for r in rows]
+                invalid=[]
+                for r in rows:
+                  try:
+                    price=float(str(r['TDD_CLSPRC']).replace(',',''))
+                    cap=float(str(r['MKTCAP']).replace(',',''))
+                    if not (price>0 and cap>0):invalid.append(r['ISU_CD'])
+                  except (ValueError,TypeError):invalid.append(r['ISU_CD'])
+                duplicates=[c for c,n in collections.Counter(codes).items() if n>1]
+                info.update({'found':True,'commit':sha,'rows':len(rows),'unique_codes':len(set(codes)),'duplicate_codes':duplicates[:30],'invalid_price_or_cap_codes':invalid[:30],'invalid_count':len(invalid),'git_blob_sha256':hashlib.sha256(raw.stdout).hexdigest(),'columns':cols})
+                extracted[path]={r['ISU_CD'].strip():r for r in rows}
+                if path=='data/latest.csv':
+                  with (out/'historical_market_snapshot.csv').open('w',encoding='utf-8-sig',newline='') as f:
+                    writer=csv.DictWriter(f,fieldnames=cols);writer.writeheader();writer.writerows(rows)
+                break
+              except (UnicodeError,csv.Error):continue
+            result['files'][path]=info
+          main=extracted.get('data/latest.csv',{})
+          if main:
+            for path,rows in extracted.items():
+              if path=='data/latest.csv':continue
+              common=set(main)&set(rows)
+              mismatches=[]
+              for code in common:
+                for field in ('TDD_CLSPRC','MKTCAP'):
+                  try:
+                    a=float(str(main[code][field]).replace(',',''))
+                    b=float(str(rows[code][field]).replace(',',''))
+                    if a!=b:mismatches.append({'code':code,'field':field,'latest':a,'other':b})
+                  except (ValueError,TypeError,KeyError):mismatches.append({'code':code,'field':field,'reason':'invalid or missing'})
+              result['cross_file_checks'][path]={'overlap':len(common),'mismatch_count':len(mismatches),'mismatch_examples':mismatches[:20]}
+            latest_info=result['files']['data/latest.csv']
+            valid=(not latest_info['invalid_count'] and not latest_info['duplicate_codes'] and all(v['mismatch_count']==0 for v in result['cross_file_checks'].values()))
+            result['status']='HISTORICAL_SNAPSHOT_INTERNALLY_CONSISTENT_PROVENANCE_PENDING' if valid else 'HISTORICAL_SNAPSHOT_VALIDATION_FAILED'
+          (out/'status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps({'status':result['status'],'files':result['files'],'cross_file_checks':result['cross_file_checks']},ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-historical-snapshot-validation
+          path: v5_historical_snapshot_validation/
