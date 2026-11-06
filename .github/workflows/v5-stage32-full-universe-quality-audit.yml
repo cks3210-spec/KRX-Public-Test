@@ -1,0 +1,85 @@
+name: KRX v5 Stage32 Full Universe Quality Audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch preserved Full Collector snapshots
+        run: |
+          git fetch --depth=1 origin v5-state
+          git show FETCH_HEAD:financial_latest.json > /tmp/v5_financial_latest.json
+          git show FETCH_HEAD:summary.json > /tmp/v5_source_summary.json
+          git show FETCH_HEAD:checkpoint.json > /tmp/v5_checkpoint.json
+      - name: Audit whole-universe data and isolate recovery targets
+        run: |
+          mkdir -p v5_stage32
+          cat > /tmp/stage32.py <<'PY'
+          import csv, json, math, pathlib, collections, datetime
+          R=pathlib.Path('v5_stage32');R.mkdir(exist_ok=True)
+          def load(p):return json.loads(pathlib.Path(p).read_text(encoding='utf-8-sig'))
+          def num(v):
+           try:
+            x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+           except (ValueError,TypeError):return None
+          f=load('/tmp/v5_financial_latest.json');s=load('/tmp/v5_source_summary.json');ck=load('/tmp/v5_checkpoint.json')
+          completed=ck.get('completed',{}) if isinstance(ck,dict) else {}
+          prices={}
+          with open('data/latest.csv',encoding='utf-8-sig',newline='') as h:
+           for r in csv.DictReader(h):
+            if r.get('ISU_CD'):prices[r['ISU_CD'].strip().zfill(6)]=r
+          eligible={c:p for c,p in prices.items() if (num(p.get('MKTCAP')) or 0)>=100_000_000_000}
+          if len(f)<1000 or len(eligible)<1000:raise RuntimeError('Unexpectedly small source: refuse misleading output')
+          rows=[];missing=[];counter=collections.Counter();periods=collections.Counter();market_dates=collections.Counter()
+          for code,p in sorted(eligible.items()):
+           d=f.get(code); d=d if isinstance(d,dict) else {};matched=code in f and bool(d)
+           c=completed.get(code,{}); c=c if isinstance(c,dict) else {}
+           vals={k:num(d.get(k)) for k in ('revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw')}
+           cover=sum(v is not None for v in vals.values());period=d.get('period','');periods[period or 'MISSING']+=1
+           market_dates[p.get('BAS_DD','MISSING')]+=1
+           eq=vals['equity_krw'];rev=vals['revenue_krw'];op=vals['operating_profit_krw'];liab=vals['liabilities_krw']
+           debt=100*liab/eq if eq and eq>0 and liab is not None else None
+           margin=100*op/rev if rev and rev>0 and op is not None else None
+           flags=[]
+           if not matched:flags.append('NO_SNAPSHOT_MATCH')
+           if cover<6:flags.append('INCOMPLETE_CORE_FIELDS')
+           if eq is not None and eq<=0:flags.append('NONPOSITIVE_EQUITY')
+           if not d.get('latest_filing_receipt'):flags.append('FILING_RECEIPT_MISSING')
+           if not period:flags.append('PERIOD_MISSING')
+           if period and not period.startswith('2026_'):flags.append('OLDER_PERIOD_REVIEW')
+           if period.endswith(('_Q1','_H1','_Q3')):flags.append('INTERIM_CUMULATIVE_NOT_ANNUAL')
+           if not d.get('statement_type'):flags.append('STATEMENT_BASIS_MISSING')
+           # Only a descriptive preliminary ordering, not an A/B investment grade.
+           points=0;possible=0
+           if debt is not None:points+=20 if debt<=100 else 10 if debt<=200 else 0;possible+=20
+           if margin is not None:points+=20 if margin>=15 else 10 if margin>=5 else 0;possible+=20
+           if op is not None:points+=10 if op>0 else 0;possible+=10
+           if vals['net_income_krw'] is not None:points+=10 if vals['net_income_krw']>0 else 0;possible+=10
+           for flag in flags:counter[flag]+=1
+           row={'ISU_CD':code,'ISU_NM':p.get('ISU_NM',''),'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),'financial_period':period,'statement_type':d.get('statement_type',''),'filing_receipt':d.get('latest_filing_receipt',''),'checkpoint_status':c.get('status','NOT_IN_CHECKPOINT'),'core_coverage':f'{cover}/6','debt_ratio_pct':round(debt,2) if debt is not None else '','operating_margin_pct':round(margin,2) if margin is not None else '','descriptive_points':points,'descriptive_possible':possible,'audit_flags':';'.join(flags),'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD'}
+           rows.append(row)
+           if not matched:missing.append(row)
+          def save(name,data,fields):
+           with (R/name).open('w',encoding='utf-8-sig',newline='') as h:
+            w=csv.DictWriter(h,fieldnames=fields);w.writeheader();w.writerows(data)
+          fields=list(rows[0]);save('full_universe_quality_audit.csv',rows,fields)
+          save('missing_91_recovery_targets.csv',missing,fields)
+          # Provisional research review is restricted to fully populated, positive-equity, documented statements.
+          review=[r for r in rows if r['core_coverage']=='6/6' and r['statement_type'] and r['filing_receipt'] and r['descriptive_possible']==60 and 'NONPOSITIVE_EQUITY' not in r['audit_flags']]
+          review.sort(key=lambda r:(-r['descriptive_points'],-(num(r['operating_margin_pct']) or -999),r['ISU_CD']))
+          save('preliminary_quality_review.csv',review,fields)
+          status={'status':'QUALITY_AUDIT_ONLY_NO_VERIFIED_BUY_SIGNAL','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_branch':'v5-state','source_universe_date':s.get('universe_date'),'source_verified_snapshots':s.get('verified_snapshot_count'),'eligible':len(eligible),'matched':sum(c in f for c in eligible),'unmatched':len(missing),'complete_six_fields':sum(r['core_coverage']=='6/6' for r in rows),'review_rows':len(review),'market_dates':dict(market_dates),'periods':dict(periods),'audit_flags':dict(counter),'source_snapshot_count':len(f),'recovery_targets_by_checkpoint':dict(collections.Counter(r['checkpoint_status'] for r in missing)),'verified_investment_grades':0,'verified_buy_signals':0,'limitations':['Descriptive points are not final A/B investment grades','Interim earnings are cumulative and must not be annualized without reconciliation','YoY growth, audited ROE, PER/PBR and source freshness remain unverified','Unmatched stocks are not necessarily missing from original source universe']}
+          (R/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/stage32.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage32-full-universe-quality-audit
+          path: v5_stage32/
+          if-no-files-found: warn
