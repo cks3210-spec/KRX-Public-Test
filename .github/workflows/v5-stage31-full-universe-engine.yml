@@ -1,0 +1,82 @@
+name: KRX v5 Stage31 Full Universe Research Bridge
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Retrieve existing financial snapshots without rerunning DART
+        run: |
+          git fetch --depth=1 origin v5-state
+          git show FETCH_HEAD:financial_latest.json > /tmp/v5_financial_latest.json
+          git show FETCH_HEAD:summary.json > /tmp/v5_source_summary.json
+      - name: Produce whole-universe research input and coverage report
+        run: |
+          mkdir -p v5_stage31
+          cat > /tmp/stage31.py <<'PY'
+          import csv,json,math,pathlib,datetime,collections
+          root=pathlib.Path('v5_stage31')
+          financial=json.loads(pathlib.Path('/tmp/v5_financial_latest.json').read_text(encoding='utf-8-sig'))
+          summary=json.loads(pathlib.Path('/tmp/v5_source_summary.json').read_text(encoding='utf-8-sig'))
+          if not isinstance(financial,dict):raise ValueError('Expected stock-code keyed financial dictionary')
+          if len(financial)<1000:raise ValueError('Financial source unexpectedly incomplete; refusing to grade')
+          prices={}
+          with pathlib.Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f:
+              for p in csv.DictReader(f):
+                  if p.get('ISU_CD'):prices[p['ISU_CD'].strip().zfill(6)]=p
+          def n(x):
+              try:
+                  v=float(str(x).replace(',','').strip())
+                  return v if math.isfinite(v) else None
+              except (TypeError,ValueError):return None
+          eligible={k:p for k,p in prices.items() if (n(p.get('MKTCAP')) or 0)>=100_000_000_000}
+          rows=[];issues=collections.Counter()
+          fields=['ISU_CD','ISU_NM','market_date','financial_period','statement_type','filing_receipt','source_verified_at_utc','market_cap_krw','revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw','debt_ratio_pct','operating_margin_pct','roe_proxy_pct','source_coverage','research_status','investment_grade','buy_decision','reason']
+          for code,p in sorted(eligible.items()):
+              f=financial.get(code)
+              if not isinstance(f,dict):
+                  issues['MISSING_FINANCIAL_SNAPSHOT']+=1
+                  f={}
+              keys=('revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw')
+              vals={k:n(f.get(k)) for k in keys}
+              missing=[k for k in keys if vals[k] is None]
+              if missing:issues['PARTIAL_FINANCIAL_FIELDS']+=1
+              debt=100*vals['liabilities_krw']/vals['equity_krw'] if vals['liabilities_krw'] is not None and vals['equity_krw'] and vals['equity_krw']>0 else None
+              margin=100*vals['operating_profit_krw']/vals['revenue_krw'] if vals['operating_profit_krw'] is not None and vals['revenue_krw'] and vals['revenue_krw']>0 else None
+              # Do not call this ROE: quarterly net income / period-end equity is not annual ROE.
+              coverage=sum(v is not None for v in vals.values())
+              status='FINANCIAL_REVIEW_READY' if coverage==6 else 'MISSING_OR_PARTIAL'
+              rows.append({'ISU_CD':code,'ISU_NM':p.get('ISU_NM') or f.get('ISU_NM',''),'market_date':p.get('BAS_DD',''),
+                'financial_period':f.get('period',''),'statement_type':f.get('statement_type',''),'filing_receipt':f.get('latest_filing_receipt',''),
+                'source_verified_at_utc':f.get('verified_at_utc',''),'market_cap_krw':p.get('MKTCAP',''),
+                **{k:vals[k] if vals[k] is not None else '' for k in keys},
+                'debt_ratio_pct':round(debt,3) if debt is not None else '',
+                'operating_margin_pct':round(margin,3) if margin is not None else '',
+                'roe_proxy_pct':'','source_coverage':f'{coverage}/6','research_status':status,
+                'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD',
+                'reason':'No same-basis YoY, audited annual ROE, valuation reconciliation or fresh market validation; not an investment recommendation'})
+          with (root/'full_universe_research_input.csv').open('w',encoding='utf-8-sig',newline='') as out:
+              w=csv.DictWriter(out,fieldnames=fields);w.writeheader();w.writerows(rows)
+          report={'status':'BRIDGED_RESEARCH_INPUT_NOT_INVESTMENT_GRADE','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'source_branch':'v5-state','source_universe_date':summary.get('universe_date'),'source_verified_snapshot_count':summary.get('verified_snapshot_count'),
+            'financial_records_loaded':len(financial),'market_rows_loaded':len(prices),'eligible_market_rows':len(eligible),
+            'matched_financial_records':sum(code in financial for code in eligible),'complete_six_field_records':sum(r['source_coverage']=='6/6' for r in rows),
+            'issues':dict(issues),'market_dates':dict(collections.Counter(r['market_date'] for r in rows)),
+            'stage25_existing_code_modified':False,'v4_or_golden_cross_modified':False,'verified_buy_signals':0,
+            'next_required':'Reconcile same-basis annual/quarterly growth, valuation, filing dates and freshness before A/B investment grades'}
+          (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/stage31.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage31-full-universe-research
+          path: v5_stage31/
+          if-no-files-found: warn
