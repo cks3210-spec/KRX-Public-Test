@@ -1,0 +1,59 @@
+name: KRX v5 Git History Market Recovery Audit (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'KRX market date YYYYMMDD'
+        required: true
+        default: '20261104'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Find historical official market snapshots in git history
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+        run: |
+          python - <<'PY'
+          import os, csv, io, json, subprocess, pathlib, re
+          target=os.environ['TARGET_DATE']
+          if not re.fullmatch(r'\d{8}',target): raise ValueError('target_date must be YYYYMMDD')
+          out=pathlib.Path('v5_git_history_audit');out.mkdir(exist_ok=True)
+          paths=['data/latest.csv','data/daily_indicators.csv','data/v4_indicators.csv','data/golden_cross_candidates.csv']
+          report={'target_date':target,'source':'git history of repository CSVs','files':{},'matched_snapshots':[], 'status':'NOT_FOUND','production_data_modified':False}
+          def git(*args):return subprocess.run(['git',*args],capture_output=True,text=True,check=False).stdout
+          for path in paths:
+            commits=[x for x in git('log','--format=%H','--',path).splitlines() if x]
+            item={'commits_checked':len(commits),'matches':0,'errors':0}
+            for commit in commits:
+              raw=subprocess.run(['git','show',f'{commit}:{path}'],capture_output=True,check=False)
+              if raw.returncode: item['errors']+=1;continue
+              try:
+                txt=raw.stdout.decode('utf-8-sig');reader=csv.DictReader(io.StringIO(txt))
+                if not reader.fieldnames:continue
+                date_col=next((c for c in ['BAS_DD','date','DATE','trade_date'] if c in reader.fieldnames),None)
+                cap_col=next((c for c in ['MKTCAP','market_cap','marketcap'] if c in reader.fieldnames),None)
+                close_col=next((c for c in ['TDD_CLSPRC','close','CLOSE'] if c in reader.fieldnames),None)
+                code_col=next((c for c in ['ISU_CD','stock_code','code'] if c in reader.fieldnames),None)
+                if not all([date_col,cap_col,close_col,code_col]):continue
+                rows=[r for r in reader if str(r.get(date_col,'')).replace('-','')==target and r.get(cap_col) and r.get(close_col) and r.get(code_col)]
+                if rows:
+                  item['matches']+=1
+                  report['matched_snapshots'].append({'path':path,'commit':commit,'matched_rows':len(rows),'date_column':date_col,'code_column':code_col,'cap_column':cap_col,'close_column':close_col})
+              except (UnicodeError,csv.Error):item['errors']+=1
+            report['files'][path]=item
+          if report['matched_snapshots']:
+            report['status']='HISTORICAL_SOURCE_FOUND_NEEDS_SOURCE_VALIDATION'
+          (out/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-git-history-market-recovery
+          path: v5_git_history_audit/
