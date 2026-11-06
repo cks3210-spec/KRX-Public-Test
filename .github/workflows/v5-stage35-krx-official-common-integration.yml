@@ -1,0 +1,119 @@
+name: KRX v5 Stage35 Official Common Stock Integration
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official-common:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      KRX_AUTH_KEY: ${{ secrets.KRX_AUTH_KEY }}
+      KRX_OPENAPI_KEY: ${{ secrets.KRX_OPENAPI_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore preserved full-collector financials
+        run: |
+          git fetch --depth=1 origin v5-state
+          git show FETCH_HEAD:financial_latest.json > /tmp/v5_financial_latest.json
+          git show FETCH_HEAD:summary.json > /tmp/v5_source_summary.json
+      - name: Query KRX official security master and join verified common stocks
+        run: |
+          mkdir -p v5_stage35
+          cat > /tmp/stage35.py <<'PY'
+          import csv,json,os,pathlib,datetime,collections,urllib.request,urllib.parse,time,math,re
+          out=pathlib.Path('v5_stage35')
+          def readcsv(p):
+              with open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def writecsv(p,rows,cols):
+              with (out/p).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          def num(v):
+              try:
+                  n=float(str(v).replace(',',''));return n if math.isfinite(n) else None
+              except (ValueError,TypeError):return None
+          def code(v):
+              v=str(v or '').strip();return v.zfill(6) if v.isdigit() and len(v)<=6 else v
+          market=readcsv('data/latest.csv')
+          fin=json.loads(pathlib.Path('/tmp/v5_financial_latest.json').read_text(encoding='utf-8-sig'))
+          source=json.loads(pathlib.Path('/tmp/v5_source_summary.json').read_text(encoding='utf-8-sig'))
+          eligible={code(r.get('ISU_CD')):r for r in market if code(r.get('ISU_CD')) and (num(r.get('MKTCAP')) or 0)>=100_000_000_000}
+          dates=sorted({re.sub('[^0-9]','',str(r.get('BAS_DD',''))) for r in eligible.values()},reverse=True)
+          if not dates or not re.fullmatch(r'20\d{6}',dates[0]):raise RuntimeError('No valid KRX market baseline date')
+          key=next((os.getenv(k,'').strip() for k in ('KRX_API_KEY','KRX_AUTH_KEY','KRX_OPENAPI_KEY') if os.getenv(k,'').strip()),'')
+          errors=[];master={};used_date=None;market_results={}
+          def get(endpoint,day):
+              url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})
+              req=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'KRX-v5-research/1.0'})
+              with urllib.request.urlopen(req,timeout=45) as resp:return json.load(resp)
+          # Only use the existing market snapshot date; never mix security types from a future date.
+          if key:
+              for endpoint in ('stk_isu_base_info','ksq_isu_base_info'):
+                  try:
+                      obj=get(endpoint,dates[0]);items=obj.get('OutBlock_1')
+                      if not isinstance(items,list) or not items:raise ValueError('Empty or invalid OutBlock_1')
+                      market_results[endpoint]=len(items)
+                      for r in items:
+                          c=code(r.get('ISU_SRT_CD'))
+                          if c and c not in master:master[c]=dict(r,krx_endpoint=endpoint)
+                  except Exception as e:errors.append(endpoint+': '+type(e).__name__+': '+str(e)[:180])
+          else:errors.append('Missing KRX API key; checked KRX_API_KEY, KRX_AUTH_KEY, KRX_OPENAPI_KEY secrets')
+          if master:used_date=dates[0]
+          # Only explicitly labeled common stocks in the official KRX security master are accepted.
+          common={'보통주','보통','보통주식'}
+          columns=['ISU_CD','ISU_NM','market_date','market_cap_krw','official_share_type','official_security_group','official_market','verification','financial_period','financial_coverage','financial_ready','research_grade','buy_signal','reason']
+          allrows=[];confirmed=[];excluded=[];quarantine=[];recovery=[];counts=collections.Counter()
+          fields=('revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw')
+          for c,p in sorted(eligible.items()):
+              m=master.get(c);f=fin.get(c,{}) if isinstance(fin,dict) else {}
+              if not isinstance(f,dict):f={}
+              kind=str(m.get('KIND_STKCERT_TP_NM','')).strip() if m else ''
+              group=str(m.get('SECUGRP_NM','')).strip() if m else ''
+              # A security group must denote shares, not ETFs, ETNs, funds, or other securities.
+              share_group=group in {'주권','주식'}
+              if m and kind in common and share_group:status='OFFICIAL_COMMON_VERIFIED'
+              elif m and (kind or group):status='OFFICIAL_NONCOMMON_OR_UNSUPPORTED'
+              else:status='UNVERIFIED_QUARANTINED'
+              coverage=sum(num(f.get(k)) is not None for k in fields)
+              eq=num(f.get('equity_krw'))
+              ready=(coverage==6 and eq is not None and eq>0 and bool(f.get('period')) and bool(f.get('statement_type')))
+              reason='Await comparable-period growth, verified valuation and freshness checks'
+              if status!='OFFICIAL_COMMON_VERIFIED':reason='Official common-stock verification not satisfied'
+              elif not ready:reason='Financial snapshot incomplete or invalid'
+              row={'ISU_CD':c,'ISU_NM':p.get('ISU_NM',''),'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),
+                   'official_share_type':kind,'official_security_group':group,'official_market':m.get('MKT_TP_NM','') if m else '',
+                   'verification':status,'financial_period':f.get('period',''),'financial_coverage':str(coverage)+'/6',
+                   'financial_ready':int(ready),'research_grade':'NOT_VERIFIED','buy_signal':'ON_HOLD','reason':reason}
+              allrows.append(row);counts[status]+=1
+              if status=='OFFICIAL_COMMON_VERIFIED':
+                  confirmed.append(row)
+                  if not ready:recovery.append(row)
+              elif status=='OFFICIAL_NONCOMMON_OR_UNSUPPORTED':excluded.append(row)
+              else:quarantine.append(row)
+          writecsv('all_security_master_join.csv',allrows,columns)
+          writecsv('official_common_verified_research_input.csv',confirmed,columns)
+          writecsv('official_noncommon_excluded.csv',excluded,columns)
+          writecsv('unverified_quarantine.csv',quarantine,columns)
+          writecsv('verified_common_financial_recovery.csv',recovery,columns)
+          report={'status':'OFFICIAL_COMMON_GATE_READY' if confirmed and not errors else 'OFFICIAL_COMMON_GATE_PARTIAL_OR_BLOCKED',
+                  'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':dates[0],
+                  'financial_source_universe_date':source.get('universe_date'),'eligible_market_universe':len(eligible),
+                  'krx_api_endpoint_counts':market_results,'krx_master_date':used_date,'official_master_rows':len(master),
+                  'classification_counts':dict(counts),'verified_common_financial_ready':sum(x['financial_ready'] for x in confirmed),
+                  'verified_common_financial_recovery':len(recovery),'errors':errors,'investment_grades_issued':0,'buy_signals_issued':0,
+                  'notes':['Only KRX API security-master response accepted, no name-based positive inference.',
+                           'Partial API failures quarantine missing market records; no false certification.',
+                           'Existing v4, Golden Cross and Stage25 remain unchanged.',
+                           'A/B ratings require same-period growth and audited valuation verification.']}
+          (out/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+          python -m py_compile /tmp/stage35.py
+          python /tmp/stage35.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage35-krx-official-common-integration
+          path: v5_stage35/
+          if-no-files-found: warn
