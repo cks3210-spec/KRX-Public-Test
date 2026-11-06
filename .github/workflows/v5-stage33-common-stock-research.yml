@@ -1,0 +1,147 @@
+name: KRX v5 Stage33 Common Stock Research Engine
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stage33:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve preserved Full Collector data
+        run: |
+          git fetch --depth=1 origin v5-state
+          git show FETCH_HEAD:financial_latest.json > /tmp/v5_financial_latest.json
+          git show FETCH_HEAD:summary.json > /tmp/v5_source_summary.json
+      - name: Evaluate common-stock gate and research readiness
+        run: |
+          mkdir -p v5_stage33
+          cat > /tmp/stage33.py <<'PYCODE'
+          import csv,json,math,re,datetime,collections,pathlib
+          R=pathlib.Path('v5_stage33');R.mkdir(exist_ok=True)
+          def readcsv(p):
+           with open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def num(v):
+           try:
+            x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+           except (TypeError,ValueError):return None
+          def save(name,rows,cols):
+           with (R/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          source=json.loads(pathlib.Path('/tmp/v5_financial_latest.json').read_text(encoding='utf-8-sig'))
+          summary=json.loads(pathlib.Path('/tmp/v5_source_summary.json').read_text(encoding='utf-8-sig'))
+          prices=readcsv('data/latest.csv')
+          annual=readcsv('data/fundamentals.csv') if pathlib.Path('data/fundamentals.csv').exists() else []
+          annual_by_code={r.get('ISU_CD','').strip().zfill(6):r for r in annual if r.get('ISU_CD')}
+          # Conservative name screening is NOT official share-type certification.
+          # Exclude recognizable preferred/share-class labels, and quarantine ambiguous names.
+          def share_class(name):
+           n=re.sub(r'\s+','',name or '')
+           if re.search(r'(?:우선주|우B|우C|우D|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',n,re.I):return 'PREFERRED_EXCLUDED'
+           if re.search(r'(?:스팩|SPAC|리츠|REIT|인프라|ETF|ETN)',n,re.I):return 'SPECIAL_SECURITY_REVIEW'
+           return 'COMMON_UNCONFIRMED'
+          # Optional authoritative KRX type file; if missing, never claim certification.
+          types={}
+          for filename in ['data/krx_share_types.csv','data/share_types.csv','data/stock_types.csv']:
+           p=pathlib.Path(filename)
+           if not p.exists():continue
+           for r in readcsv(p):
+            code=(r.get('ISU_CD') or r.get('isu_cd') or r.get('code') or '').strip().zfill(6)
+            value=(r.get('STK_KIND') or r.get('share_type') or r.get('stock_type') or r.get('주식종류') or '').strip()
+            if code and value:types[code]=value
+           break
+          
+          def certified(code):
+           t=types.get(code,'')
+           if t in ('보통주','COMMON','Common','common','보통'):return 'COMMON_VERIFIED'
+           if t:return 'NONCOMMON_OR_UNKNOWN_TYPE'
+           return 'COMMON_UNCONFIRMED'
+          rows=[];excluded=[];quarantine=[];research=[];flags=collections.Counter()
+          for p in prices:
+           code=(p.get('ISU_CD') or '').strip().zfill(6)
+           cap=num(p.get('MKTCAP'))
+           if not code or cap is None or cap<100_000_000_000:continue
+           name=p.get('ISU_NM',''); label=share_class(name);auth=certified(code)
+           if label=='PREFERRED_EXCLUDED' or auth=='NONCOMMON_OR_UNKNOWN_TYPE':status='EXCLUDED'
+           elif label=='SPECIAL_SECURITY_REVIEW':status='QUARANTINE'
+           elif auth=='COMMON_VERIFIED':status='COMMON_VERIFIED'
+           else:status='COMMON_UNCONFIRMED'
+           f=source.get(code,{});f=f if isinstance(f,dict) else {}
+           period=f.get('period',''); basis=f.get('statement_type','')
+           keys=['revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw']
+           v={k:num(f.get(k)) for k in keys};complete=all(x is not None for x in v.values())
+           eq=v['equity_krw'];rev=v['revenue_krw'];op=v['operating_profit_krw'];liab=v['liabilities_krw']
+           debt=100*liab/eq if eq is not None and eq>0 and liab is not None else None
+           margin=100*op/rev if rev is not None and rev>0 and op is not None else None
+           # Annual figures from another year are not automatically comparable with interim figures.
+           a=annual_by_code.get(code,{})
+           yoy=num(a.get('revenue_yoy_pct'));per=num(a.get('per_annual_est'));pbr=num(a.get('pbr_yearend_est'));roe=num(a.get('roe_avg_equity_est_pct'))
+           valuation_basis=a.get('valuation_basis','');annual_year=a.get('fiscal_year','')
+           notes=[]
+           if status=='COMMON_UNCONFIRMED':notes.append('KRX_SHARE_TYPE_NOT_CERTIFIED')
+           if not complete:notes.append('MISSING_CORE_FINANCIALS')
+           if not basis or not period:notes.append('MISSING_FINANCIAL_BASIS')
+           if not f.get('latest_filing_receipt'):notes.append('FILING_RECEIPT_MISSING')
+           if eq is not None and eq<=0:notes.append('NONPOSITIVE_EQUITY')
+           if period.endswith(('_Q1','_H1','_Q3')):notes.append('INTERIM_CUMULATIVE')
+           if annual_year and period and not period.startswith(annual_year+'_'):notes.append('ANNUAL_VALUATION_PERIOD_MISMATCH')
+           if not annual_year:notes.append('NO_ANNUAL_VALUATION')
+           if status=='EXCLUDED':notes.append('PREFERRED_OR_NONCOMMON_EXCLUSION')
+           if status=='QUARANTINE':notes.append('SPECIAL_SECURITY_MANUAL_REVIEW')
+           # Descriptive scoring only: never label final A/B until verified share class and comparable growth/valuation.
+           score=0;maxscore=0
+           if debt is not None:
+            maxscore+=25;score+=25 if debt<=100 else 15 if debt<=200 else 5 if debt<=300 else 0
+           if margin is not None:
+            maxscore+=25;score+=25 if margin>=15 else 15 if margin>=5 else 5 if margin>0 else 0
+           if op is not None:
+            maxscore+=15;score+=15 if op>0 else 0
+           if v['net_income_krw'] is not None:
+            maxscore+=15;score+=15 if v['net_income_krw']>0 else 0
+           # No score for cross-year, unverified valuation, and no naive annualization.
+           row={'ISU_CD':code,'ISU_NM':name,'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),
+           'share_class_gate':status,'share_class_source':'KRX_FILE' if code in types else 'NAME_SCREEN_ONLY',
+           'financial_period':period,'statement_type':basis,'filing_receipt':f.get('latest_filing_receipt',''),
+           'core_complete':int(complete),'revenue_krw':v['revenue_krw'],'operating_profit_krw':op,'net_income_krw':v['net_income_krw'],
+           'equity_krw':eq,'debt_ratio_pct':round(debt,2) if debt is not None else '',
+           'operating_margin_pct':round(margin,2) if margin is not None else '',
+           'annual_reference_year':annual_year,'annual_revenue_yoy_pct_REFERENCE_ONLY':yoy if yoy is not None else '',
+           'annual_per_REFERENCE_ONLY':per if per is not None else '', 'annual_pbr_REFERENCE_ONLY':pbr if pbr is not None else '',
+           'annual_roe_REFERENCE_ONLY':roe if roe is not None else '', 'annual_valuation_basis':valuation_basis,
+           'quality_points':score,'quality_possible':maxscore,'research_priority':round(100*score/maxscore,2) if maxscore else '',
+           'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD','audit_flags':';'.join(notes)}
+           rows.append(row)
+           if status=='EXCLUDED':excluded.append(row)
+           elif status=='QUARANTINE':quarantine.append(row)
+           elif complete and basis and f.get('latest_filing_receipt') and eq is not None and eq>0:research.append(row)
+           for n in notes:flags[n]+=1
+          cols=list(rows[0]) if rows else []
+          research.sort(key=lambda r:(-float(r['research_priority']),r['ISU_CD']))
+          save('universe_share_class_audit.csv',rows,cols)
+          save('excluded_preferred_and_noncommon.csv',excluded,cols)
+          save('special_security_quarantine.csv',quarantine,cols)
+          save('common_stock_research_queue_NOT_GRADED.csv',research,cols)
+          save('financial_recovery_queue.csv',[r for r in rows if r['share_class_gate'] not in ('EXCLUDED','QUARANTINE') and (not r['core_complete'] or not r['filing_receipt'])],cols)
+          stat={'status':'STAGE33_RESEARCH_QUEUE_ONLY','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'source_universe_date':summary.get('universe_date'),'market_dates':dict(collections.Counter(r['market_date'] for r in rows)),
+           'market_cap_100b_universe':len(rows),'excluded_preferred_and_noncommon':len(excluded),'special_security_quarantine':len(quarantine),
+           'common_verified':sum(r['share_class_gate']=='COMMON_VERIFIED' for r in rows),
+           'common_unconfirmed':sum(r['share_class_gate']=='COMMON_UNCONFIRMED' for r in rows),
+           'research_queue_not_graded':len(research),'financial_recovery_queue':sum(r['share_class_gate'] not in ('EXCLUDED','QUARANTINE') and (not r['core_complete'] or not r['filing_receipt']) for r in rows),
+           'annual_reference_rows':len(annual),'flags':dict(flags),'verified_A_B_grades':0,'verified_buy_signals':0,
+           'cautions':['Name-based share class exclusion is conservative but not authoritative KRX classification.',
+           'Without authoritative share type records, all remaining securities are COMMON_UNCONFIRMED and must not be presented as verified common shares.',
+           '2025 annual metrics and 2026 interim statements are not directly comparable.',
+           'Financial quality points are research ordering only; no A/B grades or buy signals.',
+           'Special financial/holding company accounting may make margins misleading.']}
+          (R/'status.json').write_text(json.dumps(stat,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(stat,ensure_ascii=False,indent=2))
+          PYCODE
+          python /tmp/stage33.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage33-common-stock-research
+          path: v5_stage33/
+          if-no-files-found: warn
