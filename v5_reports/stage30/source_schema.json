@@ -1,0 +1,67 @@
+{
+  "financial": {
+    "type": "object",
+    "count": 1215,
+    "keys": [
+      "000020",
+      "000050",
+      "000070",
+      "000080",
+      "000100",
+      "000120",
+      "000140",
+      "000150",
+      "000210",
+      "000240",
+      "000250",
+      "000270",
+      "000300",
+      "000320",
+      "000370",
+      "000390",
+      "000430",
+      "000480",
+      "000490",
+      "000500"
+    ]
+  },
+  "checkpoint": {
+    "type": "object",
+    "count": 4,
+    "keys": [
+      "completed",
+      "last_updated_utc",
+      "cycle",
+      "universe_date"
+    ]
+  },
+  "sample_record_keys": [
+    "ISU_CD",
+    "ISU_NM",
+    "fiscal_year",
+    "report_code",
+    "period",
+    "statement_type",
+    "verified_at_utc",
+    "latest_filing_receipt",
+    "filing_checked_at_utc",
+    "revenue_krw",
+    "revenue_status",
+    "revenue_source",
+    "operating_profit_krw",
+    "operating_profit_status",
+    "operating_profit_source",
+    "net_income_krw",
+    "net_income_status",
+    "net_income_source",
+    "assets_krw",
+    "assets_status",
+    "assets_source",
+    "liabilities_krw",
+    "liabilities_status",
+    "liabilities_source",
+    "equity_krw",
+    "equity_status",
+    "equity_source"
+  ]
+}

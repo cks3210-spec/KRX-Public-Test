@@ -1,0 +1,44 @@
+{
+  "generated_utc": "2026-11-06T15:21:54.976668+00:00",
+  "source_branch": "v5-state",
+  "source_universe_date": "20261102",
+  "universe_count": 1276,
+  "verified_snapshot_count": 1215,
+  "unverified_count": 61,
+  "source_statuses": {
+    "VERIFIED": 1215,
+    "CORP_CODE_MISSING_OR_SHARE_CLASS": 23,
+    "FINANCIAL_INCOMPLETE": 28,
+    "NO_AVAILABLE_COMPLETE_STATEMENT": 10
+  },
+  "financial_shape": {
+    "type": "object",
+    "count": 1215,
+    "keys": [
+      "000020",
+      "000050",
+      "000070",
+      "000080",
+      "000100",
+      "000120",
+      "000140",
+      "000150",
+      "000210",
+      "000240",
+      "000250",
+      "000270",
+      "000300",
+      "000320",
+      "000370",
+      "000390",
+      "000430",
+      "000480",
+      "000490",
+      "000500"
+    ]
+  },
+  "parsed_record_count": 1215,
+  "stage25_connected": false,
+  "investment_recommendations_verified": 0,
+  "bridge_status": "FULL_SOURCE_READ_SUCCESS_MAPPING_PENDING"
+}
