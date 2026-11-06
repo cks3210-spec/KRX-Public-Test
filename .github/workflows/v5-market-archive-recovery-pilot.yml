@@ -1,0 +1,87 @@
+name: KRX v5 Market Archive Recovery Pilot (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Market trading date YYYYMMDD'
+        required: true
+        default: '20261104'
+permissions:
+  contents: read
+jobs:
+  archive-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Recover and validate dated market snapshot
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, io, json, os, pathlib, re, subprocess, hashlib, time, datetime
+          target=os.environ['TARGET_DATE']
+          if not re.fullmatch(r'20\d{6}',target): raise ValueError('Invalid YYYYMMDD')
+          datetime.datetime.strptime(target,'%Y%m%d')
+          out=pathlib.Path('v5_archive_pilot')/target
+          out.mkdir(parents=True,exist_ok=True)
+          source='data/latest.csv'
+          manifest={'target_date':target,'source_path':source,'status':'NOT_FOUND','production_data_modified':False,'provenance':'REPOSITORY_GIT_HISTORY_NOT_INDEPENDENTLY_VERIFIED_AS_KRX','attempts':[]}
+          def read_git(commit):
+            for attempt in range(1,4):
+              p=subprocess.run(['git','show',f'{commit}:{source}'],capture_output=True)
+              manifest['attempts'].append({'commit':commit,'attempt':attempt,'ok':p.returncode==0})
+              if p.returncode==0:return p.stdout
+              time.sleep(attempt)
+            return None
+          try:
+            commits=subprocess.run(['git','log','--format=%H','--',source],capture_output=True,text=True,check=True).stdout.splitlines()
+            for commit in commits:
+              raw=read_git(commit)
+              if raw is None:continue
+              try:
+                table=csv.DictReader(io.StringIO(raw.decode('utf-8-sig')))
+                cols=table.fieldnames or []
+                needed={'BAS_DD','ISU_CD','TDD_CLSPRC','MKTCAP'}
+                if not needed.issubset(cols):continue
+                rows=[r for r in table if r.get('BAS_DD')==target]
+                if not rows:continue
+                codes=set(); errors=[]
+                for r in rows:
+                  code=r['ISU_CD'].strip()
+                  if not code or code in codes:errors.append('EMPTY_OR_DUPLICATE_CODE:'+code)
+                  codes.add(code)
+                  try:
+                    if float(r['TDD_CLSPRC'].replace(',',''))<=0 or float(r['MKTCAP'].replace(',',''))<=0:errors.append('NONPOSITIVE_PRICE_OR_CAP:'+code)
+                  except ValueError:errors.append('INVALID_PRICE_OR_CAP:'+code)
+                manifest.update({'commit':commit,'row_count':len(rows),'unique_codes':len(codes),'validation_errors':errors[:30], 'source_sha256':hashlib.sha256(raw).hexdigest()})
+                if errors:
+                  manifest['status']='BLOCKED_INVALID_SNAPSHOT'
+                else:
+                  buf=io.StringIO();writer=csv.DictWriter(buf,fieldnames=cols,lineterminator='\n');writer.writeheader();writer.writerows(sorted(rows,key=lambda r:r['ISU_CD']))
+                  data=buf.getvalue().encode('utf-8-sig')
+                  (out/'market_snapshot.csv').write_bytes(data)
+                  manifest.update({'status':'INTERNAL_VALIDATION_PASSED_PROVENANCE_PENDING','snapshot_sha256':hashlib.sha256(data).hexdigest(),'valuation_allowed':False})
+                break
+              except (UnicodeError,csv.Error) as e:
+                manifest['attempts'].append({'commit':commit,'parse_error':str(e)})
+            else:
+              manifest['status']='NO_MATCHING_HISTORY_SNAPSHOT'
+          except Exception as e:
+            manifest['status']='ERROR';manifest['error']=repr(e)
+          finally:
+            manifest.setdefault('valuation_allowed',False)
+            (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
+            print(json.dumps(manifest,ensure_ascii=False,indent=2))
+          PY
+      - name: Upload checkpoint and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-market-archive-pilot-${{ inputs.target_date }}
+          path: v5_archive_pilot/
+          retention-days: 90
+          if-no-files-found: warn
