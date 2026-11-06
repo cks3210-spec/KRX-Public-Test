@@ -1,0 +1,120 @@
+name: KRX v5 Cross-Run Persistent Archive Pilot (Isolated Branch)
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: Trading date YYYYMMDD
+        required: true
+        default: '20261104'
+permissions:
+  contents: write
+concurrency:
+  group: v5-market-archive-writer
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Persist or resume isolated market snapshot
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, io, json, os, pathlib, re, subprocess, hashlib, datetime, time, sys
+          T=os.environ['TARGET_DATE']; branch='v5-market-archive'; source='data/latest.csv'
+          if not re.fullmatch(r'20\d{6}',T): raise ValueError('Invalid date')
+          datetime.datetime.strptime(T,'%Y%m%d')
+          root=pathlib.Path('v5_persistence_test')/T; root.mkdir(parents=True,exist_ok=True)
+          archive=pathlib.Path('v5_market_archive')/T
+          report={'target_date':T,'branch':branch,'production_main_modified':False,'official_source_independently_verified':False,'valuation_allowed':False,'status':'STARTED','attempts':[]}
+          def run(*args,check=False):
+           p=subprocess.run(args,capture_output=True,text=True)
+           if check and p.returncode: raise RuntimeError(f'{args}: {p.stderr[-500:]}')
+           return p
+          def validate(data):
+           reader=csv.DictReader(io.StringIO(data.decode('utf-8-sig')))
+           needed={'BAS_DD','ISU_CD','TDD_CLSPRC','MKTCAP'}
+           if not needed.issubset(reader.fieldnames or []):raise ValueError('Missing columns')
+           rows=list(reader); codes=set()
+           for row in rows:
+            code=row['ISU_CD'].strip()
+            if row['BAS_DD']!=T or not code or code in codes:raise ValueError('Wrong date or duplicate code')
+            codes.add(code)
+            if float(row['TDD_CLSPRC'].replace(',',''))<=0 or float(row['MKTCAP'].replace(',',''))<=0:raise ValueError('Invalid price/cap')
+           if len(rows)<1:raise ValueError('Empty snapshot')
+           return len(rows)
+          def write_report():
+           (root/'result.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+           print(json.dumps(report,ensure_ascii=False,indent=2))
+          try:
+           run('git','fetch','origin',f'refs/heads/{branch}:refs/remotes/origin/{branch}')
+           exists=run('git','rev-parse','--verify',f'refs/remotes/origin/{branch}').returncode==0
+           old=None
+           if exists:
+            p=subprocess.run(['git','show',f'origin/{branch}:v5_market_archive/{T}/market_snapshot.csv'],capture_output=True)
+            if p.returncode==0:
+             try:
+              count=validate(p.stdout)
+              meta=subprocess.run(['git','show',f'origin/{branch}:v5_market_archive/{T}/manifest.json'],capture_output=True)
+              manifest=json.loads(meta.stdout) if meta.returncode==0 else {}
+              sha=hashlib.sha256(p.stdout).hexdigest()
+              if sha!=manifest.get('snapshot_sha256'):raise ValueError('Archived hash mismatch')
+              old=p.stdout
+              report.update(status='REUSED_PERSISTED_SNAPSHOT',row_count=count,snapshot_sha256=sha,source_commit=manifest.get('source_commit'),cross_run_resume='PASS')
+             except Exception as e:raise RuntimeError('Stored snapshot invalid; refusing overwrite: '+str(e))
+           if old is None:
+            commits=run('git','log','--format=%H','--',source,check=True).stdout.splitlines()
+            found=None
+            for commit in commits:
+             for attempt in range(1,4):
+              p=subprocess.run(['git','show',f'{commit}:{source}'],capture_output=True)
+              report['attempts'].append({'commit':commit,'attempt':attempt,'success':p.returncode==0})
+              if p.returncode==0:break
+              time.sleep(attempt)
+             if p.returncode:continue
+             try:
+              rdr=csv.DictReader(io.StringIO(p.stdout.decode('utf-8-sig')))
+              if not {'BAS_DD','ISU_CD','TDD_CLSPRC','MKTCAP'}.issubset(rdr.fieldnames or []):continue
+              rows=[r for r in rdr if r['BAS_DD']==T]
+              if not rows:continue
+              b=io.StringIO(); w=csv.DictWriter(b,fieldnames=rdr.fieldnames,lineterminator='\n');w.writeheader();w.writerows(sorted(rows,key=lambda x:x['ISU_CD']))
+              data=b.getvalue().encode('utf-8-sig');count=validate(data)
+              found=(commit,data,count);break
+             except (UnicodeError,csv.Error,ValueError):continue
+            if found is None:raise RuntimeError('No valid source snapshot found in git history')
+            commit,data,count=found;sha=hashlib.sha256(data).hexdigest()
+            report.update(status='NEW_SNAPSHOT_READY',row_count=count,snapshot_sha256=sha,source_commit=commit,cross_run_resume='PENDING_SECOND_RUN')
+            # Store only in isolated archive branch, never main.
+            if exists:run('git','checkout','-B',branch,f'origin/{branch}',check=True)
+            else:run('git','checkout','--orphan',branch,check=True);run('git','rm','-rf','--cached','.',check=False)
+            archive.mkdir(parents=True,exist_ok=True)
+            (archive/'market_snapshot.csv').write_bytes(data)
+            manifest={'target_date':T,'source_commit':commit,'source_path':source,'row_count':count,'snapshot_sha256':sha,'official_source_independently_verified':False,'valuation_allowed':False,'status':'INTERNAL_VALIDATION_ONLY'}
+            (archive/'manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+            run('git','config','user.name','github-actions[bot]',check=True)
+            run('git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com',check=True)
+            run('git','add',str(archive),check=True)
+            run('git','commit','-m',f'Archive v5 market snapshot {T} (unverified provenance)',check=True)
+            p=run('git','push','origin',f'HEAD:refs/heads/{branch}')
+            if p.returncode:raise RuntimeError('Archive branch push failed: '+p.stderr[-600:])
+            report['status']='PERSISTED_FIRST_RUN';report['archive_commit']=run('git','rev-parse','HEAD',check=True).stdout.strip()
+           else:
+            (root/'market_snapshot.csv').write_bytes(old)
+          except Exception as e:
+           report['status']='FAILED';report['error']=str(e)
+           write_report();sys.exit(1)
+          write_report()
+          PY
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-cross-run-persistence-${{ inputs.target_date }}
+          path: v5_persistence_test/
+          if-no-files-found: warn
