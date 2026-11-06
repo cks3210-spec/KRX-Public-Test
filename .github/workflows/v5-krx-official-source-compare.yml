@@ -1,0 +1,108 @@
+name: KRX v5 Official Source Independent Comparison (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Archived market date YYYYMMDD'
+        required: true
+        default: '20261104'
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compare archived snapshot against fresh KRX Open API
+        env:
+          TARGET_DATE: ${{ inputs.target_date }}
+          KRX_KEY: ${{ secrets.KRX_API_KEY }}
+          KRX_ALT_KEY: ${{ secrets.KRX_AUTH_KEY }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, re, csv, io, json, pathlib, hashlib, subprocess, time, urllib.request, urllib.parse, urllib.error, datetime, sys
+          target=os.environ['TARGET_DATE']; datetime.datetime.strptime(target,'%Y%m%d')
+          if not re.fullmatch(r'20\d{6}',target):raise ValueError('Invalid date')
+          root=pathlib.Path('v5_official_compare')/target;root.mkdir(parents=True,exist_ok=True)
+          report={'target_date':target,'status':'STARTED','official_verified':False,'valuation_allowed':False,'production_modified':False,'markets':{},'mismatch_examples':[]}
+          def finish(status,code=0):
+            report['status']=status
+            (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+            print(json.dumps(report,ensure_ascii=False,indent=2));sys.exit(code)
+          key=os.environ.get('KRX_KEY') or os.environ.get('KRX_ALT_KEY')
+          if not key:finish('BLOCKED_MISSING_KRX_SECRET')
+          git=subprocess.run(['git','fetch','--depth=1','origin','refs/heads/v5-market-archive:refs/remotes/origin/v5-market-archive'],capture_output=True,text=True)
+          if git.returncode:report['error']='Cannot fetch archive branch';finish('BLOCKED_ARCHIVE_UNAVAILABLE')
+          prefix=f'v5_market_archive/{target}/'
+          def gitshow(path):
+            p=subprocess.run(['git','show',f'origin/v5-market-archive:{prefix}{path}'],capture_output=True)
+            return p.stdout if p.returncode==0 else None
+          raw=gitshow('market_snapshot.csv');meta=gitshow('manifest.json')
+          if raw is None or meta is None:finish('BLOCKED_ARCHIVE_MISSING')
+          try: manifest=json.loads(meta); archive=list(csv.DictReader(io.StringIO(raw.decode('utf-8-sig'))))
+          except Exception as e:report['error']=str(e);finish('BLOCKED_ARCHIVE_INVALID')
+          sha=hashlib.sha256(raw).hexdigest()
+          if manifest.get('target_date')!=target or manifest.get('snapshot_sha256')!=sha:finish('BLOCKED_ARCHIVE_HASH_OR_DATE')
+          def number(x):return int(str(x).replace(',','').strip())
+          stored={};invalid=[]
+          for r in archive:
+            try:
+              code=r['ISU_CD'].strip();market=r['MARKET'].upper().strip()
+              if r['BAS_DD']!=target or market not in ('KOSPI','KOSDAQ') or code in stored or not code:raise ValueError('date/market/duplicate')
+              stored[code]={'close':number(r['TDD_CLSPRC']),'cap':number(r['MKTCAP']),'market':market}
+            except Exception as e:invalid.append({'code':r.get('ISU_CD'),'error':str(e)})
+          report.update(archive_rows=len(archive),archive_sha256=sha,archive_invalid_count=len(invalid),archive_invalid_examples=invalid[:10])
+          if invalid:finish('BLOCKED_ARCHIVE_INVALID_ROWS')
+          allofficial={};errors=[]
+          for market,api in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+            url='https://data-dbg.krx.co.kr/svc/apis/sto/'+api+'?'+urllib.parse.urlencode({'basDd':target})
+            info={'attempts':0,'response_rows':0,'valid_rows':0,'status':'NOT_FETCHED'}
+            for attempt in range(1,4):
+              info['attempts']=attempt
+              try:
+                req=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'v5-official-source-audit/1.0'})
+                with urllib.request.urlopen(req,timeout=30) as resp: payload=json.load(resp)
+                rows=payload.get('OutBlock_1')
+                if not isinstance(rows,list) or not rows:raise ValueError('Missing or empty OutBlock_1')
+                info['response_rows']=len(rows)
+                local={}
+                for r in rows:
+                  if str(r.get('BAS_DD',''))!=target:raise ValueError('Response date mismatch')
+                  code=str(r.get('ISU_CD','')).strip()
+                  if not code or code in local:raise ValueError('Duplicate or blank code')
+                  local[code]={'close':number(r['TDD_CLSPRC']),'cap':number(r['MKTCAP']),'market':market}
+                info['valid_rows']=len(local);info['status']='FETCHED';allofficial.update(local)
+                break
+              except Exception as e:
+                info['last_error']=str(e)[:180]
+                if attempt<3:time.sleep(attempt*3)
+            report['markets'][market]=info
+            if info['status']!='FETCHED':errors.append(market)
+          if errors:finish('BLOCKED_OFFICIAL_API_UNAVAILABLE')
+          mismatches=[];missing=[];matched=0
+          for code,a in stored.items():
+            b=allofficial.get(code)
+            if b is None:missing.append(code);continue
+            if a!=b:mismatches.append({'code':code,'archive':a,'official':b})
+            else:matched+=1
+          extra=[code for code in allofficial if code not in stored]
+          report.update(official_rows=len(allofficial),matched=matched,mismatch_count=len(mismatches),missing_from_official_count=len(missing),official_extra_count=len(extra),mismatch_examples=mismatches[:25],missing_examples=missing[:25],official_extra_examples=extra[:25],source='KRX_OPEN_API_DIRECT_REQUEST',source_endpoints=['sto/stk_bydd_trd','sto/ksq_bydd_trd'],source_basDd=target,source_checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+          if not mismatches and not missing and not extra and matched==len(stored):
+            report['official_verified']=True
+            report['status']='OFFICIAL_FULL_MATCH'
+          else:report['status']='BLOCKED_OFFICIAL_DIFFERENCES'
+          # This is an audit only. Never unlock valuation or update the archive automatically.
+          finish(report['status'])
+          PY
+      - name: Upload comparison report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-krx-official-compare-${{ inputs.target_date }}
+          path: v5_official_compare/
+          retention-days: 90
+          if-no-files-found: warn
