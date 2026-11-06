@@ -1,6 +1,6 @@
 name: KRX v5 Integrated Quality Gate 50 (One Click)
-true:
-  workflow_dispatch: null
+on:
+  workflow_dispatch: 
 permissions:
   contents: read
 jobs:
