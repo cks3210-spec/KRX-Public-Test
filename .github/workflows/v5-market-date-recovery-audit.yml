@@ -1,0 +1,61 @@
+name: KRX v5 Market Date Recovery Audit Read Only
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit official historical market snapshots and fallback readiness
+        shell: bash
+        run: |
+          mkdir -p v5_market_recovery_audit
+          cat > /tmp/audit.py <<'PY'
+          import csv,json,pathlib,collections,datetime,hashlib
+          ROOT=pathlib.Path('data');OUT=pathlib.Path('v5_market_recovery_audit'); TARGET='20261104'
+          def rows(path):
+              try:
+                  with path.open(encoding='utf-8-sig',newline='') as f:
+                      r=csv.DictReader(f)
+                      return list(r),r.fieldnames or []
+              except Exception as e:return [],['ERROR:'+str(e)]
+          files=sorted(p for p in ROOT.rglob('*.csv') if p.is_file()) if ROOT.exists() else []
+          results=[];candidates=[];samples=[]
+          for p in files:
+              try:
+                  if p.stat().st_size>150_000_000:
+                      results.append(dict(path=str(p),status='SKIPPED_TOO_LARGE',size=p.stat().st_size));continue
+                  rr,fields=rows(p)
+                  datekey=next((k for k in ('BAS_DD','bas_dd','date','DATE','trade_date') if k in fields),None)
+                  codekey=next((k for k in ('ISU_CD','isu_cd','stock_code','code') if k in fields),None)
+                  capkey=next((k for k in ('MKTCAP','mktcap','market_cap','marketcap') if k in fields),None)
+                  closekey=next((k for k in ('TDD_CLSPRC','close','CLOSE','close_price') if k in fields),None)
+                  matched=[r for r in rr if datekey and str(r.get(datekey,'')).replace('-','')==TARGET]
+                  dates=sorted({str(r.get(datekey,'')).replace('-','') for r in rr if datekey and r.get(datekey)})
+                  status='HISTORICAL_MATCH' if matched else ('DATE_COLUMN_NO_MATCH' if datekey else 'NO_DATE_COLUMN')
+                  results.append(dict(path=str(p),status=status,size=p.stat().st_size,rows=len(rr),target_rows=len(matched),min_date=dates[0] if dates else '',max_date=dates[-1] if dates else '',date_column=datekey or '',code_column=codekey or '',cap_column=capkey or '',close_column=closekey or ''))
+                  if matched and codekey:
+                      valid=[r for r in matched if str(r.get(codekey,'')).strip() and capkey and str(r.get(capkey,'')).strip()]
+                      candidates.append(dict(path=str(p),target_rows=len(matched),valid_marketcap_rows=len(valid),has_close=bool(closekey),has_marketcap=bool(capkey),sample_codes=';'.join(str(r.get(codekey,'')) for r in valid[:5])))
+              except Exception as e:results.append(dict(path=str(p),status='ERROR',error=str(e)))
+          # A stale snapshot must never be silently labeled as the requested day.
+          status={'target_market_date':TARGET,'source_scope':'checked-out repository data/*.csv recursively','files_scanned':len(files),'files_with_target_date':len(candidates),'historical_sources_with_marketcap':sum(x['has_marketcap'] for x in candidates),'same_date_valuation_ready':'NOT_VERIFIED','recovery_policy':{'historical_backtest':'exact requested market date only; otherwise BLOCK','live_research':'last verified trading date, explicit AS_OF and STALE status','missing_price_or_cap':'BLOCK valuation, do not impute','retry':'future workflow stage; not executed in this read-only audit'},'production_data_modified':False,'investment_grades_created':0}
+          if not candidates:status['finding']='No matching historical source with a stock code found in repository CSV files; do not calculate PER/PBR.'
+          else:status['finding']='Potential historical sources identified; inspect coverage, provenance and 50 candidate matches before valuation.'
+          def write_csv(name,items):
+              keys=sorted(set().union(*(set(x) for x in items))) if items else ['note']
+              with (OUT/name).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=keys,extrasaction='ignore');w.writeheader();w.writerows(items)
+          write_csv('market_file_inventory.csv',results)
+          write_csv('historical_source_candidates.csv',candidates)
+          (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-market-date-recovery-audit
+          path: v5_market_recovery_audit/
