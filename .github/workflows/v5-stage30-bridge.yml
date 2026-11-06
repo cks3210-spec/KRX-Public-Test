@@ -1,0 +1,86 @@
+name: KRX v5 Stage30 Full Financial Bridge
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Read persisted full collector state without rerunning DART
+        shell: bash
+        run: |
+          mkdir -p v5_reports/stage30
+          git fetch --depth=1 origin refs/heads/v5-state:refs/remotes/origin/v5-state
+          for f in summary.json checkpoint.json financial_latest.json; do
+            git show "origin/v5-state:$f" > "v5_reports/stage30/$f"
+          done
+      - name: Validate full-universe coverage and inspect source structure
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv,datetime,json,pathlib,re
+          root=pathlib.Path('v5_reports/stage30')
+          summary=json.loads((root/'summary.json').read_text(encoding='utf-8-sig'))
+          checkpoint=json.loads((root/'checkpoint.json').read_text(encoding='utf-8-sig'))
+          financial=json.loads((root/'financial_latest.json').read_text(encoding='utf-8-sig'))
+          def shape(x):
+              if isinstance(x,dict):return {'type':'object','count':len(x),'keys':list(x)[:20]}
+              if isinstance(x,list):return {'type':'array','count':len(x),'first_item_type':type(x[0]).__name__ if x else None,'first_item_keys':list(x[0])[:30] if x and isinstance(x[0],dict) else []}
+              return {'type':type(x).__name__}
+          def records(x):
+              if isinstance(x,list):return x
+              if isinstance(x,dict):
+                  for k in ('financials','stocks','records','data','latest','items'):
+                      if isinstance(x.get(k),list):return x[k]
+                      if isinstance(x.get(k),dict):return list(x[k].values())
+                  if all(re.fullmatch(r'\d{6}',str(k)) for k in x):return [{'ISU_CD':k,**(v if isinstance(v,dict) else {'raw_value':v})} for k,v in x.items()]
+              return []
+          rows=records(financial)
+          with (root/'source_schema.json').open('w',encoding='utf-8') as f:
+              json.dump({'financial':shape(financial),'checkpoint':shape(checkpoint),'sample_record_keys':list(rows[0])[:60] if rows and isinstance(rows[0],dict) else []},f,ensure_ascii=False,indent=2)
+          verified=int(summary.get('verified_snapshot_count',0))
+          universe=int(summary.get('universe_count',0))
+          status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  'source_branch':'v5-state','source_universe_date':summary.get('universe_date'),
+                  'universe_count':universe,'verified_snapshot_count':verified,
+                  'unverified_count':universe-verified,'source_statuses':summary.get('statuses',{}),
+                  'financial_shape':shape(financial),'parsed_record_count':len(rows),
+                  'stage25_connected':False,'investment_recommendations_verified':0}
+          # Never silently convert unknown account schema into scored metrics.
+          if not rows:
+              status['bridge_status']='SCHEMA_MAPPING_REQUIRED'
+          elif len(rows)<verified:
+              status['bridge_status']='SOURCE_RECORDS_BELOW_VERIFIED_COUNT'
+          else:
+              status['bridge_status']='FULL_SOURCE_READ_SUCCESS_MAPPING_PENDING'
+          (root/'bridge_status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          if universe<1000 or verified<1000 or not rows or len(rows)<verified:
+              raise SystemExit('Financial bridge quality gate failed; inspect bridge_status.json')
+          PY
+      - name: Commit diagnostic metadata only (no duplicate raw files)
+        if: always()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/stage30/bridge_status.json v5_reports/stage30/source_schema.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 stage30: verify persisted full-universe financial source'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload one result bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage30-full-financial-bridge
+          path: |
+            v5_reports/stage30/bridge_status.json
+            v5_reports/stage30/source_schema.json
+          if-no-files-found: warn
