@@ -1,0 +1,99 @@
+name: KRX v5 Integrated Latest Market and 50 Valuation (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Latest market official comparison and 50-company preliminary valuation
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          import csv,io,json,os,datetime,pathlib,urllib.request,urllib.parse,base64,gzip,hashlib
+          from decimal import Decimal,InvalidOperation
+          OUT=pathlib.Path('v5_integrated_result');OUT.mkdir(exist_ok=True)
+          TODAY=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
+          SOURCE='data/latest.csv'
+          KEY=os.environ.get('KRX_API_KEY','').strip()
+          EMBED='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'
+          def number(v):
+           try: return Decimal(str(v).replace(',','').strip())
+           except (InvalidOperation,ValueError): return None
+          def dump(name,obj): (OUT/name).write_text(json.dumps(obj,ensure_ascii=False,indent=2,default=str),encoding='utf-8')
+          def load_csv(path):
+           with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def market_rows_for_date(rows,d): return {r['ISU_CD'].strip().zfill(6):r for r in rows if r.get('BAS_DD','').strip()==d and r.get('ISU_CD','').strip()}
+          def krx_fetch(d,endpoint):
+           url='https://data-dbg.krx.co.kr/svc/apis/'+endpoint+'?'+urllib.parse.urlencode({'basDd':d})
+           req=urllib.request.Request(url,headers={'AUTH_KEY':KEY,'User-Agent':'v5-audit/1.0'})
+           with urllib.request.urlopen(req,timeout=25) as response: obj=json.load(response)
+           if not isinstance(obj,dict) or not isinstance(obj.get('OutBlock_1'),list):raise ValueError('KRX response missing OutBlock_1')
+           return obj['OutBlock_1']
+          status={'run_date_kst':str(TODAY),'production_data_modified':False,'investment_grades_created':0,'valuation_verified':False,'official_verified':False,'status':'BLOCKED','warnings':[]}
+          try:
+           rows=load_csv(SOURCE)
+           dates=sorted({r.get('BAS_DD','').strip() for r in rows if len(r.get('BAS_DD','').strip())==8 and r.get('BAS_DD','').strip().isdigit()})
+           if not dates:raise ValueError('NO_MARKET_DATES')
+           selected_date=dates[-1];selected=market_rows_for_date(rows,selected_date)
+           status.update(source_file=SOURCE,market_date=selected_date,market_rows=len(selected),market_age_calendar_days=(TODAY-datetime.datetime.strptime(selected_date,'%Y%m%d').date()).days)
+           if status['market_age_calendar_days']<0:raise ValueError('FUTURE_MARKET_DATE')
+           if len(selected)!=sum(r.get('BAS_DD','').strip()==selected_date for r in rows):raise ValueError('DUPLICATE_MARKET_CODES')
+           if any(number(r.get('MKTCAP')) is None or number(r.get('TDD_CLSPRC')) is None or number(r.get('MKTCAP'))<=0 or number(r.get('TDD_CLSPRC'))<=0 for r in selected.values()):raise ValueError('INVALID_MARKET_FIELDS')
+           official={};verified=False
+           if KEY:
+            try:
+             for endpoint in ('sto/stk_bydd_trd','sto/ksq_bydd_trd'):
+              for r in krx_fetch(selected_date,endpoint):
+               code=str(r.get('ISU_CD','')).strip().zfill(6)
+               if code in official:raise ValueError('OFFICIAL_DUPLICATE_CODE:'+code)
+               official[code]=r
+             mismatches=[]
+             for code,r in selected.items():
+              off=official.get(code)
+              if off is None or number(off.get('TDD_CLSPRC'))!=number(r.get('TDD_CLSPRC')) or number(off.get('MKTCAP'))!=number(r.get('MKTCAP')):mismatches.append(code)
+             extra=set(official)-set(selected)
+             status.update(official_rows=len(official),official_mismatch_count=len(mismatches),official_extra_count=len(extra),official_sample_mismatches=mismatches[:20])
+             verified=bool(official) and not mismatches and not extra
+            except Exception as e:status['warnings'].append('OFFICIAL_API_ERROR:'+str(e)[:250])
+           else:status['warnings'].append('KRX_API_KEY_NOT_CONFIGURED')
+           status['official_verified']=verified
+           audit=list(csv.DictReader(io.StringIO(gzip.decompress(base64.b64decode(EMBED)).decode('utf-8-sig'))))
+           output=[];counts={}
+           for item in audit:
+            code=item['ISU_CD'].strip().zfill(6); m=selected.get(code);flags=[]
+            cap=number(m.get('MKTCAP')) if m else None
+            income=number(item.get('ttm_net_income_krw'));equity=number(item.get('equity_2026_h1_krw'))
+            per=cap/income if cap is not None and income is not None and income>0 else None
+            pbr=cap/equity if cap is not None and equity is not None and equity>0 else None
+            roe=income/equity*100 if income is not None and equity is not None and equity>0 else None
+            if m is None:flags.append('MARKET_CODE_NOT_FOUND')
+            if income is None:flags.append('INCOME_MISSING')
+            elif income<=0:flags.append('NONPOSITIVE_TTM_EARNINGS_PER_NM')
+            if equity is None or equity<=0:flags.append('EQUITY_INVALID')
+            if item.get('statement_basis')=='OFS':flags.append('OFS_BASIS_REVIEW')
+            if 'INSURANCE_SECTOR' in item.get('flags',''):flags.append('INSURANCE_SECTOR_REVIEW')
+            if not verified:flags.append('OFFICIAL_MARKET_NOT_VERIFIED')
+            flags.append('FINANCIAL_POINT_IN_TIME_NOT_REVALIDATED')
+            flags.append('ROE_END_EQUITY_PROXY_ONLY')
+            for f in flags:counts[f]=counts.get(f,0)+1
+            output.append({'ISU_CD':code,'ISU_NM':item['ISU_NM'],'market_date':selected_date,'financial_period':item.get('financial_period'),'statement_basis':item.get('statement_basis'),'marketcap_krw':str(cap) if cap is not None else '', 'ttm_net_income_krw':str(income) if income is not None else '', 'equity_2026_h1_krw':str(equity) if equity is not None else '', 'per_ttm_provisional':str(round(per,3)) if per is not None else 'N/M','pbr_provisional':str(round(pbr,3)) if pbr is not None else '', 'roe_end_equity_proxy_pct':str(round(roe,3)) if roe is not None else '', 'official_market_verified':str(verified),'valuation_verified':'NO','investment_grade':'NOT_VERIFIED','flags':';'.join(flags)})
+           with (OUT/'valuation_50_provisional.csv').open('w',newline='',encoding='utf-8-sig') as f:
+            w=csv.DictWriter(f,fieldnames=output[0].keys());w.writeheader();w.writerows(output)
+           status.update(status='MARKET_OFFICIAL_VERIFIED_FINANCIAL_REVIEW_PENDING' if verified else 'PRELIMINARY_ONLY_OFFICIAL_MARKET_UNVERIFIED',candidate_count=len(output),per_provisional_count=sum(x['per_ttm_provisional']!='N/M' for x in output),pbr_provisional_count=sum(bool(x['pbr_provisional']) for x in output),flag_counts=counts,financial_source='Embedded 50-company 2026 H1 audit; not refreshed from OpenDART',financial_refresh_completed=False)
+          except Exception as e:status.update(status='FAILED',error=str(e))
+          dump('status.json',status)
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+      - name: Upload single diagnostic ZIP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-integrated-latest-50-result
+          path: v5_integrated_result/
+          if-no-files-found: warn
