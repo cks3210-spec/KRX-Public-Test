@@ -1,0 +1,51 @@
+name: KRX v5 One Click Latest Validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate latest available market snapshot
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, json, datetime, pathlib, collections, math
+          out=pathlib.Path('v5_oneclick_result');out.mkdir(exist_ok=True)
+          status={'production_data_modified':False,'valuation_allowed':False,'investment_grades_created':0,'official_source_independently_verified':False,'status':'BLOCKED'}
+          path=pathlib.Path('data/latest.csv')
+          if not path.is_file():
+              status['error']='MISSING_DATA_LATEST_CSV'
+          else:
+              with path.open(encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+              dates=sorted({r.get('BAS_DD','').strip() for r in rows if len(r.get('BAS_DD','').strip())==8 and r.get('BAS_DD','').strip().isdigit()})
+              if not dates: status['error']='NO_MARKET_DATE'
+              else:
+                  date=dates[-1]; selected=[r for r in rows if r.get('BAS_DD','').strip()==date]
+                  codes=[r.get('ISU_CD','').strip() for r in selected]
+                  invalid=[]
+                  for r in selected:
+                      try:
+                          close=float(r.get('TDD_CLSPRC','')); cap=float(r.get('MKTCAP',''))
+                          if not math.isfinite(close) or not math.isfinite(cap) or close<=0 or cap<=0: raise ValueError()
+                      except (ValueError,TypeError):invalid.append(r.get('ISU_CD',''))
+                  try:
+                      d=datetime.datetime.strptime(date,'%Y%m%d').date()
+                      age=(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()-d).days
+                  except ValueError: age=None
+                  status.update(market_date=date,market_rows=len(selected),markets=dict(collections.Counter(r.get('MARKET','') for r in selected)),duplicate_codes=len(codes)-len(set(codes)),invalid_price_or_cap=len(invalid),market_age_calendar_days=age,source_file='data/latest.csv')
+                  if age is None or age<0:status['error']='INVALID_OR_FUTURE_MARKET_DATE'
+                  elif not selected or status['duplicate_codes'] or invalid:status['error']='MARKET_INTEGRITY_FAILURE'
+                  else:status['status']='MARKET_FILE_VALID_OFFICIAL_CHECK_PENDING'
+          (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+      - name: Upload single result ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-oneclick-latest-validation-result
+          path: v5_oneclick_result/
+          if-no-files-found: error
