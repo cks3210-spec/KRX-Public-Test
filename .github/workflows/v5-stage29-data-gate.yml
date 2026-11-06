@@ -1,0 +1,64 @@
+name: KRX v5 Stage29 Full Universe Data Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit full universe and financial engine input
+        shell: bash
+        run: |
+          mkdir -p v5_reports/stage29
+          cat > /tmp/v5_stage29.py <<'PY'
+          import csv,json,pathlib,datetime,collections
+          root=pathlib.Path('.')
+          def rows(p):
+              if not p.exists():return []
+              with p.open(encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          market=rows(root/'data/latest.csv')
+          dates=[r.get('BAS_DD','') for r in market]
+          latest=max(dates,default='')
+          eligible={r.get('ISU_CD','').strip():r for r in market if r.get('BAS_DD')==latest and float(r.get('MKTCAP') or 0)>=100_000_000_000 and r.get('ISU_CD','').strip()}
+          fundamentals=rows(root/'data/fundamentals.csv')
+          indexed={r.get('ISU_CD','').strip():r for r in fundamentals if r.get('ISU_CD','').strip()}
+          required=['revenue_krw','operating_profit_krw','assets_krw','liabilities_krw','equity_krw','revenue_yoy_pct','operating_profit_yoy_pct','roe_avg_equity_est_pct']
+          missing=sorted(set(eligible)-set(indexed))
+          incomplete=[]
+          for code in sorted(set(eligible)&set(indexed)):
+              absent=[k for k in required if indexed[code].get(k,'').strip() in ('','-','None','nan')]
+              if absent:incomplete.append({'code':code,'name':eligible[code].get('ISU_NM',''),'missing':absent})
+          stage28=root/'v5_reports/stage28/status.json'
+          previous=json.loads(stage28.read_text(encoding='utf-8')) if stage28.exists() else {}
+          statuses=previous.get('component_status',{})
+          bad_components={k:v for k,v in statuses.items() if isinstance(v,dict) and (v.get('status') in ('SOURCE_UNAVAILABLE','WAITING_FOR_SOURCE_DATA','ERROR','FAILED') or v.get('status_file')=='not_present')}
+          result={
+              'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'market_date':latest,'market_rows':len([r for r in market if r.get('BAS_DD')==latest]),
+              'marketcap_100b_universe':len(eligible),
+              'fundamental_input_rows':len(fundamentals),
+              'fundamental_matched_to_universe':len(set(eligible)&set(indexed)),
+              'fundamental_unmatched_codes':missing,
+              'fundamental_incomplete_count':len(incomplete),
+              'fundamental_incomplete_sample':incomplete[:100],
+              'stage28_bad_component_statuses':bad_components,
+              'source_note':'Audit of committed files only; historical full-collector results outside data/fundamentals.csv are not counted.',
+              'investment_grades_authorized':False,
+          }
+          result['ready_for_verified_stock_selection']=(len(eligible)>0 and not missing and not incomplete and not bad_components)
+          out=root/'v5_reports/stage29';out.mkdir(parents=True,exist_ok=True)
+          (out/'status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          with (out/'missing_universe.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.writer(f);w.writerow(['ISU_CD','ISU_NM','reason']);w.writerows([code,eligible[code].get('ISU_NM',''),'NOT_IN_STAGE25_INPUT'] for code in missing)
+          print(json.dumps({k:v for k,v in result.items() if k not in ('fundamental_unmatched_codes','fundamental_incomplete_sample','stage28_bad_component_statuses')},ensure_ascii=False,indent=2))
+          PY
+          python /tmp/v5_stage29.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage29-full-universe-gap-report
+          path: v5_reports/stage29/
+          if-no-files-found: error
