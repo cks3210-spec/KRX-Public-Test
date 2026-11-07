@@ -1,0 +1,108 @@
+name: KRX v5 Stage36 Research Candidate Triage
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Evaluate existing full-universe financial snapshots
+        shell: bash
+        run: |
+          mkdir -p v5_stage36
+          cat > /tmp/v5_stage36.py <<'PY'
+          import csv,json,os,re,math,subprocess,pathlib,datetime,collections
+          O=pathlib.Path('v5_stage36'); O.mkdir(exist_ok=True)
+          def readcsv(path):
+           with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def number(v):
+           try:
+            x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+           except (ValueError,TypeError):return None
+          def code(v):
+           s=str(v or '').strip();return s.zfill(6) if s.isdigit() and len(s)<=6 else s
+          def write(name,rows,fields):
+           with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          market=readcsv('data/latest.csv')
+          eligible={code(r.get('ISU_CD')):r for r in market if code(r.get('ISU_CD')) and (number(r.get('MKTCAP')) or 0)>=100_000_000_000}
+          subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,stdout=subprocess.DEVNULL)
+          raw=subprocess.run(['git','show','FETCH_HEAD:financial_latest.json'],check=True,capture_output=True).stdout
+          fin=json.loads(raw)
+          if not isinstance(fin,dict) or len(fin)<1000:raise RuntimeError('Financial source incomplete')
+          # Prior Stage35 has already confirmed approved KRX daily trading coverage for this market date.
+          # Do not repeat remote API requests: preserve verified baseline and identify freshness honestly.
+          veto=re.compile(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.I)
+          cols=['ISU_CD','ISU_NM','market_date','market_cap_krw','financial_period','statement_type','financial_coverage','revenue_krw','operating_profit_krw','net_income_krw','equity_krw','debt_ratio_pct','operating_margin_pct','research_score','research_tier','sector_special_review','data_quality','share_class','investment_grade','buy_decision','notes']
+          rows=[];excluded=[];recovery=[];counts=collections.Counter()
+          for c,p in sorted(eligible.items()):
+           name=p.get('ISU_NM','');f=fin.get(c,{})
+           if not isinstance(f,dict):f={}
+           if veto.search(re.sub(r'\s+','',name)):
+            excluded.append({'ISU_CD':c,'ISU_NM':name,'reason':'PREFERRED_NAME_VETO'});continue
+           core=['revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw']
+           vals={k:number(f.get(k)) for k in core}
+           coverage=sum(x is not None for x in vals.values())
+           eq=vals['equity_krw'];rev=vals['revenue_krw'];op=vals['operating_profit_krw'];liab=vals['liabilities_krw']
+           debt=100*liab/eq if liab is not None and eq is not None and eq>0 else None
+           margin=100*op/rev if op is not None and rev is not None and rev>0 else None
+           period=str(f.get('period') or '');stype=str(f.get('statement_type') or '')
+           special=bool(re.search(r'금융|은행|증권|보험|지주|홀딩스|스퀘어|리츠|REIT|스팩|SPAC',name,re.I))
+           # Score is a triage indicator only, never a verified valuation or investment grade.
+           score=0
+           if coverage==6:score+=35
+           elif coverage>=4:score+=15
+           if eq is not None and eq>0:score+=15
+           if debt is not None and debt<100:score+=15
+           elif debt is not None and debt<200:score+=8
+           if op is not None and op>0:score+=10
+           if vals['net_income_krw'] is not None and vals['net_income_krw']>0:score+=10
+           if margin is not None and 0<margin<=40:score+=10
+           if period and stype:score+=5
+           if special:score=min(score,60)
+           tier='PRIORITY_REVIEW' if score>=75 else ('SECONDARY_REVIEW' if score>=55 else 'DATA_OR_RISK_REVIEW')
+           quality='SIX_FIELDS_PRESENT' if coverage==6 else 'PARTIAL_OR_MISSING'
+           notes=['COMMON_NOT_OFFICIALLY_CERTIFIED','NO_COMPARABLE_YOY','NO_VERIFIED_PER_PBR_ROE','NOT_A_BUY_SIGNAL']
+           if special:notes.append('SECTOR_SPECIFIC_ACCOUNTING_REVIEW')
+           if period.endswith(('_Q1','_H1','_Q3')):notes.append('INTERIM_CUMULATIVE_NOT_ANNUALIZED')
+           if not f.get('latest_filing_receipt'):notes.append('FILING_RECEIPT_UNCONFIRMED')
+           r={'ISU_CD':c,'ISU_NM':name,'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),
+           'financial_period':period,'statement_type':stype,'financial_coverage':str(coverage)+'/6',
+           'revenue_krw':vals['revenue_krw'] if rev is not None else '',
+           'operating_profit_krw':op if op is not None else '',
+           'net_income_krw':vals['net_income_krw'] if vals['net_income_krw'] is not None else '',
+           'equity_krw':eq if eq is not None else '',
+           'debt_ratio_pct':round(debt,2) if debt is not None else '',
+           'operating_margin_pct':round(margin,2) if margin is not None and not special else '',
+           'research_score':score,'research_tier':tier,'sector_special_review':int(special),
+           'data_quality':quality,'share_class':'COMMON_CANDIDATE_NOT_OFFICIALLY_CERTIFIED',
+           'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD','notes':';'.join(notes)}
+           rows.append(r);counts[tier]+=1
+           if coverage<6 or not period or not stype:recovery.append(r)
+          rows.sort(key=lambda r:(-r['research_score'],r['ISU_CD']))
+          write('research_priority_all_NOT_INVESTMENT_GRADES.csv',rows,cols)
+          write('priority_research_shortlist_NOT_BUY.csv',[r for r in rows if r['research_tier']=='PRIORITY_REVIEW'],cols)
+          write('financial_recovery.csv',recovery,cols)
+          write('preferred_excluded.csv',excluded,['ISU_CD','ISU_NM','reason'])
+          report={'status':'RESEARCH_TRIAGE_READY_NOT_INVESTMENT_GRADE','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'eligible_market_count':len(eligible),'preferred_name_excluded':len(excluded),'research_candidates':len(rows),
+           'financial_recovery':len(recovery),'research_tiers':dict(counts),'official_common_verified':0,
+           'verified_per_pbr_roe':False,'comparable_yoy_verified':False,'investment_grades_issued':0,'buy_signals_issued':0,
+           'market_dates':dict(collections.Counter(r['market_date'] for r in rows)),
+           'source_branch':'v5-state','source_financial_records':len(fin),
+           'caveat':'Research score is a provisional data-quality/profitability triage, not a fundamental A/B grade or recommendation. Share classes remain unverified. Sector-specific accounting is not ranked as normal operating margin.',
+           'v4_or_golden_cross_modified':False}
+          (O/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+          python -m py_compile /tmp/v5_stage36.py
+          python /tmp/v5_stage36.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage36-research-triage
+          path: v5_stage36/
+          if-no-files-found: warn
