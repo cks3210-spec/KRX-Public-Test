@@ -1,0 +1,131 @@
+name: KRX v5 Stage57 Daily Experimental Cohorts
+'on':
+  workflow_dispatch: {}
+  schedule:
+  - cron: 10 10 * * 1-5
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: v5-stage57-daily
+  cancel-in-progress: false
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+    - name: Download latest Stage55 full-market evidence
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage55_input
+
+        ID=$(gh run list --workflow v5-stage55-sector-and-performance-baseline.yml --status success --limit 30 --json
+        databaseId --jq ''.[0].databaseId'')
+
+        test -n "$ID"
+
+        gh run download "$ID" --name v5-stage55-sector-and-performance-baseline --dir stage55_input
+
+        test -s stage55_input/full_market_1248_sector_and_tracking.csv'
+    - name: Recover Stage56 baseline tracking if local tracking absent
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: "set -euo pipefail\nmkdir -p data/v5_tracking\nif [ ! -s data/v5_tracking/episodes.csv ]; then\n ID=$(gh\
+        \ run list --workflow v5-stage56-rolling-cohort-performance.yml --status success --limit 30 --json databaseId\
+        \ --jq '.[0].databaseId')\n if [ -n \"$ID\" ]; then\n  mkdir -p stage56_recovery\n  gh run download \"$ID\"\
+        \ --name v5-stage56-rolling-cohort-performance --dir stage56_recovery || true\n  for n in episodes.csv daily_prices.csv;\
+        \ do\n   if [ -s \"stage56_recovery/$n\" ]; then cp \"stage56_recovery/$n\" \"data/v5_tracking/$n\"; fi\n\
+        \  done\n fi\nfi"
+    - name: Daily provisional candidate changes and performance
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      run: "mkdir -p stage57_out\ncat > /tmp/v5_stage57.py <<'PYCODE'\nimport csv,json,os,pathlib,datetime,urllib.request,urllib.parse,collections,math\n\
+        R=pathlib.Path('data/v5_tracking');R.mkdir(parents=True,exist_ok=True)\nO=pathlib.Path('stage57_out');O.mkdir(exist_ok=True)\n\
+        def read(p):\n p=pathlib.Path(p)\n if not p.exists():return []\n with p.open(encoding='utf-8-sig',newline='')\
+        \ as f:return list(csv.DictReader(f))\ndef save(p,rows,fields):\n p=pathlib.Path(p);p.parent.mkdir(parents=True,exist_ok=True)\n\
+        \ with p.open('w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        def num(x):\n try:return float(str(x).replace(',',''))\n except:return None\ndef krx(day,market,key):\n\
+        \ ep='stk_bydd_trd' if market=='KOSPI' else 'ksq_bydd_trd'\n u='https://data-dbg.krx.co.kr/svc/apis/sto/'+ep+'?'+urllib.parse.urlencode({'basDd':day})\n\
+        \ with urllib.request.urlopen(urllib.request.Request(u,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0'}),timeout=50)\
+        \ as r:\n  j=json.load(r)\n return j.get('OutBlock_1',[])\nbase=read('stage55_input/full_market_1248_sector_and_tracking.csv')\n\
+        if len(base)<1200:raise RuntimeError('Full-market Stage55 reference missing')\nprices=read(R/'daily_prices.csv');\
+        \ pm={(x['date'],x['market'],x['code']):x for x in prices}\nepisodes=read(R/'episodes.csv'); prior_snap=read(R/'daily_candidate_snapshots.csv')\n\
+        now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))\nend=now.date() if now.hour>=18\
+        \ else now.date()-datetime.timedelta(days=1)\nstart=max(end-datetime.timedelta(days=35),datetime.date(2026,11,5))\n\
+        key=os.environ.get('KRX_API_KEY','').strip();errors=[];fresh=[]\nif not key and os.getenv('STAGE57_OFFLINE')!='1':raise\
+        \ RuntimeError('KRX_API_KEY missing')\nif os.getenv('STAGE57_OFFLINE')=='1':\n with __import__('zipfile').ZipFile('/mnt/data/v5-stage56-rolling-cohort-performance.zip')\
+        \ as z:\n  with z.open('daily_prices.csv') as f:\n   for x in csv.DictReader(y.decode('utf-8-sig') for y\
+        \ in f):pm[(x['date'],x['market'],x['code'])]=x\nelse:\n for n in range((end-start).days+1):\n  d=start+datetime.timedelta(days=n)\n\
+        \  if d.weekday()>4:continue\n  day=d.strftime('%Y%m%d');parts={};failed=False\n  for market in ('KOSPI','KOSDAQ'):\n\
+        \   try:\n    a=krx(day,market,key)\n    parts[market]=[{'date':day,'market':market,'code':str(x.get('ISU_CD','')).strip(),'close':str(num(x.get('TDD_CLSPRC'))\
+        \ or '')} for x in a if num(x.get('TDD_CLSPRC')) and num(x.get('TDD_CLSPRC'))>0]\n   except Exception as\
+        \ e:errors.append(day+' '+market+' '+str(e)[:90]);failed=True\n  if failed:continue\n  # Require both market\
+        \ datasets; a holiday is not a trading day.\n  if len(parts.get('KOSPI',[]))<500 or len(parts.get('KOSDAQ',[]))<900:continue\n\
+        \  fresh.append(day)\n  for rows in parts.values():\n   for x in rows:pm[(x['date'],x['market'],x['code'])]=x\n\
+        prices=sorted(pm.values(),key=lambda x:(x['date'],x['market'],x['code']))\nsave(R/'daily_prices.csv',prices,['date','market','code','close'])\n\
+        byday=collections.defaultdict(dict);bysec=collections.defaultdict(dict)\nfor x in prices:\n k=(x['market'],x['code']);v=num(x['close']);byday[x['date']][k]=v;bysec[k][x['date']]=v\n\
+        # Baseline from 2026-11-05, do not silently pretend full financial re-collection.\nbase_date='20261105'\n\
+        # Seed the original 318 candidate episodes and dated snapshot once.\nif not episodes:\n for b in base:\n\
+        \  g=b.get('stage55_research_grade','')\n  if g not in ('A','B'):continue\n  code=b['ISU_CD'];market=b['MARKET'];eid=f'{base_date}:{market}:{code}'\n\
+        \  episodes.append({'episode_id':eid,'entry_date':base_date,'market':market,'code':code,'name':b['ISU_NM'],'entry_price':b['TDD_CLSPRC'],'provisional_grade':g,'status':'ACTIVE_PROVISIONAL','exit_date':'','source':'STAGE55_BASELINE','final_buy_signal':'NONE'})\n\
+        if not prior_snap:\n for b in base:\n  if b.get('stage55_research_grade') in ('A','B'):\n   prior_snap.append({'date':base_date,'market':b['MARKET'],'code':b['ISU_CD'],'name':b['ISU_NM'],'grade':b['stage55_research_grade'],'close':b['TDD_CLSPRC'],'financial_score':b.get('stage53_quality_adjusted_score',''),'price_momentum_pct':'','model':'STAGE55_BASELINE'})\n\
+        known_dates={x['date'] for x in prior_snap}\nnew_dates=sorted(d for d in byday if d>base_date and d not\
+        \ in known_dates)\nchanges=read(R/'candidate_changes.csv'); daily_counts=[]\n# One episode per continuous\
+        \ membership; grade changes are not new episodes.\nfor day in new_dates:\n today_prices=byday[day]\n if\
+        \ len(today_prices)<1400:continue\n prev=max((d for d in known_dates if d<day),default=None)\n if not prev:continue\n\
+        \ old={(x['market'],x['code']):x for x in prior_snap if x['date']==prev}\n current=[]\n for b in base:\n\
+        \  k=(b['MARKET'],b['ISU_CD']);p=today_prices.get(k);initial=num(b.get('TDD_CLSPRC'));fin=num(b.get('stage53_quality_adjusted_score'))\n\
+        \  if not p or not initial or not fin or b.get('eligible_for_research')!='YES':continue\n  # Explicitly\
+        \ experimental price-overlay grade, not official or Stage55 financial re-run.\n  # Price movement from 2026-11-05\
+        \ capped to prevent price-only domination.\n  momentum=100*(p/initial-1)\n  overlay=max(-12,min(12,momentum*0.35))\n\
+        \  score=fin+overlay\n  grade='A' if score>=80 else 'B' if score>=65 else ''\n  if not grade:continue\n\
+        \  current.append({'date':day,'market':k[0],'code':k[1],'name':b['ISU_NM'],'grade':grade,'close':str(p),'financial_score':str(fin),'price_momentum_pct':str(round(momentum,3)),'model':'EXPERIMENTAL_STALE_FINANCIALS_PRICE_OVERLAY'})\n\
+        \ cur={ (x['market'],x['code']):x for x in current}\n for k,x in cur.items():\n  if k not in old:\n   eid=f'{day}:{k[0]}:{k[1]}'\n\
+        \   episodes.append({'episode_id':eid,'entry_date':day,'market':k[0],'code':k[1],'name':x['name'],'entry_price':x['close'],'provisional_grade':x['grade'],'status':'ACTIVE_PROVISIONAL','exit_date':'','source':'EXPERIMENTAL_PRICE_OVERLAY','final_buy_signal':'NONE'})\n\
+        \   event='NEW_OR_REENTRY'\n  elif old[k]['grade']!=x['grade']:event='GRADE_CHANGE'\n  else:event='MAINTAINED'\n\
+        \  if event!='MAINTAINED':changes.append({'date':day,'market':k[0],'code':k[1],'name':x['name'],'event':event,'prior_grade':old.get(k,{}).get('grade',''),'new_grade':x['grade']})\n\
+        \ for k,x in old.items():\n  if k not in cur:\n   changes.append({'date':day,'market':k[0],'code':k[1],'name':x['name'],'event':'EXIT','prior_grade':x['grade'],'new_grade':''})\n\
+        \   for ep in reversed(episodes):\n    if ep['market']==k[0] and ep['code']==k[1] and ep['status']=='ACTIVE_PROVISIONAL':ep['status']='EXITED';ep['exit_date']=day;break\n\
+        \ prior_snap.extend(current);known_dates.add(day)\n daily_counts.append({'date':day,'candidate_count':len(cur),'new_or_reentry':sum(x['event']=='NEW_OR_REENTRY'\
+        \ and x['date']==day for x in changes),'exits':sum(x['event']=='EXIT' and x['date']==day for x in changes)})\n\
+        # Derive trading sessions from full KRX day (not per-stock observations; delisting/missing prices != next\
+        \ day).\nsessions=sorted(d for d,v in byday.items() if len(v)>=1400)\nperformance=[]\nfor ep in episodes:\n\
+        \ row=dict(ep);entry=num(ep['entry_price']);key=(ep['market'],ep['code']);after=[d for d in sessions if\
+        \ d>ep['entry_date']]\n for n in (5,10,20):\n  date=after[n-1] if len(after)>=n else ''\n  close=bysec[key].get(date)\
+        \ if date else None\n  row[f'date_{n}d']=date\n  row[f'return_{n}d_pct']=str(round((close/entry-1)*100,3))\
+        \ if date and close and entry else ''\n performance.append(row)\necols=['episode_id','entry_date','market','code','name','entry_price','provisional_grade','status','exit_date','source','final_buy_signal']\n\
+        scols=['date','market','code','name','grade','close','financial_score','price_momentum_pct','model']\nccols=['date','market','code','name','event','prior_grade','new_grade']\n\
+        pcols=ecols+['date_5d','return_5d_pct','date_10d','return_10d_pct','date_20d','return_20d_pct']\nfor name,rows,cols\
+        \ in [('episodes.csv',episodes,ecols),('daily_candidate_snapshots.csv',prior_snap,scols),('performance.csv',performance,pcols),('candidate_changes.csv',changes,ccols),('daily_prices.csv',prices,['date','market','code','close'])]:\n\
+        \ save(R/name,rows,cols);save(O/name,rows,cols)\nstatus={'stage':57,'model':'EXPERIMENTAL_STALE_FINANCIALS_PRICE_OVERLAY','baseline_date':base_date,'baseline_candidates':sum(x['date']==base_date\
+        \ for x in prior_snap),'new_screened_dates':new_dates,'completed_screened_dates':[x['date'] for x in daily_counts],'daily_counts':daily_counts,'episodes_total':len(episodes),'latest_price_date':max(byday,default=''),'measured_5d':sum(bool(x['return_5d_pct'])\
+        \ for x in performance),'measured_10d':sum(bool(x['return_10d_pct']) for x in performance),'measured_20d':sum(bool(x['return_20d_pct'])\
+        \ for x in performance),'api_errors':errors[:30],'final_buy_signals':0,'limitations':['Experimental daily\
+        \ price-overlay scores are NOT full daily Stage50-55 reruns','2025 annual fundamentals and Stage55 sector\
+        \ scores remain stale until upstream refreshed','Official common-share class and PER/PBR not verified','Not\
+        \ a buy recommendation','Persistent git write success must be checked in GitHub Actions']}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        print(json.dumps(status,ensure_ascii=False,indent=2))\n\nPYCODE\npython /tmp/v5_stage57.py"
+    - name: Commit tracking state
+      id: persist
+      run: 'set -euo pipefail
+
+        git config user.name "github-actions[bot]"
+
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git add data/v5_tracking/
+
+        if ! git diff --cached --quiet; then git commit -m "v5: daily provisional cohorts and performance"; git
+        pull --rebase origin main; git push origin HEAD:main; fi'
+    - name: Upload result even if commit fails
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-stage57-daily-experimental-cohorts
+        path: stage57_out/
+        if-no-files-found: warn
