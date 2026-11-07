@@ -1,0 +1,20 @@
+name: KRX v5 Continuity and Performance Safety Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check saved market dates and conservative forward returns
+        run: python scripts/v5_continuity_audit.py
+      - name: Upload independent audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-continuity-audit
+          path: v5_continuity_out/
+          if-no-files-found: warn
