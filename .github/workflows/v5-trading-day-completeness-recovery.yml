@@ -1,0 +1,165 @@
+name: KRX v5 Trading Day Completeness Recovery
+'on':
+  workflow_dispatch:
+    inputs:
+      audit_days:
+        description: Rolling calendar days to audit (7-45)
+        required: false
+        default: '14'
+permissions:
+  contents: write
+concurrency:
+  group: v5-price-archive-sync
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Verify trading days and recover missing price snapshots
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          AUDIT_DAYS: ${{ inputs.audit_days || '14' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/v5_recover.py <<'PY'
+          import csv, json, os, pathlib, datetime, urllib.request, urllib.parse, collections, time
+          ROOT=pathlib.Path('data/v5_integrated'); ROOT.mkdir(parents=True,exist_ok=True)
+          OUT=pathlib.Path('v5_trade_day_recovery_result'); OUT.mkdir(exist_ok=True)
+          PRICES=ROOT/'daily_prices.csv'; MARKER=ROOT/'last_market_date.txt'
+          status={'version':'v5-trading-day-completeness-v1','status':'STARTED','api_checks':[], 'confirmed_trading_days':[], 'missing_dates':[], 'new_rows':0,'final_buy_signals':0,'formal_ab_rescoring':'NOT_IMPLEMENTED'}
+          def save(): (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          def api(day,market,key):
+              endpoint='stk_bydd_trd' if market=='KOSPI' else 'ksq_bydd_trd'
+              url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})
+              req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0','Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=35) as response:
+                  http=response.status
+                  raw=json.loads(response.read().decode('utf-8-sig'))
+              if not isinstance(raw,dict) or not isinstance(raw.get('OutBlock_1'),list): raise ValueError('UNEXPECTED_API_RESPONSE')
+              result={}; bad=0
+              for row in raw['OutBlock_1']:
+                  code=str(row.get('ISU_CD') or '').strip()
+                  close=str(row.get('TDD_CLSPRC') or '').replace(',','').strip()
+                  try: price=float(close)
+                  except (ValueError,TypeError): bad+=1; continue
+                  if not code or price<=0: bad+=1; continue
+                  k=(day,market,code)
+                  if k in result and result[k]!=str(int(price) if price.is_integer() else price):raise ValueError('CONFLICTING_API_DUPLICATE')
+                  result[k]=str(int(price) if price.is_integer() else price)
+              return result,{'http':http,'raw_rows':len(raw['OutBlock_1']),'parsed_rows':len(result),'invalid_rows':bad}
+          def main():
+              key=os.getenv('KRX_API_KEY','').strip()
+              if not key:raise ValueError('KRX_API_KEY is missing')
+              if not PRICES.exists():raise ValueError('Price archive absent: refuse to initialize')
+              existing={}
+              with PRICES.open(encoding='utf-8-sig',newline='') as f:
+                  reader=csv.DictReader(f)
+                  if not {'date','market','code','close'}.issubset(reader.fieldnames or []):raise ValueError('Unexpected archive columns')
+                  for row in reader:
+                      k=(row['date'],row['market'],row['code']); v=row['close']
+                      if k in existing and existing[k]!=v:raise ValueError('Existing conflicting duplicate '+str(k))
+                      existing[k]=v
+              if not existing:raise ValueError('Archive is empty')
+              now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
+              # Rolling discovery, no hardcoded recovery start date. The first run audits the past 14 calendar days.
+              window=int(os.getenv('AUDIT_DAYS','14'))
+              if window<7 or window>45:raise ValueError('AUDIT_DAYS must be 7..45')
+              days=[now-datetime.timedelta(days=i) for i in range(window-1,-1,-1)]
+              merged=dict(existing); verified=[]; api_unavailable=[]
+              for dt in days:
+                  if dt.weekday()>=5:continue
+                  day=dt.strftime('%Y%m%d')
+                  entry={'date':day,'markets':{}}
+                  retrieved={}
+                  for market in ('KOSPI','KOSDAQ'):
+                      try:
+                          data,detail=api(day,market,key)
+                          retrieved[market]=data
+                          entry['markets'][market]=detail
+                      except Exception as exc:
+                          entry['markets'][market]={'error':str(exc)[:180]}
+                  counts={m:len(retrieved.get(m,{})) for m in ('KOSPI','KOSDAQ')}
+                  entry['counts']=counts
+                  if counts['KOSPI']>=500 and counts['KOSDAQ']>=1000:
+                      combined={**retrieved['KOSPI'],**retrieved['KOSDAQ']}
+                      conflicts=[k for k,v in combined.items() if k in merged and abs(float(merged[k])-float(v))>0.0001]
+                      if conflicts:
+                          entry['result']='PRICE_CONFLICT';entry['conflict_count']=len(conflicts)
+                          api_unavailable.append(day)
+                      else:
+                          new=sum(k not in merged for k in combined)
+                          merged.update(combined);status['new_rows']+=new
+                          verified.append(day);entry['result']='VERIFIED_TRADING_DAY';entry['added']=new
+                  elif any('error' in v for v in entry['markets'].values()):
+                      entry['result']='API_ERROR';api_unavailable.append(day)
+                  elif counts['KOSPI']==0 and counts['KOSDAQ']==0:
+                      entry['result']='NO_MARKET_DATA_UNCONFIRMED_HOLIDAY_OR_NOT_PUBLISHED'
+                  else:
+                      entry['result']='PARTIAL_MARKET_DATA';api_unavailable.append(day)
+                  status['api_checks'].append(entry)
+                  time.sleep(0.12)
+              if not verified:raise ValueError('No API-confirmed trading days; refusing to modify archive')
+              # All confirmed trading days in the rolling window must have both-market price data.
+              bydate=collections.defaultdict(lambda:collections.Counter())
+              for d,m,c in merged:bydate[d][m]+=1
+              missing=[d for d in verified if bydate[d]['KOSPI']<500 or bydate[d]['KOSDAQ']<1000]
+              if missing:raise ValueError('Incomplete confirmed trading dates '+str(missing))
+              # An API outage on a weekday earlier than the newest confirmed trading day is an unresolved gap.
+              latest_api=max(verified)
+              unresolved=[d for d in api_unavailable if d<=latest_api]
+              if unresolved:raise ValueError('Unresolved API errors on historical dates '+str(unresolved))
+              # No market data on weekdays inside known trading-day bounds requires an explicit calendar check.
+              no_data=[e['date'] for e in status['api_checks'] if e['result']=='NO_MARKET_DATA_UNCONFIRMED_HOLIDAY_OR_NOT_PUBLISHED' and e['date']<=latest_api]
+              status['unconfirmed_weekdays']=no_data
+              status['confirmed_trading_days']=verified
+              status['missing_dates']=missing
+              status['latest_api_trading_day']=latest_api
+              # Previous archive can be newer than this audit window. Never regress the marker.
+              old_verified=[d for d,c in bydate.items() if c['KOSPI']>=500 and c['KOSDAQ']>=1000]
+              latest=max(old_verified)
+              status['latest_archived_trading_day']=latest
+              status['price_rows']=len(merged)
+              status['archived_dates']=sorted(bydate)
+              # No silent success when an unexplained weekday exists between confirmed trading days.
+              if no_data:raise ValueError('Unconfirmed weekdays within trading-day range '+str(no_data))
+              # Save only after all checks; Git commit is a separate atomic step.
+              with PRICES.open('w',encoding='utf-8',newline='') as f:
+                  writer=csv.writer(f);writer.writerow(['date','market','code','close'])
+                  for k,v in sorted(merged.items()):writer.writerow([*k,v])
+              MARKER.write_text(latest+'\n',encoding='utf-8')
+              status['status']='READY_TO_COMMIT';save()
+          try:
+              main()
+          except Exception as exc:
+              status['status']='FAILED_VALIDATION';status['error']=str(exc);save();raise
+          PY
+          python /tmp/v5_recover.py
+      - name: Commit validated archive and date marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_integrated/daily_prices.csv data/v5_integrated/last_market_date.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: recover and validate complete trading-day prices'
+            git push origin HEAD:main
+          fi
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('v5_trade_day_recovery_result/status.json')
+          x=json.loads(p.read_text());x['status']='COMMITTED_OR_UNCHANGED';p.write_text(json.dumps(x,ensure_ascii=False,indent=2))
+          PY
+      - name: Upload diagnostic result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-trading-day-completeness-result
+          path: v5_trade_day_recovery_result/
+          if-no-files-found: warn
