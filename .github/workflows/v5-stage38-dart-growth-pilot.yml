@@ -88,7 +88,7 @@ jobs:
                if x.get('fs_div')!=scope:continue
                aid=x.get('account_id','')
                if not aid or aid=='-표준계정코드 미사용-':continue
-               if x.get('sj_div')!='IS':continue
+               if x.get('sj_div') not in ('IS','CIS'):continue
                val=amount(x.get('thstrm_amount'))
                if val is not None:d[aid]=(val,x.get('account_nm',''))
               return d
