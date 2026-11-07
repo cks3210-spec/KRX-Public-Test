@@ -1,0 +1,29 @@
+name: V5 Stage56 Existing Data Valuation Audit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify input and script
+        run: |
+          test -s stage56_input/provisional_ab_318_evidence_audit.csv
+          test -s scripts/v5_stage56_existing_data_audit.py
+      - name: Audit existing Stage56 evidence
+        run: |
+          python scripts/v5_stage56_existing_data_audit.py
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage56-existing-data-audit
+          path: stage56_output/
+          if-no-files-found: error
