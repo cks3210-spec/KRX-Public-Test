@@ -1,0 +1,117 @@
+name: KRX v5 Stage38 DART Comparable Growth Pilot
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Pilot company count (1-80)'
+        required: false
+        default: '50'
+permissions:
+  contents: read
+jobs:
+  growth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      DART_API_KEY: ${{ secrets.DART_API_KEY }}
+      OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+      V5_STAGE38_LIMIT: ${{ inputs.limit }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare 2026 H1 vs 2025 H1 OpenDART financial statements
+        shell: bash
+        run: |
+          mkdir -p v5_stage38
+          cat > /tmp/v5_stage38.py <<'PYCODE'
+          import csv,io,json,os,time,zipfile,urllib.request,urllib.parse,datetime,pathlib,subprocess,math,xml.etree.ElementTree as ET,collections
+          O=pathlib.Path('v5_stage38');O.mkdir(exist_ok=True)
+          def savecsv(name,rows,fields):
+           with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          def fetch(url,params=None):
+           if params:url+='?'+urllib.parse.urlencode(params)
+           for attempt in range(3):
+            try:
+             with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'KRX-v5-research/1.0'}),timeout=40) as r:return r.read()
+            except Exception:
+             if attempt==2:raise
+             time.sleep(2*(attempt+1))
+          def amount(v):
+           try:return int(str(v).replace(',','').strip())
+           except (ValueError,TypeError):return None
+          with open('data/latest.csv',encoding='utf-8-sig',newline='') as f:market=list(csv.DictReader(f))
+          eligible={str(x.get('ISU_CD','')).zfill(6):x for x in market if amount(x.get('MKTCAP')) is not None and amount(x.get('MKTCAP'))>=100_000_000_000}
+          subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,capture_output=True,timeout=120)
+          fin=json.loads(subprocess.run(['git','show','FETCH_HEAD:financial_latest.json'],check=True,capture_output=True,timeout=120).stdout)
+          import re
+          veto=re.compile(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.I)
+          rank=[]
+          for c,p in eligible.items():
+           if veto.search(re.sub(r'\s+','',p.get('ISU_NM',''))):continue
+           f=fin.get(c,{})
+           if not isinstance(f,dict):continue
+           score=sum([bool(f.get('period')),bool(f.get('statement_type')),amount(f.get('operating_profit_krw')) is not None,amount(f.get('net_income_krw')) is not None])
+           rank.append((-(score),c,p,f))
+          rank.sort()
+          limit=min(80,max(1,int(os.getenv('V5_STAGE38_LIMIT','50'))))
+          key=os.getenv('DART_API_KEY','').strip() or os.getenv('OPENDART_API_KEY','').strip()
+          status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'eligible_count':len(eligible),'candidate_count':len(rank),'requested_limit':limit,'dart_key_present':bool(key),'successful_pairs':0,'yoy_verified':0,'errors':{},'investment_grades_issued':0,'buy_signals_issued':0,'note':'Pilot only; financial statement scope and matching account IDs are enforced; not a share-class certificate.'}
+          fields=['ISU_CD','ISU_NM','corp_code','statement_type','report_code','account_id','account_name','current_2026_h1_krw','previous_2025_h1_krw','yoy_pct','status']
+          results=[];errs=[]
+          if not key:
+           status['errors']['missing_dart_secret']='Set DART_API_KEY or OPENDART_API_KEY in repository secrets'
+          else:
+           try:
+            blob=fetch('https://opendart.fss.or.kr/api/corpCode.xml',{'crtfc_key':key})
+            with zipfile.ZipFile(io.BytesIO(blob)) as z:root=ET.fromstring(z.read('CORPCODE.xml'))
+            mapping={e.findtext('stock_code','').strip():e.findtext('corp_code','').strip() for e in root.findall('list') if e.findtext('stock_code','').strip()}
+           except Exception as e:
+            mapping={};status['errors']['corpcode_download']=type(e).__name__+': '+str(e)[:150]
+           def get(corp,year,reprt):
+            raw=fetch('https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json',{'crtfc_key':key,'corp_code':corp,'bsns_year':year,'reprt_code':reprt,'fs_div':'CFS'})
+            return json.loads(raw)
+           for _,c,p,f in rank[:limit]:
+            corp=mapping.get(c)
+            if not corp:
+             errs.append({'ISU_CD':c,'ISU_NM':p.get('ISU_NM',''),'reason':'NO_DART_CORP_CODE'});continue
+            scope='CFS' if str(f.get('statement_type','')).upper()=='CFS' else 'OFS'
+            try:
+             # 2026 and 2025 semiannual; use same fs_div, same account_id, cumulative half-year thstrm_amount.
+             def query(year):
+              obj=json.loads(fetch('https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json',{'crtfc_key':key,'corp_code':corp,'bsns_year':year,'reprt_code':'11012','fs_div':scope}))
+              if obj.get('status')!='000':raise ValueError('DART_'+str(obj.get('status')))
+              return obj.get('list',[])
+             cur=query('2026');prev=query('2025');status['successful_pairs']+=1
+             def indexed(items):
+              d={}
+              for x in items:
+               if x.get('fs_div')!=scope:continue
+               aid=x.get('account_id','')
+               if not aid or aid=='-표준계정코드 미사용-':continue
+               if x.get('sj_div')!='IS':continue
+               val=amount(x.get('thstrm_amount'))
+               if val is not None:d[aid]=(val,x.get('account_nm',''))
+              return d
+             a=indexed(cur);b=indexed(prev)
+             for aid in sorted(a.keys()&b.keys()):
+              av,an=a[aid];bv,bn=b[aid]
+              # Negative or zero baseline: growth percentage is not meaningful.
+              yoy=round((av-bv)/abs(bv)*100,2) if bv>0 else ''
+              results.append({'ISU_CD':c,'ISU_NM':p.get('ISU_NM',''),'corp_code':corp,'statement_type':scope,'report_code':'11012','account_id':aid,'account_name':an,'current_2026_h1_krw':av,'previous_2025_h1_krw':bv,'yoy_pct':yoy,'status':'YOY_VERIFIED' if yoy!='' else 'BASELINE_NONPOSITIVE'})
+              if yoy!='':status['yoy_verified']+=1
+            except Exception as e:errs.append({'ISU_CD':c,'ISU_NM':p.get('ISU_NM',''),'reason':type(e).__name__+': '+str(e)[:100]})
+            time.sleep(0.25)
+          status['errors']['company_failures']=len(errs)
+          savecsv('verified_comparable_accounts.csv',results,fields)
+          savecsv('company_errors.csv',errs,['ISU_CD','ISU_NM','reason'])
+          (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+          python -m py_compile /tmp/v5_stage38.py
+          python /tmp/v5_stage38.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage38-dart-growth-pilot
+          path: v5_stage38/
+          if-no-files-found: warn
