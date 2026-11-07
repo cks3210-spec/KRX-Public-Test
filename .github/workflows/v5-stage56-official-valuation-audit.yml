@@ -1,0 +1,37 @@
+name: V5 Stage56 Official PER PBR Audit
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: 'KRX HTTPS URL identifying official CSV source'
+        required: true
+        type: string
+      source_date:
+        description: 'Reference trading date YYYYMMDD'
+        required: true
+        type: string
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check evidence inputs
+        run: |
+          test -s stage56_input/provisional_ab_318_evidence_audit.csv
+          test -s stage56_input/krx_official_valuation.csv
+      - name: Audit official export
+        env:
+          SOURCE_URL: ${{ inputs.source_url }}
+          SOURCE_DATE: ${{ inputs.source_date }}
+        run: |
+          python scripts/v5_stage56_official_valuation.py --candidates stage56_input/provisional_ab_318_evidence_audit.csv --official stage56_input/krx_official_valuation.csv --source-url "$SOURCE_URL" --source-date "$SOURCE_DATE" --out stage56_output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage56-valuation-audit
+          path: stage56_output/
