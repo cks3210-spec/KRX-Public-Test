@@ -1,0 +1,86 @@
+name: KRX v5 Stage37 Valuation and Growth Readiness
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analyze market valuation proxies and growth readiness
+        shell: bash
+        run: |
+          mkdir -p v5_stage37
+          cat > /tmp/v5_stage37.py <<'PY'
+          import csv,json,math,re,subprocess,datetime,pathlib,collections
+          O=pathlib.Path('v5_stage37');O.mkdir(exist_ok=True)
+          def rows(path):
+           with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def num(v):
+           try:
+            n=float(str(v).replace(',',''));return n if math.isfinite(n) else None
+           except (ValueError,TypeError):return None
+          def code(v):
+           s=str(v or '').strip();return s.zfill(6) if s.isdigit() and len(s)<=6 else s
+          def write(name,data,fields):
+           with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(data)
+          market=rows('data/latest.csv')
+          eligible={code(r.get('ISU_CD')):r for r in market if code(r.get('ISU_CD')) and (num(r.get('MKTCAP')) or 0)>=100_000_000_000}
+          subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,capture_output=True,timeout=120)
+          fin=json.loads(subprocess.run(['git','show','FETCH_HEAD:financial_latest.json'],check=True,capture_output=True,timeout=120).stdout)
+          if not isinstance(fin,dict) or len(fin)<1000:raise RuntimeError('Missing financial snapshot')
+          veto=re.compile(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.I)
+          fields=['ISU_CD','ISU_NM','market_date','financial_period','statement_type','market_cap_krw','equity_krw','revenue_krw','operating_profit_krw','net_income_krw','debt_ratio_pct','operating_margin_pct','indicative_pbr','interim_net_income_to_equity_pct_NOT_ROE','growth_yoy_status','per_status','share_class_status','research_rank_score','research_band','flags','investment_grade','buy_decision']
+          result=[];missing=[];counts=collections.Counter();dates=collections.Counter()
+          for c,p in eligible.items():
+           name=str(p.get('ISU_NM') or '')
+           if veto.search(re.sub(r'\s+','',name)):counts['preferred_excluded']+=1;continue
+           f=fin.get(c,{})
+           if not isinstance(f,dict):f={}
+           cap=num(p.get('MKTCAP'));eq=num(f.get('equity_krw'));rev=num(f.get('revenue_krw'));op=num(f.get('operating_profit_krw'));net=num(f.get('net_income_krw'));liab=num(f.get('liabilities_krw'))
+           period=str(f.get('period') or '');stype=str(f.get('statement_type') or '');date=str(p.get('BAS_DD') or '')
+           pbr=cap/eq if cap and eq and eq>0 else None
+           margin=100*op/rev if rev and rev>0 and op is not None else None
+           debt=100*liab/eq if eq and eq>0 and liab is not None else None
+           interim=100*net/eq if eq and eq>0 and net is not None else None
+           special=bool(re.search(r'금융|은행|증권|보험|지주|홀딩스|스퀘어|리츠|REIT|스팩|SPAC',name,re.I))
+           flags=['SHARE_CLASS_UNVERIFIED','NO_COMPARABLE_YOY','PER_NOT_COMPUTABLE_WITHOUT_TTM_EPS','PBR_INDICATIVE_EQUITY_SCOPE_UNCHECKED','INTERIM_NET_EQUITY_NOT_ROE']
+           if special:flags.append('SECTOR_SPECIAL_ACCOUNTING')
+           if not f.get('latest_filing_receipt'):flags.append('FILING_RECEIPT_UNCONFIRMED')
+           if not period or not stype:flags.append('FINANCIAL_PERIOD_OR_SCOPE_MISSING')
+           if any(x is None for x in (eq,rev,op,net,liab)):flags.append('FINANCIAL_FIELDS_MISSING')
+           if eq is not None and eq<=0:flags.append('NONPOSITIVE_EQUITY')
+           # Research order, not an A/B investment rating; do not award points for artificially low PBR alone.
+           score=0
+           if all(x is not None for x in (eq,rev,op,net,liab)):score+=25
+           if period and stype:score+=10
+           if eq is not None and eq>0:score+=10
+           if op is not None and op>0:score+=15
+           if net is not None and net>0:score+=15
+           if margin is not None and margin>=10 and not special:score+=10
+           if debt is not None and 0<=debt<=100 and not special:score+=10
+           if pbr is not None:score+=5
+           if special:score=min(score,65)
+           band='HIGH_RESEARCH_PRIORITY' if score>=75 else ('NORMAL_RESEARCH_PRIORITY' if score>=50 else 'DATA_OR_RISK_REVIEW')
+           r={'ISU_CD':c,'ISU_NM':name,'market_date':date,'financial_period':period,'statement_type':stype,'market_cap_krw':p.get('MKTCAP',''),'equity_krw':eq if eq is not None else '', 'revenue_krw':rev if rev is not None else '', 'operating_profit_krw':op if op is not None else '', 'net_income_krw':net if net is not None else '', 'debt_ratio_pct':round(debt,2) if debt is not None else '', 'operating_margin_pct':round(margin,2) if margin is not None and not special else '', 'indicative_pbr':round(pbr,3) if pbr is not None else '', 'interim_net_income_to_equity_pct_NOT_ROE':round(interim,2) if interim is not None else '', 'growth_yoy_status':'NOT_AVAILABLE_NO_COMPARABLE_PERIOD','per_status':'NOT_AVAILABLE_NO_TTM_EPS','share_class_status':'COMMON_CANDIDATE_UNVERIFIED','research_rank_score':score,'research_band':band,'flags':';'.join(flags),'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD'}
+           result.append(r);counts[band]+=1;dates[date]+=1
+           if 'FINANCIAL_FIELDS_MISSING' in flags or 'FINANCIAL_PERIOD_OR_SCOPE_MISSING' in flags:missing.append(r)
+          result.sort(key=lambda r:(-r['research_rank_score'],r['ISU_CD']))
+          write('research_ranked_NOT_BUY.csv',result,fields)
+          write('high_priority_NOT_AB_GRADE.csv',[r for r in result if r['research_band']=='HIGH_RESEARCH_PRIORITY'],fields)
+          write('missing_financials.csv',missing,fields)
+          status={'status':'STAGE37_RESEARCH_VALUATION_BRIDGE_ONLY','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_dates':dict(dates),'eligible_market_count':len(eligible),'research_candidates':len(result),'counts':dict(counts),'missing_financials':len(missing),'indicative_pbr_count':sum(bool(r['indicative_pbr']!='') for r in result),'verified_yoy_count':0,'verified_per_count':0,'verified_roe_count':0,'official_common_verified':0,'investment_grades_issued':0,'buy_signals_issued':0,'notes':['PBR is market capitalization divided by snapshot equity, not verified consolidated parent-owner PBR.','Interim net-income/equity is a diagnostic ratio, not ROE; no annualization or TTM assumption.','No comparable prior-period records in the current snapshot; YoY growth cannot be asserted.','Official share class not certified.','Existing v4 and golden-cross workflows untouched.']}
+          (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python -m py_compile /tmp/v5_stage37.py
+          python /tmp/v5_stage37.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage37-valuation-growth-readiness
+          path: v5_stage37/
+          if-no-files-found: warn
