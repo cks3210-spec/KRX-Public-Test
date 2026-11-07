@@ -1,0 +1,86 @@
+name: KRX v5 Stage47 KIND Independent Shareclass Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest Stage46 alternative result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p stage46_input
+          RUN_ID=$(gh run list --workflow v5-stage46-alternative-shareclass-screening.yml --status success --limit 30 --json databaseId --jq ".[0].databaseId")
+          test -n "$RUN_ID"
+          gh run download "$RUN_ID" --name v5-stage46-alternative-shareclass-screening --dir stage46_input
+          test -s stage46_input/all_455_shareclass_screen.csv
+      - name: Install HTML table reader
+        run: python -m pip install pandas lxml html5lib beautifulsoup4
+      - name: Independently audit KIND company directory
+        shell: bash
+        run: |
+          mkdir -p stage47_out
+          cat > /tmp/stage47.py <<'PYCODE'
+          import csv,io,json,os,pathlib,urllib.request,datetime,re
+          O=pathlib.Path('stage47_out');O.mkdir(exist_ok=True)
+          with open('stage46_input/all_455_shareclass_screen.csv',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+          if len(rows)!=455: raise RuntimeError(f'Unexpected Stage46 rows: {len(rows)}')
+          url='https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
+          status={'stage':'47_KIND_independent_audit','input_rows':len(rows),'provisional_ab':sum('PROVISIONAL_A' in r.get('provisional_research_band','') or 'PROVISIONAL_B' in r.get('provisional_research_band','') for r in rows),'kind_url':url,'kind_fetch':'NOT_ATTEMPTED','kind_rows':0,'kind_code_matches':0,'kind_name_matches':0,'kind_official_shareclass_field':False,'official_common_verified':0,'final_grades':0,'buy_signals':0,'limitations':[]}
+          kind={}; cols=[]
+          try:
+           import pandas as pd
+           req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; research-validation/1.0)','Accept':'text/html,application/vnd.ms-excel,*/*'})
+           with urllib.request.urlopen(req,timeout=40) as resp: data=resp.read();status['kind_http']=resp.status;status['kind_bytes']=len(data)
+           tables=pd.read_html(io.BytesIO(data),encoding='utf-8')
+           if not tables: raise RuntimeError('KIND listing has no parseable table')
+           df=max(tables,key=len);df.columns=[str(c).strip() for c in df.columns];cols=list(df.columns)
+           code_col=next((c for c in cols if c in ('종목코드','종목 코드','단축코드','단축 코드')),None)
+           name_col=next((c for c in cols if c in ('회사명','종목명','법인명')),None)
+           if not code_col or not name_col: raise RuntimeError('KIND columns missing explicit code/name: '+repr(cols))
+           for _,v in df.iterrows():
+            code=str(v[code_col]).strip().split('.')[0].zfill(6)
+            if re.fullmatch(r'\d{6}',code):kind[code]=str(v[name_col]).strip()
+           status['kind_fetch']='OK';status['kind_rows']=len(kind)
+           status['kind_columns']=cols
+          except Exception as e:
+           status['kind_fetch']='ERROR';status['kind_error']=f'{type(e).__name__}: {e}'[:500]
+           status['limitations'].append('KIND fetch/parse unsuccessful; existing Stage46 rows preserved')
+          # Company listing is NOT a per-security share class master. Explicit KIND type column, if any,
+          # must be validated for per-issue granularity before certifying. This audit deliberately withholds certification.
+          status['kind_official_shareclass_field']=any('주식종류' in c or '주권종류' in c for c in cols)
+          for r in rows:
+           code=r.get('ISU_CD','').strip().zfill(6)
+           matched=code in kind
+           r['stage47_kind_code_match']='YES' if matched else 'NO'
+           r['stage47_kind_company_name']=kind.get(code,'')
+           r['stage47_kind_name_match']='YES' if matched and kind[code].replace(' ','')==r.get('ISU_NM','').replace(' ','') else 'NO'
+           r['stage47_official_shareclass']='UNVERIFIED'
+           r['stage47_official_common_verified']='NO'
+           r['stage47_final_grade']='WITHHELD'
+           r['stage47_buy_signal']='NONE'
+          status['kind_code_matches']=sum(r['stage47_kind_code_match']=='YES' for r in rows)
+          status['kind_name_matches']=sum(r['stage47_kind_name_match']=='YES' for r in rows)
+          status['limitations'].append('KIND listed-company directory is company-level; a matching stock code/name does not independently establish official common share class')
+          fields=list(dict.fromkeys(k for r in rows for k in r))
+          for fn,items in [('all_455_kind_audit.csv',rows),('provisional_ab_kind_audit.csv',[r for r in rows if r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B'))]),('kind_unmatched_review.csv',[r for r in rows if r['stage47_kind_code_match']!='YES'])]:
+           with (O/fn).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(items)
+          (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+          python /tmp/stage47.py
+      - name: Upload Stage47 result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage47-kind-independent-shareclass-audit
+          path: stage47_out/
+          if-no-files-found: warn
