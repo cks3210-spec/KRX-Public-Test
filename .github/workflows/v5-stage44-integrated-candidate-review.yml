@@ -1,0 +1,75 @@
+name: KRX v5 Stage44 Integrated Candidate Review
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download verified Stage40 41 43 artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: "set -euo pipefail\nmkdir -p input40 input41 input43\nfor spec in '40|v5-stage40-research-evaluation.yml|v5-stage40-research-evaluation'\
+        \ '41|v5-stage41-debt-ratio-audit.yml|v5-stage41-debt-ratio-audit' '43|v5-stage43-full-priority-ttm-per-roe.yml|v5-stage43-full-priority-ttm-per-roe';\
+        \ do\n IFS='|' read -r stage workflow artifact <<< \"$spec\"\n id=$(gh run\
+        \ list --workflow \"$workflow\" --status success --limit 10 --json databaseId\
+        \ --jq '.[0].databaseId')\n test -n \"$id\" || { echo \"Missing successful\
+        \ Stage $stage\"; exit 1; }\n gh run download \"$id\" --name \"$artifact\"\
+        \ --dir \"input$stage\"\ndone\n"
+    - name: Integrate research metrics without issuing buy signals
+      shell: bash
+      run: "mkdir -p stage44_out\ncat > /tmp/stage44.py <<'PYCODE'\nimport csv,json,pathlib,collections,datetime,math,re\n\
+        O=pathlib.Path('stage44_out');O.mkdir(exist_ok=True)\ndef read(path):\n with\
+        \ open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))\n\
+        def num(v):\n try:\n  a=float(str(v).replace(',',''));return a if math.isfinite(a)\
+        \ else None\n except (ValueError,TypeError):return None\ndef write(name,rows,fields):\n\
+        \ with (O/name).open('w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        a=read('input40/research_priority_all.csv')\nb=read('input41/research_priority_debt_audited.csv')\
+        \ if pathlib.Path('input41/research_priority_debt_audited.csv').exists() else None\n\
+        if b is None:\n candidates=list(pathlib.Path('input41').glob('*.csv'))\n print('Stage41\
+        \ files:',[x.name for x in candidates]);raise RuntimeError('Stage41 expected\
+        \ file not found: inspect artifact schema before scoring')\nc=read('input43/ttm_per_roe_research.csv')\n\
+        base={r['ISU_CD']:r for r in a};debt={r['ISU_CD']:r for r in b};ttm={r['ISU_CD']:r\
+        \ for r in c}\nif len(ttm)<400 or len(base)<1000:raise RuntimeError('Input\
+        \ row count below expected; stop instead of publishing incomplete rankings')\n\
+        financial=re.compile(r'은행|증권|보험|화재|금융|캐피탈|저축은행|투자금융|리츠|REIT',re.I)\nfields=['ISU_CD','ISU_NM','market_date','sector_review','revenue_yoy_pct','operating_profit_yoy_pct','net_income_yoy_pct','debt_ratio_pct','pbr_proxy','per_ttm','roe_ttm_pct','data_complete','research_score','provisional_research_band','share_class_status','final_grade','buy_signal','review_reason']\n\
+        rows=[];counter=collections.Counter()\nfor k,t in sorted(ttm.items()):\n x=base.get(k,{});d=debt.get(k,{})\n\
+        \ name=t.get('ISU_NM') or x.get('ISU_NM','')\n sector='FINANCIAL_OR_SPECIAL_REVIEW'\
+        \ if financial.search(name) else 'GENERAL_REVIEW_NOT_SECTOR_VERIFIED'\n revenue=num(x.get('revenue_yoy_pct'));op=num(x.get('operating_profit_yoy_pct'));net=num(x.get('net_income_yoy_pct'))\n\
+        \ ratio=num(d.get('debt_ratio_pct'));pbr=num(x.get('pbr_proxy'));per=num(t.get('per_ttm'));roe=num(t.get('roe_ttm_pct'))\n\
+        \ vals=[revenue,op,net,ratio,pbr,per,roe];complete=all(v is not None for v\
+        \ in vals)\n # Transparent, conservative heuristic, NOT a calibrated buy grade.\n\
+        \ score=0\n if revenue is not None:score+=15 if revenue>=10 else (8 if revenue>=0\
+        \ else 0)\n if op is not None:score+=20 if op>=10 else (10 if op>=0 else 0)\n\
+        \ if net is not None:score+=10 if net>=10 else (5 if net>=0 else 0)\n if ratio\
+        \ is not None:score+=15 if ratio<100 else (7 if ratio<200 else 0)\n if pbr\
+        \ is not None:score+=10 if 0<pbr<=1.5 else (5 if pbr<=3 and pbr>0 else 0)\n\
+        \ if per is not None:score+=15 if 0<per<=12 else (8 if per<=20 and per>0 else\
+        \ 0)\n if roe is not None:score+=15 if roe>=12 else (8 if roe>=7 else 0)\n\
+        \ if sector!='GENERAL_REVIEW_NOT_SECTOR_VERIFIED':band='SEPARATE_SECTOR_REVIEW'\n\
+        \ elif not complete:band='DATA_REVIEW'\n elif score>=75:band='PROVISIONAL_A_RESEARCH'\n\
+        \ elif score>=60:band='PROVISIONAL_B_RESEARCH'\n else:band='BELOW_B_NOT_PUBLISHED'\n\
+        \ counter[band]+=1\n rows.append({'ISU_CD':k,'ISU_NM':name,'market_date':t.get('market_date',''),'sector_review':sector,'revenue_yoy_pct':revenue,'operating_profit_yoy_pct':op,'net_income_yoy_pct':net,'debt_ratio_pct':ratio,'pbr_proxy':pbr,'per_ttm':per,'roe_ttm_pct':roe,'data_complete':int(complete),'research_score':score,'provisional_research_band':band,'share_class_status':'UNVERIFIED','final_grade':'WITHHELD','buy_signal':'NONE','review_reason':'Official\
+        \ common-share classification and industry validation pending'})\nrows.sort(key=lambda\
+        \ x:(-x['research_score'],x['ISU_CD']))\nwrite('all_research_audit.csv',rows,fields)\n\
+        write('provisional_a_b_research_only.csv',[r for r in rows if r['provisional_research_band']\
+        \ in ('PROVISIONAL_A_RESEARCH','PROVISIONAL_B_RESEARCH')],fields)\nwrite('separate_financial_special_review.csv',[r\
+        \ for r in rows if r['provisional_research_band']=='SEPARATE_SECTOR_REVIEW'],fields)\n\
+        write('missing_metrics_review.csv',[r for r in rows if r['provisional_research_band']=='DATA_REVIEW'],fields)\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage40_rows':len(base),'stage41_rows':len(debt),'stage43_rows':len(ttm),'evaluated':len(rows),'counts':dict(counter),'official_common_verified':0,'final_a_b_grades':0,'buy_signals':0,'warning':'Provisional\
+        \ research bands are not investment grades; financial sector detection by\
+        \ name is incomplete; official share-class data absent; historical market\
+        \ date.'}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\\\
+        n',encoding='utf-8')\nprint(json.dumps(status,ensure_ascii=False,indent=2))\n\
+        PYCODE\npython -m py_compile /tmp/stage44.py\npython /tmp/stage44.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage44-integrated-candidate-review
+        path: stage44_out/
+        if-no-files-found: warn
