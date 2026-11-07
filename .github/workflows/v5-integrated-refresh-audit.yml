@@ -1,0 +1,106 @@
+name: KRX v5 Integrated Daily Refresh Audit
+'on':
+  workflow_dispatch: {}
+  schedule:
+    - cron: '20 11 * * 1-5' # 20:20 KST; independent of existing v4/GC
+permissions:
+  actions: write
+  contents: read
+concurrency:
+  group: krx-v5-integrated-refresh
+  cancel-in-progress: false
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Stage50-55 in order, verify dates and outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v5_integrated_out
+          cat > /tmp/v5_integrated.py <<'PY'
+          import os,subprocess,json,pathlib,datetime,time,csv
+          P=pathlib.Path('v5_integrated_out')
+          repo=os.environ['GH_REPO']
+          stages=[
+            (50,'v5-stage50-full-market-integrated.yml','v5-stage50-full-market-integrated','status.json'),
+            (51,'v5-stage51-full-market-dart-integration.yml','v5-stage51-full-market-dart-integration','status.json'),
+            (52,'v5-stage52-full-market-evaluation.yml','v5-stage52-full-market-evaluation','status.json'),
+            (53,'v5-stage53-full-market-quality-audit.yml','v5-stage53-full-market-quality-audit','status.json'),
+            (54,'v5-stage54-official-evidence-integration.yml','v5-stage54-official-evidence-integration','status.json'),
+            (55,'v5-stage55-sector-and-performance-baseline.yml','v5-stage55-sector-and-performance-baseline','status.json')]
+          status={'mode':'INTEGRATION_AUDIT_NOT_FULL_DAILY_FINANCIAL_ENGINE','started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stages':[],'final_buy_signals':0,'operational_ready':False,'caveats':['Stage57 experimental overlay is NOT a production daily financial re-evaluation','Stage50 may fall back to stale data; fallback will block downstream','Historical baseline and latest market date must not be conflated','Stage57 existing schedule remains independently configured']}
+          def cmd(args,check=True):
+            p=subprocess.run(args,text=True,capture_output=True)
+            if check and p.returncode:raise RuntimeError(' '.join(args)+' '+p.stderr[-500:])
+            return p.stdout.strip()
+          def save():
+            (P/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          try:
+            today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
+            # Holiday guard is based on actual KRX both-market data, not weekday alone.
+            for num,workflow,artifact,_ in stages:
+              started=datetime.datetime.now(datetime.timezone.utc)
+              item={'stage':num,'workflow':workflow,'started_utc':started.isoformat()}
+              status['stages'].append(item);save()
+              cmd(['gh','workflow','run',workflow,'--repo',repo,'--ref','main'])
+              # GitHub dispatch is eventually consistent: find the newly created run.
+              rid=None
+              for _ in range(24):
+                runs=json.loads(cmd(['gh','run','list','--repo',repo,'--workflow',workflow,'--event','workflow_dispatch','--limit','20','--json','databaseId,createdAt,status,conclusion']))
+                matches=[r for r in runs if datetime.datetime.fromisoformat(r['createdAt'].replace('Z','+00:00'))>=started-datetime.timedelta(seconds=10)]
+                if matches:
+                  rid=max(matches,key=lambda r:r['databaseId'])['databaseId'];break
+                time.sleep(5)
+              if not rid:raise RuntimeError('Dispatched run not found: '+workflow)
+              item['run_id']=rid;save()
+              deadline=time.monotonic()+1500
+              while time.monotonic()<deadline:
+                r=json.loads(cmd(['gh','run','view',str(rid),'--repo',repo,'--json','status,conclusion']))
+                if r['status']=='completed':
+                  item['conclusion']=r['conclusion'];break
+                time.sleep(20)
+              if item.get('conclusion')!='success':raise RuntimeError(f'Stage {num} failed/timed out: {item}')
+              folder=P/f'stage{num}';folder.mkdir(exist_ok=True)
+              cmd(['gh','run','download',str(rid),'--repo',repo,'--name',artifact,'--dir',str(folder)])
+              data=json.loads((folder/'status.json').read_text(encoding='utf-8-sig'))
+              item['source_status']=data
+              if num==50:
+                day=data.get('market_date','')
+                item['market_date']=day
+                if data.get('source')!='KRX_API_both_markets' or len(data.get('source_dates',[]))!=1:
+                  raise RuntimeError('Stage50 is stale/fallback/mixed-date: downstream blocked')
+                # Prevent reprocessing an old market snapshot as a new daily result.
+                d=datetime.datetime.strptime(day,'%Y%m%d').date()
+                if (today-d).days>4 or d>today:
+                  raise RuntimeError(f'Stage50 market date is stale or future: {day}')
+                if d.weekday()>4:raise RuntimeError('Market date falls on weekend')
+                status['market_date']=day
+              if num==55:
+                dates=data.get('reference_dates',[])
+                if dates and status.get('market_date') not in dates:
+                  raise RuntimeError(f'Stage55 date {dates} differs from Stage50 {status.get("market_date")}')
+              save()
+            status['pipeline_audit_passed']=True
+            status['operational_ready']=False
+            status['next_step']='Integrate verified full daily financial refresh and persistent cohort storage; current Stage57 remains experimental'
+          except Exception as e:
+            status['error']=str(e)
+            status['pipeline_audit_passed']=False
+            save()
+            raise
+          finally:save()
+          PY
+          python /tmp/v5_integrated.py
+      - name: Upload integration audit even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-integrated-refresh-audit
+          path: v5_integrated_out/
+          if-no-files-found: warn
