@@ -1,0 +1,80 @@
+name: KRX v5 Stage46 Official Shareclass Recovery
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage45 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p stage45_input
+
+        RUN_ID=$(gh run list --workflow v5-stage45-official-sector-shareclass-audit.yml
+        --status success --limit 20 --json databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage45-official-sector-shareclass-audit
+        --dir stage45_input
+
+        test -s stage45_input/official_sector_shareclass_audit.csv'
+    - name: Verify KRX official share classes
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      shell: bash
+      run: "mkdir -p stage46_out\ncat > /tmp/stage46.py <<'PYCODE'\nimport csv,json,os,pathlib,collections,urllib.request,urllib.parse,time,datetime\n\
+        O=pathlib.Path('stage46_out');O.mkdir(exist_ok=True)\ndef readcsv(p):\n with\
+        \ open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))\n\
+        def writecsv(p,rows,fields):\n with (O/p).open('w',encoding='utf-8-sig',newline='')\
+        \ as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        base=readcsv('stage45_input/official_sector_shareclass_audit.csv')\nif not\
+        \ base:raise RuntimeError('Stage45 input empty')\ndates=sorted({str(x.get('market_date','')).replace('-','')\
+        \ for x in base if x.get('market_date')},reverse=True)\nif not dates:raise\
+        \ RuntimeError('Missing source market date')\ndate=dates[0];key=os.getenv('KRX_API_KEY','').strip()\n\
+        if not key:raise RuntimeError('KRX_API_KEY missing; reuse existing GitHub\
+        \ Secret')\napi={ 'KOSPI':'stk_isu_base_info','KOSDAQ':'ksq_isu_base_info'}\n\
+        master={};calls={};counts=collections.Counter();diagnostics=[]\nfor market,endpoint\
+        \ in api.items():\n url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':date})\n\
+        \ request=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'KRX-v5-stage46/1.0'})\n\
+        \ try:\n  with urllib.request.urlopen(request,timeout=45) as resp:\n   status=resp.status;payload=resp.read(12000000).decode('utf-8-sig');data=json.loads(payload)\n\
+        \  rows=data.get('OutBlock_1',[]) if isinstance(data,dict) else []\n  if not\
+        \ isinstance(rows,list):rows=[]\n  calls[market]={'http_status':status,'returned_rows':len(rows),'response_keys':list(data.keys())\
+        \ if isinstance(data,dict) else [],'error':''}\n  for r in rows:\n   code=str(r.get('ISU_SRT_CD','')).strip().zfill(6)\n\
+        \   if len(code)==6 and code.isdigit():master[code]=dict(r,source_market=market)\n\
+        \ except Exception as e:\n  calls[market]={'http_status':None,'returned_rows':0,'error':str(e)[:350]}\n\
+        for r in base:\n code=str(r.get('ISU_CD','')).strip().zfill(6);m=master.get(code)\n\
+        \ if not m:\n  r.update({'share_class_status':'UNVERIFIED','share_class_official':'','share_class_source':'KRX_BASE_INFO_NOT_MATCHED','official_security_group':'','official_market':'','final_grade':'WITHHELD','buy_signal':'NONE'})\n\
+        \  counts['UNVERIFIED']+=1;continue\n kind=str(m.get('KIND_STKCERT_TP_NM','')).strip();sec=str(m.get('SECUGRP_NM','')).strip()\n\
+        \ # Only exact explicit KRX category. Never infer from ticker suffix or company\
+        \ name.\n if kind=='보통주' and ('주권' in sec or sec in ('주식','')):result='COMMON_VERIFIED'\n\
+        \ elif kind and kind!='보통주':result='NON_COMMON_VERIFIED'\n else:result='UNVERIFIED'\n\
+        \ r.update({'share_class_status':result,'share_class_official':kind,'share_class_source':'KRX_ISU_BASE_INFO','official_security_group':sec,'official_market':str(m.get('MKT_TP_NM','')),'final_grade':'WITHHELD','buy_signal':'NONE'})\n\
+        \ counts[result]+=1\n diagnostics.append({'ISU_CD':code,'ISU_NM':r.get('ISU_NM',''),'official_kind':kind,'official_security_group':sec,'status':result})\n\
+        fields=list(dict.fromkeys(list(base[0].keys())+['official_security_group','official_market']))\n\
+        writecsv('shareclass_official_all.csv',base,fields)\nwritecsv('common_verified_research_only.csv',[r\
+        \ for r in base if r['share_class_status']=='COMMON_VERIFIED' and r.get('provisional_research_band','').startswith('PROVISIONAL_')],fields)\n\
+        writecsv('non_common_or_unverified.csv',[r for r in base if r['share_class_status']!='COMMON_VERIFIED'],fields)\n\
+        writecsv('official_kind_inventory.csv',[{'official_kind':k,'count':v} for\
+        \ k,v in collections.Counter(x['official_kind'] for x in diagnostics).most_common()],['official_kind','count'])\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':date,'input_rows':len(base),'krx_api_calls':calls,'master_records':len(master),'share_class_counts':dict(counts),'provisional_a_b_common':sum(r['share_class_status']=='COMMON_VERIFIED'\
+        \ and r.get('provisional_research_band','').startswith('PROVISIONAL_') for\
+        \ r in base),'final_a_b_grades':0,'buy_signals':0,'note':'KRX share-class\
+        \ verified only from explicit KIND_STKCERT_TP_NM. No final grades until sector-specific\
+        \ valuation and market-data verification.'}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\\\
+        n',encoding='utf-8')\nprint(json.dumps(status,ensure_ascii=False,indent=2))\n\
+        \nPYCODE\npython -m py_compile /tmp/stage46.py\npython /tmp/stage46.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage46-krx-official-shareclass-recovery
+        path: stage46_out/
+        if-no-files-found: warn
