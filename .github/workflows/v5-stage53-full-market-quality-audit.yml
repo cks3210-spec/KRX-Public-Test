@@ -1,0 +1,88 @@
+name: KRX v5 Stage53 Full Market Quality Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest Stage52 result
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage52_input
+
+        RUN_ID=$(gh run list --workflow v5-stage52-full-market-evaluation.yml --status success --limit 30 --json
+        databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage52-full-market-evaluation --dir stage52_input
+
+        test -s stage52_input/full_market_evaluation.csv
+
+        '
+    - name: Audit all candidates and enforce missing-data penalties
+      run: "mkdir -p stage53_out\ncat > /tmp/stage53.py <<'PY'\n\nimport csv, json, re, pathlib, datetime, collections,\
+        \ math\nP=pathlib.Path(\"stage53_out\"); P.mkdir(exist_ok=True)\nwith open(\"stage52_input/full_market_evaluation.csv\"\
+        ,encoding=\"utf-8-sig\",newline=\"\") as f: rows=list(csv.DictReader(f))\nif len(rows)<500: raise RuntimeError(\"\
+        Stage52 full-market input too small\")\ndef val(x):\n    try:\n        v=float(str(x).replace(\",\",\"\"\
+        ).strip())\n        return v if math.isfinite(v) else None\n    except (TypeError,ValueError):return None\n\
+        def write(name, data, fields):\n    with (P/name).open(\"w\",encoding=\"utf-8-sig\",newline=\"\") as f:\n\
+        \        w=csv.DictWriter(f,fieldnames=fields,extrasaction=\"ignore\");w.writeheader();w.writerows(data)\n\
+        def grade(s):\n    if s>=75:return \"A\"\n    if s>=60:return \"B\"\n    return \"BELOW_B\"\n# Each quality\
+        \ component must be independently present; missing is never silently normalized away.\ncriteria=[\n (\"\
+        revenue_growth_pct\",lambda v: 20 if v>=15 else 14 if v>=5 else 8 if v>=0 else 0,20),\n (\"operating_margin_pct\"\
+        ,lambda v: 15 if v>=15 else 11 if v>=8 else 6 if v>=3 else 0,15),\n (\"roe_proxy_pct\",lambda v: 20 if v>=15\
+        \ else 14 if v>=10 else 8 if v>=5 else 0,20),\n (\"debt_to_equity_pct\",lambda v: 15 if 0<=v<=80 else 10\
+        \ if v<=150 else 5 if v<=250 else 0,15),\n (\"operating_profit_growth_pct\",lambda v: 15 if v>=20 else 10\
+        \ if v>=5 else 5 if v>=0 else 0,15),\n (\"net_income_growth_pct\",lambda v: 15 if v>=20 else 10 if v>=5\
+        \ else 5 if v>=0 else 0,15)\n]\nreview_pat=re.compile(r\"(?:우(?:B|C|[0-9]+)?(?:\\([^)]+\\))?|[0-9]+우(?:B|C)?(?:\\\
+        ([^)]+\\))?|우선주|스팩|리츠|인프라|ETF|ETN|REIT)\",re.I)\nfor r in rows:\n    points=0; available=0; available_weight=0;\
+        \ missing=[]\n    for field,fn,weight in criteria:\n        v=val(r.get(field))\n        if v is None:missing.append(field)\n\
+        \        else:\n            available+=1;available_weight+=weight\n            points+=fn(v)\n    coverage=available_weight/100\n\
+        \    r[\"stage53_metrics_present\"]=str(available)\n    r[\"stage53_metrics_missing\"]=\";\".join(missing)\n\
+        \    r[\"stage53_coverage_pct\"]=str(round(100*coverage,1))\n    r[\"stage53_raw_score\"]=str(points)\n\
+        \    r[\"stage53_quality_adjusted_score\"]=str(round(points,1))\n    r[\"stage53_prior_normalized_score\"\
+        ]=r.get(\"normalized_financial_score\",\"\")\n    # Don't classify a financial company as an industrial\
+        \ company without official sector metadata.\n    name=r.get(\"ISU_NM\",\"\")\n    flags=[]\n    if review_pat.search(name)\
+        \ or r.get(\"security_review_flag\") not in (\"\",\"NONE\"):flags.append(\"SECURITY_NAME_REVIEW\")\n   \
+        \ if r.get(\"shareclass_official\",\"UNVERIFIED\")!=\"VERIFIED_COMMON\":flags.append(\"SHARECLASS_UNVERIFIED\"\
+        )\n    if r.get(\"financial_statement_type\",\"\") not in (\"CFS\",\"OFS\"):flags.append(\"FINANCIAL_STATEMENT_MISSING\"\
+        )\n    if available<5:flags.append(\"LOW_METRIC_COVERAGE\")\n    if val(r.get(\"revenue_growth_pct\")) is\
+        \ None:flags.append(\"GROWTH_COMPARISON_MISSING\")\n    if not r.get(\"per\") or not r.get(\"pbr\"):flags.append(\"\
+        VALUATION_SOURCE_MISSING\")\n    flags.append(\"OFFICIAL_SECTOR_UNVERIFIED\")\n    r[\"stage53_review_reasons\"\
+        ]=\";\".join(flags)\n    # A/B are provisional FINANCIAL grades only. Require 5/6 metrics, positive equity,\
+        \ both growth and profitability.\n    equity=val(r.get(\"total_equity\"))\n    r[\"stage53_financial_grade\"\
+        ]=grade(points) if available>=5 and equity is not None and equity>0 else \"UNRATED\"\n    if \"SECURITY_NAME_REVIEW\"\
+        \ in flags:r[\"stage53_financial_grade\"]=\"REVIEW_SECURITY\"\n    r[\"stage53_final_grade\"]=\"WITHHELD\"\
+        \n    r[\"stage53_buy_signal\"]=\"NONE\"\n    r[\"stage53_sector_adjusted\"]=\"NOT_AVAILABLE_OFFICIAL_SECTOR\"\
+        \n    r[\"stage53_valuation_status\"]=\"UNVERIFIED_OFFICIAL_EPS_BPS_REQUIRED\"\n    r[\"stage53_evidence_status\"\
+        ]=\"PROVISIONAL_FINANCIAL_ONLY\"\nfields=list(dict.fromkeys(k for r in rows for k in r))\nab=[r for r in\
+        \ rows if r[\"stage53_financial_grade\"] in (\"A\",\"B\")]\nreview=[r for r in rows if r[\"stage53_review_reasons\"\
+        ]]\nwrite(\"all_1248_quality_audit.csv\",rows,fields)\nwrite(\"provisional_ab_quality_adjusted.csv\",ab,fields)\n\
+        write(\"missing_evidence_and_security_review.csv\",review,fields)\ncounts=collections.Counter(r[\"stage53_financial_grade\"\
+        ] for r in rows)\nstat={\n\"stage\":53,\"input_rows\":len(rows),\"generated_utc\":datetime.datetime.now(datetime.timezone.utc).isoformat(),\n\
+        \"input_provisional_ab\":sum(r.get(\"provisional_grade\") in (\"A\",\"B\") for r in rows),\n\"quality_adjusted_provisional_A\"\
+        :counts[\"A\"],\"quality_adjusted_provisional_B\":counts[\"B\"],\n\"unrated\":counts[\"UNRATED\"],\"security_review\"\
+        :counts[\"REVIEW_SECURITY\"],\n\"metric_coverage_5plus\":sum(int(r[\"stage53_metrics_present\"])>=5 for\
+        \ r in rows),\n\"missing_revenue_growth\":sum(not r.get(\"revenue_growth_pct\") for r in rows),\n\"missing_valuation\"\
+        :sum(\"VALUATION_SOURCE_MISSING\" in r[\"stage53_review_reasons\"] for r in rows),\n\"official_shareclass_verified\"\
+        :0,\"official_sector_verified\":0,\"final_grades\":0,\"buy_signals\":0,\n\"notes\":[\"Missing metrics score\
+        \ zero; never normalize partial score to full score.\",\n\"Official sector and security type are not confirmed\
+        \ by Stage52; sector normalization and final grades are withheld.\",\n\"PER/PBR require independently verified\
+        \ EPS/BPS, share counts, and synchronized dates; no invented valuation.\",\n\"Name-pattern review is a flag,\
+        \ not official share-class proof.\",\n\"Stage53 runs offline against the latest successful Stage52 artifact,\
+        \ with no external API or secrets.\"]\n}\n(P/\"status.json\").write_text(json.dumps(stat,ensure_ascii=False,indent=2),encoding=\"\
+        utf-8\")\nprint(json.dumps(stat,ensure_ascii=False,indent=2))\n\nPY\npython /tmp/stage53.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage53-full-market-quality-audit
+        path: stage53_out/
+        if-no-files-found: warn
