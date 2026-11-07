@@ -1,0 +1,90 @@
+name: KRX v5 Stage35 Common Research Bridge
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build common-stock research queue from approved KRX daily APIs
+        run: |
+          mkdir -p v5_stage35_bridge
+          cat > /tmp/v5_common_bridge.py <<'PYCODE'
+          import csv,json,os,re,urllib.request,urllib.parse,urllib.error,pathlib,datetime,collections
+          out=pathlib.Path('v5_stage35_bridge')
+          with open('data/latest.csv',encoding='utf-8-sig',newline='') as f: market=list(csv.DictReader(f))
+          def code(v):
+              s=str(v or '').strip()
+              return s.zfill(6) if s.isdigit() and len(s)<=6 else s
+          def cap(v):
+              try:return float(str(v).replace(',',''))
+              except (ValueError,TypeError):return 0
+          eligible={code(r.get('ISU_CD')):r for r in market if cap(r.get('MKTCAP'))>=100_000_000_000 and code(r.get('ISU_CD'))}
+          dates=sorted({re.sub(r'[^0-9]','',r.get('BAS_DD','')) for r in eligible.values()},reverse=True)
+          if not dates or not re.fullmatch(r'20\d{6}',dates[0]):raise RuntimeError('Invalid market date')
+          day=dates[0];key=os.getenv('KRX_API_KEY','').strip()
+          if not key:raise RuntimeError('KRX_API_KEY secret missing')
+          received={};api={}
+          for label,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+              url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})
+              req=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=60) as response:
+                  obj=json.load(response)
+              items=obj.get('OutBlock_1',[])
+              if not isinstance(items,list) or not items:raise RuntimeError(label+' official API returned no rows')
+              api[label]=len(items)
+              for r in items:
+                  c=code(r.get('ISU_CD') or r.get('ISU_SRT_CD'))
+                  if c:received[c]=label
+          import subprocess
+          subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,stdout=subprocess.DEVNULL)
+          raw=subprocess.run(['git','show','FETCH_HEAD:financial_latest.json'],check=True,capture_output=True).stdout
+          financial=json.loads(raw)
+          if not isinstance(financial,dict) or len(financial)<1000:raise RuntimeError('Financial source incomplete')
+          # KRX daily trading endpoints do not expose a certified share-class field.
+          # A name veto is an exclusion heuristic only, never proof of common status.
+          veto=re.compile(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.I)
+          cols=['ISU_CD','ISU_NM','market_date','market_cap_krw','krx_daily_confirmed','share_class','financial_coverage','research_status','investment_grade','buy_decision']
+          allrows=[];counts=collections.Counter()
+          fields=['revenue_krw','operating_profit_krw','net_income_krw','assets_krw','liabilities_krw','equity_krw']
+          for c,p in sorted(eligible.items()):
+              name=p.get('ISU_NM','');f=financial.get(c,{})
+              if not isinstance(f,dict):f={}
+              coverage=sum(f.get(k) not in (None,'') for k in fields)
+              if c not in received:kind='UNMATCHED_KRX_DAILY'
+              elif veto.search(re.sub(r'\s+','',name)):kind='PREFERRED_NAME_EXCLUDED'
+              else:kind='COMMON_CANDIDATE_NOT_OFFICIALLY_CERTIFIED'
+              status='FINANCIAL_REVIEW_QUEUE' if kind.startswith('COMMON_CANDIDATE') and coverage==6 else 'REQUIRES_REVIEW'
+              row={'ISU_CD':c,'ISU_NM':name,'market_date':day,'market_cap_krw':p.get('MKTCAP',''),
+                   'krx_daily_confirmed':int(c in received),'share_class':kind,'financial_coverage':str(coverage)+'/6',
+                   'research_status':status,'investment_grade':'NOT_VERIFIED','buy_decision':'ON_HOLD'}
+              allrows.append(row);counts[kind]+=1
+          def write(name,items):
+              with (out/name).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=cols);w.writeheader();w.writerows(items)
+          write('all_market_share_class_audit.csv',allrows)
+          write('common_candidates_research_only.csv',[r for r in allrows if r['share_class'].startswith('COMMON_CANDIDATE')])
+          write('excluded_preferred_name.csv',[r for r in allrows if r['share_class']=='PREFERRED_NAME_EXCLUDED'])
+          write('unmatched_or_incomplete.csv',[r for r in allrows if r['research_status']=='REQUIRES_REVIEW'])
+          status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':day,
+             'eligible':len(eligible),'official_daily_rows':api,'official_daily_matches':sum(c in received for c in eligible),
+             'financial_records':len(financial),'share_class_counts':dict(counts),
+             'official_common_verified':0,'investment_grades_issued':0,'buy_signals_issued':0,
+             'limitation':'Approved daily trading APIs do not provide share-class field. Common candidates are NOT officially certified; final investment grades remain blocked.',
+             'v4_or_golden_cross_modified':False}
+          (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+          python -m py_compile /tmp/v5_common_bridge.py
+          python /tmp/v5_common_bridge.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage35-common-research-bridge
+          path: v5_stage35_bridge/
+          if-no-files-found: warn
