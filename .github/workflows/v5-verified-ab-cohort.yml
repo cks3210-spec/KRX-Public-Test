@@ -1,0 +1,119 @@
+name: KRX v5 Verified A-B Cohort and Performance
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: v5-price-archive-sync
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify fresh Stage55 and update provisional cohorts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/v5_verified_cohorts.py <<'PY'
+          import csv,json,pathlib,subprocess,datetime,collections,os
+          ROOT=pathlib.Path("data/v5_integrated"); OUT=pathlib.Path("v5_ab_cohort_validation");OUT.mkdir(exist_ok=True)
+          status={"mode":"VERIFIED_STAGE55_COHORT_INGESTION","formal_daily_rescoring":"REQUIRES_FRESH_STAGE50_TO_55","final_buy_signals":0,"cohort_updated":False}
+          def save(): (OUT/"status.json").write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding="utf-8")
+          def read(p):
+           with p.open(encoding="utf-8-sig",newline="") as f:return list(csv.DictReader(f))
+          def write(p,rows,cols):
+           with p.open("w",encoding="utf-8",newline="") as f:
+            w=csv.DictWriter(f,fieldnames=cols,extrasaction="ignore");w.writeheader();w.writerows(rows)
+          def cmd(a):
+           p=subprocess.run(a,text=True,capture_output=True)
+           if p.returncode:raise RuntimeError("Command failed: "+" ".join(a)+" "+p.stderr[-300:])
+           return p.stdout.strip()
+          try:
+           marker=(ROOT/"last_market_date.txt").read_text().strip()
+           prices=read(ROOT/"daily_prices.csv")
+           bydate=collections.defaultdict(lambda:collections.Counter())
+           lookup={}
+           for r in prices:
+            bydate[r["date"]][r["market"]]+=1
+            lookup[(r["date"],r["market"],r["code"])]=float(r["close"])
+           sessions=sorted(d for d,c in bydate.items() if c["KOSPI"]>=500 and c["KOSDAQ"]>=1000)
+           if not sessions or marker!=sessions[-1]:raise ValueError("Archive latest date and marker mismatch")
+           status["archive_latest_date"]=marker
+           # Stage55 must come from the latest successful pipeline run, not a cached baseline.
+           repo=os.environ["GH_REPO"]
+           runs=json.loads(cmd(["gh","run","list","--repo",repo,"--workflow","v5-stage55-sector-and-performance-baseline.yml","--limit","20","--json","databaseId,conclusion,createdAt"]))
+           successful=[r for r in runs if r["conclusion"]=="success"]
+           if not successful:raise ValueError("No successful Stage55 run")
+           run=successful[0];rid=str(run["databaseId"]);status["stage55_run_id"]=rid
+           dest=OUT/"stage55";dest.mkdir(exist_ok=True)
+           cmd(["gh","run","download",rid,"--repo",repo,"--name","v5-stage55-sector-and-performance-baseline","--dir",str(dest)])
+           candidates=read(dest/"candidate_performance_baseline.csv")
+           if not candidates:raise ValueError("Stage55 candidates empty")
+           dates={r["stage55_reference_date"] for r in candidates}
+           if dates!={marker}:raise ValueError("STAGE55_STALE: candidate dates "+str(sorted(dates))+" != archive "+marker)
+           # Provenance must be fresh: latest Stage55 result cannot be reused as new market-day grading.
+           status["stage55_date_verified"]=True
+           episode_file=ROOT/"episodes.csv"
+           if not episode_file.exists():raise ValueError("Missing persistent episodes.csv")
+           episodes=read(episode_file)
+           required={"episode_id","entry_date","market","code","entry_price","provisional_grade","status","exit_date","source","final_buy_signal"}
+           if not episodes or not required.issubset(episodes[0]):raise ValueError("Episode schema invalid")
+           active={(r["market"],r["code"]):r for r in episodes if r["status"].startswith("ACTIVE")}
+           fresh={(r["stage55_reference_market"],r["stage55_reference_code"]):r for r in candidates if r["stage55_research_grade"] in ("A","B","B+")}
+           if len(fresh)!=len(candidates):raise ValueError("Stage55 has duplicate/invalid candidate grades")
+           changes={"new":0,"retained":0,"exited":0}
+           for k,e in active.items():
+            if k not in fresh:
+             e["status"]="EXITED_PROVISIONAL";e["exit_date"]=marker;changes["exited"]+=1
+            else:
+             e["provisional_grade"]=fresh[k]["stage55_research_grade"];changes["retained"]+=1
+           existing_ids={e["episode_id"] for e in episodes}
+           for k,r in fresh.items():
+            if k in active:continue
+            ident=f'{marker}:{k[0]}:{k[1]}'
+            if ident in existing_ids:raise ValueError("Duplicate episode ID "+ident)
+            episodes.append({"episode_id":ident,"entry_date":marker,"market":k[0],"code":k[1],"name":r["ISU_NM"],"entry_price":r["stage55_reference_price"],"provisional_grade":r["stage55_research_grade"],"status":"ACTIVE_PROVISIONAL","exit_date":"","source":"STAGE55_VERIFIED_DATE","final_buy_signal":"NONE"})
+            changes["new"]+=1
+           # Only count verified both-market sessions AFTER the episode date.
+           perf=[]
+           for e in episodes:
+            future=[d for d in sessions if d>e["entry_date"]]
+            for h in (5,10,20):
+             target=future[h-1] if len(future)>=h else ""
+             price=lookup.get((target,e["market"],e["code"])) if target else None
+             entry=float(e["entry_price"])
+             result="DONE" if price is not None and entry>0 else ("PRICE_MISSING" if target else "PENDING")
+             perf.append({"episode_id":e["episode_id"],"entry_date":e["entry_date"],"code":e["code"],"market":e["market"],"entry_price":e["entry_price"],"grade":e["provisional_grade"],"horizon":h,"target_date":target,"target_close":price if price is not None else "","return_pct":round((price/entry-1)*100,4) if result=="DONE" else "","result":result})
+           ec=list(episodes[0].keys());pc=list(perf[0].keys())
+           write(episode_file,episodes,ec);write(ROOT/"performance.csv",perf,pc)
+           status.update(cohort_updated=True,changes=changes,episodes=len(episodes),performance_done=sum(r["result"]=="DONE" for r in perf),performance_pending=sum(r["result"]=="PENDING" for r in perf),note="Provisional research cohorts only; official shareclass and valuation not finalized")
+          except Exception as e:
+           status["error"]=str(e);save();raise
+          finally:save()
+          PY
+          python /tmp/v5_verified_cohorts.py
+      - name: Commit verified cohort changes
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/v5_integrated/episodes.csv data/v5_integrated/performance.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "v5: update verified dated provisional cohorts and returns"
+            git push origin HEAD:main
+          fi
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-ab-cohort-validation
+          path: v5_ab_cohort_validation/
+          if-no-files-found: warn
