@@ -1,0 +1,114 @@
+name: KRX v5 Stage51 Full Market DART Integration
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage50 snapshot
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p stage50_input
+
+        RUN_ID=$(gh run list --workflow v5-stage50-full-market-integrated.yml --status success --limit 30 --json
+        databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage50-full-market-integrated --dir stage50_input
+
+        test -s stage50_input/research_eligible_provisional.csv
+
+        '
+    - name: Integrate OpenDART fundamentals for all Stage50 research candidates
+      env:
+        DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+      shell: bash
+      run: "mkdir -p stage51_out\ncat > /tmp/stage51.py <<'PY'\n\nimport csv, json, os, pathlib, zipfile, io, urllib.request,\
+        \ urllib.parse, time, collections, datetime, re\nOUT=pathlib.Path(\"stage51_out\"); OUT.mkdir(exist_ok=True)\n\
+        INPUT=pathlib.Path(\"stage50_input/research_eligible_provisional.csv\")\ndef readcsv(path):\n    with open(path,encoding=\"\
+        utf-8-sig\",newline=\"\") as f: return list(csv.DictReader(f))\ndef writecsv(name,rows,fields):\n    with\
+        \ (OUT/name).open(\"w\",encoding=\"utf-8-sig\",newline=\"\") as f:\n        w=csv.DictWriter(f,fieldnames=fields,extrasaction=\"\
+        ignore\"); w.writeheader(); w.writerows(rows)\ndef fetch(url,timeout=60):\n    req=urllib.request.Request(url,headers={\"\
+        User-Agent\":\"KRX-v5-research/1.0\"})\n    with urllib.request.urlopen(req,timeout=timeout) as response:return\
+        \ response.read()\ndef api(endpoint,params):\n    url=\"https://opendart.fss.or.kr/api/\"+endpoint+\"?\"\
+        +urllib.parse.urlencode(params)\n    return json.loads(fetch(url).decode(\"utf-8\"))\ndef num(v):\n    try:return\
+        \ float(str(v).replace(\",\",\"\").strip())\n    except:return None\nrows=readcsv(INPUT)\nstatus={\"stage\"\
+        :\"51_full_market_dart_integration\",\"generated_utc\":datetime.datetime.now(datetime.timezone.utc).isoformat(),\n\
+        \"input_rows\":len(rows),\"market_dates\":sorted(set(r.get(\"BAS_DD\",\"\") for r in rows)),\"dart_key_present\"\
+        :bool(os.getenv(\"DART_API_KEY\") or os.getenv(\"OPENDART_API_KEY\")),\n\"dart_corp_matches\":0,\"dart_financial_covered\"\
+        :0,\"financial_missing\":0,\"official_shareclass_verified\":0,\"final_grades\":0,\"buy_signals\":0,\"api_calls\"\
+        :0,\"api_errors\":[],\"warnings\":[]}\nif len(rows)<500:raise RuntimeError(\"Stage50 eligible input unexpectedly\
+        \ small\")\nkey=(os.getenv(\"DART_API_KEY\") or os.getenv(\"OPENDART_API_KEY\") or \"\").strip()\ncorp={}\n\
+        if key:\n    try:\n        payload=fetch(\"https://opendart.fss.or.kr/api/corpCode.xml?\"+urllib.parse.urlencode({\"\
+        crtfc_key\":key}))\n        with zipfile.ZipFile(io.BytesIO(payload)) as z:\n            import xml.etree.ElementTree\
+        \ as ET\n            root=ET.fromstring(z.read(\"CORPCODE.xml\"))\n        for e in root.findall(\"list\"\
+        ):\n            stock=(e.findtext(\"stock_code\") or \"\").strip().upper()\n            code=(e.findtext(\"\
+        corp_code\") or \"\").strip()\n            if re.fullmatch(r\"[0-9A-Z]{6}\",stock) and re.fullmatch(r\"\\\
+        d{8}\",code):\n                corp[stock]=code\n        status[\"dart_corp_directory_count\"]=len(corp)\n\
+        \    except Exception as e:status[\"api_errors\"].append(\"corpCode: \"+str(e)[:240])\nelse:status[\"warnings\"\
+        ].append(\"DART_API_KEY / OPENDART_API_KEY secret missing; no financial verification\")\nfor r in rows:\n\
+        \    code=r.get(\"ISU_CD\",\"\").strip().upper()\n    r[\"dart_corp_code\"]=corp.get(code,\"\")\n    r[\"\
+        dart_mapping_status\"]=\"MATCHED\" if r[\"dart_corp_code\"] else \"UNMATCHED\"\n    r[\"financial_status\"\
+        ]=\"NOT_AVAILABLE\"\n    r[\"financial_period\"]=\"\"\n    r[\"financial_statement_type\"]=\"\"\n    for\
+        \ col in (\"revenue\",\"operating_profit\",\"net_income\",\"total_assets\",\"total_liabilities\",\"total_equity\"\
+        ,\"debt_to_equity_pct\",\"roe_proxy_pct\"):\n        r[col]=\"\"\n    r[\"provisional_financial_band\"]=\"\
+        UNRATED\"\n    r[\"final_grade\"]=\"WITHHELD\"\n    r[\"buy_signal\"]=\"NONE\"\nstatus[\"dart_corp_matches\"\
+        ]=sum(bool(r[\"dart_corp_code\"]) for r in rows)\n# Latest completed annual reporting year first, then prior\
+        \ annual report; never treat missing accounts as zero.\nmarket_date=max(status[\"market_dates\"])\nyear=int(market_date[:4])\n\
+        years=[year-1,year-2]\n# 2026-11-05: FY2025 annual first, FY2024 fallback. For later runs use previous fiscal\
+        \ year.\nbycorp={r[\"dart_corp_code\"]:r for r in rows if r[\"dart_corp_code\"]}\naccount_patterns={\n \"\
+        revenue\":(\"매출액\",\"영업수익\",\"수익(매출액)\",\"이자수익\"),\n \"operating_profit\":(\"영업이익\",\"영업이익(손실)\"),\n \"\
+        net_income\":(\"당기순이익\",\"당기순이익(손실)\"),\n \"total_assets\":(\"자산총계\",),\n \"total_liabilities\":(\"부채총계\"\
+        ,),\n \"total_equity\":(\"자본총계\",)\n}\n# DART multi-company endpoint supports batches; CFS preferred over\
+        \ OFS; only exact account-name matches.\nif key and bycorp:\n    codes=list(bycorp)\n    for yr in years:\n\
+        \        remaining=[c for c in codes if bycorp[c][\"financial_status\"]!=\"AVAILABLE\"]\n        if not\
+        \ remaining:break\n        for start in range(0,len(remaining),80):\n            batch=remaining[start:start+80]\n\
+        \            try:\n                result=api(\"fnlttMultiAcnt.json\",{\"crtfc_key\":key,\"corp_code\":\"\
+        ,\".join(batch),\"bsns_year\":str(yr),\"reprt_code\":\"11011\"})\n                status[\"api_calls\"]+=1\n\
+        \                if result.get(\"status\")!=\"000\":\n                    status[\"api_errors\"].append(f\"\
+        {yr} batch {start//80}: {result.get('status')} {str(result.get('message',''))[:90]}\")\n               \
+        \     continue\n                grouped=collections.defaultdict(list)\n                for item in result.get(\"\
+        list\",[]):\n                    grouped[str(item.get(\"corp_code\",\"\"))].append(item)\n             \
+        \   for code,items in grouped.items():\n                    r=bycorp.get(code)\n                    if not\
+        \ r or r[\"financial_status\"]==\"AVAILABLE\":continue\n                    fs=\"CFS\" if any(x.get(\"fs_div\"\
+        )==\"CFS\" for x in items) else \"OFS\"\n                    subset=[x for x in items if x.get(\"fs_div\"\
+        )==fs]\n                    found={}\n                    for x in subset:\n                        name=re.sub(r\"\
+        \\s+\",\"\",str(x.get(\"account_nm\",\"\")))\n                        for field,names in account_patterns.items():\n\
+        \                            if field not in found and name in [re.sub(r\"\\s+\",\"\",n) for n in names]:\n\
+        \                                value=num(x.get(\"thstrm_amount\"))\n                                if\
+        \ value is not None:found[field]=value\n                    if not found:continue\n                    for\
+        \ k,v in found.items():r[k]=str(int(v)) if v.is_integer() else str(v)\n                    r[\"financial_status\"\
+        ]=\"AVAILABLE\"\n                    r[\"financial_period\"]=str(yr)+\"_FY\"\n                    r[\"financial_statement_type\"\
+        ]=fs\n                    equity=found.get(\"total_equity\")\n                    debt=found.get(\"total_liabilities\"\
+        )\n                    profit=found.get(\"net_income\")\n                    if equity and equity>0:\n \
+        \                       if debt is not None:r[\"debt_to_equity_pct\"]=str(round(debt/equity*100,2))\n  \
+        \                      if profit is not None:r[\"roe_proxy_pct\"]=str(round(profit/equity*100,2))\n    \
+        \                # No provisional A/B without growth, valuation, share-class and quality checks.\n     \
+        \       except Exception as e:status[\"api_errors\"].append(f\"{yr} batch {start//80}: {type(e).__name__}:\
+        \ {str(e)[:130]}\")\n            time.sleep(0.3)\nstatus[\"dart_financial_covered\"]=sum(r[\"financial_status\"\
+        ]==\"AVAILABLE\" for r in rows)\nstatus[\"financial_missing\"]=len(rows)-status[\"dart_financial_covered\"\
+        ]\nstatus[\"financial_coverage_pct\"]=round(100*status[\"dart_financial_covered\"]/len(rows),2)\nstatus[\"\
+        dart_mapping_pct\"]=round(100*status[\"dart_corp_matches\"]/len(rows),2)\nstatus[\"warnings\"].append(\"\
+        Annual accounts only; growth, PER/PBR, verified share class and final investment grades remain pending\"\
+        )\nfields=list(dict.fromkeys(k for r in rows for k in r))\nwritecsv(\"all_research_financial_coverage.csv\"\
+        ,rows,fields)\nwritecsv(\"financial_covered.csv\",[r for r in rows if r[\"financial_status\"]==\"AVAILABLE\"\
+        ],fields)\nwritecsv(\"financial_missing_review.csv\",[r for r in rows if r[\"financial_status\"]!=\"AVAILABLE\"\
+        ],fields)\n(OUT/\"status.json\").write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding=\"utf-8\"\
+        )\nprint(json.dumps(status,ensure_ascii=False,indent=2))\n\nPY\npython /tmp/stage51.py"
+    - name: Upload consolidated Stage51 results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-stage51-full-market-dart-integration
+        path: stage51_out/
+        if-no-files-found: warn
