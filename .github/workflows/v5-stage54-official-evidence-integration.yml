@@ -1,0 +1,104 @@
+name: KRX v5 Stage54 Official Evidence Integration
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage53 result
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage53_input
+
+        RUN_ID=$(gh run list --workflow v5-stage53-full-market-quality-audit.yml --status success --limit 30 --json
+        databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage53-full-market-quality-audit --dir stage53_input
+
+        test -s stage53_input/all_1248_quality_audit.csv
+
+        '
+    - name: Download historical Stage45 sector evidence if available
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'mkdir -p stage45_input
+
+        RUN_ID=$(gh run list --workflow v5-stage45-official-sector-shareclass-audit.yml --status success --limit
+        30 --json databaseId --jq ''.[0].databaseId'' || true)
+
+        if [ -n "$RUN_ID" ]; then gh run download "$RUN_ID" --name v5-stage45-official-sector-shareclass-audit --dir
+        stage45_input || true; fi
+
+        '
+    - name: Install KIND directory reader
+      run: python -m pip install --quiet pandas lxml html5lib
+    - name: Integrate official sector evidence and transparent valuation diagnostics
+      run: "mkdir -p stage54_out\ncat > /tmp/stage54.py <<'PY'\n\nimport csv,json,math,re,pathlib,datetime,collections,os\n\
+        O=pathlib.Path(\"stage54_out\");O.mkdir(exist_ok=True)\ndef read(path):\n with open(path,encoding=\"utf-8-sig\"\
+        ,newline=\"\") as f:return list(csv.DictReader(f))\ndef write(name,rows,cols):\n with open(O/name,\"w\"\
+        ,encoding=\"utf-8-sig\",newline=\"\") as f:\n  w=csv.DictWriter(f,fieldnames=cols,extrasaction=\"ignore\"\
+        );w.writeheader();w.writerows(rows)\ndef number(v):\n try:\n  f=float(str(v).replace(\",\",\"\").strip())\n\
+        \  return f if math.isfinite(f) else None\n except:return None\nrows=read(\"stage53_input/all_1248_quality_audit.csv\"\
+        )\nif len(rows)<500:raise RuntimeError(\"Stage53 input incomplete\")\n# Stage45 official sector evidence\
+        \ is a *partial historic* match; never extrapolate to other securities.\nsector={};sector_source=\"NOT_AVAILABLE\"\
+        ;sector_error=\"\"\np=pathlib.Path(\"stage45_input/official_sector_shareclass_audit.csv\")\nif p.exists():\n\
+        \ try:\n  prior=read(p)\n  if prior:\n   for x in prior:\n    code=(x.get(\"ISU_CD\") or x.get(\"ISU_SRT_CD\"\
+        ) or \"\").strip()\n    industry=(x.get(\"kind_industry\") or x.get(\"official_industry\") or x.get(\"KIND_INDUSTRY\"\
+        ) or \"\").strip()\n    # Stage45 field names may differ; explicitly report schema rather than guessing.\n\
+        \    if re.fullmatch(r\"\\d{6}\",code) and industry and industry.upper() not in (\"UNKNOWN\",\"UNVERIFIED\"\
+        ,\"N/A\",\"NONE\"):\n     sector[code]=industry\n   sector_source=\"STAGE45_HISTORIC_SNAPSHOT\"\n except\
+        \ Exception as e:sector_error=str(e)[:200]\n# Independent official industry lookup from KIND directory,\
+        \ CP949-aware, with no share-class assumptions.\nkind={};kind_error=\"\"\nif os.getenv(\"STAGE54_OFFLINE\"\
+        )!=\"1\":\n try:\n  import pandas as pd,urllib.request,io\n  req=urllib.request.Request(\"https://kind.krx.co.kr/corpgeneral/corpList.do?method=download\"\
+        ,headers={\"User-Agent\":\"Mozilla/5.0\"})\n  with urllib.request.urlopen(req,timeout=50) as resp:raw=resp.read()\n\
+        \  tables=pd.read_html(io.BytesIO(raw))\n  for df in tables:\n   cols={str(c).strip():c for c in df.columns}\n\
+        \   ck=next((cols[k] for k in (\"종목코드\",\"종목 코드\") if k in cols),None)\n   ik=next((cols[k] for k in (\"\
+        업종\",\"업종명\") if k in cols),None)\n   if ck is None or ik is None:continue\n   for _,r in df.iterrows():\n\
+        \    code=str(r[ck]).strip().replace(\".0\",\"\").zfill(6)\n    ind=str(r[ik]).strip()\n    if re.fullmatch(r\"\
+        \\d{6}\",code) and ind and ind.lower()!=\"nan\":kind[code]=ind\n   break\n  if not kind:kind_error=\"No\
+        \ official KIND industry rows\"\n except Exception as e:kind_error=type(e).__name__+\": \"+str(e)[:160]\n\
+        # This is only a valuation diagnostic, not an official PER/PBR:\n# market capitalization / annual earnings\
+        \ and / ending book equity.\nfor r in rows:\n code=r.get(\"ISU_CD\",\"\").strip()\n industry=kind.get(code)\
+        \ or sector.get(code) or \"\"\n r[\"stage54_official_industry\"]=industry\n r[\"stage54_industry_source\"\
+        ]=\"KIND_CURRENT_DIRECTORY\" if code in kind else sector_source if code in sector else \"UNVERIFIED\"\n\
+        \ mcap=number(r.get(\"MKTCAP\"));earn=number(r.get(\"net_income\"));equity=number(r.get(\"total_equity\"\
+        ))\n r[\"stage54_marketcap_to_earnings_proxy\"]=str(round(mcap/earn,3)) if mcap and earn and earn>0 else\
+        \ \"\"\n r[\"stage54_marketcap_to_book_proxy\"]=str(round(mcap/equity,3)) if mcap and equity and equity>0\
+        \ else \"\"\n r[\"stage54_valuation_proxy_date\"]=r.get(\"BAS_DD\",\"\")\n r[\"stage54_valuation_proxy_fiscal_period\"\
+        ]=r.get(\"financial_period\",\"\")\n r[\"stage54_valuation_status\"]=\"PROXY_NOT_OFFICIAL_PER_PBR\"\n r[\"\
+        stage54_official_shareclass_status\"]=\"UNVERIFIED\"\n r[\"stage54_official_security_type_status\"]=\"UNVERIFIED\"\
+        \n r[\"stage54_final_grade\"]=\"WITHHELD\"\n r[\"stage54_buy_signal\"]=\"NONE\"\n reasons=[]\n if not industry:reasons.append(\"\
+        OFFICIAL_INDUSTRY_MISSING\")\n if not r[\"stage54_marketcap_to_earnings_proxy\"]:reasons.append(\"EARNINGS_PROXY_UNAVAILABLE\"\
+        )\n if not r[\"stage54_marketcap_to_book_proxy\"]:reasons.append(\"BOOK_PROXY_UNAVAILABLE\")\n reasons.append(\"\
+        OFFICIAL_SHARECLASS_MISSING\")\n reasons.append(\"OFFICIAL_PER_PBR_MISSING\")\n if r.get(\"stage53_financial_grade\"\
+        ) not in (\"A\",\"B\"):reasons.append(\"FINANCIAL_AB_NOT_PASSED\")\n r[\"stage54_blockers\"]=\";\".join(reasons)\n\
+        cols=list(dict.fromkeys(k for r in rows for k in r))\nab=[r for r in rows if r.get(\"stage53_financial_grade\"\
+        ) in (\"A\",\"B\")]\nissues=[r for r in rows if r[\"stage54_blockers\"]]\nwrite(\"all_1248_official_evidence_audit.csv\"\
+        ,rows,cols)\nwrite(\"provisional_ab_318_evidence_audit.csv\",ab,cols)\nwrite(\"evidence_gaps.csv\",issues,cols)\n\
+        stat={\"stage\":54,\"generated_utc\":datetime.datetime.now(datetime.timezone.utc).isoformat(),\"input_rows\"\
+        :len(rows),\n\"provisional_ab\":len(ab),\"official_industry_verified\":sum(bool(r[\"stage54_official_industry\"\
+        ]) for r in rows),\n\"kind_industry_rows\":len(kind),\"stage45_industry_rows\":len(sector),\"kind_error\"\
+        :kind_error,\"stage45_error\":sector_error,\n\"earnings_proxy_available\":sum(bool(r[\"stage54_marketcap_to_earnings_proxy\"\
+        ]) for r in rows),\n\"book_proxy_available\":sum(bool(r[\"stage54_marketcap_to_book_proxy\"]) for r in rows),\n\
+        \"official_shareclass_verified\":0,\"official_per_pbr_verified\":0,\"final_grades\":0,\"buy_signals\":0,\n\
+        \"notes\":[\"KIND directory is company-level: not official per-security common-share verification.\",\n\"\
+        Marketcap-to-earnings and marketcap-to-book are diagnostics, not official PER/PBR; fiscal periods differ\
+        \ from price date.\",\n\"Stage45 sector evidence may be historical. Prefer current KIND source where available.\"\
+        ,\n\"Never infer official common-share status from stock name or company directory.\"]}\n(O/\"status.json\"\
+        ).write_text(json.dumps(stat,ensure_ascii=False,indent=2),encoding=\"utf-8\")\nprint(json.dumps(stat,ensure_ascii=False,indent=2))\n\
+        \nPY\npython /tmp/stage54.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage54-official-evidence-integration
+        path: stage54_out/
+        if-no-files-found: warn
