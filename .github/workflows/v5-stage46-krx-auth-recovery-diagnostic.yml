@@ -1,0 +1,78 @@
+name: KRX v5 Stage46 KRX API Auth Recovery Diagnostic
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage45 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p stage45_input
+
+        RUN_ID=$(gh run list --workflow v5-stage45-official-sector-shareclass-audit.yml --status success --limit
+        20 --json databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage45-official-sector-shareclass-audit --dir stage45_input
+
+        test -s stage45_input/official_sector_shareclass_audit.csv
+
+        '
+    - name: Compare approved KRX APIs with share-class APIs
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      shell: bash
+      run: "mkdir -p stage46_recovery_out\ncat > /tmp/stage46_auth_recovery.py <<'PYCODE'\nimport csv,json,os,urllib.request,urllib.error,urllib.parse,pathlib,datetime,collections,time\n\
+        OUT=pathlib.Path('stage46_recovery_out');OUT.mkdir(exist_ok=True)\nkey=os.getenv('KRX_API_KEY','').strip()\n\
+        if not key: raise RuntimeError('KRX_API_KEY is not configured. Existing secret was not modified.')\nwith\
+        \ open('stage45_input/official_sector_shareclass_audit.csv',encoding='utf-8-sig',newline='') as f: base=list(csv.DictReader(f))\n\
+        if not base: raise RuntimeError('Stage45 input missing')\nmarket_date=max(str(r.get('market_date','')).replace('-','')\
+        \ for r in base if r.get('market_date'))\nchecks=[('KOSPI_TRADING_CONTROL','stk_bydd_trd'),('KOSDAQ_TRADING_CONTROL','ksq_bydd_trd'),('KOSPI_SHARECLASS','stk_isu_base_info'),('KOSDAQ_SHARECLASS','ksq_isu_base_info')]\n\
+        results=[];masters={};raw_kinds=collections.Counter()\nfor label,endpoint in checks:\n url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':market_date})\n\
+        \ req=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'Mozilla/5.0'})\n\
+        \ rec={'check':label,'endpoint':endpoint,'date':market_date,'http_status':None,'row_count':0,'response_code':'','response_message':'','error_type':'','error_detail':'','has_kind_field':False}\n\
+        \ try:\n  with urllib.request.urlopen(req,timeout=45) as resp:\n   rec['http_status']=resp.status;payload=resp.read(15000000)\n\
+        \  data=json.loads(payload.decode('utf-8-sig'))\n  if isinstance(data,dict):\n   rows=data.get('OutBlock_1',[])\n\
+        \   if not isinstance(rows,list):rows=[]\n   rec['row_count']=len(rows)\n   rec['response_code']=str(data.get('code',''))[:100]\n\
+        \   rec['response_message']=str(data.get('message',''))[:150]\n   rec['has_kind_field']=bool(rows and 'KIND_STKCERT_TP_NM'\
+        \ in rows[0])\n   if 'SHARECLASS' in label:\n    for row in rows:\n     code=str(row.get('ISU_SRT_CD','')).strip().zfill(6)\n\
+        \     if len(code)==6 and code.isdigit():masters[code]=row\n  else:rec['error_type']='UNEXPECTED_JSON_TYPE'\n\
+        \ except urllib.error.HTTPError as e:\n  rec['http_status']=e.code;rec['error_type']='HTTPError'\n  # Only\
+        \ a bounded, redacted error preview; never expose credentials or request headers.\n  detail=e.read(400).decode('utf-8','replace').replace(key,'[REDACTED]')\n\
+        \  rec['error_detail']=detail[:200]\n except Exception as e:\n  rec['error_type']=type(e).__name__;rec['error_detail']=str(e).replace(key,'[REDACTED]')[:200]\n\
+        \ results.append(rec)\n time.sleep(.5)\nfor r in base:\n code=str(r.get('ISU_CD','')).strip().zfill(6)\n\
+        \ m=masters.get(code)\n kind=str(m.get('KIND_STKCERT_TP_NM','')).strip() if m else ''\n sec=str(m.get('SECUGRP_NM','')).strip()\
+        \ if m else ''\n status='COMMON_VERIFIED' if kind=='보통주' and (not sec or '주권' in sec or sec=='주식') else\
+        \ ('NON_COMMON_VERIFIED' if kind and kind!='보통주' else 'UNVERIFIED')\n r['stage46_recovery_share_class']=status;r['stage46_recovery_official_kind']=kind;r['final_grade']='WITHHELD';r['buy_signal']='NONE'\n\
+        \ raw_kinds[status]+=1\nfields=list(dict.fromkeys(k for r in base for k in r))\ndef write_csv(name,rows,cols):\n\
+        \ with (OUT/name).open('w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        write_csv('api_auth_diagnostics.csv',results,list(results[0]))\nwrite_csv('shareclass_recovery_all.csv',base,fields)\n\
+        write_csv('common_verified_research_candidates.csv',[r for r in base if r['stage46_recovery_share_class']=='COMMON_VERIFIED'\
+        \ and str(r.get('provisional_research_band','')).startswith('PROVISIONAL_')],fields)\nwrite_csv('unverified_or_noncommon.csv',[r\
+        \ for r in base if r['stage46_recovery_share_class']!='COMMON_VERIFIED'],fields)\ncontrols=[r for r in results\
+        \ if 'CONTROL' in r['check']]\nshare=[r for r in results if 'SHARECLASS' in r['check']]\nif all(r['http_status']==200\
+        \ and r['row_count']>0 for r in controls) and all(r['http_status']==401 for r in share):assessment='CONTROL_OK_SHARECLASS_401_LIKELY_ENDPOINT_ENTITLEMENT'\n\
+        elif all(r['http_status']==401 for r in results):assessment='ALL_ENDPOINTS_401_CHECK_KEY_OR_KRX_ACCESS'\n\
+        elif any(r['row_count']>0 for r in share):assessment='SHARECLASS_API_RESPONDED_CHECK_COUNTS'\nelse:assessment='MIXED_RESULTS_REVIEW_DIAGNOSTICS'\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':market_date,'input_rows':len(base),'api_checks':results,'diagnosis':assessment,'official_master_records':len(masters),'shareclass_counts':dict(raw_kinds),'provisional_ab_common':sum(r['stage46_recovery_share_class']=='COMMON_VERIFIED'\
+        \ and str(r.get('provisional_research_band','')).startswith('PROVISIONAL_') for r in base),'final_a_b_grades':0,'buy_signals':0,'note':'Never\
+        \ infer common share class from name; missing API authorization is not a verified share class.'}\n(OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\\\
+        n',encoding='utf-8')\nprint(json.dumps({'diagnosis':assessment,'api_checks':[{k:v for k,v in r.items() if\
+        \ k in ('check','http_status','row_count','error_type')} for r in results],'shareclass_counts':dict(raw_kinds)},ensure_ascii=False,indent=2))\n\
+        \nPYCODE\npython -m py_compile /tmp/stage46_auth_recovery.py\npython /tmp/stage46_auth_recovery.py\n"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage46-krx-auth-recovery-diagnostic
+        path: stage46_recovery_out/
+        if-no-files-found: warn
