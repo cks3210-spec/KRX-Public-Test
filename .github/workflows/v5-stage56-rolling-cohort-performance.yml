@@ -1,0 +1,101 @@
+name: KRX v5 Stage56 Rolling Cohort Performance
+'on':
+  workflow_dispatch: {}
+  schedule:
+  - cron: 55 9 * * 1-5
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: v5-stage56-tracking
+  cancel-in-progress: false
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+    - name: Download Stage55 baseline
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage55_input
+
+        RUN_ID=$(gh run list --workflow v5-stage55-sector-and-performance-baseline.yml --status success --limit
+        30 --json databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage55-sector-and-performance-baseline --dir stage55_input
+
+        test -s stage55_input/candidate_performance_baseline.csv'
+    - name: Refresh daily KRX prices and rolling episode performance
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      run: "mkdir -p stage56_out\ncat > /tmp/v5_stage56.py <<'PYCODE'\nimport csv,json,os,datetime,pathlib,urllib.request,urllib.parse,collections,math\n\
+        ROOT=pathlib.Path('data/v5_tracking');ROOT.mkdir(parents=True,exist_ok=True)\nOUT=pathlib.Path('stage56_out');OUT.mkdir(exist_ok=True)\n\
+        def load(p):\n if not pathlib.Path(p).exists():return []\n with open(p,encoding='utf-8-sig',newline='')\
+        \ as f:return list(csv.DictReader(f))\ndef save(p,rows,cols):\n pathlib.Path(p).parent.mkdir(parents=True,exist_ok=True)\n\
+        \ with open(p,'w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        def get_market(day,market,key):\n endpoint='stk_bydd_trd' if market=='KOSPI' else 'ksq_bydd_trd'\n url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})\n\
+        \ req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0'})\n with urllib.request.urlopen(req,timeout=45)\
+        \ as r:obj=json.load(r)\n return obj.get('OutBlock_1',[])\ndef num(x):\n try:return float(str(x).replace(',',''))\n\
+        \ except:return None\nbase=load('stage55_input/candidate_performance_baseline.csv')\nif len(base)<200:raise\
+        \ RuntimeError('Stage55 baseline missing or incomplete')\nkey=os.getenv('KRX_API_KEY','').strip()\nif not\
+        \ key:raise RuntimeError('KRX_API_KEY missing')\nnow=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))\n\
+        today=now.date()\n# Never publish today's price before post-close finalization; schedule after 18:55 KST.\n\
+        end=today if now.hour>=18 else today-datetime.timedelta(days=1)\nprices=load(ROOT/'daily_prices.csv'); price_map={(r['date'],r['market'],r['code']):r\
+        \ for r in prices}\n# Revisit recent 40 calendar days; prior saved data persists for long horizons.\nstart=max(datetime.datetime.strptime(min(r['stage55_reference_date']\
+        \ for r in base),'%Y%m%d').date(),end-datetime.timedelta(days=40))\nerrors=[]; days_checked=0; new_rows=0;\
+        \ confirmed_sessions=[]\nfor i in range(max(0,(end-start).days+1)):\n d=start+datetime.timedelta(days=i)\n\
+        \ if d.weekday()>=5:continue\n day=d.strftime('%Y%m%d'); daily=[]; failed=False\n for market in ('KOSPI','KOSDAQ'):\n\
+        \  try:\n   items=get_market(day,market,key)\n   for x in items:\n    code=str(x.get('ISU_CD','')).strip();close=num(x.get('TDD_CLSPRC'))\n\
+        \    if code and close and close>0:daily.append({'date':day,'market':market,'code':code,'close':str(close)})\n\
+        \  except Exception as e:errors.append(f'{day} {market}: {type(e).__name__} {str(e)[:100]}');failed=True\n\
+        \ # Never write a partial market day or assume a nontrading day based on a failed API.\n if failed or not\
+        \ daily:continue\n days_checked+=1;confirmed_sessions.append(day)\n for r in daily:\n  k=(r['date'],r['market'],r['code'])\n\
+        \  if k not in price_map:new_rows+=1\n  price_map[k]=r\nprices=sorted(price_map.values(),key=lambda r:(r['date'],r['market'],r['code']))\n\
+        save(ROOT/'daily_prices.csv',prices,['date','market','code','close'])\n# A new recommendation episode begins\
+        \ only after an observed prior exit. Stage55 is one snapshot,\n# NOT a daily screening feed. Never fabricate\
+        \ daily re-selection or new A/B counts.\nledger=load(ROOT/'episodes.csv');known={r['episode_id'] for r in\
+        \ ledger}\nfor r in base:\n day=r['stage55_reference_date'];market=r['stage55_reference_market'];code=r['stage55_reference_code'];grade=r['stage55_research_grade']\n\
+        \ eid=f'{day}:{market}:{code}'\n if eid not in known:\n  ledger.append({'episode_id':eid,'entry_date':day,'market':market,'code':code,'name':r.get('ISU_NM',''),\n\
+        \   'entry_price':r['stage55_reference_price'],'provisional_grade':grade,'status':'ACTIVE_PROVISIONAL',\n\
+        \   'exit_date':'','source':'STAGE55_BASELINE','final_buy_signal':'NONE'})\n  known.add(eid)\nsave(ROOT/'episodes.csv',ledger,['episode_id','entry_date','market','code','name','entry_price','provisional_grade','status','exit_date','source','final_buy_signal'])\n\
+        bysec=collections.defaultdict(dict)\nfor r in prices:bysec[(r['market'],r['code'])][r['date']]=num(r['close'])\n\
+        performance=[]\nfor ep in ledger:\n ref=ep['entry_date'];sessions=sorted(d for d in bysec[(ep['market'],ep['code'])]\
+        \ if d>ref)\n entry=num(ep['entry_price']);row=dict(ep)\n for n in (5,10,20):\n  if len(sessions)>=n and\
+        \ entry and entry>0:\n   day=sessions[n-1];p=bysec[(ep['market'],ep['code'])][day]\n   row[f'date_{n}d']=day;row[f'return_{n}d_pct']=str(round((p/entry-1)*100,3))\
+        \ if p else ''\n  else:row[f'date_{n}d']='';row[f'return_{n}d_pct']=''\n performance.append(row)\nfields=list(dict.fromkeys(k\
+        \ for r in performance for k in r))\nsave(ROOT/'performance.csv',performance,fields)\n# Baseline stays frozen\
+        \ until fresh upstream scoring exists. Daily price updates != daily reselection.\nsummary={'stage':56,'date_kst':today.isoformat(),'baseline_count':len(base),'episodes_total':len(ledger),\n\
+        \ 'new_daily_ab_selection':'NOT_IMPLEMENTED_UPSTREAM_REQUIRES_DAILY_REFRESH',\n 'latest_confirmed_market_date':max((r['date']\
+        \ for r in prices),default=''),\n 'api_days_with_data':days_checked,'price_rows_total':len(prices),'new_price_rows':new_rows,\n\
+        \ 'measured_5d':sum(bool(r.get('return_5d_pct')) for r in performance),\n 'measured_10d':sum(bool(r.get('return_10d_pct'))\
+        \ for r in performance),\n 'measured_20d':sum(bool(r.get('return_20d_pct')) for r in performance),\n 'api_errors':errors[:60],\
+        \ 'final_buy_signals':0,\n 'limitations':['318 baseline candidates remain one dated cohort; daily A/B changes\
+        \ require refreshed Stage50-55 pipeline.',\n 'Missing historical sessions and API errors do not count as\
+        \ zero returns.',\n 'Official share class and PER/PBR verification still incomplete.',\n 'Git commit persistence\
+        \ may be blocked by repository branch permissions; Actions artifact is fallback.']}\n(OUT/'status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        for name in ('episodes.csv','performance.csv','daily_prices.csv'):\n (OUT/name).write_bytes((ROOT/name).read_bytes())\n\
+        print(json.dumps(summary,ensure_ascii=False,indent=2))\n\nPYCODE\npython /tmp/v5_stage56.py"
+    - name: Persist V5-only tracking files (best effort)
+      continue-on-error: true
+      run: 'git config user.name "github-actions[bot]"
+
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git add data/v5_tracking/
+
+        if ! git diff --cached --quiet; then git commit -m "v5: update cohort performance tracking" && git push;
+        fi'
+    - name: Upload consolidated result
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-stage56-rolling-cohort-performance
+        path: stage56_out/
+        if-no-files-found: warn
