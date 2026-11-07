@@ -1,0 +1,89 @@
+name: KRX v5 Stage42 TTM PER ROE Pilot
+'on':
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Number of priority companies (1-456); start with 50
+        required: false
+        default: '50'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      DART_API_KEY: ${{ secrets.DART_API_KEY }}
+      OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+      V5_STAGE42_LIMIT: ${{ inputs.limit }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage41 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p stage41_input
+
+        RUN_ID=$(gh run list --workflow v5-stage41-debt-ratio-audit.yml --status success --limit 20 --json databaseId
+        --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage41-debt-ratio-audit --dir stage41_input
+
+        test -s stage41_input/priority_research_only.csv'
+    - name: Verify TTM owner earnings and ROE
+      shell: bash
+      run: "set -euo pipefail\nmkdir -p stage42_out\ncat > /tmp/stage42.py <<'PYCODE'\nimport csv,io,json,os,time,zipfile,urllib.request,urllib.parse,datetime,pathlib,math,xml.etree.ElementTree\
+        \ as ET,collections\nO=pathlib.Path('stage42_out');O.mkdir(exist_ok=True)\ndef readcsv(path):\n with open(path,encoding='utf-8-sig',newline='')\
+        \ as f:return list(csv.DictReader(f))\ndef writecsv(name,rows,fields):\n with (O/name).open('w',encoding='utf-8-sig',newline='')\
+        \ as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        def num(v):\n try:\n  n=float(str(v).replace(',','').strip());return n if math.isfinite(n) else None\n except\
+        \ (TypeError,ValueError):return None\ndef fetch(url,params=None):\n if params:url+='?'+urllib.parse.urlencode(params)\n\
+        \ for attempt in range(3):\n  try:\n   with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'KRX-v5-ttm-research/1.0'}),timeout=40)\
+        \ as r:return r.read()\n  except Exception:\n   if attempt==2:raise\n   time.sleep(2*(attempt+1))\ndef api(corp,year,report,scope):\n\
+        \ obj=json.loads(fetch('https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json',{'crtfc_key':key,'corp_code':corp,'bsns_year':year,'reprt_code':report,'fs_div':scope}))\n\
+        \ if obj.get('status')!='000':raise ValueError('DART_'+str(obj.get('status')))\n return obj.get('list',[])\n\
+        def equity(items):\n # Equity attributable to owners is needed for a parent-shareholder ROE; total equity\
+        \ is not interchangeable.\n ids={'ifrs-full_EquityAttributableToOwnersOfParent','ifrs_EquityAttributableToOwnersOfParent'}\n\
+        \ vals=[]\n for x in items:\n  if x.get('sj_div')!='BS' or x.get('account_id') not in ids:continue\n  v=num(x.get('thstrm_amount'))\n\
+        \  if v is not None:vals.append(v)\n return vals[0] if len(vals)==1 else None\ndef earnings(items):\n #\
+        \ Prefer profit attributable to owners; total profit can include noncontrolling interests.\n ids={'ifrs-full_ProfitLossAttributableToOwnersOfParent','ifrs_ProfitLossAttributableToOwnersOfParent'}\n\
+        \ vals=[]\n for x in items:\n  if x.get('sj_div') not in ('IS','CIS') or x.get('account_id') not in ids:continue\n\
+        \  v=num(x.get('thstrm_amount'))\n  if v is not None:vals.append(v)\n return vals[0] if len(vals)==1 else\
+        \ None\nkey=os.getenv('DART_API_KEY','').strip() or os.getenv('OPENDART_API_KEY','').strip()\nbase=readcsv('stage41_input/priority_research_only.csv')\n\
+        market={r['ISU_CD']:r for r in readcsv('data/latest.csv')}\nlimit=int(os.getenv('V5_STAGE42_LIMIT','50'));limit=max(1,min(456,limit))\n\
+        rows=[];errors=[];stats=collections.Counter()\nif not key:raise RuntimeError('DART_API_KEY / OPENDART_API_KEY\
+        \ missing')\nblob=fetch('https://opendart.fss.or.kr/api/corpCode.xml',{'crtfc_key':key})\nwith zipfile.ZipFile(io.BytesIO(blob))\
+        \ as z:root=ET.fromstring(z.read('CORPCODE.xml'))\ncorpmap={e.findtext('stock_code','').strip():e.findtext('corp_code','').strip()\
+        \ for e in root.findall('list') if e.findtext('stock_code','').strip()}\nfor r in base[:limit]:\n c=r['ISU_CD'];corp=corpmap.get(c);scope='CFS';rec={'ISU_CD':c,'ISU_NM':r['ISU_NM'],'market_date':r['market_date'],'research_score_stage41':r['research_score_stage41'],'share_class_status':'UNVERIFIED','investment_grade':'WITHHELD','buy_signal':'NONE'}\n\
+        \ if not corp:\n  errors.append({'ISU_CD':c,'ISU_NM':r['ISU_NM'],'reason':'NO_CORP_CODE'});continue\n try:\n\
+        \  # Keep a single consolidated reporting scope for all three statements.\n  # CFS is preferred; OFS only\
+        \ when CFS is not available for all required periods.\n  datasets=None\n  for scope in ('CFS','OFS'):\n\
+        \   try:\n    fy=api(corp,'2025','11011',scope);h25=api(corp,'2025','11012',scope);h26=api(corp,'2026','11012',scope)\n\
+        \    datasets=(fy,h25,h26);break\n   except ValueError as e:\n    if scope=='OFS':raise\n  fy,h25,h26=datasets\n\
+        \  e_fy,e_h25,e_h26=[earnings(x) for x in datasets]\n  q_fy,q_h26=equity(fy),equity(h26)\n  ttm=(e_fy+e_h26-e_h25)\
+        \ if None not in (e_fy,e_h25,e_h26) else None\n  avg_eq=(q_fy+q_h26)/2 if None not in (q_fy,q_h26) and q_fy>0\
+        \ and q_h26>0 else None\n  cap=num(market.get(c,{}).get('MKTCAP'))\n  per=round(cap/ttm,3) if cap is not\
+        \ None and ttm is not None and ttm>0 else None\n  roe=round(ttm/avg_eq*100,3) if ttm is not None and avg_eq\
+        \ is not None else None\n  rec.update({'statement_scope':scope,'net_income_2025_fy':e_fy,'net_income_2025_h1':e_h25,'net_income_2026_h1':e_h26,'ttm_owner_net_income':ttm,'equity_2025_fy':q_fy,'equity_2026_h1':q_h26,'avg_owner_equity':avg_eq,'market_cap_krw':cap,'per_ttm':per,'roe_ttm_pct':roe,'per_status':'VERIFIED'\
+        \ if per is not None else 'UNAVAILABLE_OR_NONPOSITIVE','roe_status':'VERIFIED' if roe is not None else 'UNAVAILABLE'})\n\
+        \  stats['per_verified']+=per is not None;stats['roe_verified']+=roe is not None;stats['fetched']+=1\n \
+        \ rows.append(rec)\n except Exception as e:errors.append({'ISU_CD':c,'ISU_NM':r['ISU_NM'],'reason':type(e).__name__+':\
+        \ '+str(e)[:100]})\n time.sleep(0.15)\nfields=['ISU_CD','ISU_NM','market_date','research_score_stage41','statement_scope','net_income_2025_fy','net_income_2025_h1','net_income_2026_h1','ttm_owner_net_income','equity_2025_fy','equity_2026_h1','avg_owner_equity','market_cap_krw','per_ttm','roe_ttm_pct','per_status','roe_status','share_class_status','investment_grade','buy_signal']\n\
+        writecsv('ttm_per_roe_research.csv',rows,fields)\nwritecsv('company_errors.csv',errors,['ISU_CD','ISU_NM','reason'])\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage41_priority_count':len(base),'attempted':min(limit,len(base)),'fetched':stats['fetched'],'per_verified':stats['per_verified'],'roe_verified':stats['roe_verified'],'errors':len(errors),'official_common_verified':0,'final_a_b_grades':0,'buy_signals':0,'notes':['TTM\
+        \ = 2025 FY + 2026 H1 - 2025 H1; owners profit and owners equity only','Market cap from data/latest.csv;\
+        \ not a real-time quote','Financial institutions may require a separate valuation framework','No final grade\
+        \ until official share-class confirmation']}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\\\
+        n',encoding='utf-8')\nprint(json.dumps(status,ensure_ascii=False,indent=2))\nPYCODE\npython -m py_compile\
+        \ /tmp/stage42.py\npython /tmp/stage42.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage42-ttm-per-roe-pilot
+        path: stage42_out/
+        if-no-files-found: warn
