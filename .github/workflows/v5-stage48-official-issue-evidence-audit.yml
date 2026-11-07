@@ -1,0 +1,77 @@
+name: KRX v5 Stage48 Official Issue Evidence Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download last successful Stage47 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p stage47_input
+          RUN_ID=$(gh run list --workflow v5-stage47-kind-charset-recovery.yml --status success --limit 30 --json databaseId --jq '.[0].databaseId')
+          test -n "$RUN_ID"
+          gh run download "$RUN_ID" --name v5-stage47-kind-charset-recovery --dir stage47_input
+          test -s stage47_input/all_455_kind_audit.csv
+      - name: Probe official issue-level source and preserve evidence
+        shell: bash
+        run: |
+          mkdir -p stage48_out
+          cat > /tmp/stage48.py <<'PY'
+          import csv,json,pathlib,urllib.request,datetime,re,html
+          from html.parser import HTMLParser
+          O=pathlib.Path('stage48_out')
+          with open('stage47_input/all_455_kind_audit.csv',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+          if len(rows)!=455: raise RuntimeError(f'Expected 455 Stage47 rows, got {len(rows)}')
+          url='https://kind.krx.co.kr/corpgeneral/listedIssueStatus.do?method=loadInitPage'
+          status={'stage':'48_official_issue_evidence','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'input_rows':len(rows),'provisional_ab':sum(r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B')) for r in rows),'source_url':url,'source_status':'NOT_TESTED','official_common_verified':0,'official_noncommon_verified':0,'unverified':len(rows),'final_grades':0,'buy_signals':0,'limitations':['A source page or company-code match does not prove per-security common-share class.','No final A/B grades or buy signals until issue-level authoritative evidence is matched.']}
+          try:
+           req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'text/html,application/xhtml+xml,*/*'})
+           with urllib.request.urlopen(req,timeout=35) as resp:
+            raw=resp.read(3000000)
+            status['source_http']=resp.status
+            status['source_content_type']=resp.headers.get('Content-Type','')
+            status['source_bytes']=len(raw)
+           decoded=None
+           for enc in ('utf-8-sig','cp949','euc-kr'):
+            try: decoded=raw.decode(enc);status['source_encoding']=enc;break
+            except UnicodeError: pass
+           if decoded is None: raise ValueError('No supported charset')
+           status['source_status']='PAGE_REACHABLE'
+           status['has_issue_status_text']=('상장종목현황' in decoded)
+           status['has_shareclass_label']=any(k in decoded for k in ('주식종류','주권종류','보통주','우선주'))
+           status['has_search_form']=bool(re.search(r'<form\b',decoded,re.I))
+           # Only metadata and bounded, sanitized excerpts; no claim that this is a downloadable issue master.
+           (O/'source_page_diagnostic.txt').write_text('\n'.join([f'url={url}',f'encoding={status.get("source_encoding")}',f'bytes={len(raw)}',f'has_shareclass_label={status["has_shareclass_label"]}',f'has_search_form={status["has_search_form"]}']),encoding='utf-8')
+          except Exception as e:
+           status['source_status']='ERROR';status['source_error']=f'{type(e).__name__}: {e}'[:350]
+          for r in rows:
+           r['stage48_issue_source_status']=status['source_status']
+           r['stage48_official_shareclass']='UNVERIFIED'
+           r['stage48_evidence_url']=''
+           r['stage48_evidence_grade']='NONE'
+           r['stage48_final_grade']='WITHHELD'
+           r['stage48_buy_signal']='NONE'
+          fields=list(dict.fromkeys(k for r in rows for k in r))
+          subsets={'all_455_issue_evidence.csv':rows,'provisional_ab_issue_evidence.csv':[r for r in rows if r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B'))],'unverified_issue_evidence.csv':rows}
+          for name,subset in subsets.items():
+           with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(subset)
+          (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/stage48.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage48-official-issue-evidence-audit
+          path: stage48_out/
+          if-no-files-found: warn
