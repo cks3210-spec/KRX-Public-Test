@@ -1,0 +1,79 @@
+name: KRX v5 Stage40 Research Evaluation
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage39 combined artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p stage39_input
+
+        RUN_ID=$(gh run list --workflow v5-stage39-full-universe-growth.yml --status
+        success --limit 20 --json databaseId --jq ''.[0].databaseId'')
+
+        if [ -z "$RUN_ID" ]; then echo ''No successful Stage39 run found''; exit 1;
+        fi
+
+        gh run download "$RUN_ID" --name v5-stage39-full-universe-growth --dir stage39_input
+
+        ls -lh stage39_input/'
+    - name: Evaluate fundamental research priorities
+      shell: bash
+      run: "mkdir -p stage40_out\ncat > /tmp/stage40.py <<'PYCODE'\nimport csv,json,pathlib,subprocess,collections,math,datetime\n\
+        O=pathlib.Path('stage40_out');O.mkdir(exist_ok=True)\ndef readcsv(path):\n\
+        \ with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))\n\
+        def number(v):\n try:\n  x=float(str(v).replace(',',''));return x if math.isfinite(x)\
+        \ else None\n except (ValueError,TypeError):return None\ndef writecsv(name,rows,cols):\n\
+        \ with (O/name).open('w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        market={str(x['ISU_CD']).zfill(6):x for x in readcsv('data/latest.csv')}\n\
+        subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,timeout=120)\n\
+        fin=json.loads(subprocess.check_output(['git','show','FETCH_HEAD:financial_latest.json'],timeout=120))\n\
+        growth={}; errors=[]\nfor file in sorted(pathlib.Path('stage39_input').rglob('growth_batch_*.csv')):\n\
+        \ for row in readcsv(file):\n  c=row['ISU_CD'];growth.setdefault(c,{})[row['metric']]=row\n\
+        for file in sorted(pathlib.Path('stage39_input').rglob('errors_batch_*.csv')):errors+=readcsv(file)\n\
+        if not growth:raise RuntimeError('Stage39 input missing or empty; refusing\
+        \ to issue ranking')\ncols=['ISU_CD','ISU_NM','market_date','market_cap_krw','revenue_yoy_pct','operating_profit_yoy_pct','net_income_yoy_pct','equity_krw','debt_ratio_pct','pbr_proxy','research_score','research_tier','missing_fields','share_class_status','per_status','roe_status','investment_grade','buy_signal']\n\
+        rows=[];counts=collections.Counter()\nfor c,metrics in sorted(growth.items()):\n\
+        \ m=market.get(c,{});f=fin.get(c,{})\n if not isinstance(f,dict):f={}\n def\
+        \ yoy(k):\n  r=metrics.get(k,{});return number(r.get('yoy_pct')) if r.get('status')=='YOY_VERIFIED'\
+        \ else None\n revenue,op,net=[yoy(k) for k in ('revenue','operating_profit','net_income')]\n\
+        \ equity=number(f.get('equity_krw'));debt=number(f.get('debt_ratio_pct'));cap=number(m.get('MKTCAP'))\n\
+        \ pbr=round(cap/equity,3) if cap and equity and equity>0 else None\n # Research\
+        \ ordering only, not a calibrated investment grade.\n score=0;known=0\n for\
+        \ value,weight in [(revenue,20),(op,25),(net,15)]:\n  if value is not None:\n\
+        \   known+=1;score+=weight if value>10 else (weight*.5 if value>=0 else 0)\n\
+        \ if debt is not None:\n  known+=1;score+=20 if debt<100 else (10 if debt<200\
+        \ else 0)\n if pbr is not None:\n  known+=1;score+=20 if 0<pbr<2 else (10\
+        \ if pbr<5 else 0)\n missing=[name for name,value in [('revenue_yoy',revenue),('operating_profit_yoy',op),('net_income_yoy',net),('debt_ratio',debt),('pbr',pbr)]\
+        \ if value is None]\n tier='PRIORITY_RESEARCH' if known>=4 and score>=65 else\
+        \ ('SECONDARY_RESEARCH' if known>=3 else 'DATA_REVIEW')\n counts[tier]+=1\n\
+        \ rows.append({'ISU_CD':c,'ISU_NM':m.get('ISU_NM') or metrics.get('revenue',{}).get('ISU_NM',''),'market_date':m.get('BAS_DD',''),'market_cap_krw':m.get('MKTCAP',''),'revenue_yoy_pct':revenue,'operating_profit_yoy_pct':op,'net_income_yoy_pct':net,'equity_krw':equity,'debt_ratio_pct':debt,'pbr_proxy':pbr,'research_score':round(score,1),'research_tier':tier,'missing_fields':';'.join(missing),'share_class_status':'UNVERIFIED','per_status':'TTM_NOT_VERIFIED','roe_status':'TTM_NOT_VERIFIED','investment_grade':'WITHHELD','buy_signal':'NONE'})\n\
+        rows.sort(key=lambda x:(-x['research_score'],x['ISU_CD']))\nwritecsv('research_priority_all.csv',rows,cols)\n\
+        writecsv('priority_research_only.csv',[x for x in rows if x['research_tier']=='PRIORITY_RESEARCH'],cols)\n\
+        writecsv('missing_data_review.csv',[x for x in rows if x['missing_fields']],cols)\n\
+        writecsv('stage39_company_errors.csv',errors,['ISU_CD','ISU_NM','reason'])\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source':'Most\
+        \ recent successful Stage39 artifact, not a fresh market quote','market_date':next(iter(market.values()),{}).get('BAS_DD'),'research_candidates':len(rows),'research_tiers':dict(counts),'stage39_company_errors':len(errors),'official_common_verified':0,'per_ttm_verified':0,'roe_ttm_verified':0,'final_a_b_grades':0,'buy_signals':0,'notes':['Score\
+        \ is an uncalibrated research priority, not an investment recommendation.','Share\
+        \ class remains unverified; official common-stock classification required.','PER\
+        \ and ROE withheld pending audited TTM and scope-aligned equity.','Financial\
+        \ ratios depend on v5-state field availability and are blank when absent.']}\n\
+        (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\\\
+        n',encoding='utf-8')\nprint(json.dumps(status,ensure_ascii=False,indent=2))\n\
+        PYCODE\npython -m py_compile /tmp/stage40.py\npython /tmp/stage40.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage40-research-evaluation
+        path: stage40_out/
+        if-no-files-found: warn
