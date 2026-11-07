@@ -1,0 +1,133 @@
+name: KRX v5 Stage35 Approved API Recovery
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  approved-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test approved KOSPI and KOSDAQ daily trading endpoints
+        shell: bash
+        run: |
+          mkdir -p v5_stage35_approved
+          cat > /tmp/approved_api.py <<'PY'
+          import csv,json,os,pathlib,datetime,urllib.request,urllib.error,collections,re,math
+          O=pathlib.Path('v5_stage35_approved')
+          def readcsv(p):
+              with open(p,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def writecsv(name,rows,fields):
+              with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          def number(v):
+              try:
+                  n=float(str(v).replace(',',''));return n if math.isfinite(n) else None
+              except (TypeError,ValueError):return None
+          def code(v):
+              s=str(v or '').strip();return s.zfill(6) if s.isdigit() and len(s)<=6 else s
+          market=readcsv('data/latest.csv')
+          eligible={code(x.get('ISU_CD')):x for x in market if code(x.get('ISU_CD')) and (number(x.get('MKTCAP')) or 0)>=100_000_000_000}
+          dates=sorted({re.sub('[^0-9]','',str(x.get('BAS_DD',''))) for x in eligible.values()},reverse=True)
+          if not dates or not re.fullmatch(r'20\d{6}',dates[0]):raise RuntimeError('Invalid market baseline date')
+          day=dates[0]
+          key=os.getenv('KRX_API_KEY','').strip()
+          endpoints={'KOSPI_DAILY_TRADING':'stk_bydd','KOSDAQ_DAILY_TRADING':'ksq_bydd'}
+          diagnostics={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':day,
+              'secret_present':bool(key),'eligible_market_count':len(eligible),'endpoints':{},
+              'notes':['Only previously approved daily trading API families are queried.',
+                       'A successful daily trading response does NOT by itself prove share class.',
+                       'No authentication key, headers or response body are saved.',
+                       'No investment grade or buy signal is generated.']}
+          official={}
+          for label,endpoint in endpoints.items():
+              record={'endpoint':endpoint,'http_status':None,'response_rows':0,'response_fields':[],'error_category':None}
+              if not key:
+                  record['error_category']='MISSING_SECRET'
+              else:
+                  url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint
+                  req=urllib.request.Request(url+'?basDd='+day,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'KRX-v5/1.0'})
+                  try:
+                      with urllib.request.urlopen(req,timeout=45) as response:
+                          record['http_status']=response.status
+                          obj=json.load(response)
+                      items=obj.get('OutBlock_1') if isinstance(obj,dict) else None
+                      if not isinstance(items,list):
+                          record['error_category']='UNEXPECTED_RESPONSE_SCHEMA'
+                      else:
+                          record['response_rows']=len(items)
+                          record['response_fields']=sorted(set().union(*(x.keys() for x in items[:20] if isinstance(x,dict)))) if items else []
+                          for item in items:
+                              if not isinstance(item,dict):continue
+                              c=code(item.get('ISU_SRT_CD') or item.get('ISU_CD'))
+                              if c and c not in official:official[c]={'source':label,'row':item}
+                  except urllib.error.HTTPError as e:
+                      record['http_status']=e.code
+                      record['error_category']='HTTP_'+str(e.code)
+                  except Exception as e:
+                      record['error_category']=type(e).__name__
+              diagnostics['endpoints'][label]=record
+          # Only explicit, unambiguous share-class values in the approved official response can certify a common stock.
+          type_fields=('KIND_STKCERT_TP_NM','STK_KIND','STK_KIND_NM','SHARE_TYPE','share_type')
+          common={'보통주','보통','보통주식','COMMON','COMMON STOCK'}
+          veto=re.compile(r'(?:우선주|\d+우(?:B|C|D)?|우(?:B|C|D)?$|전환우선|상환우선)',re.I)
+          cols=['ISU_CD','ISU_NM','market_date','market_cap_krw','daily_api_matched','daily_api_source','official_share_type_field','official_share_type_value','classification','financial_source_present','reason']
+          rows=[];counts=collections.Counter()
+          # Full collector snapshots are read only; never re-run DART.
+          import subprocess
+          fin={}
+          try:
+              subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,capture_output=True,timeout=90)
+              raw=subprocess.run(['git','show','FETCH_HEAD:financial_latest.json'],check=True,capture_output=True,timeout=90).stdout
+              fin=json.loads(raw)
+              if not isinstance(fin,dict):fin={}
+          except Exception:
+              diagnostics['financial_snapshot_status']='UNAVAILABLE'
+          else:
+              diagnostics['financial_snapshot_status']='LOADED'
+          for c,p in sorted(eligible.items()):
+              m=official.get(c);item=m['row'] if m else {}
+              found=[(k,str(item[k]).strip()) for k in type_fields if k in item and str(item[k]).strip()]
+              kind=found[0][1] if len(found)==1 else ''
+              name=p.get('ISU_NM','')
+              if veto.search(re.sub(r'\s+','',name)):
+                  classification='PREFERRED_NAME_VETO'
+                  reason='Preferred-share name pattern; excluded from candidate pool'
+              elif len(found)==1 and kind.upper() in common:
+                  classification='OFFICIAL_COMMON_VERIFIED'
+                  reason='Explicit common-stock type in approved KRX API response'
+              elif len(found)==1:
+                  classification='NONCOMMON_OR_UNKNOWN_TYPE'
+                  reason='Explicit type not in accepted common-stock values'
+              else:
+                  classification='SHARE_CLASS_UNVERIFIED'
+                  reason='Approved daily trading API did not provide an unambiguous common-stock type'
+              counts[classification]+=1
+              rows.append({'ISU_CD':c,'ISU_NM':name,'market_date':p.get('BAS_DD',''),'market_cap_krw':p.get('MKTCAP',''),
+                  'daily_api_matched':int(bool(m)),'daily_api_source':m['source'] if m else '',
+                  'official_share_type_field':found[0][0] if len(found)==1 else '',
+                  'official_share_type_value':kind,'classification':classification,
+                  'financial_source_present':int(c in fin),'reason':reason})
+          writecsv('approved_api_share_class_audit.csv',rows,cols)
+          writecsv('official_common_verified_only.csv',[r for r in rows if r['classification']=='OFFICIAL_COMMON_VERIFIED'],cols)
+          writecsv('preferred_excluded.csv',[r for r in rows if r['classification']=='PREFERRED_NAME_VETO'],cols)
+          writecsv('unverified_for_alternative_official_source.csv',[r for r in rows if r['classification']=='SHARE_CLASS_UNVERIFIED'],cols)
+          diagnostics['matched_daily_api_codes']=sum(r['daily_api_matched'] for r in rows)
+          diagnostics['classification_counts']=dict(counts)
+          diagnostics['verified_buy_signals']=0
+          diagnostics['investment_grades_issued']=0
+          diagnostics['next_action']='If daily APIs lack explicit share class, connect separate official security classification data; do not guess.'
+          (O/'status.json').write_text(json.dumps(diagnostics,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(diagnostics,ensure_ascii=False,indent=2))
+          PY
+          python -m py_compile /tmp/approved_api.py
+          python /tmp/approved_api.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage35-approved-api-recovery
+          path: v5_stage35_approved/
+          if-no-files-found: warn
