@@ -1,0 +1,77 @@
+name: KRX v5 Daily Integrated Evidence and Performance
+'on':
+  workflow_dispatch: {}
+  schedule:
+    - cron: '30 11 * * 1-5' # 20:30 KST, Mon-Fri; KRX source-date guard inside
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: v5-daily-integrated-operations
+  cancel-in-progress: false
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Run existing Stage50-55 integration and download exact artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p incoming
+          started=$(date -u +%s)
+          gh workflow run v5-integrated-refresh-audit.yml --repo "$GH_REPO" --ref main
+          rid=''
+          for i in $(seq 1 30); do
+            rid=$(gh run list --repo "$GH_REPO" --workflow v5-integrated-refresh-audit.yml --event workflow_dispatch --limit 15 --json databaseId,createdAt --jq ".[] | select((.createdAt | fromdateiso8601) >= ($started - 15)) | .databaseId" | head -n 1)
+            if [ -n "$rid" ]; then break; fi
+            sleep 6
+          done
+          test -n "$rid" || { echo 'Integration run not found'; exit 1; }
+          for i in $(seq 1 140); do
+            result=$(gh run view "$rid" --repo "$GH_REPO" --json status,conclusion --jq '.status+":"+(.conclusion // "")')
+            if [[ "$result" == completed:* ]]; then break; fi
+            sleep 30
+          done
+          test "$result" = 'completed:success' || { echo "Integration failed: $result"; exit 1; }
+          gh run download "$rid" --repo "$GH_REPO" --name v5-integrated-refresh-audit --dir incoming
+          test -s incoming/status.json
+          python - <<'PY'
+          import json
+          s=json.load(open('incoming/status.json'))
+          assert s.get('pipeline_audit_passed') is True,s
+          assert len(s.get('stages',[]))==6
+          PY
+      - name: Archive confirmed prices and calculate forward outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/v5_daily_integrated.py
+      - name: Commit persistent v5 evidence ledger only when updated
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_integrated/
+          if ! git diff --cached --quiet; then
+            git commit -m "v5: archive confirmed KRX date and performance evidence"
+            git push origin HEAD:main
+          fi
+      - name: Upload result and ledger snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-daily-integrated-operations
+          path: |
+            v5_daily_out/status.json
+            data/v5_integrated/episodes.csv
+            data/v5_integrated/performance.csv
+            data/v5_integrated/last_market_date.txt
+          if-no-files-found: warn
