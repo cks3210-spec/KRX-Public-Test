@@ -1,0 +1,127 @@
+name: KRX v5 Historical Gap Recovery and Daily Price Sync
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: v5-price-archive-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Sync verified KRX close prices and latest-date marker
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v5_price_sync_out
+          cat > /tmp/v5_price_sync.py <<'PY'
+          import os,csv,json,datetime,urllib.request,urllib.parse,pathlib,time,subprocess,collections,io
+          P=pathlib.Path("data/v5_integrated");P.mkdir(parents=True,exist_ok=True)
+          O=pathlib.Path("v5_price_sync_out");O.mkdir(exist_ok=True)
+          F=P/"daily_prices.csv";L=P/"last_market_date.txt"
+          status={"mode":"DAILY_PRICE_SYNC_AND_DATE_ATOMIC_COMMIT","api_error":[],"new_rows":0,"updated_rows":0,"commit":"NOT_ATTEMPTED","formal_ab_rescoring":"NOT_IMPLEMENTED","final_buy_signals":0}
+          def write_status():
+           (O/"status.json").write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding="utf-8")
+          def get(day,market,key):
+           endpoint="stk_bydd_trd" if market=="KOSPI" else "ksq_bydd_trd"
+           url="https://data-dbg.krx.co.kr/svc/apis/sto/"+endpoint+"?"+urllib.parse.urlencode({"basDd":day})
+           req=urllib.request.Request(url,headers={"AUTH_KEY":key,"User-Agent":"Mozilla/5.0","Accept":"application/json"})
+           with urllib.request.urlopen(req,timeout=30) as resp:
+            raw=json.loads(resp.read().decode("utf-8-sig"))
+           if not isinstance(raw,dict) or not isinstance(raw.get("OutBlock_1"),list):raise ValueError("Unexpected API schema "+market+" "+day)
+           rows={}
+           for r in raw["OutBlock_1"]:
+            code=str(r.get("ISU_CD") or "").strip()
+            close=str(r.get("TDD_CLSPRC") or "").replace(",","").strip()
+            if code and close:
+             try:v=float(close)
+             except ValueError:continue
+             if v>0:rows[(day,market,code)]=str(int(v)) if v.is_integer() else str(v)
+           return rows
+          try:
+           key=os.environ["KRX_API_KEY"].strip()
+           if not key:raise ValueError("KRX_API_KEY empty")
+           old={}
+           if F.exists():
+            with F.open(encoding="utf-8-sig",newline="") as f:
+             for r in csv.DictReader(f):
+              k=(r["date"],r["market"],r["code"])
+              if k in old and old[k]!=r["close"]:raise ValueError("Existing conflicting duplicate "+str(k))
+              old[k]=r["close"]
+           if not old:raise ValueError("Existing archive missing; refusing to initialize or overwrite")
+           dates=sorted(set(k[0] for k in old))
+           previous=max(dates)
+           status["previous_latest_date"]=previous
+           now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
+           # Up to 10 calendar days including current date. Existing data is preserved even if API unavailable.
+           candidates=[(now-datetime.timedelta(days=i)).strftime("%Y%m%d") for i in range(10,-1,-1)]
+           candidates=[d for d in candidates if d>=previous]
+           merged=old.copy();accepted=[]
+           for day in candidates:
+            if datetime.datetime.strptime(day,"%Y%m%d").weekday()>=5:continue
+            try:
+             kospi=get(day,"KOSPI",key);kosdaq=get(day,"KOSDAQ",key)
+             if len(kospi)<500 or len(kosdaq)<1000:
+              status["api_error"].append({"date":day,"reason":"BOTH_MARKETS_NOT_CONFIRMED","kospi":len(kospi),"kosdaq":len(kosdaq)})
+              continue
+             combined={**kospi,**kosdaq}
+             conflicts=[k for k,v in combined.items() if k in merged and abs(float(merged[k])-float(v))>0.001]
+             if conflicts:
+              status["api_error"].append({"date":day,"reason":"EXISTING_PRICE_CONFLICT","count":len(conflicts)})
+              continue
+             for k,v in combined.items():
+              if k not in merged:merged[k]=v;status["new_rows"]+=1
+             accepted.append(day)
+            except Exception as e:status["api_error"].append({"date":day,"reason":str(e)[:250]})
+           # Existing dates may include partial data: do not promote such dates without verified both-market counts.
+           byday=collections.defaultdict(lambda:collections.Counter())
+           for d,m,c in merged:byday[d][m]+=1
+           valid=[d for d,counts in byday.items() if counts["KOSPI"]>=500 and counts["KOSDAQ"]>=1000]
+           if not valid:raise ValueError("No verified both-market snapshot in archive")
+           latest=max(valid)
+           status.update(verified_latest_date=latest,accepted_api_dates=accepted,price_rows=len(merged),archived_dates=sorted(byday),daily_market_counts={d:dict(byday[d]) for d in sorted(byday)},missing_weekdays=[d for d in candidates if datetime.datetime.strptime(d,"%Y%m%d").weekday()<5 and d not in valid])
+           # Sync both files together; never write a date beyond verified prices.
+           with F.open("w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f);w.writerow(["date","market","code","close"])
+            for k,v in sorted(merged.items()):w.writerow([*k,v])
+           L.write_text(latest+"\n",encoding="utf-8")
+           status["status"]="DATA_VALIDATED"
+           write_status()
+          except Exception as e:
+           status.update(status="FAILED_BEFORE_COMMIT",error=str(e));write_status();raise
+          PY
+          python /tmp/v5_price_sync.py
+      - name: Commit both price archive and latest date
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/v5_integrated/daily_prices.csv data/v5_integrated/last_market_date.txt
+          if git diff --cached --quiet; then
+            echo "No archive changes"
+          else
+            git commit -m "v5: sync verified KRX prices and latest date"
+            git push origin HEAD:main
+          fi
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('v5_price_sync_out/status.json')
+          x=json.loads(p.read_text());x['commit']='SUCCESS_OR_NO_CHANGE'
+          p.write_text(json.dumps(x,ensure_ascii=False,indent=2))
+          PY
+      - name: Upload status even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-historical-gap-recovery
+          path: v5_price_sync_out/
+          if-no-files-found: warn
