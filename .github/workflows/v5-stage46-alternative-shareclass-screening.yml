@@ -1,0 +1,78 @@
+name: KRX v5 Stage46 Alternative Shareclass Screening
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download Stage45 verified input
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |-
+        set -euo pipefail
+        mkdir -p stage45_input
+        RUN_ID=$(gh run list --workflow v5-stage45-official-sector-shareclass-audit.yml --status success --limit 20 --json databaseId --jq '.[0].databaseId')
+        test -n "$RUN_ID"
+        gh run download "$RUN_ID" --name v5-stage45-official-sector-shareclass-audit --dir stage45_input
+        test -s stage45_input/official_sector_shareclass_audit.csv
+    - name: Crosscheck KRX daily listing and flag preference patterns
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+      run: |-
+        mkdir -p stage46_alternative_out
+        cat > /tmp/stage46_alt.py <<'PY'
+        import csv,json,os,re,urllib.request,urllib.parse,collections,datetime,pathlib
+        P=pathlib.Path('stage46_alternative_out');P.mkdir(exist_ok=True)
+        with open('stage45_input/official_sector_shareclass_audit.csv',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+        assert len(rows)==455, f'Stage45 expected 455, got {len(rows)}'
+        key=os.getenv('KRX_API_KEY','').strip()
+        assert key, 'Missing KRX_API_KEY'
+        date='20261105'
+        master={}; api={}
+        for market,ep in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+         try:
+          url='https://data-dbg.krx.co.kr/svc/apis/sto/'+ep+'?'+urllib.parse.urlencode({'basDd':date})
+          req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0'})
+          with urllib.request.urlopen(req,timeout=45) as resp: data=json.load(resp)['OutBlock_1']
+          for item in data:
+           code=str(item.get('ISU_CD','')).strip()
+           if re.fullmatch(r'\d{6}',code): master[(market,code)]=item
+          api[market]={'status':'OK','rows':len(data)}
+         except Exception as e: api[market]={'status':'ERROR','message':str(e)[:240]}
+        # This is a screening signal, not proof of common-share status.
+        # Explicit preference suffix patterns flag possible noncommon instruments for review.
+        preferred=re.compile(r'(?:우|우B|우C|[1-9]우|[1-9]우B|[1-9]우C|우선주)$',re.I)
+        results=[]; counts=collections.Counter()
+        for r in rows:
+         code=r['ISU_CD'].strip();name=r['ISU_NM'].strip()
+         hits=[(m,x) for (m,c),x in master.items() if c==code]
+         official=hits[0][1] if len(hits)==1 else None
+         listed_name=(official or {}).get('ISU_NM','')
+         if official and preferred.search(name): state='PREFERRED_NAME_FLAG';reason='Preferred-share naming pattern; requires official share-class confirmation'
+         elif official: state='COMMON_CANDIDATE_UNVERIFIED';reason='Matched KRX daily trading list; daily feed lacks official share-class field'
+         else: state='NOT_MATCHED_UNVERIFIED';reason='No unique KRX daily listing match'
+         out=dict(r,krx_daily_match='YES' if official else 'NO',krx_daily_name=listed_name,alternative_shareclass_status=state,alternative_reason=reason,official_common_verified='NO',final_grade='WITHHELD',buy_signal='NONE')
+         results.append(out);counts[state]+=1
+        fields=list(dict.fromkeys(k for r in results for k in r))
+        def save(name,rr):
+         with (P/name).open('w',encoding='utf-8-sig',newline='') as f:
+          w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rr)
+        save('all_455_shareclass_screen.csv',results)
+        save('provisional_ab_review.csv',[r for r in results if r.get('provisional_research_band','').startswith('PROVISIONAL_')])
+        save('preferred_or_unmatched_review.csv',[r for r in results if r['alternative_shareclass_status']!='COMMON_CANDIDATE_UNVERIFIED'])
+        status={'stage':'46_alternative','market_date':date,'input_rows':len(rows),'api':api,'counts':dict(counts),'provisional_ab':sum(r.get('provisional_research_band','').startswith('PROVISIONAL_') for r in results),'official_common_verified':0,'final_grades':0,'buy_signals':0,'limitation':'KRX daily trading API does not expose KIND_STKCERT_TP_NM. Name-based screen is not official common-share verification. No grades released.'}
+        (P/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+        print(json.dumps(status,ensure_ascii=False,indent=2))
+        PY
+        python /tmp/stage46_alt.py
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage46-alternative-shareclass-screening
+        path: stage46_alternative_out/
+        if-no-files-found: warn
