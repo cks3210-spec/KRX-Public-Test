@@ -1,0 +1,72 @@
+name: KRX v5 Stage49 KIND Request Discovery
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest Stage48 result
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage48_input
+
+        RUN_ID=$(gh run list --workflow v5-stage48-official-issue-evidence-audit.yml --status success --limit 30
+        --json databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage48-official-issue-evidence-audit --dir stage48_input
+
+        test -s stage48_input/all_455_issue_evidence.csv'
+    - name: Discover KIND data request routes
+      run: "mkdir -p stage49_out\ncat > /tmp/stage49.py <<'PYCODE'\nimport csv, json, pathlib, re, urllib.request,\
+        \ urllib.parse, urllib.error, datetime\nfrom html.parser import HTMLParser\nO=pathlib.Path('stage49_out');\
+        \ O.mkdir(exist_ok=True)\nwith open('stage48_input/all_455_issue_evidence.csv',encoding='utf-8-sig',newline='')\
+        \ as f: rows=list(csv.DictReader(f))\nif len(rows)!=455: raise RuntimeError(f'Expected 455 rows, got {len(rows)}')\n\
+        base='https://kind.krx.co.kr'; page=base+'/corpgeneral/listedIssueStatus.do?method=loadInitPage'\nstatus={'stage':49,'input_rows':len(rows),'provisional_ab':sum(r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B'))\
+        \ for r in rows),'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'official_common_verified':0,'official_noncommon_verified':0,'unverified':455,'final_grades':0,'buy_signals':0,'source':page,'limitations':['Page\
+        \ and form discovery are not issue-level shareclass evidence; no certification without explicit official\
+        \ per-security field.']}\nclass Forms(HTMLParser):\n def __init__(self): super().__init__();self.forms=[];self.cur=None;self.scripts=[]\n\
+        \ def handle_starttag(self,tag,attrs):\n  a=dict(attrs)\n  if tag=='form':self.cur={'action':a.get('action',''),'method':a.get('method','GET'),'id':a.get('id',''),'inputs':[]};self.forms.append(self.cur)\n\
+        \  if tag in ('input','select') and self.cur is not None:self.cur['inputs'].append({'name':a.get('name',''),'type':a.get('type',''),'value':a.get('value','')})\n\
+        \  if tag=='script' and a.get('src'):self.scripts.append(urllib.parse.urljoin(page,a['src']))\n def handle_endtag(self,tag):\n\
+        \  if tag=='form':self.cur=None\n\ndef fetch(url,method='GET',data=None):\n req=urllib.request.Request(url,data=data,method=method,headers={'User-Agent':'Mozilla/5.0','Accept':'text/html,application/json,*/*','Referer':page})\n\
+        \ try:\n  with urllib.request.urlopen(req,timeout=30) as r:return r.status,r.headers.get('Content-Type',''),r.read(2500000),None\n\
+        \ except urllib.error.HTTPError as e:return e.code,e.headers.get('Content-Type',''),e.read(10000),str(e)\n\
+        \ except Exception as e:return None,'',b'',f'{type(e).__name__}: {e}'\ndef decode(b):\n for enc in ('utf-8-sig','cp949','euc-kr'):\n\
+        \  try:return b.decode(enc),enc\n  except UnicodeError:pass\n return b.decode('utf-8',errors='replace'),'replacement'\n\
+        code,ctype,data,err=fetch(page);status.update(page_http=code,page_error=err,page_bytes=len(data))\nhtml,enc=decode(data);status['page_encoding']=enc\n\
+        parser=Forms();parser.feed(html)\nstatus['forms']=parser.forms\nstatus['script_count']=len(parser.scripts)\n\
+        # Inspect only same-origin script resources; capture candidate endpoints and form submissions, not credentials.\n\
+        script_findings=[]\nfor url in list(dict.fromkeys(parser.scripts))[:30]:\n if urllib.parse.urlsplit(url).netloc!='kind.krx.co.kr':continue\n\
+        \ sc,ct,body,error=fetch(url)\n txt,_=decode(body)\n fragments=[]\n for m in re.finditer(r'.{0,130}(?:listedIssueStatus|searchListedIssue|stockissuelist|method\\\
+        s*[:=]|\\.do\\?method=).{0,160}',txt,re.I):\n  fragments.append(re.sub(r'\\s+',' ',m.group(0))[:290])\n\
+        \  if len(fragments)>=20:break\n if fragments:script_findings.append({'url':url,'http':sc,'fragments':fragments})\n\
+        status['script_findings']=script_findings\n# Read-only probe: only actual form actions with no user-specific\
+        \ query inputs; no guessed endpoints.\nprobes=[]\nfor form in parser.forms[:12]:\n action=urllib.parse.urljoin(page,form['action']\
+        \ or page)\n if urllib.parse.urlsplit(action).netloc!='kind.krx.co.kr':continue\n method=form['method'].upper()\n\
+        \ # Skip POST to avoid state-changing actions; inspect request shape only.\n probes.append({'url':action,'method':method,'input_names':[x['name']\
+        \ for x in form['inputs'] if x['name']]})\nstatus['discovered_form_requests']=probes\nstatus['actual_issue_data_endpoint_confirmed']=False\n\
+        status['next_action']='Review discovered JS request fragments and actual form payload before making issue-data\
+        \ calls'\n(O/'request_discovery.json').write_text(json.dumps({'forms':parser.forms,'script_findings':script_findings,'discovered_form_requests':probes},ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        for r in rows:\n r['stage49_official_shareclass']='UNVERIFIED';r['stage49_final_grade']='WITHHELD';r['stage49_buy_signal']='NONE'\n\
+        fields=list(dict.fromkeys(k for r in rows for k in r))\nfor filename,subset in [('all_455_request_audit.csv',rows),('provisional_ab_request_audit.csv',[r\
+        \ for r in rows if r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B'))])]:\n\
+        \ with (O/filename).open('w',encoding='utf-8-sig',newline='') as f:\n  w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(subset)\n\
+        (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')\nprint(json.dumps({k:v\
+        \ for k,v in status.items() if k not in ('forms','script_findings')},ensure_ascii=False,indent=2))\nPYCODE\n\
+        python /tmp/stage49.py"
+    - name: Upload diagnostics
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-stage49-kind-request-discovery
+        path: stage49_out/
+        if-no-files-found: warn
