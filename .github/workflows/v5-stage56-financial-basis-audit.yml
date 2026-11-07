@@ -1,0 +1,23 @@
+name: V5 Stage56 Financial Basis Audit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit existing 318-stock financial evidence
+        run: python scripts/v5_stage56_financial_basis_audit.py
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage56-financial-basis-audit
+          path: stage56_financial_basis_output/
