@@ -1,0 +1,105 @@
+name: KRX v5 Stage50 Full Market Integrated Baseline
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 9 * * 1-5' # 18:45 KST; skip holidays when KRX has no new session
+permissions:
+  contents: read
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run full-market collection and coverage audit
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p stage50_out
+          cat > /tmp/stage50.py <<'PY'
+          import csv, json, os, re, pathlib, urllib.request, urllib.parse, datetime, collections
+          P=pathlib.Path('stage50_out'); NOW=datetime.datetime.now(datetime.timezone.utc)
+          def write(name, rows, fields):
+              with (P/name).open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)
+          def number(x):
+              try:return int(str(x).replace(',','').strip())
+              except:return 0
+          status={'stage':'50_full_market_integrated_baseline','generated_utc':NOW.isoformat(),'source':'','market_date':'','api':{},'warnings':[],'official_shareclass_verified':0,'final_ab':0,'buy_signals':0}
+          latest=pathlib.Path('data/latest.csv')
+          existing=[]
+          if latest.exists():
+              with latest.open(encoding='utf-8-sig',newline='') as f:existing=list(csv.DictReader(f))
+          dates=sorted({r.get('BAS_DD','') for r in existing if re.fullmatch(r'\d{8}',r.get('BAS_DD',''))},reverse=True)
+          reference=dates[0] if dates else (NOW+datetime.timedelta(hours=9)).strftime('%Y%m%d')
+          key=os.environ.get('KRX_API_KEY','').strip(); fresh=[]
+          if key:
+              for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+                  url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':reference})
+                  try:
+                      req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0'})
+                      with urllib.request.urlopen(req,timeout=45) as response:payload=json.load(response)
+                      items=payload.get('OutBlock_1',[])
+                      if len(items)<100:raise ValueError('Insufficient market rows: '+str(len(items)))
+                      status['api'][market]={'state':'OK','count':len(items)}
+                      for x in items:
+                          fresh.append({'BAS_DD':reference,'ISU_CD':str(x.get('ISU_CD','')).strip(),'ISU_NM':str(x.get('ISU_NM','')).strip(),'TDD_CLSPRC':x.get('TDD_CLSPRC',''),'ACC_TRDVOL':x.get('ACC_TRDVOL',''),'MKTCAP':x.get('MKTCAP',''),'MARKET':market})
+                  except Exception as e:status['api'][market]={'state':'ERROR','message':str(e)[:180]}
+          else:status['warnings'].append('KRX_API_KEY missing')
+          markets={r['MARKET'] for r in fresh}
+          if markets=={'KOSPI','KOSDAQ'}:
+              rows=fresh;status['source']='KRX_API_both_markets'
+          else:
+              rows=existing;status['source']='repository_latest_csv_fallback'
+              status['warnings'].append('Fresh full-market collection incomplete; fallback is not current market data')
+          if not rows:raise RuntimeError('No KRX market rows available')
+          # Preserve alphanumeric six-character issue codes. Do not silently discard new listings.
+          by_code={}
+          for r in rows:
+              code=str(r.get('ISU_CD','')).strip().upper();market=r.get('MARKET','')
+              if re.fullmatch(r'[0-9A-Z]{6}',code) and market in ('KOSPI','KOSDAQ'):
+                  by_code[(market,code)]=r
+          rows=list(by_code.values());rows.sort(key=lambda r:(r['MARKET'],r['ISU_CD']))
+          source_dates=sorted({r.get('BAS_DD','') for r in rows})
+          status['market_date']=source_dates[-1];status['source_dates']=source_dates
+          status['total_market_issues']=len(rows)
+          status['market_counts']=dict(collections.Counter(r['MARKET'] for r in rows))
+          status['snapshot_is_reference_date']=status['market_date']==reference
+          if len(source_dates)!=1:status['warnings'].append('Mixed market dates: stop final scoring')
+          spac=re.compile(r'스팩|SPAC',re.I)
+          pref=re.compile(r'(?:우|우B|우C|[1-9]우|[1-9]우B|[1-9]우C|우선주)$',re.I)
+          results=[]
+          for r in rows:
+              x=dict(r);cap=number(x.get('MKTCAP'));name=x.get('ISU_NM','')
+              x['marketcap_ge_100b_krw']='YES' if cap>=100_000_000_000 else 'NO'
+              x['spac_name_flag']='YES' if spac.search(name) else 'NO'
+              x['preferred_name_flag']='YES' if pref.search(name) else 'NO'
+              x['shareclass_official']='UNVERIFIED'
+              x['financials_verified']='NO'
+              x['evaluation_status']='PENDING_FINANCIAL_AND_SHARECLASS_VALIDATION'
+              x['final_grade']='WITHHELD';x['buy_signal']='NONE'
+              x['eligible_for_research']='YES' if cap>=100_000_000_000 and not spac.search(name) and not pref.search(name) else 'NO'
+              results.append(x)
+          eligible=[r for r in results if r['eligible_for_research']=='YES']
+          status['marketcap_ge_100b']=sum(r['marketcap_ge_100b_krw']=='YES' for r in results)
+          status['research_eligible_provisional']=len(eligible)
+          status['preferred_name_flags']=sum(r['preferred_name_flag']=='YES' for r in results)
+          status['spac_name_flags']=sum(r['spac_name_flag']=='YES' for r in results)
+          status['coverage_pct']=round(len(results)/len(by_code)*100,2) if by_code else 0
+          status['next_required']='Integrate verified OpenDART fundamentals and official issue-level shareclass in parallel; no final investment grades yet'
+          fields=list(dict.fromkeys(k for r in results for k in r))
+          write('full_market_issues.csv',results,fields)
+          write('research_eligible_provisional.csv',eligible,fields)
+          write('exceptions_and_review.csv',[r for r in results if r['eligible_for_research']=='NO' or r['preferred_name_flag']=='YES'],fields)
+          (P/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/stage50.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-stage50-full-market-integrated
+          path: stage50_out/
+          if-no-files-found: warn
