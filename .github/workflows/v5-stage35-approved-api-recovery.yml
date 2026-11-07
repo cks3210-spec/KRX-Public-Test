@@ -34,8 +34,7 @@ jobs:
           dates=sorted({re.sub('[^0-9]','',str(x.get('BAS_DD',''))) for x in eligible.values()},reverse=True)
           if not dates or not re.fullmatch(r'20\d{6}',dates[0]):raise RuntimeError('Invalid market baseline date')
           day=dates[0]
-          key=os.getenv('KRX_API_KEY','').strip()
-          endpoints={'KOSPI_DAILY_TRADING':'stk_bydd','KOSDAQ_DAILY_TRADING':'ksq_bydd'}
+          endpoints={'KOSPI_DAILY_TRADING':'stk_bydd_trd','KOSDAQ_DAILY_TRADING':'ksq_bydd_trd'}
           diagnostics={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'market_date':day,
               'secret_present':bool(key),'eligible_market_count':len(eligible),'endpoints':{},
               'notes':['Only previously approved daily trading API families are queried.',
