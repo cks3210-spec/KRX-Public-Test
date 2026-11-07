@@ -1,0 +1,134 @@
+name: KRX v5 Three in One
+'on':
+  workflow_dispatch:
+    inputs:
+      audit_days:
+        description: Audit days 7 to 45
+        required: false
+        default: '14'
+  schedule:
+  - cron: 40 10 * * 1-5
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: v5-price-archive-sync
+  cancel-in-progress: false
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: main
+        persist-credentials: true
+    - name: Verify trading days and recover missing price snapshots
+      env:
+        KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        AUDIT_DAYS: ${{ inputs.audit_days || '14' }}
+      shell: bash
+      run: "set -euo pipefail\ncat > /tmp/v5_recover.py <<'PY'\nimport csv, json, os, pathlib, datetime, urllib.request,\
+        \ urllib.parse, collections, time\nROOT=pathlib.Path('data/v5_integrated'); ROOT.mkdir(parents=True,exist_ok=True)\n\
+        OUT=pathlib.Path('v5_trade_day_recovery_result'); OUT.mkdir(exist_ok=True)\nPRICES=ROOT/'daily_prices.csv';\
+        \ MARKER=ROOT/'last_market_date.txt'\nstatus={'version':'v5-trading-day-completeness-v1','status':'STARTED','api_checks':[],\
+        \ 'confirmed_trading_days':[], 'missing_dates':[], 'new_rows':0,'final_buy_signals':0,'formal_ab_rescoring':'NOT_IMPLEMENTED'}\n\
+        def save(): (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        def api(day,market,key):\n    endpoint='stk_bydd_trd' if market=='KOSPI' else 'ksq_bydd_trd'\n    url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})\n\
+        \    req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0','Accept':'application/json'})\n\
+        \    with urllib.request.urlopen(req,timeout=35) as response:\n        http=response.status\n        raw=json.loads(response.read().decode('utf-8-sig'))\n\
+        \    if not isinstance(raw,dict) or not isinstance(raw.get('OutBlock_1'),list): raise ValueError('UNEXPECTED_API_RESPONSE')\n\
+        \    result={}; bad=0\n    for row in raw['OutBlock_1']:\n        code=str(row.get('ISU_CD') or '').strip()\n\
+        \        close=str(row.get('TDD_CLSPRC') or '').replace(',','').strip()\n        try: price=float(close)\n\
+        \        except (ValueError,TypeError): bad+=1; continue\n        if not code or price<=0: bad+=1; continue\n\
+        \        k=(day,market,code)\n        if k in result and result[k]!=str(int(price) if price.is_integer()\
+        \ else price):raise ValueError('CONFLICTING_API_DUPLICATE')\n        result[k]=str(int(price) if price.is_integer()\
+        \ else price)\n    return result,{'http':http,'raw_rows':len(raw['OutBlock_1']),'parsed_rows':len(result),'invalid_rows':bad}\n\
+        def main():\n    key=os.getenv('KRX_API_KEY','').strip()\n    if not key:raise ValueError('KRX_API_KEY is\
+        \ missing')\n    if not PRICES.exists():raise ValueError('Price archive absent: refuse to initialize')\n\
+        \    existing={}\n    with PRICES.open(encoding='utf-8-sig',newline='') as f:\n        reader=csv.DictReader(f)\n\
+        \        if not {'date','market','code','close'}.issubset(reader.fieldnames or []):raise ValueError('Unexpected\
+        \ archive columns')\n        for row in reader:\n            k=(row['date'],row['market'],row['code']);\
+        \ v=row['close']\n            if k in existing and existing[k]!=v:raise ValueError('Existing conflicting\
+        \ duplicate '+str(k))\n            existing[k]=v\n    if not existing:raise ValueError('Archive is empty')\n\
+        \    now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()\n    # Rolling discovery,\
+        \ no hardcoded recovery start date. The first run audits the past 14 calendar days.\n    window=int(os.getenv('AUDIT_DAYS','14'))\n\
+        \    if window<7 or window>45:raise ValueError('AUDIT_DAYS must be 7..45')\n    days=[now-datetime.timedelta(days=i)\
+        \ for i in range(window-1,-1,-1)]\n    merged=dict(existing); verified=[]; api_unavailable=[]\n    for dt\
+        \ in days:\n        if dt.weekday()>=5:continue\n        day=dt.strftime('%Y%m%d')\n        entry={'date':day,'markets':{}}\n\
+        \        retrieved={}\n        for market in ('KOSPI','KOSDAQ'):\n            try:\n                data,detail=api(day,market,key)\n\
+        \                retrieved[market]=data\n                entry['markets'][market]=detail\n            except\
+        \ Exception as exc:\n                entry['markets'][market]={'error':str(exc)[:180]}\n        counts={m:len(retrieved.get(m,{}))\
+        \ for m in ('KOSPI','KOSDAQ')}\n        entry['counts']=counts\n        if counts['KOSPI']>=500 and counts['KOSDAQ']>=1000:\n\
+        \            combined={**retrieved['KOSPI'],**retrieved['KOSDAQ']}\n            conflicts=[k for k,v in\
+        \ combined.items() if k in merged and abs(float(merged[k])-float(v))>0.0001]\n            if conflicts:\n\
+        \                entry['result']='PRICE_CONFLICT';entry['conflict_count']=len(conflicts)\n             \
+        \   api_unavailable.append(day)\n            else:\n                new=sum(k not in merged for k in combined)\n\
+        \                merged.update(combined);status['new_rows']+=new\n                verified.append(day);entry['result']='VERIFIED_TRADING_DAY';entry['added']=new\n\
+        \        elif any('error' in v for v in entry['markets'].values()):\n            entry['result']='API_ERROR';api_unavailable.append(day)\n\
+        \        elif counts['KOSPI']==0 and counts['KOSDAQ']==0:\n            entry['result']='NO_MARKET_DATA_UNCONFIRMED_HOLIDAY_OR_NOT_PUBLISHED'\n\
+        \        else:\n            entry['result']='PARTIAL_MARKET_DATA';api_unavailable.append(day)\n        status['api_checks'].append(entry)\n\
+        \        time.sleep(0.12)\n    if not verified:raise ValueError('No API-confirmed trading days; refusing\
+        \ to modify archive')\n    # All confirmed trading days in the rolling window must have both-market price\
+        \ data.\n    bydate=collections.defaultdict(lambda:collections.Counter())\n    for d,m,c in merged:bydate[d][m]+=1\n\
+        \    missing=[d for d in verified if bydate[d]['KOSPI']<500 or bydate[d]['KOSDAQ']<1000]\n    if missing:raise\
+        \ ValueError('Incomplete confirmed trading dates '+str(missing))\n    # An API outage on a weekday earlier\
+        \ than the newest confirmed trading day is an unresolved gap.\n    latest_api=max(verified)\n    unresolved=[d\
+        \ for d in api_unavailable if d<=latest_api]\n    if unresolved:raise ValueError('Unresolved API errors\
+        \ on historical dates '+str(unresolved))\n    # No market data on weekdays inside known trading-day bounds\
+        \ requires an explicit calendar check.\n    no_data=[e['date'] for e in status['api_checks'] if e['result']=='NO_MARKET_DATA_UNCONFIRMED_HOLIDAY_OR_NOT_PUBLISHED'\
+        \ and e['date']<=latest_api]\n    status['unconfirmed_weekdays']=no_data\n    status['confirmed_trading_days']=verified\n\
+        \    status['missing_dates']=missing\n    status['latest_api_trading_day']=latest_api\n    # Previous archive\
+        \ can be newer than this audit window. Never regress the marker.\n    old_verified=[d for d,c in bydate.items()\
+        \ if c['KOSPI']>=500 and c['KOSDAQ']>=1000]\n    latest=max(old_verified)\n    status['latest_archived_trading_day']=latest\n\
+        \    status['price_rows']=len(merged)\n    status['archived_dates']=sorted(bydate)\n    # No silent success\
+        \ when an unexplained weekday exists between confirmed trading days.\n    if no_data:raise ValueError('Unconfirmed\
+        \ weekdays within trading-day range '+str(no_data))\n    # Save only after all checks; Git commit is a separate\
+        \ atomic step.\n    with PRICES.open('w',encoding='utf-8',newline='') as f:\n        writer=csv.writer(f);writer.writerow(['date','market','code','close'])\n\
+        \        for k,v in sorted(merged.items()):writer.writerow([*k,v])\n    MARKER.write_text(latest+'\\n',encoding='utf-8')\n\
+        \    status['status']='READY_TO_COMMIT';save()\ntry:\n    main()\nexcept Exception as exc:\n    status['status']='FAILED_VALIDATION';status['error']=str(exc);save();raise\n\
+        PY\npython /tmp/v5_recover.py\n"
+    - name: Calculate 5 10 20 session returns
+      shell: bash
+      run: "set -euo pipefail\nmkdir -p v5_three_in_one_result\ncat > /tmp/perf.py <<'PERFPY'\nimport csv,json,pathlib,collections\n\
+        p=pathlib.Path('data/v5_integrated');o=pathlib.Path('v5_three_in_one_result');o.mkdir(exist_ok=True)\ndef\
+        \ load(n):\n f=p/n\n if not f.exists():raise RuntimeError('Missing '+str(f))\n with f.open(encoding='utf-8-sig',newline='')\
+        \ as x:return list(csv.DictReader(x))\nprices=load('daily_prices.csv');episodes=load('episodes.csv')\ncounts=collections.defaultdict(lambda:collections.Counter());lookup={}\n\
+        for r in prices:\n counts[r['date']][r['market']]+=1\n lookup[(r['date'],r['market'],r['code'])]=float(r['close'])\n\
+        dates=sorted(d for d,c in counts.items() if c['KOSPI']>=500 and c['KOSDAQ']>=1000)\nif not dates:raise RuntimeError('No\
+        \ complete trading sessions')\ncols=['episode_id','entry_date','code','market','entry_price','grade','horizon','target_date','target_close','return_pct','result']\n\
+        rows=[]\nfor e in episodes:\n future=[d for d in dates if d>e['entry_date']]\n for h in (5,10,20):\n  target=future[h-1]\
+        \ if len(future)>=h else ''\n  close=lookup.get((target,e['market'],e['code'])) if target else None\n  start=float(e['entry_price'])\n\
+        \  if start<=0:raise RuntimeError('Invalid entry price')\n  result='DONE' if close is not None else ('PRICE_MISSING'\
+        \ if target else 'PENDING')\n  rows.append(dict(episode_id=e['episode_id'],entry_date=e['entry_date'],code=e['code'],market=e['market'],entry_price=e['entry_price'],grade=e['provisional_grade'],horizon=h,target_date=target,target_close=close\
+        \ if close is not None else '',return_pct=round((close/start-1)*100,4) if close is not None else '',result=result))\n\
+        with (p/'performance.csv').open('w',encoding='utf-8',newline='') as f:\n w=csv.DictWriter(f,fieldnames=cols);w.writeheader();w.writerows(rows)\n\
+        s={'archived_rows':len(prices),'verified_sessions':len(dates),'episodes':len(episodes),'done':sum(r['result']=='DONE'\
+        \ for r in rows),'pending':sum(r['result']=='PENDING' for r in rows),'missing_price':sum(r['result']=='PRICE_MISSING'\
+        \ for r in rows),'new_ab_daily_cohorts':'NOT_IMPLEMENTED','final_buy_signals':0}\n(o/'performance_status.json').write_text(json.dumps(s,ensure_ascii=False,indent=2))\n\
+        PERFPY\npython /tmp/perf.py\n"
+    - name: Commit archive and performance
+      shell: bash
+      run: "set -euo pipefail\ngit config user.name 'github-actions[bot]'\ngit config user.email '41898282+github-actions[bot]@users.noreply.github.com'\n\
+        git add data/v5_integrated/daily_prices.csv data/v5_integrated/last_market_date.txt data/v5_integrated/performance.csv\n\
+        if ! git diff --cached --quiet; then\n git commit -m 'v5: archive and forward outcomes'\n git push origin\
+        \ HEAD:main\nfi\n"
+    - name: Trigger existing full-market Stage50-55 evaluation
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+      run: "set -euo pipefail\nmkdir -p v5_three_in_one_result\nif gh workflow run v5-integrated-refresh-audit.yml\
+        \ --repo \"$GH_REPO\" --ref main; then\n echo '{\"stage50_55\":\"DISPATCHED_NOT_YET_VERIFIED\",\"daily_formal_ab_rescoring\"\
+        :\"NOT_VERIFIED\",\"final_buy_signals\":0}' > v5_three_in_one_result/evaluation_status.json\nelse\n echo\
+        \ '{\"stage50_55\":\"DISPATCH_FAILED\",\"daily_formal_ab_rescoring\":\"NOT_VERIFIED\",\"final_buy_signals\"\
+        :0}' > v5_three_in_one_result/evaluation_status.json\n exit 1\nfi\n"
+    - name: Upload combined results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: v5-three-in-one-result
+        path: 'v5_three_in_one_result/
+
+          v5_trade_day_recovery_result/'
+        if-no-files-found: warn
