@@ -1,0 +1,90 @@
+name: KRX v5 Stage47 KIND Charset Recovery
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Stage46 successful result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p stage46_input
+          RUN_ID=$(gh run list --workflow v5-stage46-alternative-shareclass-screening.yml --status success --limit 30 --json databaseId --jq '.[0].databaseId')
+          test -n "$RUN_ID"
+          gh run download "$RUN_ID" --name v5-stage46-alternative-shareclass-screening --dir stage46_input
+          test -s stage46_input/all_455_shareclass_screen.csv
+      - name: Install HTML reader
+        run: python -m pip install pandas lxml html5lib beautifulsoup4
+      - name: Decode and audit KIND directory
+        run: |
+          mkdir -p stage47_out
+          cat > /tmp/audit.py <<'PY'
+          import csv,io,json,pathlib,re,urllib.request,datetime
+          import pandas as pd
+          out=pathlib.Path('stage47_out')
+          with open('stage46_input/all_455_shareclass_screen.csv',encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+          if len(rows)!=455: raise RuntimeError(f'Expected 455 rows, received {len(rows)}')
+          url='https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
+          status={'stage':'47_KIND_charset_recovery','input_rows':len(rows),'provisional_ab':sum(r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B')) for r in rows),'kind_url':url,'kind_fetch':'ERROR','kind_rows':0,'kind_code_matches':0,'kind_name_matches':0,'official_common_verified':0,'final_grades':0,'buy_signals':0,'limitations':['KIND company-level listing cannot by itself certify per-security common-share class']}
+          directory={}
+          try:
+           req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'text/html,application/vnd.ms-excel,*/*'})
+           with urllib.request.urlopen(req,timeout=40) as response:
+            data=response.read();status['kind_http']=response.status;status['kind_bytes']=len(data)
+            status['response_content_type']=response.headers.get('Content-Type','')
+           # KIND exports may be CP949/EUC-KR. Do not force UTF-8.
+           errors=[]
+           for encoding in ('utf-8-sig','cp949','euc-kr'):
+            try:
+             html=data.decode(encoding,errors='strict')
+             tables=pd.read_html(io.StringIO(html))
+             df=max(tables,key=len)
+             df.columns=[str(c).strip() for c in df.columns]
+             code_col=next((c for c in df.columns if c in ('종목코드','종목 코드','단축코드','단축 코드')),None)
+             name_col=next((c for c in df.columns if c in ('회사명','종목명','법인명')),None)
+             if not code_col or not name_col: raise ValueError('Required column missing: '+repr(list(df.columns)))
+             for _,item in df.iterrows():
+              code=str(item[code_col]).strip().split('.')[0].zfill(6)
+              if re.fullmatch(r'\d{6}',code): directory[code]=str(item[name_col]).strip()
+             if not directory: raise ValueError('No valid stock codes')
+             status.update(kind_fetch='OK',kind_encoding=encoding,kind_rows=len(directory),kind_columns=list(df.columns))
+             break
+            except Exception as e: errors.append(f'{encoding}: {type(e).__name__}: {str(e)[:160]}')
+           status['decode_attempts']=errors
+           if not directory: status['kind_error']='All decoding and parsing attempts failed'
+          except Exception as e:
+           status['kind_error']=f'{type(e).__name__}: {str(e)[:350]}'
+          for r in rows:
+           code=r.get('ISU_CD','').strip().zfill(6)
+           match=code in directory
+           r['stage47_kind_code_match']='YES' if match else 'NO'
+           r['stage47_kind_company_name']=directory.get(code,'')
+           r['stage47_kind_name_match']='YES' if match and directory[code].replace(' ','')==r.get('ISU_NM','').replace(' ','') else 'NO'
+           r['stage47_official_shareclass']='UNVERIFIED'
+           r['stage47_official_common_verified']='NO'
+           r['stage47_final_grade']='WITHHELD'
+           r['stage47_buy_signal']='NONE'
+          status['kind_code_matches']=sum(r['stage47_kind_code_match']=='YES' for r in rows)
+          status['kind_name_matches']=sum(r['stage47_kind_name_match']=='YES' for r in rows)
+          fields=list(dict.fromkeys(k for r in rows for k in r))
+          for filename,items in [('all_455_kind_audit.csv',rows),('provisional_ab_kind_audit.csv',[r for r in rows if r.get('provisional_research_band','').startswith(('PROVISIONAL_A','PROVISIONAL_B'))]),('kind_unmatched_review.csv',[r for r in rows if r['stage47_kind_code_match']!='YES'])]:
+           with (out/filename).open('w',encoding='utf-8-sig',newline='') as f:
+            writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader();writer.writerows(items)
+          (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/audit.py
+      - name: Upload Stage47 diagnostic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage47-kind-charset-recovery
+          path: stage47_out/
+          if-no-files-found: warn
