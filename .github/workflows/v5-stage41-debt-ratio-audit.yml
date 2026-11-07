@@ -1,0 +1,93 @@
+name: KRX v5 Stage41 Debt Ratio Recovery Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage40 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |-
+        set -euo pipefail
+        mkdir -p stage40_input
+        RUN_ID=$(gh run list --workflow v5-stage40-research-evaluation.yml --status success --limit 20 --json databaseId --jq '.[0].databaseId')
+        test -n "$RUN_ID"
+        gh run download "$RUN_ID" --name v5-stage40-research-evaluation --dir stage40_input
+        test -s stage40_input/research_priority_all.csv
+    - name: Audit debt ratio from saved financial snapshot
+      shell: bash
+      run: |-
+        mkdir -p stage41_out
+        cat > /tmp/stage41.py <<'PYCODE'
+        import csv,json,pathlib,subprocess,collections,math,datetime
+        O=pathlib.Path('stage41_out');O.mkdir(exist_ok=True)
+        def readcsv(path):
+         with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+        def number(v):
+         try:
+          x=float(str(v).replace(',',''));return x if math.isfinite(x) else None
+         except (ValueError,TypeError):return None
+        def writecsv(name,rows,cols):
+         with (O/name).open('w',encoding='utf-8-sig',newline='') as f:
+          w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)
+        base=readcsv('stage40_input/research_priority_all.csv')
+        if not base:raise RuntimeError('Stage40 rows missing')
+        subprocess.run(['git','fetch','--depth=1','origin','v5-state'],check=True,timeout=120)
+        fin=json.loads(subprocess.check_output(['git','show','FETCH_HEAD:financial_latest.json'],timeout=120))
+        if not isinstance(fin,dict):raise RuntimeError('Unexpected financial snapshot schema')
+        # Diagnose field names rather than silently assuming a debt ratio exists.
+        keys=collections.Counter()
+        for x in fin.values():
+         if isinstance(x,dict):keys.update(x.keys())
+        fields=['ISU_CD','ISU_NM','market_date','research_score_stage40','revenue_yoy_pct','operating_profit_yoy_pct','net_income_yoy_pct','equity_krw','liabilities_krw','debt_ratio_pct','pbr_proxy','debt_source','research_score_stage41','research_tier_stage41','missing_fields','share_class_status','per_status','roe_status','investment_grade','buy_signal']
+        rows=[];count=collections.Counter(); source=collections.Counter()
+        for r in base:
+         c=r['ISU_CD'];f=fin.get(c,{})
+         if not isinstance(f,dict):f={}
+         equity=number(f.get('equity_krw'))
+         liabilities=None;used=''
+         # Only accept explicitly KRW-denominated total liabilities; no guessing from arbitrary balance sheet fields.
+         for k in ('liabilities_krw','total_liabilities_krw','total_debt_krw'):
+          v=number(f.get(k))
+          if v is not None and v>=0:
+           liabilities=v;used=k;break
+         ratio=None
+         if equity is not None and equity>0 and liabilities is not None:ratio=round(liabilities/equity*100,2)
+         # Existing ratio accepted only when explicit and within plausible diagnostic range.
+         elif number(f.get('debt_ratio_pct')) is not None and 0<=number(f['debt_ratio_pct'])<=100000:
+          ratio=number(f['debt_ratio_pct']);used='debt_ratio_pct'
+         if ratio is not None:count['debt_verified']+=1;source[used]+=1
+         else:count['debt_missing']+=1
+         base_score=number(r.get('research_score')) or 0
+         # Stage40 score lacked debt; add up to 20 points only when verified, without awarding missing data.
+         bonus=20 if ratio is not None and ratio<100 else (10 if ratio is not None and ratio<200 else 0)
+         score=round(base_score+bonus,1)
+         missing=[x for x in r.get('missing_fields','').split(';') if x and x!='debt_ratio']
+         if ratio is None:missing.append('debt_ratio')
+         tier='PRIORITY_RESEARCH' if ratio is not None and score>=75 and len(missing)<=1 else ('DATA_REVIEW' if len(missing)>=3 else 'SECONDARY_RESEARCH')
+         count[tier]+=1
+         rows.append({'ISU_CD':c,'ISU_NM':r['ISU_NM'],'market_date':r['market_date'],'research_score_stage40':base_score,'revenue_yoy_pct':r['revenue_yoy_pct'],'operating_profit_yoy_pct':r['operating_profit_yoy_pct'],'net_income_yoy_pct':r['net_income_yoy_pct'],'equity_krw':equity,'liabilities_krw':liabilities,'debt_ratio_pct':ratio,'pbr_proxy':r['pbr_proxy'],'debt_source':used,'research_score_stage41':score,'research_tier_stage41':tier,'missing_fields':';'.join(missing),'share_class_status':'UNVERIFIED','per_status':'TTM_NOT_VERIFIED','roe_status':'TTM_NOT_VERIFIED','investment_grade':'WITHHELD','buy_signal':'NONE'})
+        rows.sort(key=lambda r:(-r['research_score_stage41'],r['ISU_CD']))
+        writecsv('research_priority_debt_audited.csv',rows,fields)
+        writecsv('debt_missing_for_recovery.csv',[r for r in rows if r['debt_ratio_pct'] is None],fields)
+        writecsv('priority_research_only.csv',[r for r in rows if r['research_tier_stage41']=='PRIORITY_RESEARCH'],fields)
+        writecsv('financial_snapshot_field_inventory.csv',[{'field':k,'count':v} for k,v in keys.most_common()],['field','count'])
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage40_rows':len(base),'snapshot_records':len(fin),'debt_verified':count['debt_verified'],'debt_missing':count['debt_missing'],'debt_sources':dict(source),'tiers':{k:v for k,v in count.items() if k in ('PRIORITY_RESEARCH','SECONDARY_RESEARCH','DATA_REVIEW')},'official_common_verified':0,'ttm_per_verified':0,'ttm_roe_verified':0,'final_a_b_grades':0,'buy_signals':0,'note':'No guessed liabilities. Stage41 scores are research priority only; do not interpret as final grade. TTM and share class still require independent verification.'}
+        (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        print(json.dumps(status,ensure_ascii=False,indent=2))
+        PYCODE
+        python -m py_compile /tmp/stage41.py
+        python /tmp/stage41.py
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage41-debt-ratio-audit
+        path: stage41_out/
+        if-no-files-found: warn
