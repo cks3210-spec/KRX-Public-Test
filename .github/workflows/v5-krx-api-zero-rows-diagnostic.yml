@@ -1,0 +1,98 @@
+name: KRX v5 API Zero Rows Diagnostic
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect official KRX API responses without changing data
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v5_krx_diagnostic_out
+          cat > /tmp/v5_krx_api_diagnostic.py <<'PY'
+          import os,json,datetime,urllib.request,urllib.parse,urllib.error,pathlib,time,collections,csv
+          O=pathlib.Path('v5_krx_diagnostic_out');O.mkdir(exist_ok=True)
+          status={'mode':'READ_ONLY_KRX_API_DIAGNOSTIC','source':'KRX official data API','checks':[],'archive_modified':False,'secrets_exposed':False,'final_buy_signals':0}
+          key=os.environ.get('KRX_API_KEY','').strip()
+          if not key:
+           status['error']='KRX_API_KEY secret missing'
+           (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2))
+           raise SystemExit('KRX_API_KEY missing')
+          # Test latest archived date and nearby preceding business days, plus recent business days.
+          archived=''
+          p=pathlib.Path('data/v5_integrated/last_market_date.txt')
+          if p.exists():archived=p.read_text(encoding='utf-8-sig').strip()
+          today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
+          dates=set()
+          if len(archived)==8 and archived.isdigit():
+           base=datetime.datetime.strptime(archived,'%Y%m%d').date()
+           for offset in (0,1,2,3):
+            d=base-datetime.timedelta(days=offset)
+            if d.weekday()<5:dates.add(d.strftime('%Y%m%d'))
+          for offset in range(0,8):
+           d=today-datetime.timedelta(days=offset)
+           if d.weekday()<5:dates.add(d.strftime('%Y%m%d'))
+          # Do not query future dates or more than 6 dates; preserve the archived date.
+          dates=sorted((d for d in dates if d<=today.strftime('%Y%m%d')),reverse=True)
+          if archived in dates:dates=[archived]+[d for d in dates if d!=archived]
+          dates=dates[:6]
+          status['queried_dates']=dates
+          for day in dates:
+           for market,endpoint in [('KOSPI','stk_bydd_trd'),('KOSDAQ','ksq_bydd_trd')]:
+            item={'date':day,'market':market,'endpoint':endpoint}
+            url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint+'?'+urllib.parse.urlencode({'basDd':day})
+            req=urllib.request.Request(url,headers={'AUTH_KEY':key,'User-Agent':'Mozilla/5.0','Accept':'application/json'})
+            try:
+             with urllib.request.urlopen(req,timeout=25) as resp:
+              body=resp.read(3000000)
+              item['http_status']=resp.status
+              item['content_type']=resp.headers.get('Content-Type','')
+              item['response_bytes']=len(body)
+             try:
+              obj=json.loads(body.decode('utf-8-sig'))
+              item['json_type']=type(obj).__name__
+              if isinstance(obj,dict):
+               item['top_level_keys']=list(obj.keys())[:20]
+               item['array_lengths']={k:len(v) for k,v in obj.items() if isinstance(v,list)}
+               item['non_array_fields']={k:str(v)[:120] for k,v in obj.items() if not isinstance(v,(dict,list)) and k.lower() not in ('auth_key','apikey','api_key','key','token')}
+               records=obj.get('OutBlock_1')
+               item['parsed_rows']=len(records) if isinstance(records,list) else None
+               if isinstance(records,list) and records:
+                item['sample_record_field_names']=list(records[0].keys())[:20] if isinstance(records[0],dict) else []
+              else:item['json_summary']='Non-dict JSON response'
+             except Exception as e:
+              item['parse_error']=str(e)[:160]
+              # Do not dump raw body: could contain sensitive data or unrelated HTML.
+            except urllib.error.HTTPError as e:
+             item['http_status']=e.code
+             item['error_class']='HTTPError'
+             item['error_message']=str(e.reason)[:120]
+            except Exception as e:
+             item['error_class']=type(e).__name__
+             item['error_message']=str(e)[:160]
+            status['checks'].append(item)
+            time.sleep(0.2)
+          status['classification']='INSPECT_CHECKS_FOR_HTTP_STATUS_SCHEMA_AND_DATE_COVERAGE'
+          status['archive_modified']=False
+          (O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          with (O/'api_checks.csv').open('w',encoding='utf-8',newline='') as f:
+           w=csv.DictWriter(f,fieldnames=['date','market','endpoint','http_status','content_type','response_bytes','json_type','parsed_rows','error_class','error_message','parse_error'])
+           w.writeheader()
+           for x in status['checks']:w.writerow({k:x.get(k,'') for k in w.fieldnames})
+          print('Diagnostic complete; no archive files changed')
+          PY
+          python /tmp/v5_krx_api_diagnostic.py
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-krx-api-zero-rows-diagnostic
+          path: v5_krx_diagnostic_out/
+          if-no-files-found: warn
