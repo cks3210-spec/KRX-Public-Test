@@ -1,0 +1,69 @@
+name: KRX v5 Stage55 Sector Comparison and Performance Baseline
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest Stage54 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: 'set -euo pipefail
+
+        mkdir -p stage54_input
+
+        RUN_ID=$(gh run list --workflow v5-stage54-official-evidence-integration.yml --status success --limit 30
+        --json databaseId --jq ''.[0].databaseId'')
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage54-official-evidence-integration --dir stage54_input
+
+        test -s stage54_input/all_1248_official_evidence_audit.csv
+
+        '
+    - name: Compute sector comparison and performance baselines
+      run: "mkdir -p stage55_out\ncat > /tmp/stage55.py <<'PY'\nimport csv,json,pathlib,datetime,collections,statistics,math\n\
+        O=pathlib.Path('stage55_out');O.mkdir(exist_ok=True)\ndef read(p):\n with open(p,encoding='utf-8-sig',newline='')\
+        \ as f:return list(csv.DictReader(f))\ndef write(name,rr,fields):\n with (O/name).open('w',encoding='utf-8-sig',newline='')\
+        \ as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rr)\n\
+        def n(x):\n try:\n  z=float(str(x).replace(',',''));return z if math.isfinite(z) else None\n except:return\
+        \ None\nrows=read('stage54_input/all_1248_official_evidence_audit.csv')\nif len(rows)<500:raise RuntimeError('Incomplete\
+        \ Stage54 input')\n# Relative ranks only compare peers with at least 8 observations, and are not final investment\
+        \ grades.\npeer=collections.defaultdict(list)\nfor r in rows:\n s=n(r.get('stage53_quality_adjusted_score'));ind=r.get('stage54_official_industry','').strip()\n\
+        \ if ind and s is not None:peer[ind].append(s)\ndef percentile(vals,v):return round(100*(sum(x<v for x in\
+        \ vals)+0.5*sum(x==v for x in vals))/len(vals),1)\nfor r in rows:\n ind=r.get('stage54_official_industry','').strip();sc=n(r.get('stage53_quality_adjusted_score'))\n\
+        \ vals=peer.get(ind,[])\n r['stage55_sector_peer_count']=str(len(vals))\n r['stage55_sector_score_percentile']=str(percentile(vals,sc))\
+        \ if sc is not None and len(vals)>=8 else ''\n r['stage55_sector_comparison_status']='AVAILABLE' if r['stage55_sector_score_percentile']\
+        \ else 'INSUFFICIENT_PEERS_OR_INDUSTRY'\n r['stage55_valuation_proxy_status']='DIAGNOSTIC_ONLY' if r.get('stage54_marketcap_to_earnings_proxy')\
+        \ else 'MISSING'\n r['stage55_reference_price']=r.get('TDD_CLSPRC','')\n r['stage55_reference_date']=r.get('BAS_DD','')\n\
+        \ r['stage55_reference_market']=r.get('MARKET','')\n r['stage55_reference_code']=r.get('ISU_CD','')\n r['stage55_research_grade']=r.get('stage53_financial_grade','')\n\
+        \ r['stage55_final_grade']='WITHHELD'\n r['stage55_buy_signal']='NONE'\n r['stage55_followup_5d']='PENDING_FUTURE_TRADING_SESSIONS'\n\
+        \ r['stage55_followup_10d']='PENDING_FUTURE_TRADING_SESSIONS'\n r['stage55_followup_20d']='PENDING_FUTURE_TRADING_SESSIONS'\n\
+        \ r['stage55_evidence_common']='OFFICIAL_SHARECLASS_NOT_VERIFIED'\n r['stage55_evidence_valuation']='OFFICIAL_PER_PBR_NOT_VERIFIED'\n\
+        \ r['stage55_individual_issues']=';'.join(x for x in [\n  'OFFICIAL_INDUSTRY_MISSING' if not ind else '',\n\
+        \  'LOW_FINANCIAL_COVERAGE' if int(r.get('stage53_metrics_present') or 0)<5 else '',\n  'SECURITY_REVIEW'\
+        \ if r.get('stage53_financial_grade')=='REVIEW_SECURITY' else '',\n  'EARNINGS_PROXY_MISSING' if not r.get('stage54_marketcap_to_earnings_proxy')\
+        \ else '',\n  'BOOK_PROXY_MISSING' if not r.get('stage54_marketcap_to_book_proxy') else ''] if x)\nfields=list(dict.fromkeys(k\
+        \ for r in rows for k in r))\nab=[r for r in rows if r.get('stage53_financial_grade') in ('A','B')]\nwrite('full_market_1248_sector_and_tracking.csv',rows,fields)\n\
+        write('provisional_ab_sector_comparison.csv',ab,fields)\nwrite('individual_issue_queue.csv',[r for r in\
+        \ rows if r['stage55_individual_issues']],fields)\ntracking_fields=['stage55_reference_date','stage55_reference_market','stage55_reference_code','ISU_NM','stage55_reference_price','stage55_research_grade','stage53_quality_adjusted_score','stage55_sector_score_percentile','stage55_followup_5d','stage55_followup_10d','stage55_followup_20d']\n\
+        write('candidate_performance_baseline.csv',ab,tracking_fields)\nstatus={'stage':55,'input_rows':len(rows),'provisional_ab':len(ab),'official_industry_connected':sum(bool(r.get('stage54_official_industry'))\
+        \ for r in rows),'sector_comparison_available':sum(bool(r['stage55_sector_score_percentile']) for r in rows),'ab_sector_comparison_available':sum(bool(r['stage55_sector_score_percentile'])\
+        \ for r in ab),'performance_baselines':len(ab),'followup_completed':0,'official_common_verified':0,'official_per_pbr_verified':0,'final_grades':0,'buy_signals':0,'reference_dates':sorted(set(r.get('BAS_DD','')\
+        \ for r in rows)),'notes':['Sector percentile is within Stage54 eligible universe, not the full official\
+        \ sector universe.','5/10/20-day performance remains pending; do not invent future closes.','Reference price\
+        \ and annual financial period differ; valuation proxy is not official PER/PBR.','Common blockers separated\
+        \ from individual missing data.']}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        print(json.dumps(status,ensure_ascii=False,indent=2))\n\nPY\npython /tmp/stage55.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage55-sector-and-performance-baseline
+        path: stage55_out/
+        if-no-files-found: warn
