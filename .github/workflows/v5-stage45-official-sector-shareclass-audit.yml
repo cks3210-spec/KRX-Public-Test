@@ -1,0 +1,96 @@
+name: KRX v5 Stage45 Official Sector and Share-Class Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download latest successful Stage44 artifact
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: 'set -euo pipefail
+
+        mkdir -p input44
+
+        RUN_ID=$(gh run list --workflow v5-stage44-integrated-candidate-review.yml
+        --status success --limit 20 --json databaseId --jq ".[0].databaseId")
+
+        test -n "$RUN_ID"
+
+        gh run download "$RUN_ID" --name v5-stage44-integrated-candidate-review --dir
+        input44
+
+        test -s input44/all_research_audit.csv'
+    - name: Install KIND HTML reader
+      run: python -m pip install --quiet pandas lxml html5lib beautifulsoup4
+    - name: Verify official industry without guessing share class
+      shell: bash
+      run: "mkdir -p stage45_out\ncat > /tmp/stage45.py <<'PYCODE'\nimport csv,io,json,pathlib,datetime,collections,os,re,urllib.request\n\
+        O=pathlib.Path('stage45_out');O.mkdir(exist_ok=True)\ndef loadcsv(path):\n\
+        \ with open(path,encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))\n\
+        def save(name,rows,fields):\n with (O/name).open('w',encoding='utf-8-sig',newline='')\
+        \ as f:\n  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');w.writeheader();w.writerows(rows)\n\
+        rows=loadcsv('input44/all_research_audit.csv')\nif len(rows)<400:raise RuntimeError('Stage44\
+        \ incomplete')\n# Official KIND exchange disclosure company directory. Failure\
+        \ never causes guessed classifications.\nkind={};kind_error='';kind_rows=0\n\
+        try:\n import pandas as pd\n req=urllib.request.Request('https://kind.krx.co.kr/corpgeneral/corpList.do?method=download',headers={'User-Agent':'Mozilla/5.0'})\n\
+        \ with urllib.request.urlopen(req,timeout=45) as response: raw=response.read()\n\
+        \ tables=pd.read_html(io.BytesIO(raw))\n for df in tables:\n  cols={str(c).strip():c\
+        \ for c in df.columns}\n  code=next((cols[x] for x in ('종목코드','종목 코드') if\
+        \ x in cols),None)\n  industry=next((cols[x] for x in ('업종','업종명') if x in\
+        \ cols),None)\n  name=next((cols[x] for x in ('회사명','종목명') if x in cols),None)\n\
+        \  if code is None or industry is None:continue\n  for _,item in df.iterrows():\n\
+        \   c=str(item[code]).strip().replace('.0','').zfill(6)\n   if re.fullmatch(r'\\\
+        d{6}',c):kind[c]={'industry':str(item[industry]).strip(),'company':str(item[name]).strip()\
+        \ if name is not None else ''}\n  break\n kind_rows=len(kind)\n if not kind:kind_error='KIND\
+        \ returned no usable company codes'\nexcept Exception as e:kind_error=type(e).__name__+':\
+        \ '+str(e)[:250]\n# Explicitly sourced official master is OPTIONAL; no name-based\
+        \ inference is allowed.\n# The file must contain a security code and an explicit\
+        \ share class column.\nmaster={};master_error='NOT_PROVIDED';master_file=pathlib.Path('data/krx_stock_master.csv')\n\
+        if master_file.exists():\n try:\n  rr=loadcsv(master_file)\n  if not rr:raise\
+        \ ValueError('empty master')\n  keys=set(rr[0]); codekey=next((x for x in\
+        \ ('ISU_SRT_CD','ISU_CD','종목코드','단축코드') if x in keys),None)\n  classkey=next((x\
+        \ for x in ('주식종류','주식구분','share_class','SECUGRP_NM') if x in keys),None)\n\
+        \  if not codekey or not classkey:raise ValueError('master lacks explicit\
+        \ code/share class columns')\n  for r in rr:\n   c=str(r.get(codekey,'')).strip().zfill(6)\n\
+        \   if re.fullmatch(r'\\d{6}',c):master[c]=str(r.get(classkey,'')).strip()\n\
+        \  master_error=''\n except Exception as e:master_error=type(e).__name__+':\
+        \ '+str(e)[:200]\nfinancial_terms=('금융','은행','보험','증권','여신','신탁','금융 지원','재보험')\n\
+        reit_terms=('부동산','리츠','REIT')\nfields=['ISU_CD','ISU_NM','market_date','official_industry','sector_source','sector_group','share_class_official','share_class_source','share_class_status','provisional_research_band','research_score','per_ttm','roe_ttm_pct','debt_ratio_pct','pbr_proxy','final_grade','buy_signal','review_reason']\n\
+        out=[];counts=collections.Counter()\nfor r in rows:\n c=r['ISU_CD']; k=kind.get(c);industry=k['industry']\
+        \ if k else ''\n sector=('FINANCIAL_SEPARATE' if any(x in industry for x in\
+        \ financial_terms) else 'REAL_ESTATE_SEPARATE' if any(x in industry for x\
+        \ in reit_terms) else 'GENERAL_OFFICIAL_SECTOR' if industry else 'SECTOR_UNVERIFIED')\n\
+        \ cl=master.get(c,''); clnorm=re.sub(r'\\s+','',cl).upper()\n # Only explicit\
+        \ stock type labels accepted, not regexes on company names.\n status='OFFICIAL_COMMON'\
+        \ if clnorm in ('보통주','COMMON','COMMONSTOCK') else ('OFFICIAL_NON_COMMON'\
+        \ if clnorm in ('우선주','PREFERRED','PREFERREDSTOCK') else 'UNVERIFIED')\n counts[status]+=1;counts[sector]+=1\n\
+        \ out.append({'ISU_CD':c,'ISU_NM':r['ISU_NM'],'market_date':r['market_date'],'official_industry':industry,'sector_source':'KIND_COMPANY_DIRECTORY'\
+        \ if k else 'UNVERIFIED','sector_group':sector,'share_class_official':cl,'share_class_source':'KRX_MASTER_USER_SUPPLIED'\
+        \ if c in master else 'UNVERIFIED','share_class_status':status,'provisional_research_band':r['provisional_research_band'],'research_score':r['research_score'],'per_ttm':r['per_ttm'],'roe_ttm_pct':r['roe_ttm_pct'],'debt_ratio_pct':r['debt_ratio_pct'],'pbr_proxy':r['pbr_proxy'],'final_grade':'WITHHELD','buy_signal':'NONE','review_reason':('Separate\
+        \ financial/real-estate valuation needed; ' if sector in ('FINANCIAL_SEPARATE','REAL_ESTATE_SEPARATE')\
+        \ else '')+('Official share class unverified' if status=='UNVERIFIED' else\
+        \ 'Further validation required')})\nprovisional=[r for r in out if r['provisional_research_band']\
+        \ in ('PROVISIONAL_A_RESEARCH','PROVISIONAL_B_RESEARCH')]\nsave('official_sector_shareclass_audit.csv',out,fields)\n\
+        save('provisional_a_b_with_official_sector.csv',provisional,fields)\nsave('separate_sector_review.csv',[r\
+        \ for r in out if r['sector_group'] in ('FINANCIAL_SEPARATE','REAL_ESTATE_SEPARATE')],fields)\n\
+        save('shareclass_unverified.csv',[r for r in out if r['share_class_status']=='UNVERIFIED'],fields)\n\
+        status={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage44_rows':len(rows),'provisional_a_b':len(provisional),'kind_directory_records':kind_rows,'kind_matched':sum(bool(r['official_industry'])\
+        \ for r in out),'kind_error':kind_error,'explicit_master_records':len(master),'master_status':master_error,'counts':dict(counts),'final_a_b_grades':0,'buy_signals':0,'note':'KIND\
+        \ sector classification is official company-directory industry, not security\
+        \ share-class proof. Share-class confirmation requires explicit official master;\
+        \ no guessed buy signals.'}\n(O/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')\n\
+        print(json.dumps(status,ensure_ascii=False,indent=2))\nPYCODE\npython -m py_compile\
+        \ /tmp/stage45.py\npython /tmp/stage45.py"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: v5-stage45-official-sector-shareclass-audit
+        path: stage45_out/
+        if-no-files-found: warn
