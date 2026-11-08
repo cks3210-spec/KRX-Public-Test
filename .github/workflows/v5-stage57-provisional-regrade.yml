@@ -1,0 +1,21 @@
+name: V5 Stage57 Provisional Regrade
+on:
+  workflow_dispatch:
+jobs:
+  regrade:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse frozen Stage54 evidence for provisional Stage57
+        run: python scripts/v5_stage57_provisional_regrade.py
+      - name: Upload Stage57 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage57-provisional-regrade
+          path: stage57_output/
