@@ -25,15 +25,15 @@
     ]
   ],
   "universe_count": 1252,
-  "processed_this_universe": 1220,
-  "remaining": 32,
+  "processed_this_universe": 1240,
+  "remaining": 12,
   "verified_snapshot_count": 1221,
   "statuses": {
-    "UNCHANGED_FILING": 1138,
+    "UNCHANGED_FILING": 1157,
     "CORP_CODE_MISSING_OR_SHARE_CLASS": 23,
     "FINANCIAL_INCOMPLETE": 28,
     "VERIFIED": 23,
-    "NO_AVAILABLE_COMPLETE_STATEMENT": 8
+    "NO_AVAILABLE_COMPLETE_STATEMENT": 9
   },
   "note": "Dynamic fiscal years; recent financial filing checks reduce redundant full statements; 90-day forced refresh; quarterly amounts may be cumulative; no investment ratings; no filing-date certification"
 }
