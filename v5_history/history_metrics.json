@@ -956,7 +956,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T08:23:47+00:00"
+      "2026-11-08T21:40:04+00:00"
     ],
     "ISU_NM": "유진투자증권",
     "period": "2026_H1"
@@ -1216,7 +1216,7 @@
       "2025",
       "11012",
       "CFS",
-      "2026-11-03T08:31:22+00:00"
+      "2026-11-08T21:46:04+00:00"
     ],
     "ISU_NM": "현대차증권",
     "period": "2025_H1"
@@ -1398,7 +1398,7 @@
       "2026",
       "11013",
       "CFS",
-      "2026-11-03T08:35:43+00:00"
+      "2026-11-08T21:49:30+00:00"
     ],
     "ISU_NM": "신영증권",
     "period": "2026_Q1"
@@ -2646,7 +2646,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T08:48:12+00:00"
+      "2026-11-08T21:55:43+00:00"
     ],
     "ISU_NM": "한화투자증권",
     "period": "2026_H1"
@@ -2672,7 +2672,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T08:48:21+00:00"
+      "2026-11-08T21:55:50+00:00"
     ],
     "ISU_NM": "대신증권",
     "period": "2026_H1"
@@ -4128,7 +4128,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:03:00+00:00"
+      "2026-11-08T22:02:43+00:00"
     ],
     "ISU_NM": "에스엘",
     "period": "2026_H1"
@@ -4180,7 +4180,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:03:16+00:00"
+      "2026-11-08T22:02:53+00:00"
     ],
     "ISU_NM": "삼성전자",
     "period": "2026_H1"
@@ -4570,7 +4570,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:10:16+00:00"
+      "2026-11-08T22:07:25+00:00"
     ],
     "ISU_NM": "미래에셋증권",
     "period": "2026_H1"
@@ -5506,7 +5506,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:17:12+00:00"
+      "2026-11-08T22:09:13+00:00"
     ],
     "ISU_NM": "한화솔루션",
     "period": "2026_H1"
@@ -6787,29 +6787,29 @@
   },
   "015360": {
     "status": "COMPLETE",
-    "ttm_net_income_krw": 81788842000,
+    "ttm_net_income_krw": 48460823000,
     "prior_fy_net_income_krw": 86715394000,
-    "current_ytd_net_income_krw": 66004755000,
-    "previous_ytd_net_income_krw": 70931307000,
+    "current_ytd_net_income_krw": 41504762000,
+    "previous_ytd_net_income_krw": 79759333000,
     "equity_start_krw": 645396467000,
-    "equity_end_krw": 692288977000,
-    "roe_ttm_pct_diagnostic": 12.228,
-    "cfo_ttm_krw": -30783331000,
+    "equity_end_krw": 667675703000,
+    "roe_ttm_pct_diagnostic": 7.381,
+    "cfo_ttm_krw": 4108785000,
     "prior_fy_cfo_krw": -70997876000,
-    "current_ytd_cfo_krw": 2023151000,
-    "previous_ytd_cfo_krw": -38191394000,
+    "current_ytd_cfo_krw": -6582489000,
+    "previous_ytd_cfo_krw": -81689150000,
     "cfo_source_basis": "CF_YTD_amount",
     "cfo_missing_reason": null,
     "formula": "FY_prior + current_YTD - previous_YTD",
     "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
     "identity": [
       "2026",
-      "11012",
+      "11014",
       "CFS",
-      "2026-11-03T09:24:07+00:00"
+      "2026-11-08T22:10:15+00:00"
     ],
     "ISU_NM": "INVENI",
-    "period": "2026_H1"
+    "period": "2026_Q3"
   },
   "015590": {
     "status": "COMPLETE",
@@ -7066,7 +7066,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:27:49+00:00"
+      "2026-11-08T22:12:44+00:00"
     ],
     "ISU_NM": "DB증권",
     "period": "2026_H1"
@@ -9042,7 +9042,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T09:46:28+00:00"
+      "2026-11-08T22:20:49+00:00"
     ],
     "ISU_NM": "교보증권",
     "period": "2026_H1"
@@ -10966,7 +10966,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T10:01:27+00:00"
+      "2026-11-08T22:26:47+00:00"
     ],
     "ISU_NM": "키움증권",
     "period": "2026_H1"
@@ -16582,7 +16582,7 @@
       "2026",
       "11012",
       "CFS",
-      "2026-11-03T10:45:38+00:00"
+      "2026-11-08T22:40:40+00:00"
     ],
     "ISU_NM": "아모레퍼시픽",
     "period": "2026_H1"
@@ -18877,29 +18877,29 @@
   },
   "115180": {
     "status": "COMPLETE",
-    "ttm_net_income_krw": -39773592896,
+    "ttm_net_income_krw": -40312420710,
     "prior_fy_net_income_krw": -31261963979,
-    "current_ytd_net_income_krw": -21098779207,
-    "previous_ytd_net_income_krw": -12587150290,
+    "current_ytd_net_income_krw": -28253893535,
+    "previous_ytd_net_income_krw": -19203436804,
     "equity_start_krw": 39191678309,
-    "equity_end_krw": 21803264770,
-    "roe_ttm_pct_diagnostic": -130.416,
-    "cfo_ttm_krw": -32354917628,
+    "equity_end_krw": 13758147020,
+    "roe_ttm_pct_diagnostic": -152.266,
+    "cfo_ttm_krw": -37143375312,
     "prior_fy_cfo_krw": -28673478096,
-    "current_ytd_cfo_krw": -18444678012,
-    "previous_ytd_cfo_krw": -14763238480,
+    "current_ytd_cfo_krw": -26383423030,
+    "previous_ytd_cfo_krw": -17913525814,
     "cfo_source_basis": "CF_YTD_amount",
     "cfo_missing_reason": null,
     "formula": "FY_prior + current_YTD - previous_YTD",
     "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
     "identity": [
       "2026",
-      "11012",
+      "11014",
       "CFS",
-      "2026-11-03T11:02:34+00:00"
+      "2026-11-08T22:45:53+00:00"
     ],
     "ISU_NM": "큐리언트",
-    "period": "2026_H1"
+    "period": "2026_Q3"
   },
   "115310": {
     "status": "COMPLETE",
@@ -19761,29 +19761,29 @@
   },
   "126730": {
     "status": "COMPLETE",
-    "ttm_net_income_krw": 6976510629,
+    "ttm_net_income_krw": 7781768118,
     "prior_fy_net_income_krw": 2849319517,
-    "current_ytd_net_income_krw": 5619124419,
-    "previous_ytd_net_income_krw": 1491933307,
+    "current_ytd_net_income_krw": 7299530662,
+    "previous_ytd_net_income_krw": 2367082061,
     "equity_start_krw": 55798968897,
-    "equity_end_krw": 60629359193,
-    "roe_ttm_pct_diagnostic": 11.984,
-    "cfo_ttm_krw": 11844714172,
+    "equity_end_krw": 62182663636,
+    "roe_ttm_pct_diagnostic": 13.191,
+    "cfo_ttm_krw": 14872729440,
     "prior_fy_cfo_krw": 4612617924,
-    "current_ytd_cfo_krw": 10289979742,
-    "previous_ytd_cfo_krw": 3057883494,
+    "current_ytd_cfo_krw": 14915814421,
+    "previous_ytd_cfo_krw": 4655702905,
     "cfo_source_basis": "CF_YTD_amount",
     "cfo_missing_reason": null,
     "formula": "FY_prior + current_YTD - previous_YTD",
     "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
     "identity": [
       "2026",
-      "11012",
+      "11014",
       "CFS",
-      "2026-11-03T11:06:49+00:00"
+      "2026-11-08T22:46:28+00:00"
     ],
     "ISU_NM": "코칩",
-    "period": "2026_H1"
+    "period": "2026_Q3"
   },
   "127120": {
     "status": "COMPLETE",
@@ -20021,29 +20021,29 @@
   },
   "134380": {
     "status": "COMPLETE",
-    "ttm_net_income_krw": 41096056570,
+    "ttm_net_income_krw": 48182149628,
     "prior_fy_net_income_krw": 24726310450,
-    "current_ytd_net_income_krw": 28167068627,
-    "previous_ytd_net_income_krw": 11797322507,
+    "current_ytd_net_income_krw": 43205139592,
+    "previous_ytd_net_income_krw": 19749300414,
     "equity_start_krw": 173551942637,
-    "equity_end_krw": 195803858489,
-    "roe_ttm_pct_diagnostic": 22.253,
-    "cfo_ttm_krw": 29852129138,
+    "equity_end_krw": 205872923586,
+    "roe_ttm_pct_diagnostic": 25.397,
+    "cfo_ttm_krw": 28630669209,
     "prior_fy_cfo_krw": 20682914653,
-    "current_ytd_cfo_krw": 39750365285,
-    "previous_ytd_cfo_krw": 30581150800,
+    "current_ytd_cfo_krw": 49578652134,
+    "previous_ytd_cfo_krw": 41630897578,
     "cfo_source_basis": "CF_YTD_amount",
     "cfo_missing_reason": null,
     "formula": "FY_prior + current_YTD - previous_YTD",
     "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
     "identity": [
       "2026",
-      "11012",
+      "11014",
       "OFS",
-      "2026-11-03T11:08:02+00:00"
+      "2026-11-08T22:46:40+00:00"
     ],
     "ISU_NM": "미원화학",
-    "period": "2026_H1"
+    "period": "2026_Q3"
   },
   "136480": {
     "status": "COMPLETE",
@@ -31172,5 +31172,161 @@
     ],
     "ISU_NM": "프레스티지바이오파마",
     "period": "2026_Q3"
+  },
+  "035000": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": 18512934965,
+    "prior_fy_net_income_krw": 17376986920,
+    "current_ytd_net_income_krw": -7275503215,
+    "previous_ytd_net_income_krw": -8411451260,
+    "equity_start_krw": 212035906350,
+    "equity_end_krw": 200643226275,
+    "roe_ttm_pct_diagnostic": 8.972,
+    "cfo_ttm_krw": 37197825934,
+    "prior_fy_cfo_krw": -10882954390,
+    "current_ytd_cfo_krw": 23788611260,
+    "previous_ytd_cfo_krw": -24292169064,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "CFS",
+      "2026-11-08T22:25:56+00:00"
+    ],
+    "ISU_NM": "HS애드",
+    "period": "2026_H1"
+  },
+  "039340": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": 5569203696,
+    "prior_fy_net_income_krw": 2790796028,
+    "current_ytd_net_income_krw": 5793463930,
+    "previous_ytd_net_income_krw": 3015056262,
+    "equity_start_krw": 147810166493,
+    "equity_end_krw": 149468923989,
+    "roe_ttm_pct_diagnostic": 3.747,
+    "cfo_ttm_krw": 13039527787,
+    "prior_fy_cfo_krw": 4629520514,
+    "current_ytd_cfo_krw": 11160173100,
+    "previous_ytd_cfo_krw": 2750165827,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "CFS",
+      "2026-11-08T22:26:42+00:00"
+    ],
+    "ISU_NM": "한국경제TV",
+    "period": "2026_H1"
+  },
+  "109610": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": -18221939462,
+    "prior_fy_net_income_krw": -15865691092,
+    "current_ytd_net_income_krw": -9279417736,
+    "previous_ytd_net_income_krw": -6923169366,
+    "equity_start_krw": 246988535638,
+    "equity_end_krw": 236802903446,
+    "roe_ttm_pct_diagnostic": -7.533,
+    "cfo_ttm_krw": -60633795950,
+    "prior_fy_cfo_krw": -15280643272,
+    "current_ytd_cfo_krw": -65029088101,
+    "previous_ytd_cfo_krw": -19675935423,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "CFS",
+      "2026-11-08T22:45:36+00:00"
+    ],
+    "ISU_NM": "에스와이",
+    "period": "2026_H1"
+  },
+  "261780": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": -14419572376,
+    "prior_fy_net_income_krw": -16044489542,
+    "current_ytd_net_income_krw": -4735744109,
+    "previous_ytd_net_income_krw": -6360661275,
+    "equity_start_krw": 11859049755,
+    "equity_end_krw": 9890799250,
+    "roe_ttm_pct_diagnostic": -132.595,
+    "cfo_ttm_krw": -9172816125,
+    "prior_fy_cfo_krw": -11017064873,
+    "current_ytd_cfo_krw": -4389350604,
+    "previous_ytd_cfo_krw": -6233599352,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "OFS",
+      "2026-11-08T22:58:13+00:00"
+    ],
+    "ISU_NM": "아리바이오랩",
+    "period": "2026_H1"
+  },
+  "267850": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": 14009815114,
+    "prior_fy_net_income_krw": 12634364125,
+    "current_ytd_net_income_krw": 7696719234,
+    "previous_ytd_net_income_krw": 6321268245,
+    "equity_start_krw": 174278779355,
+    "equity_end_krw": 176362988547,
+    "roe_ttm_pct_diagnostic": 7.991,
+    "cfo_ttm_krw": 21661960767,
+    "prior_fy_cfo_krw": 7524856259,
+    "current_ytd_cfo_krw": 4911272188,
+    "previous_ytd_cfo_krw": -9225832320,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "OFS",
+      "2026-11-08T22:58:32+00:00"
+    ],
+    "ISU_NM": "아시아나IDT",
+    "period": "2026_H1"
+  },
+  "282720": {
+    "status": "COMPLETE",
+    "ttm_net_income_krw": -942245531,
+    "prior_fy_net_income_krw": 18131770,
+    "current_ytd_net_income_krw": -7726058870,
+    "previous_ytd_net_income_krw": -6765681569,
+    "equity_start_krw": 95649815454,
+    "equity_end_krw": 111000727470,
+    "roe_ttm_pct_diagnostic": -0.912,
+    "cfo_ttm_krw": 5645420941,
+    "prior_fy_cfo_krw": 15077672267,
+    "current_ytd_cfo_krw": -20122655562,
+    "previous_ytd_cfo_krw": -10690404236,
+    "cfo_source_basis": "CF_YTD_amount",
+    "cfo_missing_reason": null,
+    "formula": "FY_prior + current_YTD - previous_YTD",
+    "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
+    "identity": [
+      "2026",
+      "11012",
+      "CFS",
+      "2026-11-08T22:59:57+00:00"
+    ],
+    "ISU_NM": "금양그린파워",
+    "period": "2026_H1"
   }
 }
