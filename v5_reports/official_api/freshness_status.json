@@ -1,14 +1,14 @@
 {
-  "checked_kst": "2026-11-09T10:51:01.931291+09:00",
+  "checked_kst": "2026-11-10T16:44:28.533567+09:00",
   "source": "KRX_OFFICIAL_OPEN_API",
   "status": "LATEST_AVAILABLE_VERIFIED",
-  "latest_weekday_candidate": "20261106",
+  "latest_weekday_candidate": "20261109",
   "production_data_modified": false,
   "raw_market_data_published": false,
   "markets": {},
   "date_checks": [
     {
-      "date": "20261106",
+      "date": "20261109",
       "markets": {
         "KOSPI": {
           "status": "VALID",
@@ -22,7 +22,7 @@
     }
   ],
   "note": "A weekday is not necessarily a KRX trading day. No v4/GC integration or licensed raw data publishing.",
-  "source_date": "20261106",
+  "source_date": "20261109",
   "market_counts": {
     "KOSPI": 938,
     "KOSDAQ": 1831
