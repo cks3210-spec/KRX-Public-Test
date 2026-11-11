@@ -1,9 +1,9 @@
 {
-  "checked_kst": "2026-11-10T17:22:45.561317+09:00",
+  "checked_kst": "2026-11-11T16:43:37.680678+09:00",
   "calendar": "exchange_calendars XKRX",
   "calendar_library_version": "4.13.1",
   "is_krx_session_today": true,
-  "expected_completed_session": "20261109",
+  "expected_completed_session": "20261110",
   "source": "KRX_OFFICIAL_OPEN_API",
   "status": "EXPECTED_SESSION_VERIFIED",
   "production_data_modified": false,
@@ -11,13 +11,13 @@
   "markets": {
     "KOSPI": {
       "status": "VALID",
-      "rows": 938
+      "rows": 936
     },
     "KOSDAQ": {
       "status": "VALID",
-      "rows": 1831
+      "rows": 1832
     }
   },
   "note": "Calendar is a third-party schedule, not the KRX official holiday calendar. API raw rows are never persisted.",
-  "total_rows": 2769
+  "total_rows": 2768
 }
