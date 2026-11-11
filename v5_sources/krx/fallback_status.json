@@ -1,5 +1,5 @@
 {
-  "checked_kst": "2026-11-11T02:46:18.995404+09:00",
+  "checked_kst": "2026-11-12T02:52:37.470445+09:00",
   "status": "SOURCE_UNAVAILABLE",
   "source": null,
   "source_date": null,
@@ -7,6 +7,11 @@
   "fresh_for_today": false,
   "production_data_modified": false,
   "attempts": [
+    {
+      "source": "KRX_PYKRX",
+      "date": "20261112",
+      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
+    },
     {
       "source": "KRX_PYKRX",
       "date": "20261111",
@@ -30,11 +35,6 @@
     {
       "source": "KRX_PYKRX",
       "date": "20261105",
-      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
-    },
-    {
-      "source": "KRX_PYKRX",
-      "date": "20261104",
       "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
     },
     {
