@@ -1,11 +1,11 @@
 {
-  "checked_kst": "2026-11-12T02:28:51.559899+09:00",
+  "checked_kst": "2026-11-13T02:45:39.938956+09:00",
   "status": "API_MATCHED_EXISTING",
   "decision": "SHADOW_VERIFIED_ONLY",
   "production_data_modified": false,
   "raw_market_data_published": false,
-  "api_rows": 2768,
-  "existing_rows": 2768,
+  "api_rows": 2769,
+  "existing_rows": 2769,
   "comparison": {
     "missing_keys": 0,
     "extra_keys": 0,
@@ -13,9 +13,9 @@
     "conflict_examples": []
   },
   "reason": "FULL_EXACT_MATCH",
-  "existing_date": "20261110",
+  "existing_date": "20261111",
   "market_counts": {
     "KOSPI": 936,
-    "KOSDAQ": 1832
+    "KOSDAQ": 1833
   }
 }
