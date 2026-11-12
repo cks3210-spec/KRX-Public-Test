@@ -478,5 +478,43 @@
       }
     },
     "status": "CHECK_COMPLETE"
+  },
+  {
+    "checked_kst": "2026-11-13T02:43:32.015586+09:00",
+    "source": "KRX_OFFICIAL_OPEN_API",
+    "calendar": "exchange_calendars XKRX (third-party)",
+    "fixed_date": "20261104",
+    "rolling_previous_session": "20261112",
+    "raw_market_data_published": false,
+    "production_data_modified": false,
+    "dates": {
+      "20261104": {
+        "status": "VERIFIED",
+        "markets": {
+          "KOSPI": {
+            "status": "VALID",
+            "rows": 938
+          },
+          "KOSDAQ": {
+            "status": "VALID",
+            "rows": 1831
+          }
+        }
+      },
+      "20261112": {
+        "status": "PENDING",
+        "markets": {
+          "KOSPI": {
+            "status": "EMPTY_DATE",
+            "rows": 0
+          },
+          "KOSDAQ": {
+            "status": "EMPTY_DATE",
+            "rows": 0
+          }
+        }
+      }
+    },
+    "status": "CHECK_COMPLETE"
   }
 ]
