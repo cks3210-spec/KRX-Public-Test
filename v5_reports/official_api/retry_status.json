@@ -1,18 +1,21 @@
 {
-  "checked_kst": "2026-11-12T02:26:07.415603+09:00",
+  "checked_kst": "2026-11-12T16:41:16.815287+09:00",
   "source": "KRX_OFFICIAL_OPEN_API",
   "calendar": "exchange_calendars XKRX (third-party)",
   "expected_completed_session": "20261111",
-  "status": "EXPECTED_SESSION_DATA_PENDING",
+  "status": "EXPECTED_SESSION_VERIFIED",
   "markets": {
     "KOSPI": {
-      "status": "EMPTY_DATE"
+      "status": "VALID",
+      "rows": 936
     },
     "KOSDAQ": {
-      "status": "EMPTY_DATE"
+      "status": "VALID",
+      "rows": 1833
     }
   },
   "production_data_modified": false,
   "raw_market_data_published": false,
-  "ready_for_downstream": false
+  "ready_for_downstream": false,
+  "total_rows": 2769
 }
