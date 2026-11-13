@@ -1,9 +1,9 @@
 {
-  "checked_kst": "2026-11-12T17:15:02.263678+09:00",
+  "checked_kst": "2026-11-13T16:53:25.084397+09:00",
   "calendar": "exchange_calendars XKRX",
   "calendar_library_version": "4.13.1",
   "is_krx_session_today": true,
-  "expected_completed_session": "20261111",
+  "expected_completed_session": "20261112",
   "source": "KRX_OFFICIAL_OPEN_API",
   "status": "EXPECTED_SESSION_VERIFIED",
   "production_data_modified": false,
@@ -15,9 +15,9 @@
     },
     "KOSDAQ": {
       "status": "VALID",
-      "rows": 1833
+      "rows": 1834
     }
   },
   "note": "Calendar is a third-party schedule, not the KRX official holiday calendar. API raw rows are never persisted.",
-  "total_rows": 2769
+  "total_rows": 2770
 }
