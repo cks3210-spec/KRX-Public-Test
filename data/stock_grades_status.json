@@ -1,22 +1,21 @@
 {
-  "generated_at_utc": "2026-11-12T04:06:00.470814+00:00",
+  "generated_at_utc": "2026-11-13T03:30:13.080276+00:00",
   "price_snapshot_dates": [
-    "20261111"
+    "20261112"
   ],
-  "technical_rows": 1288,
-  "annual_rows": 12,
-  "latest_report_rows": 12,
-  "v4_screen_rows": 11,
+  "technical_rows": 1283,
+  "annual_rows": 15,
+  "latest_report_rows": 15,
+  "v4_screen_rows": 8,
   "grade_A": 0,
   "grade_B": 0,
   "v4_graded": 0,
   "excluded_by_reason": {
-    "latest_report_incomplete": 4,
-    "no_eligible_screen": 1276,
-    "newer_provisional_earnings_unverified": 1,
-    "latest_earnings_not_profitable_and_growing": 5,
-    "debt_ratio_above_150": 1,
-    "annual_valuation_threshold_failed": 1
+    "newer_provisional_earnings_unverified": 4,
+    "latest_report_incomplete": 6,
+    "no_eligible_screen": 1268,
+    "latest_earnings_not_profitable_and_growing": 4,
+    "debt_ratio_above_150": 1
   },
   "disclaimer": "Preliminary only. Latest filed report YTD comparisons, 2025 annual valuation estimates, no validated institutional/foreign flow. Newer provisional disclosures require review."
 }
