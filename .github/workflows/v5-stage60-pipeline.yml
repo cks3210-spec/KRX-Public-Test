@@ -1,0 +1,65 @@
+name: V5 Stage60 KRX Holiday Gate Fresh Data Pipeline
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 9 * * 1-5' # 18:30 KST; calendar gate also blocks KRX holidays
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage60-fresh-data
+  cancel-in-progress: false
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install KRX calendar and market data dependencies
+        run: python -m pip install 'exchange_calendars>=4.5,<5' 'pykrx>=1.0.48,<2' pandas
+      - name: Check official exchange session and refresh latest KRX data
+        id: gate
+        run: python scripts/v5_stage60_market_gate.py
+      - name: Read gate decision
+        id: decision
+        if: success()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os
+          x=json.load(open('stage60_output/market_gate_status.json'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('state='+x['state']+'\n')
+          PY
+      - name: Run integrated Stage56-59 components on validated fresh market data
+        if: steps.decision.outputs.state == 'FRESH_KRX_SNAPSHOT_VALIDATED'
+        run: python scripts/v5_stage60_pipeline.py
+      - name: Persist verified daily snapshot and Stage59 history
+        if: steps.decision.outputs.state == 'FRESH_KRX_SNAPSHOT_VALIDATED'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/latest.csv stage59_input/daily_prices.csv
+          if ! git diff --cached --quiet; then
+            git commit -m 'stage60: persist validated KRX daily snapshot and tracking history'
+            git push origin HEAD:main
+          fi
+      - name: Upload Stage60 results and market gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage60-pipeline-results
+          path: |
+            stage60_output/
+            stage56_output/
+            stage56_financial_basis_output/
+            stage57_output/
+            stage58_output/
+            stage59_output/
+          if-no-files-found: warn
