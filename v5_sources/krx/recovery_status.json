@@ -1,6 +1,6 @@
 {
-  "checked_kst": "2026-11-13T02:53:20.344642+09:00",
-  "expected_today": "20261113",
+  "checked_kst": "2026-11-14T02:29:01.384302+09:00",
+  "expected_today": "20261114",
   "attempts": [
     {
       "day": "20261113",
@@ -49,16 +49,6 @@
     },
     {
       "day": "20261109",
-      "source": "FDR",
-      "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
-    },
-    {
-      "day": "20261106",
-      "source": "pykrx",
-      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
-    },
-    {
-      "day": "20261106",
       "source": "FDR",
       "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
     }
