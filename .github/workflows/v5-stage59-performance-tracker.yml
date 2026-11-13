@@ -1,0 +1,21 @@
+name: V5 Stage59 Forward Performance Tracker
+on:
+  workflow_dispatch:
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Track 5 10 20 trading sessions without inventing missing returns
+        run: python scripts/v5_stage59_performance_tracker.py
+      - name: Upload Stage59 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage59-performance-tracker
+          path: stage59_output/
