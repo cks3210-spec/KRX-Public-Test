@@ -1,0 +1,23 @@
+name: V5 Stage58 Price Sensitivity Scenarios
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stage58:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build illustrative valuation scenarios
+        run: python scripts/v5_stage58_price_scenarios.py
+      - name: Upload Stage58 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage58-price-scenarios
+          path: stage58_output/
