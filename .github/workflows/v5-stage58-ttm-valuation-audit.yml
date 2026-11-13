@@ -1,0 +1,55 @@
+name: KRX v5 Stage58 TTM Valuation Audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve most recent successful Stage57 linked evidence artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          run_id=$(gh run list --workflow v5-stage57-stage56-evidence-link.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$run_id" && test "$run_id" != null
+          mkdir -p /tmp/stage57_artifact
+          gh run download "$run_id" --dir /tmp/stage57_artifact
+          python - <<'PY'
+          import pathlib,zipfile
+          base=pathlib.Path('/tmp/stage57_artifact')
+          matches=list(base.rglob('stage56_linked_candidates.csv'))
+          if len(matches)!=1:raise RuntimeError('Expected one linked candidate CSV in artifact, found '+str(len(matches)))
+          folder=matches[0].parent.parent
+          names=['stage57_output/stage56_linked_candidates.csv','stage56_official_output/owner_fields.csv']
+          with zipfile.ZipFile('/tmp/stage57_evidence.zip','w') as z:
+              for name in names:
+                  p=folder/name
+                  if not p.exists():
+                      hits=list(base.rglob(pathlib.Path(name).name))
+                      if len(hits)!=1:raise RuntimeError('Missing or ambiguous artifact file: '+name)
+                      p=hits[0]
+                  z.write(p,name)
+          PY
+      - name: Verify TTM components from OpenDART
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: |
+          python scripts/v5_stage58_ttm_valuation_audit.py \
+            --evidence-zip /tmp/stage57_evidence.zip \
+            --market-csv stage56_input/provisional_ab_318_evidence_audit.csv
+      - name: Upload evidence and audit status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage58-ttm-valuation-audit
+          path: stage58_ttm_output/
+          if-no-files-found: warn
