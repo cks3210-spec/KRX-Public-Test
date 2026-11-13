@@ -1,0 +1,82 @@
+name: KRX v5 Stage57 Link Verified Stage56 Evidence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify owner-attributable financial evidence using Stage56 v3
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: python scripts/v5_stage56_official_financial_verify.py
+      - name: Run existing Stage57 provisional regrade
+        run: python scripts/v5_stage57_provisional_regrade.py
+      - name: Join verified Stage56 evidence to Stage57 without promoting final grades
+        run: |
+          python - <<'PY'
+          import csv, json, pathlib, collections, datetime
+          base=pathlib.Path('.')
+          evidence=base/'stage56_official_output/owner_fields.csv'
+          provisional=base/'stage57_output/provisional_regrade.csv'
+          result=base/'stage57_output/stage56_linked_candidates.csv'
+          def read(p):
+              with p.open(encoding='utf-8-sig',newline='') as f: return list(csv.DictReader(f))
+          a,b=read(evidence),read(provisional)
+          if len(a)!=318 or len(b)!=318: raise RuntimeError(f'Expected 318/318 rows, got {len(a)}/{len(b)}')
+          index={}
+          for r in a:
+              code=r['ISU_CD'].strip()
+              if code in index: raise RuntimeError('Duplicate Stage56 security: '+code)
+              index[code]=r
+          if len(index)!=318 or {r['ISU_CD'].strip() for r in b}!=set(index):
+              raise RuntimeError('Stage56/57 candidate sets differ; refuse positional join')
+          out=[];counts=collections.Counter()
+          for r in b:
+              s=index[r['ISU_CD'].strip()]
+              if s['ISU_NM'].strip()!=r['ISU_NM'].strip():
+                  raise RuntimeError('Name mismatch for '+r['ISU_CD'])
+              verified=(s['status']=='OWNER_FIELDS_VERIFIED'
+                        and s['fs_div']=='CFS'
+                        and s['financial_period'] in ('2026_Q3','2026_H1')
+                        and s['owner_profit'].lstrip('+-').isdigit()
+                        and s['owner_equity'].lstrip('+-').isdigit()
+                        and s['owner_profit_account_id'].startswith(('ifrs-full_','ifrs_'))
+                        and s['owner_equity_account_id'].startswith(('ifrs-full_','ifrs_')))
+              state='OWNER_FIELDS_VERIFIED' if verified else 'OWNER_FIELDS_UNVERIFIED'
+              counts[state]+=1
+              out.append({**r,'stage56_owner_evidence_state':state,
+                          'stage56_financial_period':s['financial_period'] if verified else '',
+                          'stage56_owner_profit':s['owner_profit'] if verified else '',
+                          'stage56_owner_equity':s['owner_equity'] if verified else '',
+                          'stage56_failure_reason':'' if verified else s['detail'],
+                          'valuation_state':'OFFICIAL_PER_PBR_NOT_VERIFIED',
+                          'final_grade':'WITHHELD','buy_signal':'NONE'})
+          with result.open('w',encoding='utf-8-sig',newline='') as f:
+              writer=csv.DictWriter(f,fieldnames=list(out[0]));writer.writeheader();writer.writerows(out)
+          status={'stage':57,'mode':'LINK_STAGE56_OWNER_EVIDENCE','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  'candidate_count':len(out),'counts':dict(counts),'official_per_pbr_verified':0,
+                  'final_grades_released':0,'buy_signals_released':0,
+                  'warning':'CFS owner fields verified only; Q3/H1 values are not annual PER/PBR or final investment grades.'}
+          (base/'stage57_output/stage56_link_status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False))
+          PY
+      - name: Upload evidence and linked results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage57-stage56-linked-evidence
+          path: |
+            stage56_official_output/
+            stage57_output/
+          if-no-files-found: warn
