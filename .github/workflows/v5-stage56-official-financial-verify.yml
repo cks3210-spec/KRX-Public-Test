@@ -1,0 +1,32 @@
+name: KRX v5 Stage56 Official Financial Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Stage56 OpenDART verification
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: python scripts/v5_stage56_official_financial_verify.py
+      - name: Upload Stage56 evidence and status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage56-official-financial-verification
+          path: stage56_official_output/
+          if-no-files-found: warn
+          retention-days: 30
