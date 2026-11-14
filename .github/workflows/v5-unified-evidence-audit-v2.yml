@@ -1,0 +1,129 @@
+name: KRX v5 Unified Evidence Audit V2
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  unified:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse latest successful Stage57 and Stage58 artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in 'v5-stage57-stage56-evidence-link.yml stage57' 'v5-stage58-ttm-valuation-audit.yml stage58'; do
+            set -- $spec
+            run_id=$(gh run list --workflow "$1" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            test -n "$run_id" && test "$run_id" != null || { echo "Missing successful run: $1"; exit 1; }
+            mkdir -p "/tmp/$2"
+            gh run download "$run_id" --dir "/tmp/$2"
+          done
+      - name: Unified financial arithmetic and optional official crosscheck
+        run: |
+          python - <<'PYCODE'
+          import csv,io,json,os,pathlib,collections,datetime,decimal
+          from decimal import Decimal
+          root=pathlib.Path(os.environ.get('V5_INPUT_ROOT','/tmp'))
+          out=pathlib.Path(os.environ.get('V5_OUTPUT','v5_unified_output'));out.mkdir(parents=True,exist_ok=True)
+          def load(folder,name):
+           p=list((root/folder).rglob(name))
+           if len(p)!=1:raise RuntimeError(f'Expected exactly one {folder}/{name}, got {len(p)}')
+           return p[0].read_bytes()
+          def rows(folder,name):return list(csv.DictReader(io.StringIO(load(folder,name).decode('utf-8-sig'))))
+          def dec(s):
+           try:
+            n=Decimal(str(s).replace(',',''));return n if n.is_finite() else None
+           except (decimal.InvalidOperation,ValueError,TypeError):return None
+          a=rows('stage57','stage56_linked_candidates.csv');v=rows('stage58','valuation_audit.csv')
+          s=json.loads(load('stage58','status.json').decode('utf-8-sig'))
+          if s.get('official_krx_per_pbr_verified') is not False:raise RuntimeError('Unrecognized Stage58 evidence status')
+          def idx(rs):
+           d={}
+           for r in rs:
+            k=r.get('ISU_CD','').zfill(6)
+            if len(k)!=6 or not k.isdigit() or k in d:raise RuntimeError('Duplicate/bad code '+k)
+            d[k]=r
+           return d
+          A=idx(a);V=idx(v)
+          if len(A)!=318 or set(A)!=set(V):raise RuntimeError('318-stock universe mismatch')
+          dates={r['BAS_DD'] for r in a}
+          if len(dates)!=1:raise RuntimeError('Mixed cohort dates')
+          date=dates.pop()
+          # Official KRX crosscheck must be same-date, same-share-class evidence. No guessed matching.
+          # Optional file can be supplied as repository data/official_valuation_verified.csv.
+          official={}; official_source='NOT_PROVIDED'
+          p=pathlib.Path('data/official_valuation_verified.csv')
+          if p.is_file():
+           for r in csv.DictReader(p.open(encoding='utf-8-sig',newline='')):
+            if r.get('BAS_DD')!=date or r.get('source')!='KRX_OFFICIAL_VERIFIED' or r.get('share_class_verified')!='YES':continue
+            code=r.get('ISU_CD','').zfill(6)
+            if code in official:raise RuntimeError('Duplicate official code '+code)
+            per=dec(r.get('PER'));pbr=dec(r.get('PBR'))
+            if per is not None and pbr is not None and per>0 and pbr>0:official[code]=(per,pbr)
+           official_source=str(p)
+          output=[];c=collections.Counter()
+          for code in sorted(A):
+           r=A[code];q=V[code]
+           if q.get('market_date')!=date:raise RuntimeError('Market date mismatch '+code)
+           grade=r.get('stage57_provisional_grade','')
+           eligible=grade in ('A','A+','B','B+')
+           computed=q.get('state')=='RESEARCH_RATIOS_COMPUTED'
+           state='BLOCKED';reason=q.get('reason','')
+           rp=dec(q.get('research_per_ttm'));rb=dec(q.get('research_pbr'))
+           if computed:
+            if not eligible or rp is None or rb is None or rp<=0 or rb<=0:raise RuntimeError('Invalid valuation '+code)
+            cap=dec(q.get('market_cap'));profit=dec(q.get('owner_profit_ttm'));equity=dec(q.get('owner_equity_latest'))
+            if None in (cap,profit,equity) or min(cap,profit,equity)<=0:raise RuntimeError('Missing fundamentals '+code)
+            if abs(cap/profit-rp)>Decimal('.015') or abs(cap/equity-rb)>Decimal('.015'):raise RuntimeError('Arithmetic mismatch '+code)
+            state='RESEARCH_VERIFIED';reason='REFERENCE_ONLY_NOT_OFFICIAL'
+            c['research_verified']+=1
+            if code in official:
+             op,ob=official[code]
+             # KRX official ratio can differ due to earnings period, accounting rules and share class.
+             pd=abs(rp-op)/op;bd=abs(rb-ob)/ob
+             if pd<=Decimal('.05') and bd<=Decimal('.05'):
+              state='OFFICIAL_MULTIPLES_CROSSCHECK_PASS';c['official_crosscheck_pass']+=1
+             else:
+              state='OFFICIAL_MULTIPLES_MISMATCH';c['official_crosscheck_mismatch']+=1
+           else:c['blocked']+=1
+           flags=['SECTOR_MODEL_NOT_VALIDATED','FAIR_PRICE_WITHHELD','FINAL_GRADE_WITHHELD','PERFORMANCE_NOT_EVIDENCE_VERIFIED']
+           if code not in official:flags.append('OFFICIAL_KRX_MULTIPLES_UNAVAILABLE')
+           if r.get('stage56_owner_evidence_state')!='OWNER_FIELDS_VERIFIED':flags.append('OWNER_FIELDS_NOT_VERIFIED')
+           if 'SHARECLASS_NOT_VERIFIED' in r.get('stage57_blockers',''):flags.append('SHARECLASS_NOT_VERIFIED')
+           output.append({'BAS_DD':date,'ISU_CD':code,'ISU_NM':r.get('ISU_NM',''),
+            'provisional_grade':grade if eligible else 'REVIEW',
+            'owner_evidence':r.get('stage56_owner_evidence_state',''),
+            'valuation_audit_state':state,'research_per_ttm':str(rp) if computed else '',
+            'research_pbr':str(rb) if computed else '',
+            'official_krx_per':str(official[code][0]) if code in official else '',
+            'official_krx_pbr':str(official[code][1]) if code in official else '',
+            'reason':reason,'final_grade':'WITHHELD','fair_price':'','buy_signal':'NONE',
+            'performance_5d':'PENDING','performance_10d':'PENDING','performance_20d':'PENDING',
+            'blockers':';'.join(flags)})
+          with (out/'integrated_candidates.csv').open('w',encoding='utf-8-sig',newline='') as f:
+           w=csv.DictWriter(f,fieldnames=list(output[0]));w.writeheader();w.writerows(output)
+          summary={'mode':'ONE_RUN_EVIDENCE_AUDIT_V2','generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'market_date':date,'candidate_count':len(output),'research_ratios_arithmetic_verified':c['research_verified'],
+           'valuation_blocked':c['blocked'],'official_source':official_source,
+           'official_crosscheck_pass':c['official_crosscheck_pass'],'official_crosscheck_mismatch':c['official_crosscheck_mismatch'],
+           'final_grade_released':0,'fair_price_released':0,'buy_signals':0,
+           'performance_verified':False,
+           'pending':['official KRX same-date evidence if not provided','sector calibration','verified share class','5/10/20-session price snapshots'],
+           'note':'No official metrics, fair prices, final grades or performance fabricated. Prior stages reused.'}
+          (out/'status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(summary,ensure_ascii=False,indent=2))
+          PYCODE
+      - name: Upload one consolidated result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-unified-evidence-audit-v2
+          path: v5_unified_output/
+          if-no-files-found: warn
