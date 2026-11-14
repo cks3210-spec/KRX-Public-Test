@@ -1,0 +1,68 @@
+name: KRX v5 DART Disclosure Evidence Audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit DART periodic filing dates for 96 research candidates
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        shell: bash
+        run: |
+          cat > /tmp/v5_dart_audit.py <<'PY'
+          import os,csv,io,zipfile,xml.etree.ElementTree as ET,json,urllib.request,urllib.parse,datetime,pathlib,base64,gzip
+          key=os.environ.get('DART_API_KEY') or os.environ.get('OPENDART_API_KEY')
+          if not key:raise SystemExit('DART_API_KEY or OPENDART_API_KEY missing')
+          seed=csv.DictReader(io.StringIO(gzip.decompress(base64.b64decode('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')).decode('utf-8-sig')))
+          candidates={str(r['code']).zfill(6) for r in seed}
+          root=pathlib.Path('data/v5_forward_validation');root.mkdir(parents=True,exist_ok=True)
+          def get(url,params):
+           q=urllib.parse.urlencode(params);req=urllib.request.Request(url+'?'+q,headers={'User-Agent':'KRX-v5-research/1.0'})
+           with urllib.request.urlopen(req,timeout=45) as response:return response.read()
+          raw=get('https://opendart.fss.or.kr/api/corpCode.xml',{'crtfc_key':key})
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:tree=ET.fromstring(z.read(z.namelist()[0]))
+          lookup={e.findtext('stock_code','').strip():e.findtext('corp_code','').strip() for e in tree.findall('list') if e.findtext('stock_code','').strip()}
+          rows=[];today=datetime.date.today();end=today.strftime('%Y%m%d');start=(today-datetime.timedelta(days=550)).strftime('%Y%m%d')
+          for code in sorted(candidates):
+           corp=lookup.get(code,'');row=dict(code=code,corp_code=corp,filing_date='',receipt_no='',report_name='',report_year='',report_code='',status='NO_CORP_CODE' if not corp else 'NO_PERIODIC_REPORT',api_status='')
+           if corp:
+            try:
+             payload=json.loads(get('https://opendart.fss.or.kr/api/list.json',{'crtfc_key':key,'corp_code':corp,'bgn_de':start,'end_de':end,'pblntf_ty':'A','page_count':100,'sort':'date','sort_mth':'desc'}))
+             row['api_status']=payload.get('status','')
+             if payload.get('status')=='000':
+              reports=[]
+              for r in payload.get('list',[]):
+               nm=r.get('report_nm','');d=r.get('rcept_dt','')
+               # Only exact primary periodic report, not audit/correction/other report.
+               kinds=[('사업보고서','11011'),('반기보고서','11012'),('분기보고서','11013')]
+               if nm.startswith('사업보고서 (') or nm.startswith('반기보고서 (') or nm.startswith('분기보고서 ('):
+                typ=next(((n,c) for n,c in kinds if nm.startswith(n+' (')),None)
+                if typ:reports.append((d,r,typ))
+              if reports:
+               d,r,typ=max(reports,key=lambda x:x[0]);row.update(filing_date=d,receipt_no=r.get('rcept_no',''),report_name=r.get('report_nm',''),report_year=r.get('report_nm',''),report_code=typ[1],status='DISCLOSURE_FOUND_NOT_FEATURE_VERIFIED')
+             elif payload.get('status') not in ('013',):row['status']='API_ERROR'
+            except Exception as e:row['status']='REQUEST_ERROR';row['api_status']=str(e)[:120]
+           rows.append(row)
+          fields=list(rows[0]);out=root/'dart_disclosure_audit.csv'
+          with out.open('w',encoding='utf-8',newline='') as f:w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
+          counts={k:sum(r['status']==k for r in rows) for k in sorted({r['status'] for r in rows})}
+          (root/'dart_disclosure_status.json').write_text(json.dumps({'candidate_count':len(candidates),'counts':counts,'note':'Disclosure metadata only. No verified_features.csv or A/B grades generated. Receipt date alone does not prove the financial figures used by the model were available at entry time.'},ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(counts,ensure_ascii=False))
+          PY
+          python /tmp/v5_dart_audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-dart-disclosure-audit
+          path: |
+            data/v5_forward_validation/dart_disclosure_audit.csv
+            data/v5_forward_validation/dart_disclosure_status.json
+          if-no-files-found: error
