@@ -1,0 +1,124 @@
+name: KRX v5 Official Market Date Collector
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Optional KRX trading date YYYYMMDD; blank = today KST'
+        required: false
+        type: string
+  schedule:
+    - cron: '30 9 * * 1-5'  # 18:30 KST
+    - cron: '0 11 * * 1-5'  # 20:00 KST retry
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: krx-v5-official-market-collector
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse last successful official snapshot when needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/krx_last
+          run_id=$(gh run list --workflow v5-official-market-date-collector.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+          if [ -n "$run_id" ] && [ "$run_id" != null ]; then
+            gh run download "$run_id" --name krx-v5-official-market-snapshot --dir /tmp/krx_last || true
+          fi
+      - name: Collect and validate official KRX daily data
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          TARGET_DATE: ${{ inputs.target_date }}
+        run: |
+          cat > /tmp/krx_v5_official_collector.py <<'PY'
+          import csv, datetime as dt, hashlib, io, json, os, pathlib, re, urllib.parse, urllib.request
+          from zoneinfo import ZoneInfo
+          OUT=pathlib.Path('krx_v5_official_output'); OUT.mkdir(exist_ok=True)
+          KST=ZoneInfo('Asia/Seoul'); now=dt.datetime.now(KST)
+          day=os.environ.get('TARGET_DATE','').strip() or now.strftime('%Y%m%d')
+          if not re.fullmatch(r'\d{8}',day): raise SystemExit('Invalid target date')
+          target=dt.datetime.strptime(day,'%Y%m%d').date()
+          if target>now.date(): raise SystemExit('Future target date not allowed')
+          status={'target_market_date':day,'verified_at':now.isoformat(),'market_date':None,
+                  'financial_period':None,'source':'KRX Open API','source_endpoints':[],
+                  'official_per_pbr_verified':False,'final_grade_released':False,'buy_signal_released':False}
+          def save(): (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          if target.weekday()>=5:
+              status['state']='SKIPPED_WEEKEND';save();raise SystemExit(0)
+          key=os.environ.get('KRX_API_KEY','').strip()
+          if not key:
+              status['state']='BLOCKED_KRX_API_KEY_MISSING';save();raise SystemExit(0)
+          # KRX Open API stock daily-trading endpoints; these return close and market cap,
+          # NOT officially certified PER/PBR. Never synthesize those values.
+          endpoints={'KOSPI':'https://data-dbg.krx.co.kr/svc/apis/sto/stk_bydd_trd',
+                     'KOSDAQ':'https://data-dbg.krx.co.kr/svc/apis/sto/ksq_bydd_trd'}
+          rows=[]; hashes={}; errors={}
+          for market,url in endpoints.items():
+              try:
+                  req=urllib.request.Request(url+'?'+urllib.parse.urlencode({'basDd':day}),
+                      headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'KRX-v5-official-research/1.0'})
+                  with urllib.request.urlopen(req,timeout=25) as res: raw=res.read()
+                  payload=json.loads(raw)
+                  entries=payload.get('OutBlock_1')
+                  if not isinstance(entries,list) or len(entries)<100:
+                      raise ValueError('Missing/incomplete OutBlock_1')
+                  hashes[market]=hashlib.sha256(raw).hexdigest()
+                  status['source_endpoints'].append(url)
+                  for r in entries:
+                      if str(r.get('BAS_DD','')).strip()!=day: raise ValueError('Mixed BAS_DD in '+market)
+                      code=str(r.get('ISU_CD','')).strip()
+                      if not re.fullmatch(r'\d{6}',code): raise ValueError('Invalid ISU_CD '+code)
+                      close=str(r.get('TDD_CLSPRC','')).replace(',','').strip()
+                      cap=str(r.get('MKTCAP','')).replace(',','').strip()
+                      if not close.isdigit() or not cap.isdigit() or int(close)<=0 or int(cap)<=0:
+                          raise ValueError('Invalid price or cap for '+code)
+                      rows.append({'BAS_DD':day,'MARKET':market,'ISU_CD':code,'ISU_NM':r.get('ISU_NM',''),
+                                   'TDD_CLSPRC':close,'MKTCAP':cap,'source':'KRX_OPEN_API',
+                                   'retrieved_at_kst':now.isoformat(),'source_sha256':hashes[market]})
+              except Exception as exc:
+                  errors[market]=type(exc).__name__+': '+str(exc)[:250]
+          status['endpoint_errors']=errors
+          status['response_sha256']=hashes
+          status['records_fetched']=len(rows)
+          if len(hashes)==2 and not errors and len(rows)>=200:
+              ids=[(r['MARKET'],r['ISU_CD']) for r in rows]
+              if len(ids)!=len(set(ids)):
+                  status['state']='BLOCKED_DUPLICATE_SECURITY';save();raise SystemExit(0)
+              with (OUT/'official_daily_market.csv').open('w',encoding='utf-8-sig',newline='') as f:
+                  writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+              status['state']='VERIFIED_OFFICIAL_MARKET_SNAPSHOT'
+              status['market_date']=day
+          else:
+              status['state']='BLOCKED_OFFICIAL_MARKET_UNAVAILABLE'
+              # Never mislabel a previous day's snapshot as today's. The archived file is
+              # copied separately, with its original status and original date intact.
+              prev=pathlib.Path('/tmp/krx_last/status.json')
+              old=pathlib.Path('/tmp/krx_last/official_daily_market.csv')
+              if prev.exists() and old.exists():
+                  try:
+                      previous=json.loads(prev.read_text(encoding='utf-8'))
+                      if previous.get('state')=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT' and previous.get('market_date'):
+                          (OUT/'last_verified_market.csv').write_bytes(old.read_bytes())
+                          status['fallback_market_date']=previous['market_date']
+                          status['fallback_file']='last_verified_market.csv'
+                  except (ValueError,OSError): pass
+          save()
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PY
+          python /tmp/krx_v5_official_collector.py
+      - name: Upload official snapshot and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-official-market-snapshot
+          path: krx_v5_official_output/
+          if-no-files-found: warn
+          retention-days: 90
