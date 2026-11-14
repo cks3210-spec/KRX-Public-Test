@@ -1,0 +1,108 @@
+name: KRX v5 Receipt and Financial Recheck
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recheck 2025 and 2026 half-year receipts and financial figures
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: |
+          cat > /tmp/unpack.py <<'PY'
+          import base64,gzip,pathlib
+          pathlib.Path('receipt_period_corrected_96.csv').write_bytes(gzip.decompress(base64.b64decode('H4sIAIcV+GoC/91dbW8UV5b+vtL+h/0B5av7cu6b5pMHm2Dh2AhIRvOp5RiTWGJsZExG+83JtiMnJjOw2wajGMbskAAjonEmRGsU0PwfV7X2L+xzqumOC9re6qpdaaoRctt93dVd5/ie85xznnPuf//898XVK0vJysLvlpKlTxeu3VxYX15daV1fW15cal1ZWF9K1paur66tt/Jf01K71tXla8srH/cW8yfWlhaXlq+vt1ZWk6vLKwsri8sL11rXl9aWV68ce+LG+sL6zRvHn1i9ubbI1/90aeXmUuvjtdXfr3/Sur64nqzixfgceJPra6tXl9ePr11Z+mi9xaurb/3q4sKNT65eW/194UN+tHR1dW3p+O18is91dXnpSuvqEj7P2tKN/gdbW1q4sbqSf75reMMF3O7VheW13muTj27+a+vG8sdYS3qfu3VcLoOnBoJ488xxWfUk0vrdwvriJ3j/469/Z2lwnbdWTrne4ura9aFXe1cG/esvfrKw8vHSlf4L+k/3BPLP/ySNU1EmR4db3fudbudVdu929tXjbHsvF7FSSidKSWX6P/7yjZTSW9nTBP+KTqY/nJmanjsz3TozPzs7feby9FQyf31pZWry4uXW1ZVr6+uXcF/XJhdX1ievXUu0EdGYZMKLaF2inQhkEkNOW++s0lrI5OzCtRtLya9n58+cn55qfTB3eWa2dXH6zPTMhcut2ekPp2dbH07OfjB9qTU5N9XCB7GtCxfnP5yem+QP8eH0xZmzM/gMZ2dmZ+bea83NX36z3Pr19Nn5i9P4aQa/NzV5efpXZ2f4RTOTuP78by7lv9t/o/cnL585Nz31q/z6Z+bfvzB5cebS/Fzr2GUHb/Wbmcvnzk3PTiXJ3Pzc9FuSOyawXJD8r3eHva8XcJX5qV/ed+bSJbwBVKS8xeuyrd3s84OsfZj++KK7/QO0NExF0io7+EZKo4ytoaIolPesKRtMQkpYB4VFE6Efb1yAii6v3fy/0ND/r/TfkkUuo7LSV1LjFUn6x/tZ+4fs1Ub618Ps5+dF0eveZYOiwTd4O+dMddErDZnbxEP03vCD1pRMKB3JBrxt9P/4stfDhJEL6fRVKZ2PBt/k9zdUO2fnP5jjW+6//Zs7ZW2paLBXHhzCnGX7O0c//lRCVdq/eb7aLnGCYkgUHkglWgnPZk1L7JlIOgTTLFUNhDFUVcVVKSlo0q6SqsgobKxsp509eJF2Ou8YtKGqUl666qoi4Xk3kTDRJwb2zGNTwZL5GKMm2SxFDUQxVFHFVSnxdxiDrKIobCmtoKj7G1BU9mRjIvvmdplNZVyNTcXOBq92UBjuDeYOmCCZMEH5EH2g2LA91ZfF8D1VWIXq8NepYhVVQWCO4KwOOthQ3c2v02ed9D/KQTlPNSwglEUa7kkKspotoYIJJE2GrPRQ5ThCuTcCGw3KQUy8lWDwHu5BP2U0Q6YGjDBBKAcbRyJ6C1ARhAuUGJhxbSPMrxtH1fQlNppqQiQvk3NTZ7q77fTWxvSFEspRjuFxZYznAKhz5VgYACWliC5iF3nliaLxNI4x0EBko2kH0QbC1OxJGyi8u33AnqjztAwKN3U0ZKAS9jswcIYo8Qo/wrDhcsFbrXXTUHhfGMNReGGVEQRpGSohBoBE2UPhnVfp9lb3q8PuveecV3i1kd19UcbqRaWqq21CCaUBHzw2kA14FCrEJDjtJaBDjONo9PoCG21bwUdr4IX242z3cbbXzr7b6t7fSDvPTsguvG3+tKyBGibgfJRLJqyGtlyiggjRJjDDkjhs8uNo/PoCG0lLkI7XgwTQg8P0aw6WsKnS78okIuD1ayAIL6xkH6VFgOnTCGZxceOdMkErm7uoJsVMfVkMj5kKq5JzCUZXs4AItjgPsfs4fbSXPnhVJl5ysUa8hN3DKRPgPe8jALkXQeJelI0mWEUqNCxg6gtjeMBUWIWeSFlbLQmhKACQd3f2si86vVQEotty1k9aVyO3qkhoQPEJOCcfHYdQOvjEUvDkjaFxdFF9eY2I/KzjkOmLTvrjYRmtBGvrIAct8Lc1oZ0wBvtICh1VEgm72XmoZhzV0hfYaGqJRlqZzJ4tY9ko1KkTCcUoQQqSlhG45ljJOo/LGti4phm2viyGG7bCKnYMpGx0JQcUrXNFZFcG0Kk6NYsJL+BwAOjw6ByHt8biHrUO8KvKyjCOiK4vsZF2D/SsPIzav+127+xl2w+6/75VopinZJ0kHUJY+MgJ44SNhBgWds4mCrtfumhIUbOKeQNZjFTMgzPheGduEm9TajuQrJXe0RTZcmm4EjIi4pMqFZy13iMgjW4s9wNVKXFHCnhd9tVWt9NGVJM+2WIiAsDYy93uZydVGwZYPU8r6TqWS0UBEDYRjHAScbSwnC2NUWppfaOKDcdFkYvo9FV2MTFaX6nYwGEFsPO9b7tf7HNKe/Mw/Rt/k23ulqqPW1+rPg5Jce5UGvajJCLgMwJSHxWubKhp9XF7WmausCp5yxmlKunMkIuABZsvs+3vs4e3s28O0pf3S/gejY9RI49qBH/yKJyBkpQRJnJWVXvjfVBNI5IMZDGa78HW45TAf24e/derdPvlqYm2t6XvbY3cgBEe0rYRgWZMAsAZ6cSQtibgi5cNE35fFKMJXznPhdE7t7Pd52U8v6E6ZQN4EQOoZQVhm0aPWNImRpIO0Vg1lvnngcBG8/tSK+ylo7+9Tr8oUwxVRDW8vBMIGjntbHVIvBWRjRD2MlkZ4cnGsUw9ENiIakFsD7UcbGS7T7P9dtbeL+HQIcRYY89YoSgk1grLl4GPwG7hYihpTr/g8g2j5wzEMdSlF1c5niHvqqWapY5Q1uXfvl8mO8ZhZ3WYDBUoOHB4c++SCAhmQjIRow8aIU4YSzJBX2Cj2jVyMjl3iVmI7R/KoOFQJ/s/oeHcWRfAhYLIcZ6MdaOArjw1joI4EMZwNBzeyv57stpXY4tiH8rk0nnOkW3udju3mJbz1WEZY4cQo56+FMEAMBOREsKDSaw2QUbjnG9Y8DKQxXBLV1hlxijimYoBp2VaQfqsw57pq8fd9kHa6Rz9dDvbe1RCZcBidQJOEZyDP8JWkioJSqigEw9gZxk+AE00SmUDWQxVWXE1z7UFVy0NrYLzvMN6GivFRCRbq6kEW5rV5IC98TbkRYQ9VNCQ8wqRGytwDNmIVKWGo6yBl5qB2uZmhqvmDYeYv8l9Yahj85Sw2DMT3gsLjUgtnMkvb5RVjYB3ZpgwciGVF7nmHqA3XValeNTMea5FhTKwV4SINDA7ICACUsGr6AxH0rppwOA0s1VchYZssLJSmszYXstV+wFC014murt9UApfy1irRIP9EUUMKoFqIhdmo3TOGZmnacYPXL+R1khmy5jo4VPY77+4BeV0O+1s53H6sl0mgWBlnaYEEThloKxwiNUiVOJioqwPRpKh8Uwg9AU2GmMN9kX1CKDAaI/2skcHpcptviadkHvkWDkmcVJwZTZGZ6Ph1NtY1toq9SAYySj6/OUyvodq8QEU7xDKa86qV/sUXubsNOU4id68pM5AIMMdELm3+IPSaFWNvkFMBTk6eJz+6ftsey/baadPD3tU6nKsT+Nr0Qlhy5hno4WHArk1TiluGzH4WKQbFuwMRDFcab6YTrABYLpSfCqDyZtPoauDTva6U4rnXodhMBG4ombYIzkRDPeQILoJiHby3iu+vbGkulejGETDJOo/tHkL7X/ZI3uWIhRqVYvmCRcEE6iFhXfyJKAcPGu1gWkIcjwZhbpKL4KTzHI/fw6b54TWuHeqoqpWDs6IyLkC64W0MfFwTpGDI0RHLvigdNMKo6oKIypI7sJO//I0vXO7u/X8nfac4YzOIEOdOhxphtFGwWjBWsHZcD0BcMEZ7v4w1DAHMxDHcFJnYZXLjQ47v1IClCSz1Zmh/uCnmQuXyjR/BLL1EBzeIJmgKKzziYk5kKMII6YMRdewwsJAGsPbPwqrgNfG4jYrIQE271DU63ct2QnVhDr7yXjBHCgoJ0rLiQNFeBdnESVH55xvWjXhtM1UXAV6g6hjNbQWDU8+Sl9ucm/Bo/0SJEOpag2fCEIboGjoyQUDkCYsfsQfXYRBAOZ0zaIZDoQxlGZYXIXR8yGvUldppXI5V7rPB83u7aftb0s2KMpYp0UnIAryCsgAUCDYvEeHy98E2ODleKZ7+gIbLd0DuAQVpZ0OBz7Q0onKGeSSNMf+ug672hqBYDTRVgnsIDaCDsbaBa0p6uB0c8oJBWHkQhphnkSQxRk6J9AKTximo+vU2nRO1QkknHZcW+CZOsF5S44oNq0xtC+KE4bpHF+F17HRVhymo61lvP3Xw/Rh3s57b7NMDOrqDKgyVgsKLgkxCu5nNU5oB5NtOAtHZMw4NuYMRDZqSVQDuKW3NrKD1+n203KJayl9jaqPlnni2kcRVG9YAYIhbbwmH21UYzkIsS+wUWmJ3HPIbNGDZ2XMGxM861AJFEen0mDTUGIJDwZuJsL3u6C0a5iB6wtjuIErrDIOgG2o2PkOacElPbydT+Br45tSBk7XQdYSqoLzIRK4k8RxS7UFbFOk4FaDGUvKR19io84S5Tk63Z29o5++z3ZuZa/3SjVXUaw1HYxkjhMsEQ8qkJY5pDHvUDW2ac1VFE9rrjq+2mMgOFuNmhhM6Dmiu3ewjY4OD45+/OkdtHBC1a7O8BxthbeBRx95npcKdEc8OUxG7cj5xlFJ+7I4oWCnimYP/6KpxsK2ee3n81c8JnaI2TuhBy7WoYvoKGLkyTnMyObpyUrgMlxdMBbQXDeywtoXyQmdcLFImweQrQbEtYXoYAk/ew4g3u20u188LkfTrlFyiCRCsIlzUBt2mBYKxoEsYibHRIumpb0HwjiJpl3g/eIeo6+WTSXPhJ/sdSf9+iD7biv7+UWeZzgsNaGvzvhEbDALi45LOZGTLbwIwBnSGoVNRjSW8/lMpYEGkglz6R/vA5rz1NFOp9yUbOnrNA2xfoLKuaSem4ek0FYnUWNPWaNV0zqG/KkdQ4VVJmUbCLfafop5J+rD59nuZ5z8/vPTk2eRDiq5TNGVddwVcZ01QYwrKGjuQw2e0986WA0TGFWDEnbHZZHLqPQ+MS6fjHhs0EEZ/G1DjfIQIJyUhOhI8PS5KIgJCBH+xsSgVcPgd18Sw+F3YRVoTpOzphr8pnx+W15pTZ8e9mhX2d1X78zRGW7VnKZ6TQwONxJENJrTrAEgj4gU0A/iCdUwq9aXxXCrVljlH42raNWk4V7irL1/9OJOGfaIrnM0RhR4feJIkA6JY5K9S4wFkPMxuCYEtWaYKEaijuhA3FOf/X0f/7v3t5imWKrsYKhONjsIzccsMDJTvFU09rwnB3RppVaNi071qdHpcWYijwHl6d2Vat2RTD4Xnqtzu4+50/FPz8sWiZyvVSQK/HIlEJFyCZwH8joPpSFys7FpRSLnTysSuUL7iYMlqziVkv+aOUu3m36+y95n++AE7zO8sGpdvWSqzWnMTsio+UeHyIdMtN4DNTjZsMJqXxijFVZd0Bxybm688fy7pYaNe1sj8YZwkk/CCjx6UnEuxyASc1aRYXoIqaZl3vrCOIF1bQuZN9yeJFdx0qGBG5q5dKYMMFN1KKOkhPKGZ1SQd8yRj56b6oKhGBA3N8yaDWQxHJgVVrGNvGZ2WSVgJulNTfWb20cHO+WS2Mqaev0LUTMnTuWptjzxhs2kA9ffm5cUHQhjuOMprOZZbECzimOrZX58Vg4SNm9xdnT7y5KN21Rn8C4gs0WUY3lKJVOC86GvRgWHbQVHOpZFcKoyeFcbzxPceh3EAAbdW3uljsGok7mxiEQpsvnz3EWMzSR9ghDZkrba+qYdnDUQxgnHYBRLDMGrYColEYxm/JGcm+qdKAOVpe2t7MlGL+VWbkqi1rHeOAQ+nY2pwT5YJv4YQDouvZKGywoNI2kNhDGcZ19YhRXEbdpqtSFl8mMxvt7JPj/ojVBO/1z2TAxTayq8y1shfMyhIFMcE00E0K0IyGMs58ZVGQrPM6X9sSPpsnudbvsADotPx3j6qtwIH4IprbG1vODXA2BoZjp7oTiR5ZWyljvvGjaWfCCL4fNgCqtMrUOEUokdRI4Hxyc9g9h9uHtyCqLAu69H43Ywflx9sFrn5wzzEXURBlB57lJvGOte/mLkzP+yCkU5b3w1PoPxHAD/9r1/uTD7QZlGI6Pr4HUdhGWaSe+4WwpQEk/z5XHdiqcrNAxg6NPgenGVR8UhVPEVTy/hPNF752dLUex8jayQYuowl76FhS1gxMece6BCGwO56MeSYeerMOyCjap/8AKfVFfOwtk645UJOAEflYDy8Fpv87nzyls+1LYR05X1MFEMt3CFVbgm8rEiURW2UQ2SrE+2eMYPwt23G8FOGCOj6/C2pBRB8ylaiivi8EWCmBnpJZ8OAIW5sTz7rC+zETnfgTjcbe91H3xbJvftakEFBESkOP3gvU0iHuCGrPbW8PHQsmk9Re6XZq4RUt/cviOT8+91b93irqLPD7PNvTKSNxTq7In8wDLlheeDNrVQFl+9l1riS9NqDn1RjCR42GqmuaXPOtnLF+mjvXJnKLhaMneRaYh8hEIQ/NfC1WBOZYfQvAMU3KkHKBQOQ3c8SLTaDNLoGXJlnae9DByfeHH3Rfrks1LDXurMjEVIqXVe8eZR65bPv+AknLMhhogbHMtJL6bKgCvJ5KZfqNhHhwelmL3S1uJYIVphdeRzmG1v5D8PilTOWcsnkjSN2yvtadxead+mYVfk9lrT62DdSh8+K7OHTKw3jac3Yz6fhumFjiYxFMl5Ps99LIcl9eU12ohF74zMG7ph3LK9MtP/tY913D9Uwml3TlBbfgCuBzCWlgdpRNO0eTB9WQzPUxdWpcrTu1U3D6vpTTfX/k7644vswWH23YNSY61qAWWFjUSctmGOkpeCmEHmlYRjVeN5stlAYCNOtQqc8OSd9GSj2z7kOlCpAwE4fK+V88QeTiiKSDmjJKcneoqRNAB+02hXNp5Gu7KFep2JIVQ7tl6rQEomF8+emynDJVFS61oWj1OzhoTjlhIjbD5hhIdFORi+pjHj+rIYrqLCKrcuBJ6eXcniUWRst7/HoekhB6jZvf1SBfA6bF8jPENvPmzOcBU18oAlY0PQCmahadCuL4oTyt+mOOqCT3qvSMiWOSF7b5+P1757p3v3yzI4gs8tqRPS8olH2FXclYEHzuOEXsOGt6Fho7AGshiOIwqrfNaT5XnalQaXOup1b+U4Yi/beV1qaFmdJgdO+HDCwef1OO7gz4csBLgtFal5R6Cc2uRgi00OfOp8NReFiDifYvoqL3z3zqu/18nu3SnJvPd1xiwEYTkdqhDqKraCnhEgzINV1kryTaOn6tMSRoVViTjecE6visZ85Hm1Rwcb6cs2NFbGBEZZzwTy6GYEuVr7hKs/DDO4iCqdId8wYDGQxXATGIvTAC3uPFbrkNCBnRVMIO+qJxvZkzJ9XkbWOdneCZUfgJIP/MHrEVKFBGGV4emazWPVydNOti+u5qeneFtJU3z8l8vpxOlfNgeculIRb51WcMUUYsUMBcf8Ec3NrFzCi5bgO00Yz0HOVXrB/wczkK2OcJ4AAA==')))
+          pathlib.Path('dart_disclosure_audit.csv').write_bytes(gzip.decompress(base64.b64decode('H4sIAIcV+GoC/71by2qdVRSeC76DQwtB9rrvNRSbQkFa6MXpIaRRAtqENA6c9yEcOPARChXxmVofwrX3/s+J1nUKOliZZJM/Of/Hun7fWjvnVy8uTs6vbq535+P07eX3ly+/2704u704ubk4v7i8vt29vIrj9dVNnM5+uNiff7o4u9mf55++uj27/fHVydn15W4dP/2kxZe0k9aggWI/wYbaOvDhEE/c4eT9m5/f/fHm/dvf3r399c/Xv3z2+Xj+RdN7H3kC8Zl4cv/h06++fvz0+ZPT3YPHzx/d3z16/Gz34PTLZ+Mn35w+efjg4en9ANAmGGgTDAs0z8Bgo14GhmmCAehsqWWEsAyMLMs0Nk3d1By8Cgzosgw7yYZBQA6HcJNJWOb319kr6d5Hngww9N/A4BYzAYdoYgiP3R0GTKZjr/R7H3nyf8CwTjDGgmnMUPeymEFflgHD8FdimcDZqixDm5sIumsaM0hSFTPiK4BRqbfUTepl2dTZN8toxMbmnbtD/Ja6VLnJQfaWMcgDuEmRZSDKyAQjXdoRMGBVYAS3doBqnmZTi5/XuCk6z6ozkTqbZeJD9HCYqd2rwKjxsoyrYVqBKRpoERiTFTMk8e6szhCU1Znwge8DWGUft3Q4jE7KVXUGutrq2hxvTQM4ulaVmzza9nSTG+RMj7SqUaLIyiY3kzy1FbDIMti3RmndhNOi16Jn1ViGgnAvyzTCvAKzUhUYwlVnWLtC7ibUIjcF8cUBBlU9BwNhnjIwOrMJ2b2nFbh1qUptUph1Bgk75pZpXghmVWBTAc2LnpS5Sbd2YBE7qYgjsio+Q4a2xQzm8pawTN5S1JcFRhksdRPXBbD3Td5CNIa0N2mZiGO8qzOSkytsXGSZ8M6swNxC3fZUqhBX0U42mwFMIXM9F/5KVcKffT8SsXZXgQ/VD4Y68Cp1EEplgqE4eZraTVrVGE0CywKjLDnt7GXtQEK9zmyKNmn5SITGtLMGDC8OjE31CO3ksgAWXpYhcclHImBYJfyFfYq46N6h8PNGSVVgtNmswGT9MCH/cNoJXKQo1WjGDLO0PJsgcr4oZrQvCsHxXk4bJZlU7Q6CW62i573n5AqGuKsBY7B0E0c6aZ7aDlV1xtxn15aQR54qyuigVe2gR1eelhFFSN2EvQ4MrZjhqMQsuZvKRFwX31Lb/G4T9/dh0dwBFVkmmvWa6fGRbApuwVVgnBfTE3OSnOlZ1YAxImZaZqwQCNMA5rL5jNOStzwGjS2NmTEWrgJDs1FqdGfO5a1hGRgeXgg3dWPJ5a2ViTjnviqwu9+B+eccGKvGaC60wFiUfUlTG4DLwOhsB8GsurZ8jKZVHNh9BTCz4zGpglAGZl0/UAp1oDmf0aJh0ZCvq8704ORHFCVxFRjYunZHxnw+Y4BVYBBXAEdrgnxcr1UTcgiTrJjBeGmqm+JRmZs69e3+DDjluwMoUgdjFj8DWMSk9Xx3YEW7g8GpYLlJnPNx/VgXFoHxtTvQwYI1r8BWNGAExD6ZXuh+ytUBI1UVPdQl/GEQm1xRYq9Kbaalm3polmPzmSqmB9GzZzbF97E9yebA0deLYqbbFjMYksVTMA2LRNwY5Q1yFZVY7UidsapsQqC5OwgFACI9v5hRVWdCYEOfYEZq5zM9laLURpA5n4Fm3DUVcdGaysB0hgWmg+V1JlhGERhiHakd0SFtL1U+mHZyazXTznEFZLoJkFUo1U3Se5VlbFqmdYNOOZ+hqkuD4YN5zSlihvAI0zOoAzP5zIgZ5xRMhLhUgYG1FtSR4nakzmgVmD7vQoSGtSbprddRgoqySdwnhbDo3sfudnqROsDO89LgIFna+Yg6qCp6bovPmAprTsidiro24WAsI2bcRVKmh+hF2RQVbWUTS1DgI/umVnQ1jmS72+kIfuQyz/i3kRowpnOvDSzacj6D5kW9afxTgc6YkUN5+dfkqmqVzNrWfEbVyNKu3VpVAP8FQr2D4z01AAA=')))
+          PY
+          python /tmp/unpack.py
+          cat > /tmp/recheck.py <<'PY'
+          import csv,io,os,json,urllib.parse,urllib.request,datetime,collections,decimal
+          from pathlib import Path
+
+          def fetch(endpoint,key,**params):
+           q=urllib.parse.urlencode({'crtfc_key':key,**params}); req=urllib.request.Request('https://opendart.fss.or.kr/api/'+endpoint+'?'+q,headers={'User-Agent':'KRX-v5-research/1.0'})
+           with urllib.request.urlopen(req,timeout=35) as r:return json.load(r)
+
+          def number(v):
+           try:return decimal.Decimal(str(v).replace(',','').strip())
+           except:return None
+
+          def extract(items,kind):
+           ids={'revenue':('ifrs-full_Revenue','ifrs_Revenue','dart_RevenueFromSaleOfGoods','dart_RevenueFromRenderingOfServices'), 'op':('dart_OperatingIncomeLoss','ifrs-full_ProfitLossFromOperatingActivities'), 'liabilities':('ifrs-full_Liabilities','ifrs_Liabilities'), 'equity':('ifrs-full_Equity','ifrs_Equity'), 'ocf':('ifrs-full_CashFlowsFromUsedInOperatingActivities','ifrs_CashFlowsFromUsedInOperatingActivities')}
+           sj={'revenue':('IS','CIS'),'op':('IS','CIS'),'liabilities':('BS',),'equity':('BS',),'ocf':('CF',)}
+           matched=[r for r in items if r.get('account_id') in ids[kind] and r.get('sj_div') in sj[kind] and (not r.get('account_detail') or r.get('account_detail')=='-')]
+           vals={number(r.get('thstrm_amount')) for r in matched};vals.discard(None)
+           return next(iter(vals)) if len(vals)==1 else None
+
+          def main():
+           key=os.getenv('DART_API_KEY') or os.getenv('OPENDART_API_KEY');assert key,'Missing DART secret'
+           src=Path(os.environ.get('SEED_CSV','receipt_period_corrected_96.csv'));corp=Path(os.environ.get('CORP_CSV','dart_disclosure_audit.csv'))
+           base=list(csv.DictReader(src.open(encoding='utf-8-sig')));lookup={r['code']:r['corp_code'] for r in csv.DictReader(corp.open(encoding='utf-8-sig'))}
+           out=[];api_errors=[]
+           for i,r in enumerate(base,1):
+            code=r['code'];cc=lookup.get(code,'');date=r['evaluation_price_date'];rec={'code':code,'name':r['name'],'evaluation_price_date':date,'corp_code':cc,'report_code':'11012','2026_receipt_no':'','2026_filing_date':'','2025_receipt_no':'','2025_filing_date':'','receipt_status':'','amount_status':'NOT_VERIFIED','growth_match':'','op_growth_match':'','debt_ratio_match':'','ocf_match':'','reason':'','final_grade':'WITHHELD'}
+            if not cc:rec['receipt_status']='NO_CORP_CODE';out.append(rec);continue
+            filing={}
+            for yr in (2025,2026):
+             try:
+              x=fetch('list.json',key,corp_code=cc,bgn_de=f'{yr}0701',end_de=f'{yr}1231',pblntf_ty='A',page_count=100)
+              if x.get('status')!='000':rec['reason']+=f'LIST_{yr}_{x.get("status")};';continue
+              matches=[v for v in x.get('list',[]) if v.get('report_nm','').startswith('반기보고서 (') and f'{yr}.06' in v.get('report_nm','')]
+              # Multiple corrections: choose latest filing available as of evaluation date.
+              eligible=[v for v in matches if v.get('rcept_dt','')<=date]
+              if eligible:filing[yr]=max(eligible,key=lambda v:(v.get('rcept_dt',''),v.get('rcept_no','')))
+              elif matches:rec['reason']+=f'FILING_{yr}_AFTER_EVALUATION;'
+              else:rec['reason']+=f'NO_HALF_YEAR_FILING_{yr};'
+             except Exception as e:rec['reason']+=f'LIST_{yr}_REQUEST_ERROR;';api_errors.append([code,yr,str(e)[:100]])
+            for yr,v in filing.items():rec[f'{yr}_receipt_no']=v.get('rcept_no','');rec[f'{yr}_filing_date']=v.get('rcept_dt','')
+            if len(filing)!=2:rec['receipt_status']='MISSING_ELIGIBLE_RECEIPT';out.append(rec);continue
+            rec['receipt_status']='BOTH_RECEIPTS_BEFORE_EVALUATION'
+            financial={};valid=True
+            for yr in (2025,2026):
+             financial[yr]=None
+             for fs in ('CFS','OFS'):
+              try:
+               x=fetch('fnlttSinglAcntAll.json',key,corp_code=cc,bsns_year=str(yr),reprt_code='11012',fs_div=fs)
+               if x.get('status')=='000' and x.get('list'):
+                items=x['list'];receipts={v.get('rcept_no') for v in items if v.get('rcept_no')}
+                if filing[yr]['rcept_no'] not in receipts:continue
+                vals={k:extract(items,k) for k in ('revenue','op','liabilities','equity','ocf')}
+                financial[yr]=(fs,vals);break
+              except Exception as e:api_errors.append([code,yr,str(e)[:100]])
+             if financial[yr] is None:rec['reason']+=f'NO_RECEIPT_MATCHED_FINANCIALS_{yr};';valid=False
+            if not valid:rec['amount_status']='RECEIPT_FINANCIALS_NOT_MATCHED';out.append(rec);continue
+            if financial[2025][0]!=financial[2026][0]:rec['amount_status']='CFS_OFS_MISMATCH';out.append(rec);continue
+            a=financial[2025][1];b=financial[2026][1]
+            def eq(expected,actual):
+             v=number(expected)
+             if v is None or actual is None:return 'MISSING'
+             return 'MATCH' if abs(v-actual)<=max(decimal.Decimal('0.015'),abs(actual)*decimal.Decimal('0.00005')) else 'MISMATCH'
+            def growth(k):return (b[k]/a[k]-1)*100 if a[k] not in (None,0) and b[k] is not None else None
+            rec['growth_match']=eq(r['revenue_growth_pct'],growth('revenue'))
+            rec['op_growth_match']=eq(r['operating_profit_growth_pct'],growth('op'))
+            rec['debt_ratio_match']=eq(r['debt_ratio_pct'],b['liabilities']/b['equity']*100 if b['liabilities'] is not None and b['equity'] not in (None,0) else None)
+            rec['ocf_match']=eq(r['operating_cashflow'],b['ocf'])
+            rec['amount_status']='ALL_FOUR_MATCH' if all(rec[k]=='MATCH' for k in ('growth_match','op_growth_match','debt_ratio_match','ocf_match')) else 'PARTIAL_OR_MISMATCH'
+            out.append(rec)
+            print(i,code,rec['receipt_status'],rec['amount_status'],flush=True)
+           root=Path('v5_receipt_recheck');root.mkdir(exist_ok=True)
+           with (root/'receipt_financial_audit_96.csv').open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=list(out[0]));w.writeheader();w.writerows(out)
+           (root/'status.json').write_text(json.dumps({'count':len(out),'receipt_status':dict(collections.Counter(x['receipt_status'] for x in out)),'amount_status':dict(collections.Counter(x['amount_status'] for x in out)),'api_errors':api_errors,'note':'No new A/B grades or backtest. Original figures are verified only if same-receipt source values reproduce all four indicators.'},ensure_ascii=False,indent=2))
+          if __name__=='__main__':main()
+          PY
+          python /tmp/recheck.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v5-receipt-financial-recheck
+          path: v5_receipt_recheck/
+          if-no-files-found: warn
