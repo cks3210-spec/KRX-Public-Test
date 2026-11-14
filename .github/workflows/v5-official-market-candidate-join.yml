@@ -1,0 +1,94 @@
+name: KRX v5 Official Market Candidate Join
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download latest successful official and v6 evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/official /tmp/v6
+          official_id=$(gh run list --workflow v5-official-market-date-collector.yml --status success --limit 20 --json databaseId --jq '.[].databaseId' | head -20)
+          found=0
+          for id in $official_id; do
+            rm -f /tmp/official/*
+            if gh run download "$id" --name krx-v5-official-market-snapshot --dir /tmp/official >/dev/null 2>&1 && test -f /tmp/official/official_daily_market.csv && test -f /tmp/official/status.json; then
+              if python -c "import json;assert json.load(open('/tmp/official/status.json'))['state']=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT'"; then found=1;break;fi
+            fi
+          done
+          test "$found" -eq 1 || { echo 'No verified official market snapshot artifact';exit 1; }
+          v6_id=$(gh run list --workflow v5-unified-evidence-performance-v6.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$v6_id" && test "$v6_id" != null
+          gh run download "$v6_id" --name v5-unified-v6-result --dir /tmp/v6
+          test -f /tmp/v6/integrated_candidates.csv
+          (cd /tmp/official && zip -q /tmp/official.zip status.json official_daily_market.csv)
+          (cd /tmp/v6 && zip -q /tmp/v6.zip status.json integrated_candidates.csv historical_performance.csv)
+      - name: Join official market snapshot and preserve v6 evidence
+        run: |
+          cat > /tmp/v5_join.py <<'PYCODE'
+          import csv,json,zipfile,sys,pathlib,datetime
+          from collections import Counter
+          
+          def read(z,name):
+              with z.open(name) as f:
+                  import io
+                  return list(csv.DictReader(io.TextIOWrapper(f,encoding='utf-8-sig')))
+          def main(snapshot,v6,out):
+              out=pathlib.Path(out);out.mkdir(parents=True,exist_ok=True)
+              with zipfile.ZipFile(snapshot) as a,zipfile.ZipFile(v6) as b:
+                  st=json.loads(a.read('status.json')); vs=json.loads(b.read('status.json'))
+                  market=read(a,'official_daily_market.csv'); candidates=read(b,'integrated_candidates.csv')
+                  history=read(b,'historical_performance.csv')
+              date=st.get('market_date')
+              if st.get('state')!='VERIFIED_OFFICIAL_MARKET_SNAPSHOT' or not date or st.get('target_market_date')!=date:raise ValueError('Official snapshot status/date invalid')
+              if len(market)<200 or len(candidates)!=318:raise ValueError('Unexpected input counts')
+              keys=[(r['MARKET'],r['ISU_CD']) for r in market]
+              if len(keys)!=len(set(keys)):raise ValueError('Duplicate market security')
+              for r in market:
+                  if r['BAS_DD']!=date or r['source']!='KRX_OPEN_API' or int(r['TDD_CLSPRC'])<=0 or int(r['MKTCAP'])<=0:raise ValueError('Market data provenance/value invalid')
+              # Only join unambiguous codes. Market is absent from v6 candidate records.
+              bycode={}
+              for r in market:bycode.setdefault(r['ISU_CD'],[]).append(r)
+              rows=[]; cnt=Counter()
+              for r in candidates:
+                  matches=bycode.get(r['ISU_CD'],[])
+                  d=dict(r)
+                  d['latest_market_date']=date if len(matches)==1 else ''
+                  d['latest_official_close']=matches[0]['TDD_CLSPRC'] if len(matches)==1 else ''
+                  d['latest_official_marketcap']=matches[0]['MKTCAP'] if len(matches)==1 else ''
+                  d['latest_market_source_sha256']=matches[0]['source_sha256'] if len(matches)==1 else ''
+                  d['market_join_state']='MATCHED' if len(matches)==1 else ('MISSING' if not matches else 'AMBIGUOUS')
+                  # No PER/PBR certification, price target, or trade recommendation from this join.
+                  d['official_per_pbr_verified']='NO'
+                  d['final_grade']='WITHHELD';d['fair_price']='';d['buy_signal']='NONE'
+                  cnt[d['market_join_state']]+=1;rows.append(d)
+              with (out/'official_market_candidate_join.csv').open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+              status={'mode':'OFFICIAL_MARKET_JOIN_V1','cohort_date':vs.get('cohort_market_date'),'official_market_date':date,'source':'KRX_OPEN_API','market_rows':len(market),'candidate_rows':len(rows),'market_join_counts':dict(cnt),'historical_performance_rows_preserved':len(history),'official_per_pbr_verified':0,'final_grades_released':0,'fair_prices_released':0,'buy_signals':0,'warnings':['No official PER/PBR endpoint is connected','Current market prices are not backfilled into the original cohort date','A join by stock code requires an unambiguous match']}
+              (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+              with (out/'historical_performance.csv').open('w',encoding='utf-8-sig',newline='') as f:
+                  if history:
+                      w=csv.DictWriter(f,fieldnames=list(history[0]));w.writeheader();w.writerows(history)
+              print(json.dumps(status,ensure_ascii=False,indent=2))
+          if __name__=='__main__':main(*sys.argv[1:])
+          PYCODE
+          python /tmp/v5_join.py /tmp/official.zip /tmp/v6.zip v5_official_join_output
+      - name: Upload single integrated result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-official-market-candidate-join-result
+          path: v5_official_join_output/
+          if-no-files-found: warn
+          retention-days: 90
