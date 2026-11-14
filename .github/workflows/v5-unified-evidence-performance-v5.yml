@@ -1,0 +1,168 @@
+name: KRX v5 Unified Evidence and Performance V5
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  unified:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse Stage57 and Stage58 successful artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in 'v5-stage57-stage56-evidence-link.yml stage57' 'v5-stage58-ttm-valuation-audit.yml stage58'; do
+            set -- $spec
+            run_id=$(gh run list --workflow "$1" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            test -n "$run_id" && test "$run_id" != null || { echo "Missing successful run: $1"; exit 1; }
+            mkdir -p "/tmp/$2"
+            gh run download "$run_id" --dir "/tmp/$2"
+          done
+      - name: Unified valuation and mature historical performance audit
+        run: |
+          cat > /tmp/v5_unified_v4.py <<'PYCODE'
+          import csv, io, json, os, pathlib, collections, datetime
+          from decimal import Decimal, InvalidOperation
+          ROOT=pathlib.Path('.'); OUT=pathlib.Path('v5_unified_v4_output');OUT.mkdir(exist_ok=True)
+          ART=pathlib.Path(os.getenv('V5_INPUT_ROOT','/tmp'))
+          def load(path):
+           with path.open(encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
+          def artifact(folder,filename):
+           hits=list((ART/folder).rglob(filename))
+           if len(hits)!=1:raise ValueError(f'Artifact {folder}/{filename} count {len(hits)}')
+           return load(hits[0])
+          def num(s):
+           try:
+            n=Decimal(str(s).strip().replace(',',''));return n if n.is_finite() else None
+           except (InvalidOperation,TypeError,ValueError):return None
+          def index(rows):
+           result={}
+           for r in rows:
+            code=r['ISU_CD'].strip().zfill(6)
+            if code in result or len(code)!=6 or not code.isdigit():raise ValueError('Duplicate/invalid code '+code)
+            result[code]=r
+           return result
+          linked=index(artifact('stage57','stage56_linked_candidates.csv'))
+          valuations=index(artifact('stage58','valuation_audit.csv'))
+          if len(linked)!=318 or set(linked)!=set(valuations):raise ValueError('318 frozen cohort mismatch')
+          dates={r['BAS_DD'] for r in linked.values()}
+          if len(dates)!=1:raise ValueError('Mixed cohort dates')
+          cohort_date=dates.pop()
+          # Official source must be explicit and same-date; local reference files are not proof by themselves.
+          official={}; official_file=ROOT/'data/official_valuation_verified.csv'
+          if official_file.exists():
+           for r in load(official_file):
+            code=r.get('ISU_CD','').zfill(6)
+            if r.get('BAS_DD')!=cohort_date or r.get('source')!='KRX_OFFICIAL_VERIFIED' or r.get('share_class_verified')!='YES':continue
+            if not r.get('source_url') or not r.get('retrieved_utc'):continue
+            p,b=num(r.get('PER')),num(r.get('PBR'))
+            if code in official:raise ValueError('Duplicate official record '+code)
+            if p is not None and b is not None and p>0 and b>0:official[code]=(p,b)
+          # Preserve all episodes, including pending and failed, with no date inference.
+          perf_file=ROOT/'data/v5_integrated/performance.csv'
+          perf=load(perf_file) if perf_file.exists() else []
+          seen=set()
+          for r in perf:
+           k=(r.get('episode_id'),r.get('horizon'))
+           if k in seen:raise ValueError('Duplicate performance row '+str(k))
+           seen.add(k)
+          # Recompute ONLY pending records from an exact KRX daily trading calendar and observed close.
+          market_file=ROOT/'data/daily_indicators.csv'; market=load(market_file) if market_file.exists() else []
+          calendar=sorted({r['BAS_DD'] for r in market if len(r.get('BAS_DD',''))==8})
+          prices={}
+          for r in market:
+           code=r.get('ISU_CD','').zfill(6); day=r.get('BAS_DD','');close=num(r.get('TDD_CLSPRC'))
+           if close is not None and close>0:
+            key=(code,day)
+            if key in prices and prices[key]!=close:raise ValueError('Conflicting close '+str(key))
+            prices[key]=close
+          # Completed 5-day observations anchor later horizons when the entry date
+          # is outside the retained market-history window. Never infer missing sessions.
+          anchors={}
+          for done in perf:
+           if done.get('horizon')=='5' and done.get('result')=='DONE' and done.get('target_date'):
+            key=done.get('episode_id')
+            if key in anchors and anchors[key]!=done['target_date']:raise ValueError('Conflicting 5d anchor '+str(key))
+            anchors[key]=done['target_date']
+          updated=0; missing=collections.Counter()
+          for r in perf:
+           if r.get('result')!='PENDING' or r.get('horizon') not in ('5','10','20'):continue
+           code=r.get('code','').zfill(6); entry=r.get('entry_date',''); horizon=int(r['horizon']);entry_price=num(r.get('entry_price'))
+           if entry_price is None or entry_price<=0 or not entry:
+            missing['invalid_entry_data']+=1;continue
+           anchor=entry; offset=horizon
+           if entry not in calendar:
+            anchor=anchors.get(r.get('episode_id'))
+            offset=horizon-5
+            if not anchor or horizon<=5:
+             missing['entry_history_unavailable']+=1;continue
+           if anchor not in calendar:
+            missing['anchor_history_unavailable']+=1;continue
+           target_idx=calendar.index(anchor)+offset
+           if target_idx>=len(calendar):
+            missing['awaiting_future_sessions']+=1;continue
+           target=calendar[target_idx]; close=prices.get((code,target))
+           if close is None:missing['target_close_missing']+=1;continue
+           r.update({'target_date':target,'target_close':str(close),'return_pct':str(((close/entry_price)-1)*100),'result':'DONE'})
+           updated+=1
+          # Note: calendar is valid only if all intervening KRX trading days are present.
+          # If latest data is sparse, prevent falsely matured episodes by checking calendar coverage.
+          # Dataset's daily_indicators must contain broad-market daily rows for each day.
+          if market:
+           counts=collections.Counter(r['BAS_DD'] for r in market)
+           if any(counts[d]<100 for d in calendar):
+            raise ValueError('Incomplete trading-day calendar: fewer than 100 records on some dates')
+          output=[];counts=collections.Counter()
+          for code in sorted(linked):
+           a=linked[code];v=valuations[code]
+           if v.get('market_date')!=cohort_date:raise ValueError('Valuation date mismatch '+code)
+           grade=a.get('stage57_provisional_grade','');eligible=grade in ('A','A+','B','B+')
+           state=v.get('state');p=num(v.get('research_per_ttm'));b=num(v.get('research_pbr'))
+           blockers=[];status='BLOCKED'
+           if state=='RESEARCH_RATIOS_COMPUTED':
+            cap,profit,equity=(num(v.get(k)) for k in ('market_cap','owner_profit_ttm','owner_equity_latest'))
+            if not eligible or None in (p,b,cap,profit,equity) or min(p,b,cap,profit,equity)<=0:raise ValueError('Invalid research valuation '+code)
+            if abs(cap/profit-p)>Decimal('.015') or abs(cap/equity-b)>Decimal('.015'):raise ValueError('Ratio mismatch '+code)
+            status='RESEARCH_ONLY';counts['research_ratios_verified']+=1
+           else:counts['valuation_blocked']+=1
+           if code in official and status=='RESEARCH_ONLY':
+            op,ob=official[code]
+            if abs(p-op)/op<=Decimal('.05') and abs(b-ob)/ob<=Decimal('.05'):
+             status='OFFICIAL_CROSSCHECK_PASS';counts['official_crosscheck_pass']+=1
+            else:
+             status='OFFICIAL_CROSSCHECK_MISMATCH';counts['official_crosscheck_mismatch']+=1
+           else:blockers.append('OFFICIAL_KRX_MULTIPLES_UNVERIFIED')
+           if a.get('stage56_owner_evidence_state')!='OWNER_FIELDS_VERIFIED':blockers.append('OWNER_FINANCIALS_UNVERIFIED')
+           if 'SHARECLASS_NOT_VERIFIED' in a.get('stage57_blockers',''):blockers.append('SHARECLASS_UNVERIFIED')
+           blockers.extend(['SECTOR_MODEL_NOT_VALIDATED','FINAL_GRADE_WITHHELD','FAIR_PRICE_WITHHELD','BUY_SIGNAL_WITHHELD'])
+           episodes=[r for r in perf if r.get('code','').zfill(6)==code]
+           record={'BAS_DD':cohort_date,'ISU_CD':code,'ISU_NM':a.get('ISU_NM',''),'provisional_grade':grade if eligible else 'REVIEW','valuation_state':status,'research_per_ttm':str(p) if state=='RESEARCH_RATIOS_COMPUTED' else '','research_pbr':str(b) if state=='RESEARCH_RATIOS_COMPUTED' else '', 'official_per':str(official[code][0]) if code in official else '', 'official_pbr':str(official[code][1]) if code in official else '', 'historical_episode_count':len(set(r.get('episode_id') for r in episodes)),'final_grade':'WITHHELD','fair_price':'','buy_signal':'NONE','blockers':';'.join(blockers)}
+           for h in ('5','10','20'):record['historical_'+h+'d_completed']=sum(r.get('horizon')==h and r.get('result')=='DONE' for r in episodes)
+           output.append(record);counts['total']+=1
+          
+          def write(filename,rows):
+           if not rows:return
+           with (OUT/filename).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=list(rows[0]),extrasaction='ignore');w.writeheader();w.writerows(rows)
+          write('integrated_candidates.csv',output)
+          write('historical_performance.csv',perf)
+          status={'mode':'V5_UNIFIED_V5_ANCHORED_PERFORMANCE_MATURITY','created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cohort_market_date':cohort_date,'market_latest_date':max(calendar) if calendar else None,'counts':dict(counts),'official_evidence_count':len(official),'historical_completed_by_horizon':{h:sum(r.get('horizon')==h and r.get('result')=='DONE' for r in perf) for h in ('5','10','20')},'newly_matured_performance_rows':updated,'pending_reasons':dict(missing),'final_grades_released':0,'fair_prices_released':0,'buy_signals':0,'limits':['Official valuation needs verified provenance and exact market date','Sector fair value and final A/B scoring not calibrated','Performance records are historical episodes, not current cohort forecasts','Daily market history must cover all intervening sessions']}
+          (OUT/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+          python /tmp/v5_unified_v4.py
+      - name: Upload single combined result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-unified-v4-result
+          path: v5_unified_v4_output/
+          if-no-files-found: warn
+          retention-days: 30
