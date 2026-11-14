@@ -1,0 +1,140 @@
+name: KRX v5 Integrated Evidence and Performance V3
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse successful Stage57 and Stage58 artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in 'v5-stage57-stage56-evidence-link.yml stage57' 'v5-stage58-ttm-valuation-audit.yml stage58'; do
+            set -- $spec
+            run_id=$(gh run list --workflow "$1" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            test -n "$run_id" && test "$run_id" != null || { echo "Missing successful run: $1"; exit 1; }
+            mkdir -p "/tmp/$2"
+            gh run download "$run_id" --dir "/tmp/$2"
+          done
+      - name: Integrated audit with historical performance evidence
+        run: |
+          python - <<'PYCODE'
+          import csv,io,json,os,pathlib,collections,datetime,decimal
+          from decimal import Decimal
+          root=pathlib.Path(os.getenv('V5_INPUT_ROOT','/tmp'))
+          out=pathlib.Path(os.getenv('V5_OUTPUT','v5_unified_v3_output'));out.mkdir(parents=True,exist_ok=True)
+          def read(folder,name):
+           p=list((root/folder).rglob(name))
+           if len(p)!=1:raise RuntimeError(f'Expected one {folder}/{name}, got {len(p)}')
+           return p[0].read_bytes()
+          def rows(folder,name):return list(csv.DictReader(io.StringIO(read(folder,name).decode('utf-8-sig'))))
+          def number(s):
+           try:
+            d=Decimal(str(s).replace(',',''));return d if d.is_finite() else None
+           except (decimal.InvalidOperation,TypeError,ValueError):return None
+          def index(rs,key):
+           d={}
+           for r in rs:
+            k=r[key].zfill(6)
+            if k in d or len(k)!=6 or not k.isdigit():raise RuntimeError('Duplicate or invalid code '+k)
+            d[k]=r
+           return d
+          linked=index(rows('stage57','stage56_linked_candidates.csv'),'ISU_CD')
+          valuation=index(rows('stage58','valuation_audit.csv'),'ISU_CD')
+          if len(linked)!=318 or set(linked)!=set(valuation):raise RuntimeError('Frozen cohort mismatch')
+          dates={r['BAS_DD'] for r in linked.values()}
+          if len(dates)!=1:raise RuntimeError('Mixed cohort dates')
+          cohort_date=dates.pop()
+          # Optional verified official reference is an existing repository artifact, never inferred from ratios.
+          official={}; official_path=pathlib.Path('data/official_valuation_verified.csv')
+          if official_path.exists():
+           for r in csv.DictReader(official_path.open(encoding='utf-8-sig',newline='')):
+            if r.get('BAS_DD')!=cohort_date or r.get('source')!='KRX_OFFICIAL_VERIFIED' or r.get('share_class_verified')!='YES':continue
+            code=r.get('ISU_CD','').zfill(6)
+            if code in official:raise RuntimeError('Duplicate official evidence '+code)
+            p,b=number(r.get('PER')),number(r.get('PBR'))
+            if p is not None and b is not None and p>0 and b>0:official[code]=(p,b)
+          # Historical performance is evidence of past episodes, NOT this cohort's future return.
+          perf_path=pathlib.Path('data/v5_integrated/performance.csv');perf={};perf_counts=collections.Counter()
+          if perf_path.exists():
+           for r in csv.DictReader(perf_path.open(encoding='utf-8-sig',newline='')):
+            code=r.get('code','').zfill(6);h=r.get('horizon','')
+            if h not in ('5','10','20') or r.get('result')!='DONE':continue
+            ret=number(r.get('return_pct'))
+            if ret is None:continue
+            k=(code,h,r.get('entry_date',''))
+            if k in perf:raise RuntimeError('Duplicate performance episode '+str(k))
+            perf[k]=r
+            perf_counts[h]+=1
+          output=[];summary=collections.Counter();cross=collections.Counter()
+          for code in sorted(linked):
+           a=linked[code];v=valuation[code];grade=a.get('stage57_provisional_grade','')
+           if v.get('market_date')!=cohort_date:raise RuntimeError('Mixed market date '+code)
+           eligible=grade in ('A','A+','B','B+')
+           computed=v.get('state')=='RESEARCH_RATIOS_COMPUTED'
+           p,b=number(v.get('research_per_ttm')),number(v.get('research_pbr'))
+           flags=[];state='BLOCKED'
+           if computed:
+            cap,profit,equity=(number(v.get(k)) for k in ('market_cap','owner_profit_ttm','owner_equity_latest'))
+            if not eligible or None in (p,b,cap,profit,equity) or min(p,b,cap,profit,equity)<=0:raise RuntimeError('Invalid valuation '+code)
+            if abs(cap/profit-p)>Decimal('.015') or abs(cap/equity-b)>Decimal('.015'):raise RuntimeError('Ratio arithmetic mismatch '+code)
+            state='RESEARCH_ONLY';summary['research_ratios_verified']+=1
+           else:summary['valuation_blocked']+=1
+           if code in official and computed:
+            op,ob=official[code]
+            if abs(p-op)/op<=Decimal('.05') and abs(b-ob)/ob<=Decimal('.05'):
+             state='OFFICIAL_CROSSCHECK_PASS';summary['official_crosscheck_pass']+=1
+            else:state='OFFICIAL_CROSSCHECK_MISMATCH';summary['official_crosscheck_mismatch']+=1
+           else:flags.append('OFFICIAL_KRX_MULTIPLES_UNVERIFIED')
+           if a.get('stage56_owner_evidence_state')!='OWNER_FIELDS_VERIFIED':flags.append('OWNER_FINANCIALS_UNVERIFIED')
+           if 'SHARECLASS_NOT_VERIFIED' in a.get('stage57_blockers',''):flags.append('SHARECLASS_UNVERIFIED')
+           flags.extend(['SECTOR_FAIR_VALUE_MODEL_UNCALIBRATED','FINAL_GRADE_WITHHELD','BUY_SIGNAL_WITHHELD'])
+           # Link historical outcomes by code, retain entry dates to avoid falsely attributing them to this cohort.
+           histories=[r for (c,h,d),r in perf.items() if c==code]
+           histories.sort(key=lambda r:(r['entry_date'],int(r['horizon'])))
+           for h in ('5','10','20'):
+            if any(r['horizon']==h for r in histories):cross['historical_'+h+'d_codes']+=1
+           output.append({'BAS_DD':cohort_date,'ISU_CD':code,'ISU_NM':a.get('ISU_NM',''),
+            'provisional_grade':grade if eligible else 'REVIEW','owner_evidence':a.get('stage56_owner_evidence_state',''),
+            'valuation_state':state,'research_per_ttm':str(p) if computed else '', 'research_pbr':str(b) if computed else '',
+            'official_per':str(official[code][0]) if code in official else '', 'official_pbr':str(official[code][1]) if code in official else '',
+            'historical_episode_count':len({r['episode_id'] for r in histories}),
+            'historical_5d_completed':sum(r['horizon']=='5' for r in histories),
+            'historical_10d_completed':sum(r['horizon']=='10' for r in histories),
+            'historical_20d_completed':sum(r['horizon']=='20' for r in histories),
+            'final_grade':'WITHHELD','fair_price':'','buy_signal':'NONE','blockers':';'.join(flags)})
+           summary['total']+=1
+          with (out/'integrated_candidates.csv').open('w',encoding='utf-8-sig',newline='') as f:
+           w=csv.DictWriter(f,fieldnames=list(output[0]));w.writeheader();w.writerows(output)
+          # Full performance record remains independent, with episode dates, for transparent review.
+          with (out/'historical_performance.csv').open('w',encoding='utf-8-sig',newline='') as f:
+           cols=['episode_id','entry_date','code','horizon','target_date','target_close','return_pct','result']
+           w=csv.DictWriter(f,fieldnames=cols);w.writeheader()
+           for k in sorted(perf):w.writerow({c:perf[k].get(c,'') for c in cols})
+          status={'mode':'V5_INTEGRATED_EVIDENCE_AND_HISTORICAL_PERFORMANCE_V3','created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'market_date':cohort_date,'counts':dict(summary),'official_evidence_count':len(official),
+           'historical_performance_source':str(perf_path) if perf_path.exists() else 'MISSING',
+           'historical_completed_rows_by_horizon':dict(perf_counts),'historical_codes_by_horizon':dict(cross),
+           'final_grade_released':0,'fair_price_released':0,'buy_signals':0,
+           'notes':['Historical episodes have their own entry dates; not future performance for frozen cohort',
+           'Official comparison requires same-date verified file; no official figures fabricated',
+           'Sector fair-value model, official share-class validation and final grades not yet implemented']}
+          (out/'status.json').write_text(json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(status,ensure_ascii=False,indent=2))
+          PYCODE
+      - name: Upload single consolidated artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-integrated-evidence-performance-v3
+          path: v5_unified_v3_output/
+          if-no-files-found: warn
