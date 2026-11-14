@@ -1,0 +1,107 @@
+name: KRX v5 Integrated Evidence Review
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download latest successful Stage57 and Stage58 evidence without rerunning OpenDART
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in 'v5-stage57-stage56-evidence-link.yml stage57' 'v5-stage58-ttm-valuation-audit.yml stage58'; do
+            set -- $spec
+            run_id=$(gh run list --workflow "$1" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            test -n "$run_id" && test "$run_id" != null || { echo "Missing successful run: $1"; exit 1; }
+            mkdir -p "/tmp/$2"
+            gh run download "$run_id" --dir "/tmp/$2"
+            printf '%s\n' "$run_id" > "/tmp/$2.runid"
+          done
+      - name: Join, audit and publish one consolidated report
+        run: |
+          python - <<'PY'
+          import csv,json,pathlib,collections,datetime,zipfile,io
+          root=pathlib.Path('/tmp');out=pathlib.Path('v5_integrated_output');out.mkdir(exist_ok=True)
+          def locate(folder,filename):
+              matches=list((root/folder).rglob(filename))
+              if len(matches)!=1:raise RuntimeError(f'{folder}/{filename}: expected one file, got {len(matches)}')
+              p=matches[0]
+              if p.is_file():return p.read_bytes()
+              raise RuntimeError('Not a regular file')
+          def csvrows(folder,filename):
+              return list(csv.DictReader(io.StringIO(locate(folder,filename).decode('utf-8-sig'))))
+          linked=csvrows('stage57','stage56_linked_candidates.csv')
+          vals=csvrows('stage58','valuation_audit.csv')
+          vstatus=json.loads(locate('stage58','status.json').decode('utf-8-sig'))
+          if vstatus.get('error') or vstatus.get('official_krx_per_pbr_verified') is not False:raise RuntimeError('Stage58 status not eligible')
+          if len(linked)!=318 or len(vals)!=318:raise RuntimeError('Cohort mismatch')
+          def index(rows):
+              d={}
+              for r in rows:
+                  k=(r.get('ISU_CD') or '').strip()
+                  if not k or k in d:raise RuntimeError('Missing or duplicate ISU_CD: '+k)
+                  d[k]=r
+              return d
+          vi=index(vals);li=index(linked)
+          if set(vi)!=set(li):raise RuntimeError('Stage57/58 universe mismatch')
+          dates={r.get('BAS_DD') for r in linked}
+          if len(dates)!=1:raise RuntimeError('Inconsistent Stage57 market dates')
+          result=[]
+          for code in sorted(li):
+              a=li[code];v=vi[code]
+              if (v.get('market_date') or '')!=a.get('BAS_DD'):raise RuntimeError('Market date mismatch: '+code)
+              grade=a.get('stage57_provisional_grade','')
+              eligible=grade in ('A','A+','B','B+')
+              computed=v.get('state')=='RESEARCH_RATIOS_COMPUTED'
+              if computed and (not eligible or not v.get('research_per_ttm') or not v.get('research_pbr')):
+                  raise RuntimeError('Invalid research valuation state: '+code)
+              flags=['OFFICIAL_KRX_MULTIPLES_UNVERIFIED','SECTOR_CALIBRATION_PENDING','FAIR_VALUE_NOT_VERIFIED','SHARE_CLASS_NOT_OFFICIALLY_VERIFIED']
+              if not computed:flags.append('VALUATION_BLOCKED')
+              row={'BAS_DD':a.get('BAS_DD',''),'ISU_CD':code,'ISU_NM':a.get('ISU_NM',''),
+                   'provisional_grade':grade if eligible else 'REVIEW',
+                   'financial_evidence':a.get('stage56_owner_evidence_state',''),
+                   'valuation_state':v.get('state',''),
+                   'research_per_ttm':v.get('research_per_ttm','') if computed else '',
+                   'research_pbr':v.get('research_pbr','') if computed else '',
+                   'valuation_reason':v.get('reason',''),
+                   'final_grade':'WITHHELD','verified_fair_price':'','buy_price':'',
+                   'buy_signal':'NONE','performance_5d':'PENDING_EVIDENCE',
+                   'performance_10d':'PENDING_EVIDENCE','performance_20d':'PENDING_EVIDENCE',
+                   'review_flags':';'.join(flags)}
+              result.append(row)
+          with (out/'integrated_candidates.csv').open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=list(result[0]));w.writeheader();w.writerows(result)
+          counts=collections.Counter(r['valuation_state'] for r in result)
+          summary={'mode':'REUSE_ONLY_INTEGRATED_EVIDENCE_REVIEW',
+                   'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'source_stage57_run':(root/'stage57.runid').read_text().strip(),
+                   'source_stage58_run':(root/'stage58.runid').read_text().strip(),
+                   'market_date':next(iter(dates)),'candidate_count':len(result),
+                   'research_ratios_computed':counts['RESEARCH_RATIOS_COMPUTED'],
+                   'valuation_blocked':len(result)-counts['RESEARCH_RATIOS_COMPUTED'],
+                   'official_krx_per_pbr_verified':False,'final_grade_released':0,
+                   'verified_fair_prices':0,'buy_signals':0,
+                   'performance_backtest_verified':False,
+                   'next_dependencies':['same-date KRX official PER/PBR cross-check',
+                     'sector-specific valuation model','share class evidence','5/10/20-day verified snapshots'],
+                   'note':'Integrates existing evidence in one run; does not rerun OpenDART or invent missing valuation or performance data.'}
+          (out/'status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
+          (out/'README.txt').write_text('Research-only integration. No official valuation certification, final buy grade, fair price or trading signal.\n',encoding='utf-8')
+          print(json.dumps(summary,ensure_ascii=False,indent=2))
+          PY
+      - name: Upload one consolidated artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-integrated-evidence-review
+          path: v5_integrated_output/
+          if-no-files-found: warn
