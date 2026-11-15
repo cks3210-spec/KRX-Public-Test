@@ -1,0 +1,200 @@
+{
+  "trading_date": "20261112",
+  "generated_at_utc": "2026-11-15T08:34:50.122484+00:00",
+  "source": "data/daily_dart_evidence.json",
+  "candidate_count": 5,
+  "cumulative_yoy_calculated_count": 5,
+  "verified_count": 0,
+  "final_ab_grade_count": 0,
+  "note": "Same-filing current/prior cumulative values only; amendment and filing recency not verified. Not investment advice.",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "status": "CUMULATIVE_YOY_CALCULATED_NOT_FINAL_VERIFIED",
+      "official_filing_collected": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "LATEST_COLLECTED_PERIOD_BEFORE_2026_Q3_CHECK_FOR_NEWER_FILINGS",
+        "AMENDMENT_AND_ORIGINAL_FILING_RECONCILIATION_PENDING",
+        "FINANCIAL_LINEAGE_AND_GRADE_MODEL_VALIDATION_PENDING"
+      ],
+      "report_year": 2026,
+      "report_code": "11012",
+      "report_quarter": 2,
+      "period_end": "2026-06-30",
+      "statement_type": "CFS",
+      "receipt_numbers": [
+        "20260814003190"
+      ],
+      "metrics": {
+        "revenue": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 2463984181771,
+          "prior": 2183562257125,
+          "yoy_pct": 12.842,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        },
+        "operating_profit": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 353475617551,
+          "prior": 295071990672,
+          "yoy_pct": 19.793,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        }
+      }
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "status": "CUMULATIVE_YOY_CALCULATED_NOT_FINAL_VERIFIED",
+      "official_filing_collected": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "AMENDMENT_AND_ORIGINAL_FILING_RECONCILIATION_PENDING",
+        "FINANCIAL_LINEAGE_AND_GRADE_MODEL_VALIDATION_PENDING"
+      ],
+      "report_year": 2026,
+      "report_code": "11014",
+      "report_quarter": 3,
+      "period_end": "2026-09-30",
+      "statement_type": "CFS",
+      "receipt_numbers": [
+        "20261113001008"
+      ],
+      "metrics": {
+        "revenue": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 479614479113,
+          "prior": 444568158503,
+          "yoy_pct": 7.883,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        },
+        "operating_profit": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 90530330797,
+          "prior": 79541833701,
+          "yoy_pct": 13.815,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        }
+      }
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "status": "CUMULATIVE_YOY_CALCULATED_NOT_FINAL_VERIFIED",
+      "official_filing_collected": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "AMENDMENT_AND_ORIGINAL_FILING_RECONCILIATION_PENDING",
+        "FINANCIAL_LINEAGE_AND_GRADE_MODEL_VALIDATION_PENDING"
+      ],
+      "report_year": 2026,
+      "report_code": "11014",
+      "report_quarter": 3,
+      "period_end": "2026-09-30",
+      "statement_type": "CFS",
+      "receipt_numbers": [
+        "20261113000391"
+      ],
+      "metrics": {
+        "revenue": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 209829718880,
+          "prior": 184011473203,
+          "yoy_pct": 14.031,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        },
+        "operating_profit": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 18240368071,
+          "prior": 12384852500,
+          "yoy_pct": 47.28,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        }
+      }
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "status": "CUMULATIVE_YOY_CALCULATED_NOT_FINAL_VERIFIED",
+      "official_filing_collected": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "LATEST_COLLECTED_PERIOD_BEFORE_2026_Q3_CHECK_FOR_NEWER_FILINGS",
+        "AMENDMENT_AND_ORIGINAL_FILING_RECONCILIATION_PENDING",
+        "FINANCIAL_LINEAGE_AND_GRADE_MODEL_VALIDATION_PENDING"
+      ],
+      "report_year": 2026,
+      "report_code": "11012",
+      "report_quarter": 2,
+      "period_end": "2026-06-30",
+      "statement_type": "CFS",
+      "receipt_numbers": [
+        "20260814003751"
+      ],
+      "metrics": {
+        "revenue": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 2538678712902,
+          "prior": 1803369024709,
+          "yoy_pct": 40.774,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        },
+        "operating_profit": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 773661225753,
+          "prior": 391887649948,
+          "yoy_pct": 97.419,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        }
+      }
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "status": "CUMULATIVE_YOY_CALCULATED_NOT_FINAL_VERIFIED",
+      "official_filing_collected": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "LATEST_COLLECTED_PERIOD_BEFORE_2026_Q3_CHECK_FOR_NEWER_FILINGS",
+        "AMENDMENT_AND_ORIGINAL_FILING_RECONCILIATION_PENDING",
+        "FINANCIAL_LINEAGE_AND_GRADE_MODEL_VALIDATION_PENDING"
+      ],
+      "report_year": 2026,
+      "report_code": "11012",
+      "report_quarter": 2,
+      "period_end": "2026-06-30",
+      "statement_type": "CFS",
+      "receipt_numbers": [
+        "20260814001759"
+      ],
+      "metrics": {
+        "revenue": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 138812160210,
+          "prior": 119702485064,
+          "yoy_pct": 15.964,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        },
+        "operating_profit": {
+          "status": "COMPARABLE_CUMULATIVE_VALUES",
+          "current": 25271144343,
+          "prior": 15263959217,
+          "yoy_pct": 65.561,
+          "basis": "DART_THSTRM_ADD_AMOUNT_VS_FRMTRM_ADD_AMOUNT"
+        }
+      }
+    }
+  ]
+}
