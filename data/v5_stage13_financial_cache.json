@@ -1,0 +1,956 @@
+{
+  "schema": 1,
+  "entries": {
+    "000020": {
+      "name": "동화약품",
+      "corp_code": "00119195",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261002000407"
+        ],
+        "metrics": {
+          "revenue": "267546558373",
+          "operating_profit": "21518244028",
+          "net_income": "16113568451",
+          "assets": "653674878926",
+          "liabilities": "238208331459",
+          "equity": "415466547467",
+          "operating_cashflow": "19039756839"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000050": {
+      "name": "경방",
+      "corp_code": "00101628",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001991"
+        ],
+        "metrics": {
+          "revenue": "228126258908",
+          "operating_profit": "28988544599",
+          "net_income": "18291414638",
+          "assets": "1273782375931",
+          "liabilities": "448381266092",
+          "equity": "825401109839",
+          "operating_cashflow": "37997068126"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000070": {
+      "name": "삼양홀딩스",
+      "corp_code": "00126937",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001287"
+        ],
+        "metrics": {
+          "revenue": "2731935295991",
+          "operating_profit": "102092336175",
+          "net_income": "283905093392",
+          "assets": "6013040789953",
+          "liabilities": "3037925977406",
+          "equity": "2975114812547",
+          "operating_cashflow": "110842197618"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000080": {
+      "name": "하이트진로",
+      "corp_code": "00150244",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000784"
+        ],
+        "metrics": {
+          "revenue": "1841827730821",
+          "operating_profit": "178620714429",
+          "net_income": "105022959984",
+          "assets": "3281505125710",
+          "liabilities": "2076766407480",
+          "equity": "1204738718230",
+          "operating_cashflow": "219361707072"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000100": {
+      "name": "유한양행",
+      "corp_code": "00145109",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002038"
+        ],
+        "metrics": {
+          "revenue": "1166231575529",
+          "operating_profit": "75684328844",
+          "net_income": "91411850434",
+          "assets": "3330275529266",
+          "liabilities": "859282491141",
+          "equity": "2470993038125",
+          "operating_cashflow": "81110007587"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000120": {
+      "name": "CJ대한통운",
+      "corp_code": "00113410",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001369"
+        ],
+        "metrics": {
+          "revenue": "9952666801658",
+          "operating_profit": "304220928573",
+          "net_income": "129382504284",
+          "assets": "10575242914515",
+          "liabilities": "6256900000933",
+          "equity": "4318342913582",
+          "operating_cashflow": "399414962160"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000140": {
+      "name": "하이트진로홀딩스",
+      "corp_code": "00148993",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000805"
+        ],
+        "metrics": {
+          "revenue": "1833221998466",
+          "operating_profit": "179667107431",
+          "net_income": "89154393359",
+          "assets": "3914671740431",
+          "liabilities": "2725528777873",
+          "equity": "1189142962558",
+          "operating_cashflow": "198025959414"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000150": {
+      "name": "두산",
+      "corp_code": "00117212",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001375"
+        ],
+        "metrics": {
+          "revenue": "16044376000000",
+          "operating_profit": "1290144000000",
+          "net_income": "740185000000",
+          "assets": "35063381000000",
+          "liabilities": "22256360000000",
+          "equity": "12807021000000",
+          "operating_cashflow": "-603709000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000210": {
+      "name": "DL",
+      "corp_code": "00109693",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003266"
+        ],
+        "metrics": {
+          "revenue": "2950630270160",
+          "operating_profit": "369363656822",
+          "net_income": "164855771591",
+          "assets": "12842584053020",
+          "liabilities": "7587684850064",
+          "equity": "5254899202956",
+          "operating_cashflow": "288526075724"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000240": {
+      "name": "한국앤컴퍼니",
+      "corp_code": "00160047",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000696"
+        ],
+        "metrics": {
+          "revenue": "1044794474299",
+          "operating_profit": "288335347453",
+          "net_income": "266909291489",
+          "assets": "5284839031972",
+          "liabilities": "470068057779",
+          "equity": "4814770974193",
+          "operating_cashflow": "136777666811"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000250": {
+      "name": "삼천당제약",
+      "corp_code": "00128546",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001330"
+        ],
+        "metrics": {
+          "revenue": "204769475441",
+          "operating_profit": "12437231589",
+          "net_income": "11731863446",
+          "assets": "574394766175",
+          "liabilities": "175635381978",
+          "equity": "398759384197",
+          "operating_cashflow": "3623351391"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000270": {
+      "name": "기아",
+      "corp_code": "00106641",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260916000427"
+        ],
+        "metrics": {
+          "revenue": "62538936000000",
+          "operating_profit": "4833650000000",
+          "net_income": "4157949000000",
+          "assets": "106829374000000",
+          "liabilities": "42140138000000",
+          "equity": "64689236000000",
+          "operating_cashflow": "7167135000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000300": {
+      "name": "DH오토넥스",
+      "corp_code": "00126089",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001196"
+        ],
+        "metrics": {
+          "operating_profit": "-2036652646",
+          "assets": "50027757036",
+          "liabilities": "20048310286",
+          "equity": "29979446750",
+          "operating_cashflow": "-170062928"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "net_income_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000320": {
+      "name": "노루홀딩스",
+      "corp_code": "00113508",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002880"
+        ],
+        "metrics": {
+          "revenue": "655023841347",
+          "operating_profit": "47066091404",
+          "net_income": "42202203403",
+          "assets": "1393664421779",
+          "liabilities": "547265748791",
+          "equity": "846398672988",
+          "operating_cashflow": "22897710986"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000370": {
+      "name": "한화손해보험",
+      "corp_code": "00135917",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000493"
+        ],
+        "metrics": {
+          "net_income": "329222778000",
+          "assets": "19613529507000",
+          "liabilities": "16526663380000",
+          "equity": "3086866127000",
+          "operating_cashflow": "1065056313000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000390": {
+      "name": "SP삼화",
+      "corp_code": "00129387",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001499"
+        ],
+        "metrics": {
+          "revenue": "321853767655",
+          "operating_profit": "15571797281",
+          "net_income": "12529150256",
+          "assets": "693197260507",
+          "liabilities": "343721543094",
+          "equity": "349475717413",
+          "operating_cashflow": "17490669245"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000400": {
+      "name": "롯데손해보험",
+      "corp_code": "00113562",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260831001456"
+        ],
+        "metrics": {
+          "net_income": "-18454000000",
+          "assets": "13637671000000",
+          "liabilities": "12644125000000",
+          "equity": "993546000000",
+          "operating_cashflow": "132959000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000430": {
+      "name": "대원강업",
+      "corp_code": "00111847",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001532"
+        ],
+        "metrics": {
+          "revenue": "904822889000",
+          "operating_profit": "61762124000",
+          "net_income": "65847504000",
+          "assets": "1541060889000",
+          "liabilities": "750298286000",
+          "equity": "790762603000",
+          "operating_cashflow": "62802550000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000480": {
+      "name": "CR홀딩스",
+      "corp_code": "00148984",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000540"
+        ],
+        "metrics": {
+          "revenue": "602132877000",
+          "operating_profit": "11815044000",
+          "net_income": "8756458000",
+          "assets": "1542761518000",
+          "liabilities": "761034350000",
+          "equity": "781727168000",
+          "operating_cashflow": "9170234000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000490": {
+      "name": "대동",
+      "corp_code": "00109286",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001683"
+        ],
+        "metrics": {
+          "revenue": "1197208147540",
+          "operating_profit": "7908984676",
+          "net_income": "-58008616593",
+          "assets": "2433775198436",
+          "liabilities": "1726938189174",
+          "equity": "706837009262",
+          "operating_cashflow": "-38610174749"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000500": {
+      "name": "가온전선",
+      "corp_code": "00104768",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814000919"
+        ],
+        "metrics": {
+          "revenue": "1632966571000",
+          "operating_profit": "63966384000",
+          "net_income": "42536391000",
+          "assets": "1661211467000",
+          "liabilities": "1130963256000",
+          "equity": "530248211000",
+          "operating_cashflow": "-174294980000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000520": {
+      "name": "삼일제약",
+      "corp_code": "00128032",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001835"
+        ],
+        "metrics": {
+          "revenue": "103149352947",
+          "operating_profit": "-14706526900",
+          "net_income": "-18523981224",
+          "assets": "374731301009",
+          "liabilities": "249180898264",
+          "equity": "125550402745",
+          "operating_cashflow": "-2989792917"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000540": {
+      "name": "흥국화재",
+      "corp_code": "00103176",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260831000486"
+        ],
+        "metrics": {
+          "net_income": "26167000000",
+          "operating_cashflow": "95975000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING",
+          "assets_MISSING",
+          "liabilities_MISSING",
+          "equity_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000640": {
+      "name": "동아제약",
+      "corp_code": "00116824",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003374"
+        ],
+        "metrics": {
+          "revenue": "763392758432",
+          "operating_profit": "58096296247",
+          "net_income": "49401058384",
+          "assets": "2208305193611",
+          "liabilities": "1001110371177",
+          "equity": "1207194822434",
+          "operating_cashflow": "137520114625"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000650": {
+      "name": "천일고속",
+      "corp_code": "00151395",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20261113001193"
+        ],
+        "metrics": {
+          "revenue": "35594656347",
+          "operating_profit": "-4280748774",
+          "net_income": "-4789942516",
+          "assets": "52508236368",
+          "liabilities": "47780437082",
+          "equity": "4727799286",
+          "operating_cashflow": "-1693439114"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000660": {
+      "name": "SK하이닉스",
+      "corp_code": "00164779",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003509"
+        ],
+        "metrics": {
+          "revenue": "131895033000000",
+          "operating_profit": "98152891000000",
+          "net_income": "134268502000000",
+          "assets": "348862214000000",
+          "liabilities": "86168986000000",
+          "equity": "262693228000000",
+          "operating_cashflow": "91742501000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000670": {
+      "name": "영풍",
+      "corp_code": "00141307",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001247"
+        ],
+        "metrics": {
+          "revenue": "2498780693721",
+          "operating_profit": "-21995752320",
+          "net_income": "419237953923",
+          "assets": "6326076398519",
+          "liabilities": "2045843430489",
+          "equity": "4280232968030",
+          "operating_cashflow": "188610129169"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000680": {
+      "name": "LS네트웍스",
+      "corp_code": "00104698",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003314"
+        ],
+        "metrics": {
+          "revenue": "4083941017195",
+          "operating_profit": "106322312138",
+          "net_income": "62268967669",
+          "assets": "15648621772542",
+          "liabilities": "14326098996647",
+          "equity": "1322522775895",
+          "operating_cashflow": "517374296061"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000700": {
+      "name": "유수홀딩스",
+      "corp_code": "00163691",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003193"
+        ],
+        "metrics": {
+          "revenue": "228115395176",
+          "operating_profit": "22761908287",
+          "net_income": "24065192394",
+          "assets": "509050790342",
+          "liabilities": "84645361499",
+          "equity": "424405428843",
+          "operating_cashflow": "19607261627"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000720": {
+      "name": "현대건설",
+      "corp_code": "00164478",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003360"
+        ],
+        "metrics": {
+          "revenue": "13123568000000",
+          "operating_profit": "442716000000",
+          "net_income": "363741000000",
+          "assets": "28629147000000",
+          "liabilities": "17411335000000",
+          "equity": "11217812000000",
+          "operating_cashflow": "-1677087000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000810": {
+      "name": "삼성화재",
+      "corp_code": "00139214",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003992"
+        ],
+        "metrics": {
+          "net_income": "1373953295615",
+          "assets": "115515640725192",
+          "liabilities": "79304501127337",
+          "equity": "36211139597855",
+          "operating_cashflow": "2482256829984"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000860": {
+      "name": "강남제비스코",
+      "corp_code": "00100939",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004095"
+        ],
+        "metrics": {
+          "revenue": "325454805395",
+          "operating_profit": "13230638172",
+          "net_income": "5415887579",
+          "assets": "1027304679358",
+          "liabilities": "313662196609",
+          "equity": "713642482749",
+          "operating_cashflow": "20905049690"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000880": {
+      "name": "한화",
+      "corp_code": "00160588",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000446"
+        ],
+        "metrics": {
+          "revenue": "63690339000000",
+          "operating_profit": "3960156000000",
+          "net_income": "2817989000000",
+          "assets": "282346559000000",
+          "liabilities": "232937057000000",
+          "equity": "49409502000000",
+          "operating_cashflow": "846579000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000970": {
+      "name": "한국주철관",
+      "corp_code": "00159573",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814000843"
+        ],
+        "metrics": {
+          "revenue": "203932049728",
+          "operating_profit": "9748770596",
+          "net_income": "8732744978",
+          "assets": "441081020134",
+          "liabilities": "75651323071",
+          "equity": "365429697063",
+          "operating_cashflow": "-4419689549"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    },
+    "000990": {
+      "name": "DB하이텍",
+      "corp_code": "00160843",
+      "attempted_on": "2026-11-15",
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001333"
+        ],
+        "metrics": {
+          "revenue": "1177407878298",
+          "operating_profit": "262160534221",
+          "net_income": "224952491212",
+          "assets": "3161345481217",
+          "liabilities": "598764638575",
+          "equity": "2562580842642",
+          "operating_cashflow": "272012438626"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:28:14.778548+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "issues": []
+    }
+  },
+  "updated_at_utc": "2026-11-15T12:28:14.778548+00:00"
+}
