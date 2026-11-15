@@ -1,0 +1,326 @@
+{
+  "generated_at_utc": "2026-11-15T10:10:56.711805+00:00",
+  "trading_date": "20261112",
+  "search_receipt_dates": [
+    "20240906",
+    "20261115"
+  ],
+  "candidate_count": 5,
+  "history_audited_count": 5,
+  "amendment_detected_count": 0,
+  "financial_verified_count": 0,
+  "final_ab_grade_count": 0,
+  "note": "Searches all returned periodic filings including corrections; financial value differences and completeness outside date window remain unverified. No buy signals.",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "corp_code": "00140964",
+      "status": "HISTORY_AUDITED_NOT_FINANCIALLY_VERIFIED",
+      "history_search_complete": true,
+      "amendment_detected": false,
+      "amendment_financial_change_verified": false,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260814003190"
+          ],
+          "latest_disclosed_receipt": "20260814003190",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260814003190",
+              "receipt_date": "20260814",
+              "report_name": "반기보고서 (2026.06)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260515002166"
+          ],
+          "latest_disclosed_receipt": "20260515002166",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260515002166",
+              "receipt_date": "20260515",
+              "report_name": "분기보고서 (2026.03)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        }
+      ],
+      "issues": [
+        "ORIGINAL_VS_AMENDED_FINANCIAL_VALUES_NOT_COMPARED",
+        "GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "corp_code": "00158325",
+      "status": "HISTORY_AUDITED_NOT_FINANCIALLY_VERIFIED",
+      "history_search_complete": true,
+      "amendment_detected": false,
+      "amendment_financial_change_verified": false,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20261113001008"
+          ],
+          "latest_disclosed_receipt": "20261113001008",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20261113001008",
+              "receipt_date": "20261113",
+              "report_name": "분기보고서 (2026.09)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260813000967"
+          ],
+          "latest_disclosed_receipt": "20260813000967",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260813000967",
+              "receipt_date": "20260813",
+              "report_name": "[첨부추가]반기보고서 (2026.06)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        }
+      ],
+      "issues": [
+        "ORIGINAL_VS_AMENDED_FINANCIAL_VALUES_NOT_COMPARED",
+        "GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "corp_code": "00298270",
+      "status": "HISTORY_AUDITED_NOT_FINANCIALLY_VERIFIED",
+      "history_search_complete": true,
+      "amendment_detected": false,
+      "amendment_financial_change_verified": false,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20261113000391"
+          ],
+          "latest_disclosed_receipt": "20261113000391",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20261113000391",
+              "receipt_date": "20261113",
+              "report_name": "분기보고서 (2026.09)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260813000644"
+          ],
+          "latest_disclosed_receipt": "20260813000644",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260813000644",
+              "receipt_date": "20260813",
+              "report_name": "반기보고서 (2026.06)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        }
+      ],
+      "issues": [
+        "ORIGINAL_VS_AMENDED_FINANCIAL_VALUES_NOT_COMPARED",
+        "GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "corp_code": "00413046",
+      "status": "HISTORY_AUDITED_NOT_FINANCIALLY_VERIFIED",
+      "history_search_complete": true,
+      "amendment_detected": false,
+      "amendment_financial_change_verified": false,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260814003751"
+          ],
+          "latest_disclosed_receipt": "20260814003751",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260814003751",
+              "receipt_date": "20260814",
+              "report_name": "반기보고서 (2026.06)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260515002932"
+          ],
+          "latest_disclosed_receipt": "20260515002932",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260515002932",
+              "receipt_date": "20260515",
+              "report_name": "분기보고서 (2026.03)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        }
+      ],
+      "issues": [
+        "ORIGINAL_VS_AMENDED_FINANCIAL_VALUES_NOT_COMPARED",
+        "GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "corp_code": "00398808",
+      "status": "HISTORY_AUDITED_NOT_FINANCIALLY_VERIFIED",
+      "history_search_complete": true,
+      "amendment_detected": false,
+      "amendment_financial_change_verified": false,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260814001759"
+          ],
+          "latest_disclosed_receipt": "20260814001759",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260814001759",
+              "receipt_date": "20260814",
+              "report_name": "반기보고서 (2026.06)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "collected_receipts": [
+            "20260515000840"
+          ],
+          "latest_disclosed_receipt": "20260515000840",
+          "latest_receipt_matches": true,
+          "amendment_count": 0,
+          "history": [
+            {
+              "receipt_no": "20260515000840",
+              "receipt_date": "20260515",
+              "report_name": "분기보고서 (2026.03)",
+              "remark": "",
+              "amended": false,
+              "withdrawn": false
+            }
+          ],
+          "status": "MATCHED"
+        }
+      ],
+      "issues": [
+        "ORIGINAL_VS_AMENDED_FINANCIAL_VALUES_NOT_COMPARED",
+        "GRADE_MODEL_NOT_VALIDATED"
+      ]
+    }
+  ]
+}
