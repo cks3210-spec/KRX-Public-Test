@@ -1,0 +1,90 @@
+{
+  "trading_date": "20261112",
+  "generated_at_utc": "2026-11-15T07:55:44.643934+00:00",
+  "source": [
+    "data/daily_financial_bridge.json",
+    "data/all_candidates_318.csv"
+  ],
+  "financial_source_date": "UNVERIFIED_FROM_INPUT",
+  "counts": {
+    "ELIGIBLE_FOR_GRADE_REVIEW": 3,
+    "SPECIAL_REVIEW_REQUIRED": 2,
+    "MISSING_RESEARCH_RECORD": 0
+  },
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "review_status": "SPECIAL_REVIEW_REQUIRED",
+      "model_gate": "WITHHELD",
+      "research_review_class": "NOT_READY",
+      "previous_final_grade": "WITHHELD",
+      "reasons": [
+        "FINANCIAL_SECTOR_SEPARATE_MODEL_REQUIRED",
+        "PER_PBR_ESTIMATES_DISAGREE_GT_40PCT",
+        "FINAL_GRADE_NOT_VERIFIED"
+      ],
+      "grade": null,
+      "fair_price": null,
+      "buy_signal": null
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "review_status": "SPECIAL_REVIEW_REQUIRED",
+      "model_gate": "WITHHELD",
+      "research_review_class": "NOT_READY",
+      "previous_final_grade": "WITHHELD",
+      "reasons": [
+        "PER_PBR_ESTIMATES_DISAGREE_GT_40PCT",
+        "FINAL_GRADE_NOT_VERIFIED"
+      ],
+      "grade": null,
+      "fair_price": null,
+      "buy_signal": null
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "model_gate": "REVIEW_ONLY",
+      "research_review_class": "NO_SCREENING_RISK_FLAG",
+      "previous_final_grade": "WITHHELD",
+      "reasons": [
+        "FINAL_GRADE_NOT_VERIFIED"
+      ],
+      "grade": null,
+      "fair_price": null,
+      "buy_signal": null
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "model_gate": "REVIEW_ONLY",
+      "research_review_class": "NO_SCREENING_RISK_FLAG",
+      "previous_final_grade": "WITHHELD",
+      "reasons": [
+        "FINAL_GRADE_NOT_VERIFIED"
+      ],
+      "grade": null,
+      "fair_price": null,
+      "buy_signal": null
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "model_gate": "REVIEW_ONLY",
+      "research_review_class": "NO_SCREENING_RISK_FLAG",
+      "previous_final_grade": "WITHHELD",
+      "reasons": [
+        "FINAL_GRADE_NOT_VERIFIED"
+      ],
+      "grade": null,
+      "fair_price": null,
+      "buy_signal": null
+    }
+  ],
+  "note": "Eligibility is not an investment grade. Stale/uncorroborated growth figures must not be treated as validated. No fair price calculated."
+}
