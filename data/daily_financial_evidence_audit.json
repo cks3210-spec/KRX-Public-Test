@@ -1,0 +1,147 @@
+{
+  "trading_date": "20261112",
+  "generated_at_utc": "2026-11-15T08:11:17.811782+00:00",
+  "input": [
+    "data/daily_grade_gate.json",
+    "data/all_candidates_318.csv"
+  ],
+  "research_csv_columns": [
+    "buy_signal",
+    "code",
+    "debt_ratio_pct",
+    "fair_price",
+    "final_grade",
+    "market_peer_count_after_trim",
+    "market_peer_median_pbr",
+    "market_peer_median_per",
+    "model_gate",
+    "name",
+    "official_close",
+    "official_marketcap",
+    "official_pbr",
+    "official_per",
+    "operating_cashflow",
+    "operating_profit_growth_pct",
+    "per_pbr_spread_pct",
+    "research_review_class",
+    "revenue_growth_pct",
+    "review_notes",
+    "risk_flag_count",
+    "sector"
+  ],
+  "required_provenance_columns": [
+    "dart_corp_code",
+    "financial_period",
+    "financial_statement_type",
+    "disclosure_receipt_no",
+    "financial_source_url",
+    "financial_fetched_at_utc"
+  ],
+  "candidate_count": 5,
+  "candidates_with_complete_provenance": 0,
+  "officially_verified_candidates": 0,
+  "status": "OFFICIAL_SOURCE_VERIFICATION_REQUIRED",
+  "note": "This is a diagnostic only. CSV metadata cannot authenticate filings. No A/B grade or buy price is authorized.",
+  "findings": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "grade_review_status": "SPECIAL_REVIEW_REQUIRED",
+      "research_record_present": true,
+      "missing_provenance_fields": [
+        "dart_corp_code",
+        "financial_period",
+        "financial_statement_type",
+        "disclosure_receipt_no",
+        "financial_source_url",
+        "financial_fetched_at_utc"
+      ],
+      "missing_financial_measures": [],
+      "source_authenticated": false,
+      "period_and_cumulative_basis_reconciled": false,
+      "financial_evidence_verified": false,
+      "final_grade_authorized": false,
+      "next_action": "FETCH_AND_RECONCILE_OFFICIAL_DART_FILINGS"
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "grade_review_status": "SPECIAL_REVIEW_REQUIRED",
+      "research_record_present": true,
+      "missing_provenance_fields": [
+        "dart_corp_code",
+        "financial_period",
+        "financial_statement_type",
+        "disclosure_receipt_no",
+        "financial_source_url",
+        "financial_fetched_at_utc"
+      ],
+      "missing_financial_measures": [],
+      "source_authenticated": false,
+      "period_and_cumulative_basis_reconciled": false,
+      "financial_evidence_verified": false,
+      "final_grade_authorized": false,
+      "next_action": "FETCH_AND_RECONCILE_OFFICIAL_DART_FILINGS"
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "grade_review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "research_record_present": true,
+      "missing_provenance_fields": [
+        "dart_corp_code",
+        "financial_period",
+        "financial_statement_type",
+        "disclosure_receipt_no",
+        "financial_source_url",
+        "financial_fetched_at_utc"
+      ],
+      "missing_financial_measures": [],
+      "source_authenticated": false,
+      "period_and_cumulative_basis_reconciled": false,
+      "financial_evidence_verified": false,
+      "final_grade_authorized": false,
+      "next_action": "FETCH_AND_RECONCILE_OFFICIAL_DART_FILINGS"
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "grade_review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "research_record_present": true,
+      "missing_provenance_fields": [
+        "dart_corp_code",
+        "financial_period",
+        "financial_statement_type",
+        "disclosure_receipt_no",
+        "financial_source_url",
+        "financial_fetched_at_utc"
+      ],
+      "missing_financial_measures": [],
+      "source_authenticated": false,
+      "period_and_cumulative_basis_reconciled": false,
+      "financial_evidence_verified": false,
+      "final_grade_authorized": false,
+      "next_action": "FETCH_AND_RECONCILE_OFFICIAL_DART_FILINGS"
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "grade_review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "research_record_present": true,
+      "missing_provenance_fields": [
+        "dart_corp_code",
+        "financial_period",
+        "financial_statement_type",
+        "disclosure_receipt_no",
+        "financial_source_url",
+        "financial_fetched_at_utc"
+      ],
+      "missing_financial_measures": [],
+      "source_authenticated": false,
+      "period_and_cumulative_basis_reconciled": false,
+      "financial_evidence_verified": false,
+      "final_grade_authorized": false,
+      "next_action": "FETCH_AND_RECONCILE_OFFICIAL_DART_FILINGS"
+    }
+  ]
+}
