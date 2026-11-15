@@ -1,0 +1,117 @@
+{
+  "trading_date": "20261112",
+  "financial_verification": "NOT_VERIFIED",
+  "classification": "VALUATION_DIAGNOSTIC_ONLY_NOT_BUY_ADVICE",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "review_status": "SPECIAL_REVIEW_REQUIRED",
+      "reference_close_from_research": 173800.0,
+      "peer_median_per": 7.45,
+      "peer_median_pbr": 0.49,
+      "per_implied_value": 235849,
+      "pbr_implied_value": 127107,
+      "valuation_spread_pct": 46.11,
+      "indicative_lower_value": 127107,
+      "indicative_upper_value": 235849,
+      "valuation_is_investment_target": false,
+      "grade": null,
+      "fair_buy_price": null,
+      "buy_signal": null,
+      "blockers": [
+        "RESEARCH_REVIEW_REQUIRED",
+        "FINANCIAL_SOURCE_NOT_VERIFIED",
+        "PER_PBR_ESTIMATES_DISAGREE_GT_40PCT",
+        "FINAL_GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "review_status": "SPECIAL_REVIEW_REQUIRED",
+      "reference_close_from_research": 17740.0,
+      "peer_median_per": 13.26,
+      "peer_median_pbr": 1.26,
+      "per_implied_value": 17463,
+      "pbr_implied_value": 9979,
+      "valuation_spread_pct": 42.86,
+      "indicative_lower_value": 9979,
+      "indicative_upper_value": 17463,
+      "valuation_is_investment_target": false,
+      "grade": null,
+      "fair_buy_price": null,
+      "buy_signal": null,
+      "blockers": [
+        "RESEARCH_REVIEW_REQUIRED",
+        "FINANCIAL_SOURCE_NOT_VERIFIED",
+        "PER_PBR_ESTIMATES_DISAGREE_GT_40PCT",
+        "FINAL_GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "reference_close_from_research": 111900.0,
+      "peer_median_per": 13.26,
+      "peer_median_pbr": 1.26,
+      "per_implied_value": 75781,
+      "pbr_implied_value": 52414,
+      "valuation_spread_pct": 30.83,
+      "indicative_lower_value": 52414,
+      "indicative_upper_value": 75781,
+      "valuation_is_investment_target": false,
+      "grade": null,
+      "fair_buy_price": null,
+      "buy_signal": null,
+      "blockers": [
+        "FINANCIAL_SOURCE_NOT_VERIFIED",
+        "FINAL_GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "reference_close_from_research": 214000.0,
+      "peer_median_per": 14.48,
+      "peer_median_pbr": 1.06,
+      "per_implied_value": 64422,
+      "pbr_implied_value": 79593,
+      "valuation_spread_pct": 19.06,
+      "indicative_lower_value": 64422,
+      "indicative_upper_value": 79593,
+      "valuation_is_investment_target": false,
+      "grade": null,
+      "fair_buy_price": null,
+      "buy_signal": null,
+      "blockers": [
+        "FINANCIAL_SOURCE_NOT_VERIFIED",
+        "FINAL_GRADE_MODEL_NOT_VALIDATED"
+      ]
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "review_status": "ELIGIBLE_FOR_GRADE_REVIEW",
+      "reference_close_from_research": 9510.0,
+      "peer_median_per": 12.04,
+      "peer_median_pbr": 1.355,
+      "per_implied_value": 9646,
+      "pbr_implied_value": 7199,
+      "valuation_spread_pct": 25.37,
+      "indicative_lower_value": 7199,
+      "indicative_upper_value": 9646,
+      "valuation_is_investment_target": false,
+      "grade": null,
+      "fair_buy_price": null,
+      "buy_signal": null,
+      "blockers": [
+        "FINANCIAL_SOURCE_NOT_VERIFIED",
+        "FINAL_GRADE_MODEL_NOT_VALIDATED"
+      ]
+    }
+  ],
+  "note": "Peer-multiple estimates use historical research reference close, not live prices. They are diagnostics only. Never issue A/B grades or buy prices until financial lineage and model validated."
+}
