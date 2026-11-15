@@ -1,0 +1,76 @@
+{
+  "generated_at_utc": "2026-11-15T10:02:32.904658+00:00",
+  "trading_date": "20261112",
+  "candidate_count": 5,
+  "evidence_consistency_passed_count": 5,
+  "financial_verified_count": 0,
+  "final_ab_grade_count": 0,
+  "note": "Local consistency gate only. Complete amendment lineage, accounting comparability and grade model validation remain pending.",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "evidence_consistency_passed": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "FINANCIAL_GRADE_MODEL_NOT_VALIDATED",
+        "FULL_AMENDMENT_HISTORY_NOT_VERIFIED"
+      ],
+      "latest_receipt": "20260814003190"
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "evidence_consistency_passed": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "FINANCIAL_GRADE_MODEL_NOT_VALIDATED",
+        "FULL_AMENDMENT_HISTORY_NOT_VERIFIED"
+      ],
+      "latest_receipt": "20261113001008"
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "evidence_consistency_passed": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "FINANCIAL_GRADE_MODEL_NOT_VALIDATED",
+        "FULL_AMENDMENT_HISTORY_NOT_VERIFIED"
+      ],
+      "latest_receipt": "20261113000391"
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "evidence_consistency_passed": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "FINANCIAL_GRADE_MODEL_NOT_VALIDATED",
+        "FULL_AMENDMENT_HISTORY_NOT_VERIFIED"
+      ],
+      "latest_receipt": "20260814003751"
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "evidence_consistency_passed": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "issues": [
+        "FINANCIAL_GRADE_MODEL_NOT_VALIDATED",
+        "FULL_AMENDMENT_HISTORY_NOT_VERIFIED"
+      ],
+      "latest_receipt": "20260814001759"
+    }
+  ]
+}
