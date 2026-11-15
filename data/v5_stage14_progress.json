@@ -1,6 +1,6 @@
 {
   "trading_date": "20261112",
-  "generated_at_utc": "2026-11-15T21:40:50.512632+00:00",
+  "generated_at_utc": "2026-11-15T22:46:50.822192+00:00",
   "total_market_cap_universe": 1283,
   "preferred_excluded_heuristic": 28,
   "eligible_candidates": 1255,
@@ -29,21 +29,22 @@
     "0162D0",
     "0220W0"
   ],
-  "fetched_cached": 295,
-  "remaining_without_filing": 960,
-  "coverage_percent": 23.51,
-  "new_fetched_this_run": 50,
-  "selected_batch_size": 50,
+  "fetched_cached": 659,
+  "remaining_without_filing": 596,
+  "coverage_percent": 52.51,
+  "new_fetched_this_run": 69,
+  "selected_batch_size": 70,
   "retry_wait_count": 0,
   "mapping_refresh_status": "REFRESHED",
   "collection_status_counts": {
-    "FETCHED_PARTIAL_NOT_VERIFIED": 295,
+    "FETCHED_PARTIAL_NOT_VERIFIED": 659,
     "EXCLUDED_PREFERRED": 28,
     "MAPPING_MISSING": 21,
-    "UNFETCHED": 939
+    "RETRY_REQUIRED": 1,
+    "UNFETCHED": 574
   },
   "error_counts": {},
-  "valuation_pbr_proxy_count": 293,
+  "valuation_pbr_proxy_count": 655,
   "valuation_annual_per_roe_proxy_count": 0,
   "verified_ab_grade_count": 0,
   "note": "Raw financial data and valuation proxies only; not official ratios or final grades."

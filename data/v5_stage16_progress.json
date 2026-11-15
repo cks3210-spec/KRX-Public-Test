@@ -1,0 +1,48 @@
+{
+  "trading_date": "20261112",
+  "generated_at_utc": "2026-11-15T23:08:32.578892+00:00",
+  "phase": "COMPLETE",
+  "eligible_count": 1255,
+  "basic_cached": 659,
+  "basic_missing": 596,
+  "basic_coverage_pct": 52.51,
+  "dart_mapped": 1234,
+  "annual_years": [
+    2025,
+    2024
+  ],
+  "annual_filing_counts": {
+    "2025": 60,
+    "2024": 60
+  },
+  "annual_pair_count": 60,
+  "annual_comparable_count": 49,
+  "valuation_proxy_counts": {
+    "per": 36,
+    "pbr": 59,
+    "roe": 48
+  },
+  "provisional_grade_counts": {
+    "A": 2,
+    "B+": 10,
+    "B": 16,
+    "WITHHELD": 1227
+  },
+  "verified_ab_count": 0,
+  "elapsed_seconds": 2524.0,
+  "limits": {
+    "max_seconds": 4800,
+    "basic_batches": 3,
+    "basic_batch_size": 70,
+    "annual_limit": 90,
+    "retry_days": 3
+  },
+  "events": [
+    "BASIC_BATCH_1_NEW_70",
+    "BASIC_BATCH_2_NEW_70",
+    "BASIC_BATCH_3_NEW_69",
+    "ANNUAL_ATTEMPTED_90_FETCHED_90",
+    "STAGE15_REPORT_REFRESHED"
+  ],
+  "classification": "UNVERIFIED_RESEARCH_ONLY"
+}
