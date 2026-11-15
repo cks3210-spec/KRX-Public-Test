@@ -1,0 +1,95 @@
+name: V5 Daily Discovery
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 10 * * 1-5'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v5-daily-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check freshness
+        id: freshness
+        shell: bash
+        run: |
+          python - <<'PY'
+          import datetime,json,os,pathlib
+          from zoneinfo import ZoneInfo
+          summary=json.loads(pathlib.Path('data/summary.json').read_text(encoding='utf-8'))
+          day=datetime.datetime.strptime(str(summary['latest_trading_date']),'%Y%m%d').date()
+          now=datetime.datetime.now(ZoneInfo('Asia/Seoul')).date()
+          manual=os.environ['GITHUB_EVENT_NAME']=='workflow_dispatch'
+          run=manual or (now.weekday()<5 and day==now)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f'run={str(run).lower()}\n')
+          print(f'market_day={day} today={now} manual={manual} run={run}')
+          PY
+      - name: Run daily discovery v2
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/build_daily_discovery_v2.py
+      - name: Join existing financial research
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/krx_financial_bridge_retry_20261115.py --financial data/all_candidates_318.csv
+      - name: Apply investment grade eligibility gate
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/build_daily_grade_gate.py
+      - name: Calculate diagnostic valuations
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/build_daily_valuation_v3.py
+      - name: Audit official financial evidence gaps
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/build_daily_financial_evidence_audit.py
+      - name: Fetch official OpenDART financial evidence
+        if: steps.freshness.outputs.run == 'true'
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python scripts/build_official_dart_evidence.py
+      - name: Reconcile DART cumulative financial periods
+        if: steps.freshness.outputs.run == 'true'
+        run: python scripts/build_dart_period_reconciliation.py
+      - name: Upload results
+        if: steps.freshness.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-discovery-reconciled-${{ github.run_number }}
+          path: |
+            data/daily_discovery.json
+            data/daily_financial_bridge.json
+            data/daily_grade_gate.json
+            data/daily_valuation_v3.json
+            data/daily_financial_evidence_audit.json
+            data/daily_dart_evidence.json
+            data/daily_dart_reconciliation.json
+            data/dart_corp_map.json
+            data/daily_discovery_archive/*.json
+          if-no-files-found: error
+      - name: Save daily discovery and official evidence
+        if: steps.freshness.outputs.run == 'true'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/daily_discovery.json data/daily_financial_bridge.json data/daily_grade_gate.json data/daily_valuation_v3.json data/daily_financial_evidence_audit.json data/daily_dart_evidence.json data/daily_dart_reconciliation.json data/dart_corp_map.json data/daily_discovery_archive/
+          if git diff --cached --quiet; then
+            echo 'No changes'
+          else
+            git commit -m 'data: update daily discovery and official DART evidence'
+            git push origin HEAD:main
+          fi
