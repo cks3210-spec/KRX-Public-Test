@@ -1,0 +1,156 @@
+{
+  "generated_at_utc": "2026-11-15T10:17:03.988386+00:00",
+  "trading_date": "20261112",
+  "candidate_count": 5,
+  "review_complete_count": 5,
+  "financial_verified_count": 0,
+  "final_ab_grade_count": 0,
+  "note": "Receipt-specific comparison uses only archived, provenance-tagged financial snapshots. OpenDART period APIs do not retrieve original historical receipts. No final grades or buy signals.",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "status": "AMENDMENT_DIFF_REVIEW_COMPLETE_NOT_FINAL_VERIFIED",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        }
+      ],
+      "issues": [
+        "FULL_ACCOUNTING_AND_GRADE_VALIDATION_PENDING"
+      ]
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "status": "AMENDMENT_DIFF_REVIEW_COMPLETE_NOT_FINAL_VERIFIED",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        }
+      ],
+      "issues": [
+        "FULL_ACCOUNTING_AND_GRADE_VALIDATION_PENDING"
+      ]
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "status": "AMENDMENT_DIFF_REVIEW_COMPLETE_NOT_FINAL_VERIFIED",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        }
+      ],
+      "issues": [
+        "FULL_ACCOUNTING_AND_GRADE_VALIDATION_PENDING"
+      ]
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "status": "AMENDMENT_DIFF_REVIEW_COMPLETE_NOT_FINAL_VERIFIED",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        }
+      ],
+      "issues": [
+        "FULL_ACCOUNTING_AND_GRADE_VALIDATION_PENDING"
+      ]
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "status": "AMENDMENT_DIFF_REVIEW_COMPLETE_NOT_FINAL_VERIFIED",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "buy_signal": null,
+      "periods": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "statement_type": "CFS",
+          "amendment_count": 0,
+          "comparisons": [],
+          "status": "NO_AMENDMENT_IN_SEARCH_WINDOW"
+        }
+      ],
+      "issues": [
+        "FULL_ACCOUNTING_AND_GRADE_VALIDATION_PENDING"
+      ]
+    }
+  ]
+}
