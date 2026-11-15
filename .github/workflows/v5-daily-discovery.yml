@@ -104,3 +104,4 @@ jobs:
           else
             git commit -m 'data: update daily discovery and refreshed DART evidence'
             git push origin HEAD:main
+            fi
