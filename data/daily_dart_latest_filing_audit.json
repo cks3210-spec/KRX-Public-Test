@@ -1,0 +1,214 @@
+{
+  "generated_at_utc": "2026-11-15T08:48:06.514942+00:00",
+  "searched_receipt_dates": [
+    "20250514",
+    "20261115"
+  ],
+  "trading_date": "20261112",
+  "candidate_count": 5,
+  "latest_period_missing_count": 0,
+  "verified_count": 0,
+  "classification": "LATEST_FILING_AND_AMENDMENT_AUDIT_NOT_FINANCIAL_VERIFICATION",
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "corp_code": "00140964",
+      "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
+      "errors": [],
+      "latest_periodic": {
+        "report_code": "11012",
+        "quarter": 2,
+        "fiscal_year": 2026,
+        "report_name": "반기보고서 (2026.06)",
+        "receipt_no": "20260814003190",
+        "receipt_date": "20260814",
+        "remark": "",
+        "amended": false,
+        "withdrawn": false
+      },
+      "collected_period": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "receipts": [
+            "20260814003190"
+          ]
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "receipts": [
+            "20260515002166"
+          ]
+        }
+      ],
+      "newer_filing_available": false,
+      "amendment_review_required": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "latest_receipt_matches_collected": true,
+      "periodic_filing_count": 3
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "corp_code": "00158325",
+      "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
+      "errors": [],
+      "latest_periodic": {
+        "report_code": "11012",
+        "quarter": 2,
+        "fiscal_year": 2026,
+        "report_name": "[첨부추가]반기보고서 (2026.06)",
+        "receipt_no": "20260813000967",
+        "receipt_date": "20260813",
+        "remark": "",
+        "amended": false,
+        "withdrawn": false
+      },
+      "collected_period": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "receipts": [
+            "20261113001008"
+          ]
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "receipts": [
+            "20260813000967"
+          ]
+        }
+      ],
+      "newer_filing_available": false,
+      "amendment_review_required": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "latest_receipt_matches_collected": true,
+      "periodic_filing_count": 3
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "corp_code": "00298270",
+      "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
+      "errors": [],
+      "latest_periodic": {
+        "report_code": "11012",
+        "quarter": 2,
+        "fiscal_year": 2026,
+        "report_name": "반기보고서 (2026.06)",
+        "receipt_no": "20260813000644",
+        "receipt_date": "20260813",
+        "remark": "",
+        "amended": false,
+        "withdrawn": false
+      },
+      "collected_period": [
+        {
+          "year": 2026,
+          "report_code": "11014",
+          "receipts": [
+            "20261113000391"
+          ]
+        },
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "receipts": [
+            "20260813000644"
+          ]
+        }
+      ],
+      "newer_filing_available": false,
+      "amendment_review_required": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "latest_receipt_matches_collected": true,
+      "periodic_filing_count": 3
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "corp_code": "00413046",
+      "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
+      "errors": [],
+      "latest_periodic": {
+        "report_code": "11012",
+        "quarter": 2,
+        "fiscal_year": 2026,
+        "report_name": "반기보고서 (2026.06)",
+        "receipt_no": "20260814003751",
+        "receipt_date": "20260814",
+        "remark": "",
+        "amended": false,
+        "withdrawn": false
+      },
+      "collected_period": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "receipts": [
+            "20260814003751"
+          ]
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "receipts": [
+            "20260515002932"
+          ]
+        }
+      ],
+      "newer_filing_available": false,
+      "amendment_review_required": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "latest_receipt_matches_collected": true,
+      "periodic_filing_count": 3
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "corp_code": "00398808",
+      "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
+      "errors": [],
+      "latest_periodic": {
+        "report_code": "11012",
+        "quarter": 2,
+        "fiscal_year": 2026,
+        "report_name": "반기보고서 (2026.06)",
+        "receipt_no": "20260814001759",
+        "receipt_date": "20260814",
+        "remark": "",
+        "amended": false,
+        "withdrawn": false
+      },
+      "collected_period": [
+        {
+          "year": 2026,
+          "report_code": "11012",
+          "receipts": [
+            "20260814001759"
+          ]
+        },
+        {
+          "year": 2026,
+          "report_code": "11013",
+          "receipts": [
+            "20260515000840"
+          ]
+        }
+      ],
+      "newer_filing_available": false,
+      "amendment_review_required": true,
+      "financial_verified": false,
+      "grade_authorized": false,
+      "latest_receipt_matches_collected": true,
+      "periodic_filing_count": 3
+    }
+  ]
+}
