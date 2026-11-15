@@ -1,0 +1,71 @@
+{
+  "generated_at_utc": "2026-11-15T09:42:41.260218+00:00",
+  "trading_date": "20261112",
+  "candidate_count": 5,
+  "refreshed_count": 0,
+  "failed_count": 0,
+  "financial_verified_count": 0,
+  "grade_authorized_count": 0,
+  "results": [
+    {
+      "code": "009970",
+      "name": "영원무역홀딩스",
+      "status": "ALREADY_MATCHES_LATEST_RECEIPT",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "errors": [],
+      "year": 2026,
+      "report_code": "11012",
+      "expected_receipt": "20260814003190",
+      "statement_type": "CFS"
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "status": "ALREADY_MATCHES_LATEST_RECEIPT",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "errors": [],
+      "year": 2026,
+      "report_code": "11014",
+      "expected_receipt": "20261113001008",
+      "statement_type": "CFS"
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "status": "ALREADY_MATCHES_LATEST_RECEIPT",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "errors": [],
+      "year": 2026,
+      "report_code": "11014",
+      "expected_receipt": "20261113000391",
+      "statement_type": "CFS"
+    },
+    {
+      "code": "068270",
+      "name": "셀트리온",
+      "status": "ALREADY_MATCHES_LATEST_RECEIPT",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "errors": [],
+      "year": 2026,
+      "report_code": "11012",
+      "expected_receipt": "20260814003751",
+      "statement_type": "CFS"
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "status": "ALREADY_MATCHES_LATEST_RECEIPT",
+      "financial_verified": false,
+      "grade_authorized": false,
+      "errors": [],
+      "year": 2026,
+      "report_code": "11012",
+      "expected_receipt": "20260814001759",
+      "statement_type": "CFS"
+    }
+  ]
+}
