@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-11-15T12:43:09.786127+00:00",
+  "generated_at_utc": "2026-11-15T21:38:17.264152+00:00",
   "trading_date": "20261112",
   "total_universe": 1283,
   "preferred_excluded_count": 28,
   "eligible_common_candidate_count": 1255,
   "corp_code_mapped_count": 1234,
-  "fetched_count": 70,
+  "fetched_count": 175,
   "processed_this_run": 35,
-  "unfetched_count": 1185,
+  "unfetched_count": 1080,
   "classification": "STAGE13_INCREMENTAL_RAW_FINANCIAL_NOT_FINAL_GRADE",
   "notes": [
     "Preferred class name heuristic only; formal common-share confirmation pending.",
@@ -2608,8 +2608,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002763"
+        ],
+        "metrics": {
+          "revenue": "153466162990",
+          "operating_profit": "32339602029",
+          "net_income": "24588775555",
+          "assets": "536130677186",
+          "liabilities": "232427961611",
+          "equity": "303702715575",
+          "operating_cashflow": "-26561485360"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2623,8 +2642,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001003"
+        ],
+        "metrics": {
+          "revenue": "155456782696",
+          "operating_profit": "-2385665312",
+          "net_income": "-2930515371",
+          "assets": "730439296837",
+          "liabilities": "488257526280",
+          "equity": "242181770557",
+          "operating_cashflow": "-36744805921"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2638,8 +2676,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002851"
+        ],
+        "metrics": {
+          "revenue": "41251065038",
+          "operating_profit": "2149206239",
+          "net_income": "3126544753",
+          "assets": "478829087337",
+          "liabilities": "28328379715",
+          "equity": "450500707622",
+          "operating_cashflow": "2026377180"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2653,8 +2710,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515000984"
+        ],
+        "metrics": {
+          "revenue": "19123954775",
+          "operating_profit": "289094074",
+          "net_income": "14016095",
+          "assets": "288496229495",
+          "liabilities": "195111361757",
+          "equity": "93384867738",
+          "operating_cashflow": "-138659321"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2668,8 +2744,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002688"
+        ],
+        "metrics": {
+          "revenue": "432709847439",
+          "operating_profit": "7044996501",
+          "net_income": "20960505721",
+          "assets": "2790882663611",
+          "liabilities": "766082204105",
+          "equity": "2024800459506",
+          "operating_cashflow": "33396935912"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2683,8 +2778,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001613"
+        ],
+        "metrics": {
+          "revenue": "217134500001",
+          "operating_profit": "10039692312",
+          "net_income": "8076404025",
+          "assets": "1064363988688",
+          "liabilities": "221703242337",
+          "equity": "842660746351",
+          "operating_cashflow": "18433556482"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2698,8 +2812,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002513"
+        ],
+        "metrics": {
+          "revenue": "778956182832",
+          "operating_profit": "19842809265",
+          "net_income": "-2265484498",
+          "assets": "4309439099772",
+          "liabilities": "2790076176536",
+          "equity": "1519362923236",
+          "operating_cashflow": "34240995518"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2713,8 +2846,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001713"
+        ],
+        "metrics": {
+          "revenue": "838274592362",
+          "operating_profit": "54210089139",
+          "net_income": "61994156403",
+          "assets": "4859189265833",
+          "liabilities": "2714068069486",
+          "equity": "2145121196347",
+          "operating_cashflow": "23892874304"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2728,8 +2880,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001302"
+        ],
+        "metrics": {
+          "revenue": "1626399550089",
+          "operating_profit": "88128115563",
+          "net_income": "216956898424",
+          "assets": "17623019753777",
+          "liabilities": "9523275763995",
+          "equity": "8099743989782",
+          "operating_cashflow": "85181963718"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2743,8 +2914,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001203"
+        ],
+        "metrics": {
+          "revenue": "135428158176",
+          "operating_profit": "753230374",
+          "net_income": "-8582629563",
+          "assets": "798751998307",
+          "liabilities": "530847381288",
+          "equity": "267904617019",
+          "operating_cashflow": "154830185"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2758,8 +2948,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001933"
+        ],
+        "metrics": {
+          "revenue": "7165374309",
+          "operating_profit": "160267067",
+          "net_income": "13589807",
+          "assets": "49448836286",
+          "liabilities": "24877677697",
+          "equity": "24571158589",
+          "operating_cashflow": "55027573"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2773,8 +2982,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515003096"
+        ],
+        "metrics": {
+          "revenue": "68952460878",
+          "operating_profit": "190690457",
+          "net_income": "4562353821",
+          "assets": "733364847912",
+          "liabilities": "299033349185",
+          "equity": "434331498727",
+          "operating_cashflow": "4466368325"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2788,8 +3016,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260518000378"
+        ],
+        "metrics": {
+          "revenue": "150396246941",
+          "operating_profit": "3559732758",
+          "net_income": "4484625748",
+          "assets": "878260088750",
+          "liabilities": "403140677176",
+          "equity": "475119411574",
+          "operating_cashflow": "447084019"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2803,8 +3050,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002376"
+        ],
+        "metrics": {
+          "revenue": "174653330631",
+          "operating_profit": "-3980487942",
+          "net_income": "-1536139944",
+          "assets": "579759407036",
+          "liabilities": "330564779430",
+          "equity": "249194627606",
+          "operating_cashflow": "-5787079363"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2818,8 +3084,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001277"
+        ],
+        "metrics": {
+          "revenue": "1222742980327",
+          "operating_profit": "137785701905",
+          "net_income": "132463342842",
+          "assets": "8863211414485",
+          "liabilities": "1600342445007",
+          "equity": "7262868969478",
+          "operating_cashflow": "161744992722"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2848,8 +3133,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000855"
+        ],
+        "metrics": {
+          "revenue": "109421102618",
+          "operating_profit": "4512499011",
+          "net_income": "19835092680",
+          "assets": "805014915501",
+          "liabilities": "129506340451",
+          "equity": "675508575050",
+          "operating_cashflow": "-4161998435"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2863,8 +3167,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002312"
+        ],
+        "metrics": {
+          "revenue": "117304934500",
+          "operating_profit": "9829258675",
+          "net_income": "10999399742",
+          "assets": "504859489564",
+          "liabilities": "87157642526",
+          "equity": "417701847038",
+          "operating_cashflow": "15135181992"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2878,8 +3201,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000938"
+        ],
+        "metrics": {
+          "revenue": "289678142744",
+          "operating_profit": "35042321451",
+          "net_income": "30271449229",
+          "assets": "914007974835",
+          "liabilities": "468856068379",
+          "equity": "445151906456",
+          "operating_cashflow": "-34674833727"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2893,8 +3235,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515003130"
+        ],
+        "metrics": {
+          "revenue": "91271286857",
+          "operating_profit": "16009001378",
+          "net_income": "14048814668",
+          "assets": "221258144137",
+          "liabilities": "111047498315",
+          "equity": "110210645822",
+          "operating_cashflow": "7160439592"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2908,8 +3269,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000373"
+        ],
+        "metrics": {
+          "revenue": "453403404607",
+          "operating_profit": "12117588063",
+          "net_income": "10794714981",
+          "assets": "1515969047267",
+          "liabilities": "1283127341752",
+          "equity": "232841705515",
+          "operating_cashflow": "147072784949"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2923,8 +3303,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001216"
+        ],
+        "metrics": {
+          "revenue": "47776062641",
+          "operating_profit": "1104335721",
+          "net_income": "1161563611",
+          "assets": "469599164099",
+          "liabilities": "135820591125",
+          "equity": "333778572974",
+          "operating_cashflow": "-1489979287"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2938,8 +3337,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515000310"
+        ],
+        "metrics": {
+          "revenue": "40365454215",
+          "operating_profit": "1301381570",
+          "net_income": "415946812",
+          "assets": "249196163005",
+          "liabilities": "121084071789",
+          "equity": "128112091216",
+          "operating_cashflow": "-6755984696"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2953,8 +3371,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001160"
+        ],
+        "metrics": {
+          "revenue": "991921004523",
+          "operating_profit": "26676309176",
+          "net_income": "8241662521",
+          "assets": "6433038742204",
+          "liabilities": "3617130241305",
+          "equity": "2815908500899",
+          "operating_cashflow": "49833524124"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2968,8 +3405,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002059"
+        ],
+        "metrics": {
+          "revenue": "631208591918",
+          "operating_profit": "22012196302",
+          "net_income": "10892102035",
+          "assets": "3094824209164",
+          "liabilities": "2402273265468",
+          "equity": "692550943696",
+          "operating_cashflow": "91549927863"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -2983,8 +3439,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001452"
+        ],
+        "metrics": {
+          "revenue": "492706725823",
+          "operating_profit": "47780885256",
+          "net_income": "53257616636",
+          "assets": "3407710417636",
+          "liabilities": "1554646352971",
+          "equity": "1853064064665",
+          "operating_cashflow": "34950408993"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3013,8 +3488,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002235"
+        ],
+        "metrics": {
+          "revenue": "44320492793",
+          "operating_profit": "10577672029",
+          "net_income": "9431494632",
+          "assets": "707818439908",
+          "liabilities": "266411534890",
+          "equity": "441406905018",
+          "operating_cashflow": "17839264848"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3028,8 +3522,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001484"
+        ],
+        "metrics": {
+          "revenue": "16709333845",
+          "operating_profit": "-495763307",
+          "net_income": "1577290782",
+          "assets": "402926705604",
+          "liabilities": "24001438628",
+          "equity": "378925266976",
+          "operating_cashflow": "-731199089"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3043,8 +3556,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000626"
+        ],
+        "metrics": {
+          "revenue": "105701281780",
+          "operating_profit": "18872013350",
+          "net_income": "14964022867",
+          "assets": "430360562290",
+          "liabilities": "219583157426",
+          "equity": "210777404864",
+          "operating_cashflow": "-405526742"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3058,8 +3590,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000651"
+        ],
+        "metrics": {
+          "revenue": "140508730222",
+          "operating_profit": "2993856937",
+          "net_income": "4048363778",
+          "assets": "1116471979423",
+          "liabilities": "167708840222",
+          "equity": "948763139201",
+          "operating_cashflow": "36238746933"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3073,8 +3624,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000603"
+        ],
+        "metrics": {
+          "revenue": "158057594682",
+          "operating_profit": "4381074409",
+          "net_income": "1919696906",
+          "assets": "595986846866",
+          "liabilities": "325011736196",
+          "equity": "270975110670",
+          "operating_cashflow": "9209998373"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3088,8 +3658,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000571"
+        ],
+        "metrics": {
+          "revenue": "714406081624",
+          "operating_profit": "177133059786",
+          "net_income": "144515643100",
+          "assets": "2387057414000",
+          "liabilities": "981546642823",
+          "equity": "1405510771177",
+          "operating_cashflow": "211340130698"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3103,8 +3692,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002322"
+        ],
+        "metrics": {
+          "revenue": "533314204401",
+          "operating_profit": "-11400670426",
+          "net_income": "28387679289",
+          "assets": "4580226295900",
+          "liabilities": "545320106814",
+          "equity": "4034906189086",
+          "operating_cashflow": "-42226239076"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3118,8 +3726,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000171"
+        ],
+        "metrics": {
+          "revenue": "40022518012",
+          "operating_profit": "1104468196",
+          "net_income": "552950499",
+          "assets": "477162016374",
+          "liabilities": "202423210682",
+          "equity": "274738805692",
+          "operating_cashflow": "4770135786"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3133,8 +3760,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002924"
+        ],
+        "metrics": {
+          "revenue": "395615058113",
+          "operating_profit": "12396113205",
+          "net_income": "6075503922",
+          "assets": "3678233465137",
+          "liabilities": "1376736770978",
+          "equity": "2301496694159",
+          "operating_cashflow": "34121851193"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3148,8 +3794,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260514001214"
+        ],
+        "metrics": {
+          "revenue": "52227148831",
+          "operating_profit": "8574656132",
+          "net_income": "7528420429",
+          "assets": "214630628514",
+          "liabilities": "103466572295",
+          "equity": "111164056219",
+          "operating_cashflow": "-1584299888"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3163,8 +3828,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000460"
+        ],
+        "metrics": {
+          "revenue": "3554066000000",
+          "operating_profit": "258252000000",
+          "net_income": "141147000000",
+          "assets": "17924477000000",
+          "liabilities": "11217212000000",
+          "equity": "6707265000000",
+          "operating_cashflow": "264930000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3178,8 +3862,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515003066"
+        ],
+        "metrics": {
+          "net_income": "11171891756",
+          "assets": "951327033366",
+          "liabilities": "420439617085",
+          "equity": "530887416281",
+          "operating_cashflow": "6616535230"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3193,8 +3897,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000137"
+        ],
+        "metrics": {
+          "revenue": "1723369309000",
+          "net_income": "67977885000",
+          "assets": "22255000009000",
+          "liabilities": "20331087753000",
+          "equity": "1923912257000",
+          "operating_cashflow": "-166988007000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3208,8 +3932,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000116"
+        ],
+        "metrics": {
+          "revenue": "484033000000",
+          "operating_profit": "49618000000",
+          "net_income": "35470000000",
+          "assets": "1848391000000",
+          "liabilities": "1335963000000",
+          "equity": "512428000000",
+          "operating_cashflow": "106211000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3223,8 +3966,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001941"
+        ],
+        "metrics": {
+          "revenue": "6658062171688",
+          "operating_profit": "517384321919",
+          "net_income": "33677401714",
+          "assets": "53310246316345",
+          "liabilities": "42035070822758",
+          "equity": "11275175493587",
+          "operating_cashflow": "2088798854267"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3238,8 +4000,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001353"
+        ],
+        "metrics": {
+          "revenue": "63759492342",
+          "operating_profit": "-1754877866",
+          "net_income": "-2281994977",
+          "assets": "233815092234",
+          "liabilities": "145007953942",
+          "equity": "88807138292",
+          "operating_cashflow": "-11523367090"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3253,8 +4034,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000990"
+        ],
+        "metrics": {
+          "revenue": "1659350000000",
+          "net_income": "19127000000",
+          "assets": "19050551000000",
+          "liabilities": "17011541000000",
+          "equity": "2039010000000",
+          "operating_cashflow": "216172000000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3268,8 +4069,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001304"
+        ],
+        "metrics": {
+          "revenue": "2401389120000",
+          "net_income": "145487475000",
+          "assets": "38634299251000",
+          "liabilities": "34596174584000",
+          "equity": "4038124667000",
+          "operating_cashflow": "-1047473481000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3313,8 +4134,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002383"
+        ],
+        "metrics": {
+          "revenue": "1800623000000",
+          "operating_profit": "413830000000",
+          "net_income": "378965000000",
+          "assets": "35044557000000",
+          "liabilities": "3441768000000",
+          "equity": "31602789000000",
+          "operating_cashflow": "429718000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3343,8 +4183,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260512000195"
+        ],
+        "metrics": {
+          "revenue": "179924652203",
+          "operating_profit": "21287373544",
+          "net_income": "20245522255",
+          "assets": "1252617607518",
+          "liabilities": "362388133613",
+          "equity": "890229473905",
+          "operating_cashflow": "35286795548"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3373,8 +4232,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000761"
+        ],
+        "metrics": {
+          "revenue": "62492126347",
+          "operating_profit": "-725635551",
+          "net_income": "5351668027",
+          "assets": "252029449465",
+          "liabilities": "70371140265",
+          "equity": "181658309200",
+          "operating_cashflow": "-3098324729"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3388,8 +4266,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000616"
+        ],
+        "metrics": {
+          "revenue": "1141372673339",
+          "operating_profit": "9589390749",
+          "net_income": "27291788513",
+          "assets": "3576914736561",
+          "liabilities": "2065433128474",
+          "equity": "1511481608087",
+          "operating_cashflow": "74385796339"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3403,8 +4300,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001902"
+        ],
+        "metrics": {
+          "revenue": "101100543797",
+          "operating_profit": "13724165859",
+          "net_income": "16942436545",
+          "assets": "563036044079",
+          "liabilities": "71559878440",
+          "equity": "491476165639",
+          "operating_cashflow": "20348500789"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3418,8 +4334,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001405"
+        ],
+        "metrics": {
+          "revenue": "757515005832",
+          "operating_profit": "17699640745",
+          "net_income": "6283039998",
+          "assets": "9520080359594",
+          "liabilities": "4902523341703",
+          "equity": "4617557017891",
+          "operating_cashflow": "-54421888241"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3433,8 +4368,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260529002207"
+        ],
+        "metrics": {
+          "net_income": "214621970101",
+          "assets": "14361076742545",
+          "liabilities": "10563772131785",
+          "equity": "3797304610760",
+          "operating_cashflow": "-186214240432"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3448,8 +4403,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000873"
+        ],
+        "metrics": {
+          "revenue": "48437244989",
+          "operating_profit": "6005864442",
+          "net_income": "5662456350",
+          "assets": "205999495820",
+          "liabilities": "112782748059",
+          "equity": "93216747761",
+          "operating_cashflow": "1768280624"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3463,8 +4437,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000487"
+        ],
+        "metrics": {
+          "revenue": "85035704232",
+          "operating_profit": "12807382624",
+          "net_income": "15018397921",
+          "assets": "840079933092",
+          "liabilities": "100017141272",
+          "equity": "740062791820",
+          "operating_cashflow": "15038053094"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3478,8 +4471,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515002405"
+        ],
+        "metrics": {
+          "revenue": "26522280902",
+          "operating_profit": "-642206123",
+          "net_income": "11048230576",
+          "assets": "842283028006",
+          "liabilities": "127574391537",
+          "equity": "714708636469",
+          "operating_cashflow": "-3919490653"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3493,8 +4505,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001437"
+        ],
+        "metrics": {
+          "revenue": "255354185384",
+          "operating_profit": "20151376751",
+          "net_income": "41438477100",
+          "assets": "1401930303925",
+          "liabilities": "528216024137",
+          "equity": "873714279788",
+          "operating_cashflow": "37040551226"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3508,8 +4539,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002860"
+        ],
+        "metrics": {
+          "revenue": "225174524705",
+          "operating_profit": "522319129",
+          "net_income": "6314728621",
+          "assets": "1121482080509",
+          "liabilities": "181075607974",
+          "equity": "940406472535",
+          "operating_cashflow": "7233442940"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3523,8 +4573,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001981"
+        ],
+        "metrics": {
+          "revenue": "886309738876",
+          "operating_profit": "23774967655",
+          "net_income": "15611884577",
+          "assets": "2163287929380",
+          "liabilities": "1367190930343",
+          "equity": "796096999037",
+          "operating_cashflow": "49135342841"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3553,8 +4622,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001167"
+        ],
+        "metrics": {
+          "revenue": "510654014171",
+          "operating_profit": "32664949261",
+          "net_income": "44691359941",
+          "assets": "2777158964044",
+          "liabilities": "334694381085",
+          "equity": "2442464582959",
+          "operating_cashflow": "50157464281"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3568,8 +4656,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002588"
+        ],
+        "metrics": {
+          "revenue": "5739684986139",
+          "operating_profit": "15689403201",
+          "net_income": "-39319323342",
+          "assets": "35035632442260",
+          "liabilities": "15194964128545",
+          "equity": "19840668313715",
+          "operating_cashflow": "262515120207"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3583,8 +4690,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002060"
+        ],
+        "metrics": {
+          "revenue": "25154905055",
+          "operating_profit": "805650195",
+          "net_income": "823916985",
+          "assets": "153792639125",
+          "liabilities": "39802182076",
+          "equity": "113990457049",
+          "operating_cashflow": "-4867264445"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3598,8 +4724,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002727"
+        ],
+        "metrics": {
+          "revenue": "171246023843",
+          "operating_profit": "4142943174",
+          "net_income": "1527304740",
+          "assets": "443080091949",
+          "liabilities": "236214480270",
+          "equity": "206865611679",
+          "operating_cashflow": "4287386180"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3613,8 +4758,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002221"
+        ],
+        "metrics": {
+          "revenue": "151108556363",
+          "operating_profit": "6130184864",
+          "net_income": "3823763826",
+          "assets": "627767650602",
+          "liabilities": "458165046948",
+          "equity": "169602603654",
+          "operating_cashflow": "-7112072427"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3628,8 +4792,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001253"
+        ],
+        "metrics": {
+          "revenue": "269570790000",
+          "operating_profit": "7939575000",
+          "net_income": "11633652000",
+          "assets": "912114384000",
+          "liabilities": "259753089000",
+          "equity": "652361295000",
+          "operating_cashflow": "12106803000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3643,8 +4826,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001886"
+        ],
+        "metrics": {
+          "revenue": "1847144650245",
+          "operating_profit": "197824793751",
+          "net_income": "145356596559",
+          "assets": "15987187892077",
+          "liabilities": "9193694141691",
+          "equity": "6793493750386",
+          "operating_cashflow": "170740115030"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3658,8 +4860,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260414002254"
+        ],
+        "metrics": {
+          "revenue": "46454406369",
+          "operating_profit": "2521352563",
+          "net_income": "419998128",
+          "assets": "224306161457",
+          "liabilities": "89491288796",
+          "equity": "134814872661",
+          "operating_cashflow": "188275347"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3673,8 +4894,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001435"
+        ],
+        "metrics": {
+          "revenue": "299758732903",
+          "operating_profit": "6884035805",
+          "net_income": "19381802780",
+          "assets": "1536286638759",
+          "liabilities": "309059022371",
+          "equity": "1227227616388",
+          "operating_cashflow": "1216596777"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3688,8 +4928,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000865"
+        ],
+        "metrics": {
+          "revenue": "934029005207",
+          "operating_profit": "67424701255",
+          "net_income": "60676367253",
+          "assets": "4003402133392",
+          "liabilities": "1080464268257",
+          "equity": "2922937865135",
+          "operating_cashflow": "127930004595"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3703,8 +4962,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000584"
+        ],
+        "metrics": {
+          "revenue": "65424274278",
+          "operating_profit": "-3812081965",
+          "net_income": "-4186928017",
+          "assets": "399669068452",
+          "liabilities": "247308483438",
+          "equity": "152360585014",
+          "operating_cashflow": "1315068565"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3718,8 +4996,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000304"
+        ],
+        "metrics": {
+          "revenue": "269204000000",
+          "operating_profit": "26558000000",
+          "net_income": "18091000000",
+          "assets": "1213974000000",
+          "liabilities": "432874000000",
+          "equity": "781100000000",
+          "operating_cashflow": "15757000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3733,8 +5030,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001365"
+        ],
+        "metrics": {
+          "revenue": "525448979145",
+          "operating_profit": "33253606801",
+          "net_income": "36331671991",
+          "assets": "2370033562604",
+          "liabilities": "696248083553",
+          "equity": "1673785479051",
+          "operating_cashflow": "70163100236"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3748,8 +5064,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002652"
+        ],
+        "metrics": {
+          "revenue": "199736409115",
+          "operating_profit": "8386008851",
+          "net_income": "4352615671",
+          "assets": "743011312221",
+          "liabilities": "219434613808",
+          "equity": "523576698413",
+          "operating_cashflow": "12962501351"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T12:44:23.670583+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3763,8 +5098,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000514"
+        ],
+        "metrics": {
+          "revenue": "4085721215692",
+          "operating_profit": "181073408343",
+          "net_income": "164202695561",
+          "assets": "4377502112736",
+          "liabilities": "2347043994781",
+          "equity": "2030458117955",
+          "operating_cashflow": "206708197826"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3778,8 +5132,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260814001094"
+        ],
+        "metrics": {
+          "revenue": "42175352351",
+          "operating_profit": "158488238",
+          "net_income": "3940611556",
+          "assets": "706149375757",
+          "liabilities": "94011910564",
+          "equity": "612137465193",
+          "operating_cashflow": "5222860326"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3793,8 +5166,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000666"
+        ],
+        "metrics": {
+          "revenue": "997114175689",
+          "operating_profit": "43178700266",
+          "net_income": "27875361608",
+          "assets": "1266570662736",
+          "liabilities": "633973003147",
+          "equity": "632597659589",
+          "operating_cashflow": "10701491510"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3808,8 +5200,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001241"
+        ],
+        "metrics": {
+          "revenue": "1963114548675",
+          "operating_profit": "501587377208",
+          "net_income": "452073310962",
+          "assets": "5886590270463",
+          "liabilities": "2557223743560",
+          "equity": "3329366526903",
+          "operating_cashflow": "423040956"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3823,8 +5234,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261014000290"
+        ],
+        "metrics": {
+          "revenue": "511278445299",
+          "operating_profit": "39814498636",
+          "net_income": "31220820658",
+          "assets": "2290617880418",
+          "liabilities": "1418870065540",
+          "equity": "871747814878",
+          "operating_cashflow": "-60147789670"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3838,8 +5268,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002067"
+        ],
+        "metrics": {
+          "revenue": "214885863760",
+          "operating_profit": "4979695512",
+          "net_income": "32091333030",
+          "assets": "738727731943",
+          "liabilities": "109960106568",
+          "equity": "628767625375",
+          "operating_cashflow": "4182453729"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3853,8 +5302,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003208"
+        ],
+        "metrics": {
+          "revenue": "788253389691",
+          "operating_profit": "19727612932",
+          "net_income": "13489866702",
+          "assets": "1340943827256",
+          "liabilities": "738681767885",
+          "equity": "602262059371",
+          "operating_cashflow": "-4903405126"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3868,8 +5336,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001616"
+        ],
+        "metrics": {
+          "revenue": "11839234273755",
+          "operating_profit": "332689173648",
+          "net_income": "70652180782",
+          "assets": "23479542056483",
+          "liabilities": "13961904159232",
+          "equity": "9517637897251",
+          "operating_cashflow": "1015381968933"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3883,8 +5370,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004246"
+        ],
+        "metrics": {
+          "revenue": "389952361267",
+          "operating_profit": "-6058134815",
+          "net_income": "-18533125648",
+          "assets": "1481937231853",
+          "liabilities": "383241599663",
+          "equity": "1098695632190",
+          "operating_cashflow": "-1776157460"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3898,8 +5404,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260930000732"
+        ],
+        "metrics": {
+          "revenue": "260404573756",
+          "operating_profit": "5527073954",
+          "net_income": "-2331477043",
+          "assets": "855684206088",
+          "liabilities": "315135291486",
+          "equity": "540548914602",
+          "operating_cashflow": "-22683093502"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3913,8 +5438,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000527"
+        ],
+        "metrics": {
+          "revenue": "1764054222296",
+          "operating_profit": "120498846094",
+          "net_income": "21908022285",
+          "assets": "3359256327212",
+          "liabilities": "2551329809887",
+          "equity": "807926517325",
+          "operating_cashflow": "120369158827"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3928,8 +5472,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001382"
+        ],
+        "metrics": {
+          "revenue": "498733480851",
+          "operating_profit": "-6367323335",
+          "net_income": "-26456686183",
+          "assets": "873499574010",
+          "liabilities": "436428404306",
+          "equity": "437071169704",
+          "operating_cashflow": "-21831325167"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3943,8 +5506,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814000452"
+        ],
+        "metrics": {
+          "revenue": "754446299948",
+          "operating_profit": "83484592037",
+          "net_income": "67424727784",
+          "assets": "1137322228192",
+          "liabilities": "352454101992",
+          "equity": "784868126200",
+          "operating_cashflow": "53797755591"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3958,8 +5540,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003916"
+        ],
+        "metrics": {
+          "revenue": "1131042460506",
+          "operating_profit": "9686153664",
+          "net_income": "-28273540796",
+          "assets": "4177752335876",
+          "liabilities": "2435352282751",
+          "equity": "1742400053125",
+          "operating_cashflow": "-59361464084"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3973,8 +5574,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002890"
+        ],
+        "metrics": {
+          "revenue": "674960031852",
+          "operating_profit": "125883677544",
+          "net_income": "151870811412",
+          "assets": "2256015485041",
+          "liabilities": "1013653261056",
+          "equity": "1242362223985",
+          "operating_cashflow": "151196513099"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -3988,8 +5608,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000693"
+        ],
+        "metrics": {
+          "revenue": "3115531085402",
+          "operating_profit": "160639845024",
+          "net_income": "94063928990",
+          "assets": "4225980868568",
+          "liabilities": "2594188238951",
+          "equity": "1631792629617",
+          "operating_cashflow": "262107904450"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4003,8 +5642,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003521"
+        ],
+        "metrics": {
+          "revenue": "95154214000000",
+          "operating_profit": "5365574000000",
+          "net_income": "5472888000000",
+          "assets": "394512167000000",
+          "liabilities": "259095722000000",
+          "equity": "135416445000000",
+          "operating_cashflow": "4849653000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4078,8 +5736,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260930000428"
+        ],
+        "metrics": {
+          "revenue": "389641616574",
+          "operating_profit": "13628508315",
+          "net_income": "1337121714",
+          "assets": "1313624170443",
+          "liabilities": "679846226307",
+          "equity": "633777944136",
+          "operating_cashflow": "-31519605749"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4093,8 +5770,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003106"
+        ],
+        "metrics": {
+          "revenue": "351849429276",
+          "operating_profit": "32610285332",
+          "net_income": "26245308668",
+          "assets": "576939972815",
+          "liabilities": "149235949932",
+          "equity": "427704022883",
+          "operating_cashflow": "48731810040"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4108,8 +5804,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002625"
+        ],
+        "metrics": {
+          "revenue": "4139424014000",
+          "operating_profit": "202925904000",
+          "net_income": "279381742000",
+          "assets": "10999470660000",
+          "liabilities": "3409327946000",
+          "equity": "7590142714000",
+          "operating_cashflow": "376271006000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4123,8 +5838,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001097"
+        ],
+        "metrics": {
+          "revenue": "56276270005016",
+          "operating_profit": "2470561603453",
+          "net_income": "1684546213984",
+          "assets": "106093390616230",
+          "liabilities": "41588382504126",
+          "equity": "64505008112104",
+          "operating_cashflow": "1737959835190"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4138,8 +5872,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260814003494"
+        ],
+        "metrics": {
+          "revenue": "147704210304",
+          "operating_profit": "10740582553",
+          "net_income": "7492286488",
+          "assets": "476873525950",
+          "liabilities": "178102968220",
+          "equity": "298770557730",
+          "operating_cashflow": "27072366998"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4153,8 +5906,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001053"
+        ],
+        "metrics": {
+          "revenue": "1660107666019",
+          "operating_profit": "-4187803963",
+          "net_income": "-9866600513",
+          "assets": "1180710619041",
+          "liabilities": "715175995459",
+          "equity": "465534623582",
+          "operating_cashflow": "41320985047"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4168,8 +5940,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000873"
+        ],
+        "metrics": {
+          "revenue": "127213187764",
+          "operating_profit": "8364149838",
+          "net_income": "12302748619",
+          "assets": "599213784840",
+          "liabilities": "35317926032",
+          "equity": "563895858808",
+          "operating_cashflow": "14705297207"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4183,8 +5974,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20261112000058"
+        ],
+        "metrics": {
+          "revenue": "112638505767",
+          "operating_profit": "38240072341",
+          "net_income": "30372717888",
+          "assets": "195751035620",
+          "liabilities": "43852434064",
+          "equity": "151898601556",
+          "operating_cashflow": "31485889614"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4198,8 +6008,27 @@
       "market": "KOSDAQ",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002698"
+        ],
+        "metrics": {
+          "revenue": "494309070361",
+          "operating_profit": "24243559966",
+          "net_income": "39082446775",
+          "assets": "813343705681",
+          "liabilities": "190081003475",
+          "equity": "623262702206",
+          "operating_cashflow": "51005196725"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4213,8 +6042,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002676"
+        ],
+        "metrics": {
+          "revenue": "1946125105554",
+          "operating_profit": "116691554929",
+          "net_income": "95964867981",
+          "assets": "5979981242397",
+          "liabilities": "3197258730914",
+          "equity": "2782722511483",
+          "operating_cashflow": "186668641723"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4228,8 +6076,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003953"
+        ],
+        "metrics": {
+          "revenue": "103567918653",
+          "operating_profit": "134811401",
+          "net_income": "386998686",
+          "assets": "429129970328",
+          "liabilities": "41777295554",
+          "equity": "387352674774",
+          "operating_cashflow": "-2156182477"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4243,8 +6110,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004013"
+        ],
+        "metrics": {
+          "revenue": "283794748244",
+          "operating_profit": "76585621659",
+          "net_income": "71521659442",
+          "assets": "1407573885444",
+          "liabilities": "176670036603",
+          "equity": "1230903848841",
+          "operating_cashflow": "10562797447"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4258,8 +6144,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003682"
+        ],
+        "metrics": {
+          "net_income": "1116444000000",
+          "assets": "81608305000000",
+          "liabilities": "67567084000000",
+          "equity": "14041221000000",
+          "operating_cashflow": "6293966000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4273,8 +6179,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261106000241"
+        ],
+        "metrics": {
+          "revenue": "2755346929901",
+          "operating_profit": "269572671154",
+          "net_income": "247998614166",
+          "assets": "4411664315506",
+          "liabilities": "1599710588188",
+          "equity": "2811953727318",
+          "operating_cashflow": "410934081321"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4288,8 +6213,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003103"
+        ],
+        "metrics": {
+          "revenue": "590635389234",
+          "operating_profit": "137372935268",
+          "net_income": "120449076480",
+          "assets": "4433404737473",
+          "liabilities": "1726969518239",
+          "equity": "2706435219234",
+          "operating_cashflow": "220143830792"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4303,8 +6247,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003699"
+        ],
+        "metrics": {
+          "revenue": "305372914000000",
+          "operating_profit": "146725209000000",
+          "net_income": "118849733000000",
+          "assets": "759480516000000",
+          "liabilities": "180170840000000",
+          "equity": "579309676000000",
+          "operating_cashflow": "145355192000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4333,8 +6296,28 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000872"
+        ],
+        "metrics": {
+          "net_income": "1348768000000",
+          "assets": "94665741000000",
+          "liabilities": "83675113000000",
+          "equity": "10990628000000",
+          "operating_cashflow": "3279774000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,
@@ -4363,8 +6346,27 @@
       "market": "KOSPI",
       "preferred_excluded": false,
       "corp_code_mapped": true,
-      "status": "UNFETCHED",
-      "filing": null,
+      "status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002941"
+        ],
+        "metrics": {
+          "revenue": "1379295175000",
+          "operating_profit": "121987050000",
+          "net_income": "98689197000",
+          "assets": "1048763040000",
+          "liabilities": "631087559000",
+          "equity": "417675481000",
+          "operating_cashflow": "-7729348000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "valuation_indicators": {},
       "valuation_status": "MISSING",
       "financial_verified": false,

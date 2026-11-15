@@ -2,7 +2,7 @@
   "classification": "STAGE14_FULL_MARKET_UNVERIFIED_RESEARCH",
   "progress": {
     "trading_date": "20261112",
-    "generated_at_utc": "2026-11-15T12:44:23.670583+00:00",
+    "generated_at_utc": "2026-11-15T21:40:50.512632+00:00",
     "total_market_cap_universe": 1283,
     "preferred_excluded_heuristic": 28,
     "eligible_candidates": 1255,
@@ -31,21 +31,21 @@
       "0162D0",
       "0220W0"
     ],
-    "fetched_cached": 140,
-    "remaining_without_filing": 1115,
-    "coverage_percent": 11.16,
-    "new_fetched_this_run": 70,
-    "selected_batch_size": 70,
+    "fetched_cached": 295,
+    "remaining_without_filing": 960,
+    "coverage_percent": 23.51,
+    "new_fetched_this_run": 50,
+    "selected_batch_size": 50,
     "retry_wait_count": 0,
     "mapping_refresh_status": "REFRESHED",
     "collection_status_counts": {
-      "FETCHED_PARTIAL_NOT_VERIFIED": 140,
+      "FETCHED_PARTIAL_NOT_VERIFIED": 295,
       "EXCLUDED_PREFERRED": 28,
       "MAPPING_MISSING": 21,
-      "UNFETCHED": 1094
+      "UNFETCHED": 939
     },
     "error_counts": {},
-    "valuation_pbr_proxy_count": 139,
+    "valuation_pbr_proxy_count": 293,
     "valuation_annual_per_roe_proxy_count": 0,
     "verified_ab_grade_count": 0,
     "note": "Raw financial data and valuation proxies only; not official ratios or final grades."
@@ -6331,10 +6331,33 @@
       "preferred_excluded": false,
       "corp_code": "00128555",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000514"
+        ],
+        "metrics": {
+          "revenue": "4085721215692",
+          "operating_profit": "181073408343",
+          "net_income": "164202695561",
+          "assets": "4377502112736",
+          "liabilities": "2347043994781",
+          "equity": "2030458117955",
+          "operating_cashflow": "206708197826"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2168"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6350,10 +6373,33 @@
       "preferred_excluded": false,
       "corp_code": "00148939",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260814001094"
+        ],
+        "metrics": {
+          "revenue": "42175352351",
+          "operating_profit": "158488238",
+          "net_income": "3940611556",
+          "assets": "706149375757",
+          "liabilities": "94011910564",
+          "equity": "612137465193",
+          "operating_cashflow": "5222860326"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7506"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6369,10 +6415,33 @@
       "preferred_excluded": false,
       "corp_code": "00157399",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000666"
+        ],
+        "metrics": {
+          "revenue": "997114175689",
+          "operating_profit": "43178700266",
+          "net_income": "27875361608",
+          "assets": "1266570662736",
+          "liabilities": "633973003147",
+          "equity": "632597659589",
+          "operating_cashflow": "10701491510"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5744"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6388,10 +6457,33 @@
       "preferred_excluded": false,
       "corp_code": "00117188",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001241"
+        ],
+        "metrics": {
+          "revenue": "1963114548675",
+          "operating_profit": "501587377208",
+          "net_income": "452073310962",
+          "assets": "5886590270463",
+          "liabilities": "2557223743560",
+          "equity": "3329366526903",
+          "operating_cashflow": "423040956"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6265"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6407,10 +6499,33 @@
       "preferred_excluded": false,
       "corp_code": "00162063",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261014000290"
+        ],
+        "metrics": {
+          "revenue": "511278445299",
+          "operating_profit": "39814498636",
+          "net_income": "31220820658",
+          "assets": "2290617880418",
+          "liabilities": "1418870065540",
+          "equity": "871747814878",
+          "operating_cashflow": "-60147789670"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1337"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6426,10 +6541,33 @@
       "preferred_excluded": false,
       "corp_code": "00135962",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002067"
+        ],
+        "metrics": {
+          "revenue": "214885863760",
+          "operating_profit": "4979695512",
+          "net_income": "32091333030",
+          "assets": "738727731943",
+          "liabilities": "109960106568",
+          "equity": "628767625375",
+          "operating_cashflow": "4182453729"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2293"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6445,10 +6583,33 @@
       "preferred_excluded": false,
       "corp_code": "00132804",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003208"
+        ],
+        "metrics": {
+          "revenue": "788253389691",
+          "operating_profit": "19727612932",
+          "net_income": "13489866702",
+          "assets": "1340943827256",
+          "liabilities": "738681767885",
+          "equity": "602262059371",
+          "operating_cashflow": "-4903405126"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2927"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6464,10 +6625,33 @@
       "preferred_excluded": false,
       "corp_code": "00120562",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001616"
+        ],
+        "metrics": {
+          "revenue": "11839234273755",
+          "operating_profit": "332689173648",
+          "net_income": "70652180782",
+          "assets": "23479542056483",
+          "liabilities": "13961904159232",
+          "equity": "9517637897251",
+          "operating_cashflow": "1015381968933"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2293"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6483,10 +6667,33 @@
       "preferred_excluded": false,
       "corp_code": "00156488",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004246"
+        ],
+        "metrics": {
+          "revenue": "389952361267",
+          "operating_profit": "-6058134815",
+          "net_income": "-18533125648",
+          "assets": "1481937231853",
+          "liabilities": "383241599663",
+          "equity": "1098695632190",
+          "operating_cashflow": "-1776157460"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1767"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6502,10 +6709,33 @@
       "preferred_excluded": false,
       "corp_code": "00129989",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260930000732"
+        ],
+        "metrics": {
+          "revenue": "260404573756",
+          "operating_profit": "5527073954",
+          "net_income": "-2331477043",
+          "assets": "855684206088",
+          "liabilities": "315135291486",
+          "equity": "540548914602",
+          "operating_cashflow": "-22683093502"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.1752"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6521,10 +6751,33 @@
       "preferred_excluded": false,
       "corp_code": "00125150",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000527"
+        ],
+        "metrics": {
+          "revenue": "1764054222296",
+          "operating_profit": "120498846094",
+          "net_income": "21908022285",
+          "assets": "3359256327212",
+          "liabilities": "2551329809887",
+          "equity": "807926517325",
+          "operating_cashflow": "120369158827"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6331"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6540,10 +6793,33 @@
       "preferred_excluded": false,
       "corp_code": "00172680",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001382"
+        ],
+        "metrics": {
+          "revenue": "498733480851",
+          "operating_profit": "-6367323335",
+          "net_income": "-26456686183",
+          "assets": "873499574010",
+          "liabilities": "436428404306",
+          "equity": "437071169704",
+          "operating_cashflow": "-21831325167"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4052"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6559,10 +6835,33 @@
       "preferred_excluded": false,
       "corp_code": "00124726",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814000452"
+        ],
+        "metrics": {
+          "revenue": "754446299948",
+          "operating_profit": "83484592037",
+          "net_income": "67424727784",
+          "assets": "1137322228192",
+          "liabilities": "352454101992",
+          "equity": "784868126200",
+          "operating_cashflow": "53797755591"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8708"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6578,10 +6877,33 @@
       "preferred_excluded": false,
       "corp_code": "00108135",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003916"
+        ],
+        "metrics": {
+          "revenue": "1131042460506",
+          "operating_profit": "9686153664",
+          "net_income": "-28273540796",
+          "assets": "4177752335876",
+          "liabilities": "2435352282751",
+          "equity": "1742400053125",
+          "operating_cashflow": "-59361464084"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2623"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6597,10 +6919,33 @@
       "preferred_excluded": false,
       "corp_code": "00118804",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002890"
+        ],
+        "metrics": {
+          "revenue": "674960031852",
+          "operating_profit": "125883677544",
+          "net_income": "151870811412",
+          "assets": "2256015485041",
+          "liabilities": "1013653261056",
+          "equity": "1242362223985",
+          "operating_cashflow": "151196513099"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.4934"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6616,10 +6961,33 @@
       "preferred_excluded": false,
       "corp_code": "00120571",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261112000693"
+        ],
+        "metrics": {
+          "revenue": "3115531085402",
+          "operating_profit": "160639845024",
+          "net_income": "94063928990",
+          "assets": "4225980868568",
+          "liabilities": "2594188238951",
+          "equity": "1631792629617",
+          "operating_cashflow": "262107904450"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5755"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6635,10 +7003,33 @@
       "preferred_excluded": false,
       "corp_code": "00164742",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003521"
+        ],
+        "metrics": {
+          "revenue": "95154214000000",
+          "operating_profit": "5365574000000",
+          "net_income": "5472888000000",
+          "assets": "394512167000000",
+          "liabilities": "259095722000000",
+          "equity": "135416445000000",
+          "operating_cashflow": "4849653000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4004"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6730,10 +7121,33 @@
       "preferred_excluded": false,
       "corp_code": "00160302",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260930000428"
+        ],
+        "metrics": {
+          "revenue": "389641616574",
+          "operating_profit": "13628508315",
+          "net_income": "1337121714",
+          "assets": "1313624170443",
+          "liabilities": "679846226307",
+          "equity": "633777944136",
+          "operating_cashflow": "-31519605749"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5630"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6749,10 +7163,33 @@
       "preferred_excluded": false,
       "corp_code": "00156691",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003106"
+        ],
+        "metrics": {
+          "revenue": "351849429276",
+          "operating_profit": "32610285332",
+          "net_income": "26245308668",
+          "assets": "576939972815",
+          "liabilities": "149235949932",
+          "equity": "427704022883",
+          "operating_cashflow": "48731810040"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7825"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6768,10 +7205,33 @@
       "preferred_excluded": false,
       "corp_code": "00105280",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002625"
+        ],
+        "metrics": {
+          "revenue": "4139424014000",
+          "operating_profit": "202925904000",
+          "net_income": "279381742000",
+          "assets": "10999470660000",
+          "liabilities": "3409327946000",
+          "equity": "7590142714000",
+          "operating_cashflow": "376271006000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2585"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6787,10 +7247,33 @@
       "preferred_excluded": false,
       "corp_code": "00155319",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113001097"
+        ],
+        "metrics": {
+          "revenue": "56276270005016",
+          "operating_profit": "2470561603453",
+          "net_income": "1684546213984",
+          "assets": "106093390616230",
+          "liabilities": "41588382504126",
+          "equity": "64505008112104",
+          "operating_cashflow": "1737959835190"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3378"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6806,10 +7289,33 @@
       "preferred_excluded": false,
       "corp_code": "00128412",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260814003494"
+        ],
+        "metrics": {
+          "revenue": "147704210304",
+          "operating_profit": "10740582553",
+          "net_income": "7492286488",
+          "assets": "476873525950",
+          "liabilities": "178102968220",
+          "equity": "298770557730",
+          "operating_cashflow": "27072366998"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8832"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6825,10 +7331,33 @@
       "preferred_excluded": false,
       "corp_code": "00125530",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814001053"
+        ],
+        "metrics": {
+          "revenue": "1660107666019",
+          "operating_profit": "-4187803963",
+          "net_income": "-9866600513",
+          "assets": "1180710619041",
+          "liabilities": "715175995459",
+          "equity": "465534623582",
+          "operating_cashflow": "41320985047"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7081"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6844,10 +7373,33 @@
       "preferred_excluded": false,
       "corp_code": "00127200",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000873"
+        ],
+        "metrics": {
+          "revenue": "127213187764",
+          "operating_profit": "8364149838",
+          "net_income": "12302748619",
+          "assets": "599213784840",
+          "liabilities": "35317926032",
+          "equity": "563895858808",
+          "operating_cashflow": "14705297207"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4033"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6863,10 +7415,33 @@
       "preferred_excluded": false,
       "corp_code": "00145163",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20261112000058"
+        ],
+        "metrics": {
+          "revenue": "112638505767",
+          "operating_profit": "38240072341",
+          "net_income": "30372717888",
+          "assets": "195751035620",
+          "liabilities": "43852434064",
+          "equity": "151898601556",
+          "operating_cashflow": "31485889614"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "3.3893"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6882,10 +7457,33 @@
       "preferred_excluded": false,
       "corp_code": "00111874",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002698"
+        ],
+        "metrics": {
+          "revenue": "494309070361",
+          "operating_profit": "24243559966",
+          "net_income": "39082446775",
+          "assets": "813343705681",
+          "liabilities": "190081003475",
+          "equity": "623262702206",
+          "operating_cashflow": "51005196725"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3440"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6901,10 +7499,33 @@
       "preferred_excluded": false,
       "corp_code": "00167192",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002676"
+        ],
+        "metrics": {
+          "revenue": "1946125105554",
+          "operating_profit": "116691554929",
+          "net_income": "95964867981",
+          "assets": "5979981242397",
+          "liabilities": "3197258730914",
+          "equity": "2782722511483",
+          "operating_cashflow": "186668641723"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1173"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6920,10 +7541,33 @@
       "preferred_excluded": false,
       "corp_code": "00136624",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003953"
+        ],
+        "metrics": {
+          "revenue": "103567918653",
+          "operating_profit": "134811401",
+          "net_income": "386998686",
+          "assets": "429129970328",
+          "liabilities": "41777295554",
+          "equity": "387352674774",
+          "operating_cashflow": "-2156182477"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3183"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6939,10 +7583,33 @@
       "preferred_excluded": false,
       "corp_code": "00155531",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004013"
+        ],
+        "metrics": {
+          "revenue": "283794748244",
+          "operating_profit": "76585621659",
+          "net_income": "71521659442",
+          "assets": "1407573885444",
+          "liabilities": "176670036603",
+          "equity": "1230903848841",
+          "operating_cashflow": "10562797447"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3924"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6958,10 +7625,34 @@
       "preferred_excluded": false,
       "corp_code": "00159102",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003682"
+        ],
+        "metrics": {
+          "net_income": "1116444000000",
+          "assets": "81608305000000",
+          "liabilities": "67567084000000",
+          "equity": "14041221000000",
+          "operating_cashflow": "6293966000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7580"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6977,10 +7668,33 @@
       "preferred_excluded": false,
       "corp_code": "00125521",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261106000241"
+        ],
+        "metrics": {
+          "revenue": "2755346929901",
+          "operating_profit": "269572671154",
+          "net_income": "247998614166",
+          "assets": "4411664315506",
+          "liabilities": "1599710588188",
+          "equity": "2811953727318",
+          "operating_cashflow": "410934081321"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7631"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -6996,10 +7710,33 @@
       "preferred_excluded": false,
       "corp_code": "00113535",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003103"
+        ],
+        "metrics": {
+          "revenue": "590635389234",
+          "operating_profit": "137372935268",
+          "net_income": "120449076480",
+          "assets": "4433404737473",
+          "liabilities": "1726969518239",
+          "equity": "2706435219234",
+          "operating_cashflow": "220143830792"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2248"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7015,10 +7752,33 @@
       "preferred_excluded": false,
       "corp_code": "00126380",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814003699"
+        ],
+        "metrics": {
+          "revenue": "305372914000000",
+          "operating_profit": "146725209000000",
+          "net_income": "118849733000000",
+          "assets": "759480516000000",
+          "liabilities": "180170840000000",
+          "equity": "579309676000000",
+          "operating_cashflow": "145355192000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.0991"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7053,10 +7813,34 @@
       "preferred_excluded": false,
       "corp_code": "00120182",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11014",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20261113000872"
+        ],
+        "metrics": {
+          "net_income": "1348768000000",
+          "assets": "94665741000000",
+          "liabilities": "83675113000000",
+          "equity": "10990628000000",
+          "operating_cashflow": "3279774000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7441"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7091,10 +7875,33 @@
       "preferred_excluded": false,
       "corp_code": "00145552",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11012",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814002941"
+        ],
+        "metrics": {
+          "revenue": "1379295175000",
+          "operating_profit": "121987050000",
+          "net_income": "98689197000",
+          "assets": "1048763040000",
+          "liabilities": "631087559000",
+          "equity": "417675481000",
+          "operating_cashflow": "-7729348000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:38:17.264152+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5653"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7110,10 +7917,33 @@
       "preferred_excluded": false,
       "corp_code": "00115612",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002704"
+        ],
+        "metrics": {
+          "revenue": "434557723558",
+          "operating_profit": "10124435464",
+          "net_income": "15977335932",
+          "assets": "1729538688267",
+          "liabilities": "1166704634481",
+          "equity": "562834053786",
+          "operating_cashflow": "-37169488555"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3025"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7129,10 +7959,33 @@
       "preferred_excluded": false,
       "corp_code": "00120924",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002518"
+        ],
+        "metrics": {
+          "revenue": "557574283915",
+          "operating_profit": "18002333290",
+          "net_income": "19216824416",
+          "assets": "1441761482658",
+          "liabilities": "574549299353",
+          "equity": "867212183305",
+          "operating_cashflow": "31645033679"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1533"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7148,10 +8001,33 @@
       "preferred_excluded": false,
       "corp_code": "00118026",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000701"
+        ],
+        "metrics": {
+          "revenue": "2530018775439",
+          "operating_profit": "146157183082",
+          "net_income": "112900452362",
+          "assets": "7981172522511",
+          "liabilities": "4127982289500",
+          "equity": "3853190233011",
+          "operating_cashflow": "169862263768"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3763"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7167,10 +8043,33 @@
       "preferred_excluded": false,
       "corp_code": "00166227",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000658"
+        ],
+        "metrics": {
+          "revenue": "408174796650",
+          "operating_profit": "8533841796",
+          "net_income": "393209759",
+          "assets": "1712777637848",
+          "liabilities": "1149644089508",
+          "equity": "563133548340",
+          "operating_cashflow": "-22839909692"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2058"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7186,10 +8085,33 @@
       "preferred_excluded": false,
       "corp_code": "00126779",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001558"
+        ],
+        "metrics": {
+          "revenue": "67433640627",
+          "operating_profit": "-4386064389",
+          "net_income": "-5495748185",
+          "assets": "483404710119",
+          "liabilities": "262280030003",
+          "equity": "221124680116",
+          "operating_cashflow": "-14891735245"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.8725"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7205,10 +8127,33 @@
       "preferred_excluded": false,
       "corp_code": "00131832",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002242"
+        ],
+        "metrics": {
+          "revenue": "3289249768218",
+          "operating_profit": "189763322166",
+          "net_income": "212279727296",
+          "assets": "17789114368775",
+          "liabilities": "10751984954543",
+          "equity": "7037129414232",
+          "operating_cashflow": "252962023789"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1762"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7224,10 +8169,34 @@
       "preferred_excluded": false,
       "corp_code": "00148832",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002992"
+        ],
+        "metrics": {
+          "net_income": "4210000000",
+          "assets": "8361346000000",
+          "liabilities": "7719244000000",
+          "equity": "642102000000",
+          "operating_cashflow": "266361000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5021"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7243,10 +8212,33 @@
       "preferred_excluded": false,
       "corp_code": "00105952",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260527000198"
+        ],
+        "metrics": {
+          "revenue": "9504447000000",
+          "operating_profit": "476090000000",
+          "net_income": "241907000000",
+          "assets": "27620017000000",
+          "liabilities": "19867904000000",
+          "equity": "7752113000000",
+          "operating_cashflow": "-864847000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7546"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7262,10 +8254,33 @@
       "preferred_excluded": false,
       "corp_code": "00129679",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002618"
+        ],
+        "metrics": {
+          "revenue": "435531830460",
+          "operating_profit": "11729720249",
+          "net_income": "20142230307",
+          "assets": "2775848885409",
+          "liabilities": "1466877782664",
+          "equity": "1308971102745",
+          "operating_cashflow": "-24532193532"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.2499"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7281,10 +8296,33 @@
       "preferred_excluded": false,
       "corp_code": "00260392",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260508000019"
+        ],
+        "metrics": {
+          "revenue": "189242394685",
+          "operating_profit": "14668767675",
+          "net_income": "11209830009",
+          "assets": "369672556504",
+          "liabilities": "202073044984",
+          "equity": "167599511520",
+          "operating_cashflow": "-13176695993"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "3.9722"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7300,10 +8338,33 @@
       "preferred_excluded": false,
       "corp_code": "00120030",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260701000631"
+        ],
+        "metrics": {
+          "revenue": "2400539000000",
+          "operating_profit": "73468000000",
+          "net_income": "10707000000",
+          "assets": "18541824000000",
+          "liabilities": "12944586000000",
+          "equity": "5597238000000",
+          "operating_cashflow": "-94307000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4618"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7319,10 +8380,33 @@
       "preferred_excluded": false,
       "corp_code": "00126362",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002408"
+        ],
+        "metrics": {
+          "revenue": "3576353183422",
+          "operating_profit": "-155580771739",
+          "net_income": "56110855928",
+          "assets": "44506274451489",
+          "liabilities": "19596352221381",
+          "equity": "24909922230108",
+          "operating_cashflow": "85212739917"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.5302"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7357,10 +8441,33 @@
       "preferred_excluded": false,
       "corp_code": "00260383",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002047"
+        ],
+        "metrics": {
+          "revenue": "847106246912",
+          "operating_profit": "73562574453",
+          "net_income": "67268734173",
+          "assets": "2870735243860",
+          "liabilities": "739545322568",
+          "equity": "2131189921292",
+          "operating_cashflow": "137841237533"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2791"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7376,10 +8483,33 @@
       "preferred_excluded": false,
       "corp_code": "00130383",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000938"
+        ],
+        "metrics": {
+          "revenue": "66086319401",
+          "operating_profit": "17786628942",
+          "net_income": "5966711636",
+          "assets": "3253393355432",
+          "liabilities": "1868979350552",
+          "equity": "1384414004880",
+          "operating_cashflow": "12753610773"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4703"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7395,10 +8525,34 @@
       "preferred_excluded": false,
       "corp_code": "00111722",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260814004062"
+        ],
+        "metrics": {
+          "revenue": "14428703000000",
+          "net_income": "1001943000000",
+          "assets": "169869436000000",
+          "liabilities": "155519975000000",
+          "equity": "14349461000000",
+          "operating_cashflow": "-4165807000000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8174"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7452,10 +8606,33 @@
       "preferred_excluded": false,
       "corp_code": "00267881",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515000655"
+        ],
+        "metrics": {
+          "revenue": "40863917871",
+          "operating_profit": "5952503595",
+          "net_income": "4920377536",
+          "assets": "140856215902",
+          "liabilities": "26226080819",
+          "equity": "114630135083",
+          "operating_cashflow": "12607279781"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.9715"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7471,10 +8648,33 @@
       "preferred_excluded": false,
       "corp_code": "00140177",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000582"
+        ],
+        "metrics": {
+          "revenue": "2854875935476",
+          "operating_profit": "58274149464",
+          "net_income": "42502982754",
+          "assets": "7382830512702",
+          "liabilities": "4113252591373",
+          "equity": "3269577921329",
+          "operating_cashflow": "99485170403"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5715"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7490,10 +8690,33 @@
       "preferred_excluded": false,
       "corp_code": "00124799",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002239"
+        ],
+        "metrics": {
+          "revenue": "143321354784",
+          "operating_profit": "4666427917",
+          "net_income": "-4007111565",
+          "assets": "1290690063657",
+          "liabilities": "659521367318",
+          "equity": "631168696339",
+          "operating_cashflow": "-33916546995"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3050"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7509,10 +8732,33 @@
       "preferred_excluded": false,
       "corp_code": "00141529",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001174"
+        ],
+        "metrics": {
+          "revenue": "955199820487",
+          "operating_profit": "59381524921",
+          "net_income": "35045783010",
+          "assets": "3705069596709",
+          "liabilities": "1481325676375",
+          "equity": "2223743920334",
+          "operating_cashflow": "90120885830"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5371"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7528,10 +8774,34 @@
       "preferred_excluded": false,
       "corp_code": "00124805",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515002531"
+        ],
+        "metrics": {
+          "net_income": "-833591308",
+          "assets": "1545560405254",
+          "liabilities": "1225508126905",
+          "equity": "320052278349",
+          "operating_cashflow": "-18422448767"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4698"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7547,10 +8817,33 @@
       "preferred_excluded": false,
       "corp_code": "00116949",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001634"
+        ],
+        "metrics": {
+          "revenue": "1017653926000",
+          "operating_profit": "144619810000",
+          "net_income": "99178001000",
+          "assets": "6466535442000",
+          "liabilities": "3885022841000",
+          "equity": "2581512601000",
+          "operating_cashflow": "161943913000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8896"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7566,10 +8859,33 @@
       "preferred_excluded": false,
       "corp_code": "00117276",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002955"
+        ],
+        "metrics": {
+          "revenue": "4059763678",
+          "operating_profit": "-1322679651",
+          "net_income": "-1142306057",
+          "assets": "86745514974",
+          "liabilities": "23659654419",
+          "equity": "63085860555",
+          "operating_cashflow": "-766919793"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "22.5726"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7585,10 +8901,33 @@
       "preferred_excluded": false,
       "corp_code": "00146454",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002491"
+        ],
+        "metrics": {
+          "revenue": "65073523147",
+          "operating_profit": "-7368840001",
+          "net_income": "16962301708",
+          "assets": "465538201971",
+          "liabilities": "208008388981",
+          "equity": "257529812990",
+          "operating_cashflow": "26509381624"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4899"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7604,10 +8943,33 @@
       "preferred_excluded": false,
       "corp_code": "00107613",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002006"
+        ],
+        "metrics": {
+          "revenue": "340281879464",
+          "operating_profit": "67221356999",
+          "net_income": "50443435649",
+          "assets": "1351670645571",
+          "liabilities": "554587225494",
+          "equity": "797083420077",
+          "operating_cashflow": "-76462057689"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "7.7454"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7623,10 +8985,33 @@
       "preferred_excluded": false,
       "corp_code": "00104388",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002200"
+        ],
+        "metrics": {
+          "revenue": "413929497914",
+          "operating_profit": "10301788186",
+          "net_income": "1540853977",
+          "assets": "1952018690145",
+          "liabilities": "1073469379301",
+          "equity": "878549310844",
+          "operating_cashflow": "-3105870079"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3183"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7642,10 +9027,33 @@
       "preferred_excluded": false,
       "corp_code": "00126487",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002745"
+        ],
+        "metrics": {
+          "revenue": "560909174213",
+          "operating_profit": "145729744454",
+          "net_income": "165832652284",
+          "assets": "4497563558731",
+          "liabilities": "767732270396",
+          "equity": "3729831288335",
+          "operating_cashflow": "127643847628"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1385"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7661,10 +9069,33 @@
       "preferred_excluded": false,
       "corp_code": "00152686",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001529"
+        ],
+        "metrics": {
+          "revenue": "419900611488",
+          "operating_profit": "26443486523",
+          "net_income": "30137667511",
+          "assets": "1460578213107",
+          "liabilities": "614795201881",
+          "equity": "845783011226",
+          "operating_cashflow": "-21067543243"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.5123"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7680,10 +9111,33 @@
       "preferred_excluded": false,
       "corp_code": "00163114",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002795"
+        ],
+        "metrics": {
+          "revenue": "1283882491880",
+          "operating_profit": "52473761602",
+          "net_income": "53157840072",
+          "assets": "3976691900806",
+          "liabilities": "2256203084715",
+          "equity": "1720488816091",
+          "operating_cashflow": "49205004212"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.0946"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7699,10 +9153,33 @@
       "preferred_excluded": false,
       "corp_code": "00109189",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001884"
+        ],
+        "metrics": {
+          "revenue": "442599788714",
+          "operating_profit": "53261806901",
+          "net_income": "50894999326",
+          "assets": "1829077098280",
+          "liabilities": "393635829466",
+          "equity": "1435441268814",
+          "operating_cashflow": "53189436661"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3054"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7737,10 +9214,33 @@
       "preferred_excluded": false,
       "corp_code": "00107224",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000805"
+        ],
+        "metrics": {
+          "revenue": "63120779530",
+          "operating_profit": "-1720007607",
+          "net_income": "-1080328608",
+          "assets": "460502775015",
+          "liabilities": "173900206235",
+          "equity": "286602568780",
+          "operating_cashflow": "-6001377667"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4833"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7756,10 +9256,33 @@
       "preferred_excluded": false,
       "corp_code": "00131692",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001324"
+        ],
+        "metrics": {
+          "revenue": "201552164261",
+          "operating_profit": "21235425836",
+          "net_income": "14520860796",
+          "assets": "1087637085658",
+          "liabilities": "531234009035",
+          "equity": "556403076623",
+          "operating_cashflow": "18223507292"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3618"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7775,10 +9298,33 @@
       "preferred_excluded": false,
       "corp_code": "00145260",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001770"
+        ],
+        "metrics": {
+          "revenue": "127218321079",
+          "operating_profit": "561378600",
+          "net_income": "1500665597",
+          "assets": "680000478689",
+          "liabilities": "392301641713",
+          "equity": "287698836976",
+          "operating_cashflow": "-6535780887"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.9844"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7794,10 +9340,33 @@
       "preferred_excluded": false,
       "corp_code": "00165680",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002154"
+        ],
+        "metrics": {
+          "revenue": "1053491831261",
+          "operating_profit": "20415282258",
+          "net_income": "5997988546",
+          "assets": "3366665699143",
+          "liabilities": "2251974567715",
+          "equity": "1114691131428",
+          "operating_cashflow": "53570453531"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.2306"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7813,10 +9382,33 @@
       "preferred_excluded": false,
       "corp_code": "00109310",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001020"
+        ],
+        "metrics": {
+          "revenue": "59325071991",
+          "operating_profit": "-1406809538",
+          "net_income": "-2020618384",
+          "assets": "301104641490",
+          "liabilities": "224491529093",
+          "equity": "76613112397",
+          "operating_cashflow": "-586488209"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.7752"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7851,10 +9443,33 @@
       "preferred_excluded": false,
       "corp_code": "00161426",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002621"
+        ],
+        "metrics": {
+          "revenue": "353702972178",
+          "operating_profit": "33561995850",
+          "net_income": "42287152823",
+          "assets": "1494914183697",
+          "liabilities": "494835653465",
+          "equity": "1000078530232",
+          "operating_cashflow": "7959428236"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "3.7476"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7870,10 +9485,33 @@
       "preferred_excluded": false,
       "corp_code": "00117629",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000665"
+        ],
+        "metrics": {
+          "revenue": "67030082489",
+          "operating_profit": "4185427237",
+          "net_income": "1708073950",
+          "assets": "251892465102",
+          "liabilities": "108529787852",
+          "equity": "143362677250",
+          "operating_cashflow": "-5276375484"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7680"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7889,10 +9527,33 @@
       "preferred_excluded": false,
       "corp_code": "00103042",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002724"
+        ],
+        "metrics": {
+          "revenue": "265692947680",
+          "operating_profit": "11685077312",
+          "net_income": "8215612427",
+          "assets": "809585861811",
+          "liabilities": "466000923970",
+          "equity": "343584937841",
+          "operating_cashflow": "29113031785"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3213"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7908,10 +9569,33 @@
       "preferred_excluded": false,
       "corp_code": "00126371",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002842"
+        ],
+        "metrics": {
+          "revenue": "3209113412582",
+          "operating_profit": "280572751176",
+          "net_income": "252687583556",
+          "assets": "15660483690834",
+          "liabilities": "5569390662139",
+          "equity": "10091093028695",
+          "operating_cashflow": "478936857669"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "6.5581"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7946,10 +9630,33 @@
       "preferred_excluded": false,
       "corp_code": "00138260",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002780"
+        ],
+        "metrics": {
+          "revenue": "315345152180",
+          "operating_profit": "21629622216",
+          "net_income": "1745271277",
+          "assets": "1331576404620",
+          "liabilities": "675106946448",
+          "equity": "656469458172",
+          "operating_cashflow": "570865193"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5367"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7965,10 +9672,33 @@
       "preferred_excluded": false,
       "corp_code": "00161693",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001380"
+        ],
+        "metrics": {
+          "revenue": "399418155288",
+          "operating_profit": "10074344595",
+          "net_income": "2625167887",
+          "assets": "952659616085",
+          "liabilities": "549690071177",
+          "equity": "402969544908",
+          "operating_cashflow": "23026685606"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.2601"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -7984,10 +9714,33 @@
       "preferred_excluded": false,
       "corp_code": "00136864",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002816"
+        ],
+        "metrics": {
+          "revenue": "280827615381",
+          "operating_profit": "6280018622",
+          "net_income": "1552652454",
+          "assets": "683657454832",
+          "liabilities": "454226181763",
+          "equity": "229431273069",
+          "operating_cashflow": "-7748930193"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5032"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8003,10 +9756,33 @@
       "preferred_excluded": false,
       "corp_code": "00103592",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002771"
+        ],
+        "metrics": {
+          "revenue": "410853703841",
+          "operating_profit": "7521328350",
+          "net_income": "4900297206",
+          "assets": "1318402336132",
+          "liabilities": "606089430172",
+          "equity": "712312905960",
+          "operating_cashflow": "-10754630998"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4425"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8022,10 +9798,33 @@
       "preferred_excluded": false,
       "corp_code": "00153861",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002680"
+        ],
+        "metrics": {
+          "revenue": "354851639753",
+          "operating_profit": "17732174578",
+          "net_income": "-2994558228",
+          "assets": "3799993947549",
+          "liabilities": "3154695940966",
+          "equity": "645298006583",
+          "operating_cashflow": "-47037086994"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7595"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8041,10 +9840,33 @@
       "preferred_excluded": false,
       "corp_code": "00162586",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001126"
+        ],
+        "metrics": {
+          "revenue": "40030619639",
+          "operating_profit": "838726386",
+          "net_income": "275003828",
+          "assets": "243834178787",
+          "liabilities": "81476883475",
+          "equity": "162357295312",
+          "operating_cashflow": "2458331200"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "16.4421"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8060,10 +9882,33 @@
       "preferred_excluded": false,
       "corp_code": "00101488",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260518000356"
+        ],
+        "metrics": {
+          "revenue": "425320066937",
+          "operating_profit": "63810296194",
+          "net_income": "58004436537",
+          "assets": "1599577225488",
+          "liabilities": "776492026692",
+          "equity": "823085198796",
+          "operating_cashflow": "70103665470"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.0443"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8079,10 +9924,33 @@
       "preferred_excluded": false,
       "corp_code": "00129271",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001039"
+        ],
+        "metrics": {
+          "revenue": "57447366248",
+          "operating_profit": "3382657630",
+          "net_income": "1832366689",
+          "assets": "189039774962",
+          "liabilities": "63811172857",
+          "equity": "125228602105",
+          "operating_cashflow": "4471663426"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.5184"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8098,10 +9966,33 @@
       "preferred_excluded": false,
       "corp_code": "00128111",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515000960"
+        ],
+        "metrics": {
+          "revenue": "103339758743",
+          "operating_profit": "2479007846",
+          "net_income": "2237643864",
+          "assets": "155124270663",
+          "liabilities": "39050915473",
+          "equity": "116073355190",
+          "operating_cashflow": "2925575890"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "3.9213"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8117,10 +10008,33 @@
       "preferred_excluded": false,
       "corp_code": "00164830",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001799"
+        ],
+        "metrics": {
+          "revenue": "8140889752000",
+          "operating_profit": "1355970120000",
+          "net_income": "1141412052000",
+          "assets": "42204851656000",
+          "liabilities": "24888294971000",
+          "equity": "17316556685000",
+          "operating_cashflow": "1775559420000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.9727"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8136,10 +10050,33 @@
       "preferred_excluded": false,
       "corp_code": "00151128",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000961"
+        ],
+        "metrics": {
+          "revenue": "68316190894",
+          "operating_profit": "4347573636",
+          "net_income": "5730054993",
+          "assets": "536755208564",
+          "liabilities": "65036108969",
+          "equity": "471719099595",
+          "operating_cashflow": "6274372312"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4607"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8155,10 +10092,33 @@
       "preferred_excluded": false,
       "corp_code": "00121154",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000563"
+        ],
+        "metrics": {
+          "revenue": "48175466866",
+          "operating_profit": "8030933579",
+          "net_income": "6711667291",
+          "assets": "284335800968",
+          "liabilities": "90535645267",
+          "equity": "193800155701",
+          "operating_cashflow": "4723820551"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6448"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8174,10 +10134,33 @@
       "preferred_excluded": false,
       "corp_code": "00162461",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000336"
+        ],
+        "metrics": {
+          "revenue": "3881952000000",
+          "operating_profit": "92610000000",
+          "net_income": "-38198000000",
+          "assets": "34930282000000",
+          "liabilities": "22932550000000",
+          "equity": "11997732000000",
+          "operating_cashflow": "-363669000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4471"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8193,10 +10176,33 @@
       "preferred_excluded": false,
       "corp_code": "00173078",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000771"
+        ],
+        "metrics": {
+          "revenue": "412049586000",
+          "operating_profit": "20606832879",
+          "net_income": "22330756730",
+          "assets": "1527133487923",
+          "liabilities": "708287723417",
+          "equity": "818845764506",
+          "operating_cashflow": "13599434690"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4582"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8212,10 +10218,33 @@
       "preferred_excluded": false,
       "corp_code": "00140964",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002166"
+        ],
+        "metrics": {
+          "revenue": "1078632482075",
+          "operating_profit": "157802244564",
+          "net_income": "194232560212",
+          "assets": "7223036816514",
+          "liabilities": "1756799727094",
+          "equity": "5466237089420",
+          "operating_cashflow": "83802322627"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4044"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8231,10 +10260,33 @@
       "preferred_excluded": false,
       "corp_code": "00148896",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000992"
+        ],
+        "metrics": {
+          "revenue": "892359113000",
+          "operating_profit": "10862402000",
+          "net_income": "8857466000",
+          "assets": "8200214577000",
+          "liabilities": "3304618927000",
+          "equity": "4895595650000",
+          "operating_cashflow": "-66746717000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7528"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8250,10 +10302,33 @@
       "preferred_excluded": false,
       "corp_code": "00105855",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000847"
+        ],
+        "metrics": {
+          "revenue": "1376552257987",
+          "operating_profit": "126567079934",
+          "net_income": "118980033015",
+          "assets": "5361875565139",
+          "liabilities": "3227706530280",
+          "equity": "2134169034859",
+          "operating_cashflow": "-26963759802"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "8.7505"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8269,10 +10344,33 @@
       "preferred_excluded": false,
       "corp_code": "00102858",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260813001749"
+        ],
+        "metrics": {
+          "revenue": "6072027416801",
+          "operating_profit": "746054912558",
+          "net_income": "354041248312",
+          "assets": "21300493286483",
+          "liabilities": "10036720163797",
+          "equity": "11263773122686",
+          "operating_cashflow": "-95844360871"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.6715"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8288,10 +10386,33 @@
       "preferred_excluded": false,
       "corp_code": "00126478",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002303"
+        ],
+        "metrics": {
+          "revenue": "2902250597972",
+          "operating_profit": "273118473369",
+          "net_income": "100039045873",
+          "assets": "16568722984124",
+          "liabilities": "12113230201919",
+          "equity": "4455492782205",
+          "operating_cashflow": "1488808578614"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "3.2707"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8307,10 +10428,33 @@
       "preferred_excluded": false,
       "corp_code": "00113261",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002702"
+        ],
+        "metrics": {
+          "revenue": "34248640061",
+          "operating_profit": "-3961404116",
+          "net_income": "-3671887420",
+          "assets": "251368708225",
+          "liabilities": "135371308178",
+          "equity": "115997400047",
+          "operating_cashflow": "-14220721446"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "17.4791"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8326,10 +10470,33 @@
       "preferred_excluded": false,
       "corp_code": "00147860",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515000267"
+        ],
+        "metrics": {
+          "revenue": "36600884734",
+          "operating_profit": "489113118",
+          "net_income": "409481475",
+          "assets": "99724693465",
+          "liabilities": "29152643202",
+          "equity": "70572050263",
+          "operating_cashflow": "-1633547413"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "4.1697"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8345,10 +10512,33 @@
       "preferred_excluded": false,
       "corp_code": "00166315",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000183"
+        ],
+        "metrics": {
+          "revenue": "505575797323",
+          "operating_profit": "16981885358",
+          "net_income": "28298717144",
+          "assets": "1744028430902",
+          "liabilities": "1139134612557",
+          "equity": "604893818345",
+          "operating_cashflow": "62535259910"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3516"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8364,10 +10554,33 @@
       "preferred_excluded": false,
       "corp_code": "00115977",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000426"
+        ],
+        "metrics": {
+          "revenue": "437014361973",
+          "operating_profit": "118076091787",
+          "net_income": "154504231347",
+          "assets": "3461141608026",
+          "liabilities": "1895669050005",
+          "equity": "1565472558021",
+          "operating_cashflow": "147501810484"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2639"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8383,10 +10596,33 @@
       "preferred_excluded": false,
       "corp_code": "00148522",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260515001879"
+        ],
+        "metrics": {
+          "revenue": "79301130545",
+          "operating_profit": "2281967597",
+          "net_income": "1683547212",
+          "assets": "394485302962",
+          "liabilities": "311780733597",
+          "equity": "82704569365",
+          "operating_cashflow": "-4646805327"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.6419"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8402,10 +10638,33 @@
       "preferred_excluded": false,
       "corp_code": "00138279",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000478"
+        ],
+        "metrics": {
+          "revenue": "8942689000000",
+          "operating_profit": "1231078000000",
+          "net_income": "720991000000",
+          "assets": "28862781000000",
+          "liabilities": "19294578000000",
+          "equity": "9568203000000",
+          "operating_cashflow": "-523886000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.1990"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8440,10 +10699,33 @@
       "preferred_excluded": false,
       "corp_code": "00101549",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000981"
+        ],
+        "metrics": {
+          "revenue": "47814426265",
+          "operating_profit": "2410534894",
+          "net_income": "4724612129",
+          "assets": "309298713970",
+          "liabilities": "79702712276",
+          "equity": "229596001694",
+          "operating_cashflow": "5702566941"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6620"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8459,10 +10741,33 @@
       "preferred_excluded": false,
       "corp_code": "00105961",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001513"
+        ],
+        "metrics": {
+          "revenue": "5534835000000",
+          "operating_profit": "295320000000",
+          "net_income": "229143000000",
+          "assets": "11822058000000",
+          "liabilities": "5741177000000",
+          "equity": "6080881000000",
+          "operating_cashflow": "300126000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.1188"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8478,10 +10783,33 @@
       "preferred_excluded": false,
       "corp_code": "00165413",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002934"
+        ],
+        "metrics": {
+          "revenue": "4990520929713",
+          "operating_profit": "73478150850",
+          "net_income": "33458618040",
+          "assets": "31896861229277",
+          "liabilities": "13776031554726",
+          "equity": "18120829674551",
+          "operating_cashflow": "-624708806521"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1108"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8497,10 +10825,33 @@
       "preferred_excluded": false,
       "corp_code": "00164645",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000483"
+        ],
+        "metrics": {
+          "revenue": "2718734000000",
+          "operating_profit": "269094000000",
+          "net_income": "353610000000",
+          "assets": "36089577000000",
+          "liabilities": "8308846000000",
+          "equity": "27780731000000",
+          "operating_cashflow": "511027000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7028"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8516,10 +10867,33 @@
       "preferred_excluded": false,
       "corp_code": "00106623",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001049"
+        ],
+        "metrics": {
+          "revenue": "2179328000000",
+          "operating_profit": "51566000000",
+          "net_income": "35402000000",
+          "assets": "7219019000000",
+          "liabilities": "3071872000000",
+          "equity": "4147147000000",
+          "operating_cashflow": "109322000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3207"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8535,10 +10909,33 @@
       "preferred_excluded": false,
       "corp_code": "00160861",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260514001012"
+        ],
+        "metrics": {
+          "revenue": "59355942477",
+          "operating_profit": "3339907422",
+          "net_income": "3329100024",
+          "assets": "247208417721",
+          "liabilities": "70121914155",
+          "equity": "177086503566",
+          "operating_cashflow": "-1824366898"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.0826"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8554,10 +10951,33 @@
       "preferred_excluded": false,
       "corp_code": "00133876",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000437"
+        ],
+        "metrics": {
+          "revenue": "245930756459",
+          "operating_profit": "15797839289",
+          "net_income": "13192523544",
+          "assets": "460832455313",
+          "liabilities": "176137556698",
+          "equity": "284694898615",
+          "operating_cashflow": "-44812679017"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:39:24.915403+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6872"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8573,10 +10993,33 @@
       "preferred_excluded": false,
       "corp_code": "00164812",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001114"
+        ],
+        "metrics": {
+          "revenue": "2072672856682",
+          "operating_profit": "46062769122",
+          "net_income": "11058258472",
+          "assets": "2781388335349",
+          "liabilities": "2057512672314",
+          "equity": "723875663035",
+          "operating_cashflow": "-25071906025"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4103"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8592,10 +11035,33 @@
       "preferred_excluded": false,
       "corp_code": "00106368",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002055"
+        ],
+        "metrics": {
+          "revenue": "1779957662893",
+          "operating_profit": "59403454696",
+          "net_income": "96292490134",
+          "assets": "8769223834018",
+          "liabilities": "2352131894610",
+          "equity": "6417091939408",
+          "operating_cashflow": "84660417894"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3825"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8630,10 +11096,33 @@
       "preferred_excluded": false,
       "corp_code": "00139889",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002307"
+        ],
+        "metrics": {
+          "revenue": "496640108452",
+          "operating_profit": "-28734348988",
+          "net_income": "-75553166040",
+          "assets": "6767244299774",
+          "liabilities": "4754681978888",
+          "equity": "2012562320886",
+          "operating_cashflow": "-243410636927"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.8188"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8649,8 +11138,27 @@
       "preferred_excluded": false,
       "corp_code": "00138297",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001922"
+        ],
+        "metrics": {
+          "revenue": "59973000000",
+          "operating_profit": "-9865000000",
+          "net_income": "-44612000000",
+          "assets": "436611000000",
+          "liabilities": "530418000000",
+          "equity": "-93807000000",
+          "operating_cashflow": "-2086000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
       "ratios": {},
       "ratio_sources": {},
       "ratio_issues": [
@@ -8668,10 +11176,33 @@
       "preferred_excluded": false,
       "corp_code": "00136271",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000432"
+        ],
+        "metrics": {
+          "revenue": "153687860644",
+          "operating_profit": "-2234005795",
+          "net_income": "-3808688515",
+          "assets": "653174553632",
+          "liabilities": "426447459461",
+          "equity": "226727094171",
+          "operating_cashflow": "-3576678427"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.1267"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8687,10 +11218,33 @@
       "preferred_excluded": false,
       "corp_code": "00163345",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001571"
+        ],
+        "metrics": {
+          "revenue": "166769504270",
+          "operating_profit": "18735711847",
+          "net_income": "29701156405",
+          "assets": "1029546985126",
+          "liabilities": "533895215610",
+          "equity": "495651769516",
+          "operating_cashflow": "-2818257241"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8929"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8725,10 +11279,33 @@
       "preferred_excluded": false,
       "corp_code": "00125664",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "OFS",
+        "receipt_numbers": [
+          "20260514000579"
+        ],
+        "metrics": {
+          "revenue": "18258698314",
+          "operating_profit": "1602296350",
+          "net_income": "1253509184",
+          "assets": "202663692168",
+          "liabilities": "108595286512",
+          "equity": "94068405656",
+          "operating_cashflow": "-3032245113"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.6712"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8744,10 +11321,33 @@
       "preferred_excluded": false,
       "corp_code": "00164788",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002700"
+        ],
+        "metrics": {
+          "revenue": "15560513000000",
+          "operating_profit": "802648000000",
+          "net_income": "883052000000",
+          "assets": "73917161000000",
+          "liabilities": "23269228000000",
+          "equity": "50647933000000",
+          "operating_cashflow": "1116722000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6242"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8763,10 +11363,33 @@
       "preferred_excluded": false,
       "corp_code": "00126566",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000860"
+        ],
+        "metrics": {
+          "revenue": "5751023496000",
+          "operating_profit": "638892160000",
+          "net_income": "526260028000",
+          "assets": "56659594923000",
+          "liabilities": "39219529796000",
+          "equity": "17440065127000",
+          "operating_cashflow": "-1714281019000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.9336"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8782,10 +11405,33 @@
       "preferred_excluded": false,
       "corp_code": "00102113",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000287"
+        ],
+        "metrics": {
+          "revenue": "107855619071",
+          "operating_profit": "6528900036",
+          "net_income": "5615111403",
+          "assets": "549845842919",
+          "liabilities": "282192947647",
+          "equity": "267652895272",
+          "operating_cashflow": "-7142123737"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4789"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8801,10 +11447,33 @@
       "preferred_excluded": false,
       "corp_code": "00164636",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001441"
+        ],
+        "metrics": {
+          "revenue": "1257391332747",
+          "operating_profit": "180345780876",
+          "net_income": "107167044085",
+          "assets": "12349105604159",
+          "liabilities": "6883829398433",
+          "equity": "5465276205726",
+          "operating_cashflow": "34998989998"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2097"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8839,10 +11508,33 @@
       "preferred_excluded": false,
       "corp_code": "00158501",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002833"
+        ],
+        "metrics": {
+          "revenue": "673714757951",
+          "operating_profit": "20744829566",
+          "net_income": "21534544259",
+          "assets": "2438177243412",
+          "liabilities": "766026137027",
+          "equity": "1672151106385",
+          "operating_cashflow": "60780525965"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.2566"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8858,10 +11550,33 @@
       "preferred_excluded": false,
       "corp_code": "00137234",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000359"
+        ],
+        "metrics": {
+          "revenue": "265324535153",
+          "operating_profit": "7423710925",
+          "net_income": "6009969966",
+          "assets": "829109442084",
+          "liabilities": "570697108955",
+          "equity": "258412333129",
+          "operating_cashflow": "5006865406"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5583"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8877,10 +11592,33 @@
       "preferred_excluded": false,
       "corp_code": "00165060",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000879"
+        ],
+        "metrics": {
+          "revenue": "54145864395",
+          "operating_profit": "15685603263",
+          "net_income": "15263202837",
+          "assets": "511204935208",
+          "liabilities": "48217981977",
+          "equity": "462986953231",
+          "operating_cashflow": "13157965265"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7778"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8896,10 +11634,33 @@
       "preferred_excluded": false,
       "corp_code": "00117966",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001220"
+        ],
+        "metrics": {
+          "revenue": "74509298566",
+          "operating_profit": "5438960614",
+          "net_income": "6067690098",
+          "assets": "1488248989882",
+          "liabilities": "434985580013",
+          "equity": "1053263409869",
+          "operating_cashflow": "-81227778184"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1697"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8915,10 +11676,33 @@
       "preferred_excluded": false,
       "corp_code": "00166272",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001588"
+        ],
+        "metrics": {
+          "revenue": "421450614010",
+          "operating_profit": "25615016707",
+          "net_income": "24775234383",
+          "assets": "1263649380858",
+          "liabilities": "822456769071",
+          "equity": "441192611787",
+          "operating_cashflow": "27257727101"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2553"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8934,10 +11718,33 @@
       "preferred_excluded": false,
       "corp_code": "00117179",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001398"
+        ],
+        "metrics": {
+          "revenue": "331466081746",
+          "operating_profit": "8353016506",
+          "net_income": "7685961159",
+          "assets": "1095036030545",
+          "liabilities": "475149301270",
+          "equity": "619886729275",
+          "operating_cashflow": "9214402518"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1690"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8953,10 +11760,33 @@
       "preferred_excluded": false,
       "corp_code": "00102432",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001718"
+        ],
+        "metrics": {
+          "revenue": "670713971399",
+          "operating_profit": "40792019622",
+          "net_income": "22355275053",
+          "assets": "3215037598138",
+          "liabilities": "2209557862359",
+          "equity": "1005479735779",
+          "operating_cashflow": "-117078309262"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2235"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8972,10 +11802,33 @@
       "preferred_excluded": false,
       "corp_code": "00150633",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000802"
+        ],
+        "metrics": {
+          "revenue": "139558174746",
+          "operating_profit": "-30092483770",
+          "net_income": "-22820074991",
+          "assets": "1075224304678",
+          "liabilities": "423242055010",
+          "equity": "651982249668",
+          "operating_cashflow": "-5249128838"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2098"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -8991,10 +11844,33 @@
       "preferred_excluded": false,
       "corp_code": "00138446",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000360"
+        ],
+        "metrics": {
+          "revenue": "48473525137",
+          "operating_profit": "2136933493",
+          "net_income": "2484561743",
+          "assets": "225733982180",
+          "liabilities": "54604620128",
+          "equity": "171129362052",
+          "operating_cashflow": "586144901"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8965"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9010,10 +11886,33 @@
       "preferred_excluded": false,
       "corp_code": "00105299",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000698"
+        ],
+        "metrics": {
+          "revenue": "196667640593",
+          "operating_profit": "13239252102",
+          "net_income": "17151637205",
+          "assets": "1243836834362",
+          "liabilities": "731068186118",
+          "equity": "512768648244",
+          "operating_cashflow": "-10118941170"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2325"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9029,10 +11928,33 @@
       "preferred_excluded": false,
       "corp_code": "00105156",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001031"
+        ],
+        "metrics": {
+          "revenue": "247645982644",
+          "operating_profit": "5520985269",
+          "net_income": "3235006960",
+          "assets": "525672346549",
+          "liabilities": "296393490088",
+          "equity": "229278856461",
+          "operating_cashflow": "2377368262"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4791"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9048,10 +11970,33 @@
       "preferred_excluded": false,
       "corp_code": "00132318",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001055"
+        ],
+        "metrics": {
+          "revenue": "59137475360",
+          "operating_profit": "6569418113",
+          "net_income": "8426828641",
+          "assets": "597266372303",
+          "liabilities": "44733325321",
+          "equity": "552533046982",
+          "operating_cashflow": "4911748260"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.9901"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9067,10 +12012,33 @@
       "preferred_excluded": false,
       "corp_code": "00140955",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001360"
+        ],
+        "metrics": {
+          "revenue": "231868922275",
+          "operating_profit": "44412388297",
+          "net_income": "42534735832",
+          "assets": "1695448186595",
+          "liabilities": "494986273793",
+          "equity": "1200461912802",
+          "operating_cashflow": "38926418930"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.6491"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9086,10 +12054,33 @@
       "preferred_excluded": false,
       "corp_code": "00124780",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002370"
+        ],
+        "metrics": {
+          "revenue": "67662833927",
+          "operating_profit": "2589603214",
+          "net_income": "2181487011",
+          "assets": "436648957299",
+          "liabilities": "235194473698",
+          "equity": "201454483601",
+          "operating_cashflow": "-30482634417"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7145"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9124,10 +12115,33 @@
       "preferred_excluded": false,
       "corp_code": "00132637",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001084"
+        ],
+        "metrics": {
+          "revenue": "337811389596",
+          "operating_profit": "13037548307",
+          "net_income": "16190627325",
+          "assets": "1600319627600",
+          "liabilities": "721239685472",
+          "equity": "879079942128",
+          "operating_cashflow": "45065000925"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.6860"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9143,10 +12157,33 @@
       "preferred_excluded": false,
       "corp_code": "00159786",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000454"
+        ],
+        "metrics": {
+          "revenue": "384412394377",
+          "operating_profit": "25501918897",
+          "net_income": "24868206047",
+          "assets": "1713717679972",
+          "liabilities": "555607714475",
+          "equity": "1158109965497",
+          "operating_cashflow": "-34548609852"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3138"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9162,10 +12199,33 @@
       "preferred_excluded": false,
       "corp_code": "00141608",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260508000018"
+        ],
+        "metrics": {
+          "revenue": "56445903892",
+          "operating_profit": "7980637802",
+          "net_income": "6155758290",
+          "assets": "242008777272",
+          "liabilities": "110395253960",
+          "equity": "131613523312",
+          "operating_cashflow": "2309681146"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.2206"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9181,10 +12241,33 @@
       "preferred_excluded": false,
       "corp_code": "00112679",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514000249"
+        ],
+        "metrics": {
+          "revenue": "98354445984",
+          "operating_profit": "11523347964",
+          "net_income": "10569323871",
+          "assets": "423681495255",
+          "liabilities": "90173280222",
+          "equity": "333508215033",
+          "operating_cashflow": "10381463350"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4883"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9200,10 +12283,33 @@
       "preferred_excluded": false,
       "corp_code": "00105101",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260508000361"
+        ],
+        "metrics": {
+          "revenue": "572033744000",
+          "operating_profit": "79145863000",
+          "net_income": "57152992000",
+          "assets": "1661747972000",
+          "liabilities": "978219364000",
+          "equity": "683528608000",
+          "operating_cashflow": "124611724000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5054"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9238,10 +12344,33 @@
       "preferred_excluded": false,
       "corp_code": "00108746",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001723"
+        ],
+        "metrics": {
+          "revenue": "20362722576",
+          "operating_profit": "1234563844",
+          "net_income": "4597984190",
+          "assets": "198910111899",
+          "liabilities": "68670298800",
+          "equity": "130239813099",
+          "operating_cashflow": "8044241529"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.8405"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9257,10 +12386,33 @@
       "preferred_excluded": false,
       "corp_code": "00132992",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000832"
+        ],
+        "metrics": {
+          "revenue": "1069577960819",
+          "operating_profit": "54495556673",
+          "net_income": "31174391298",
+          "assets": "5141593751995",
+          "liabilities": "3006426210735",
+          "equity": "2135167541260",
+          "operating_cashflow": "78691985123"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1963"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9276,10 +12428,33 @@
       "preferred_excluded": false,
       "corp_code": "00159193",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002075"
+        ],
+        "metrics": {
+          "revenue": "24398487000000",
+          "operating_profit": "3784169000000",
+          "net_income": "2519007000000",
+          "assets": "257787981000000",
+          "liabilities": "206377906000000",
+          "equity": "51410075000000",
+          "operating_cashflow": "7307019000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3827"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9295,10 +12470,33 @@
       "preferred_excluded": false,
       "corp_code": "00146649",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001599"
+        ],
+        "metrics": {
+          "revenue": "572897546593",
+          "operating_profit": "52130520491",
+          "net_income": "39092358183",
+          "assets": "2472486363016",
+          "liabilities": "1275123847038",
+          "equity": "1197362515978",
+          "operating_cashflow": "-88395255296"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2667"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9314,10 +12512,33 @@
       "preferred_excluded": false,
       "corp_code": "00153339",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002457"
+        ],
+        "metrics": {
+          "revenue": "206159009758",
+          "operating_profit": "17216607095",
+          "net_income": "14181443779",
+          "assets": "1009904657639",
+          "liabilities": "413431602736",
+          "equity": "596473054903",
+          "operating_cashflow": "1293307154"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2244"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9371,10 +12592,34 @@
       "preferred_excluded": false,
       "corp_code": "00104856",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002158"
+        ],
+        "metrics": {
+          "net_income": "450856069096",
+          "assets": "93107693518543",
+          "liabilities": "84939872425180",
+          "equity": "8167821093363",
+          "operating_cashflow": "-1142528052546"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.7806"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9390,10 +12635,33 @@
       "preferred_excluded": false,
       "corp_code": "00115676",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002539"
+        ],
+        "metrics": {
+          "revenue": "805288623946",
+          "operating_profit": "21512932639",
+          "net_income": "45101219441",
+          "assets": "3334626632674",
+          "liabilities": "1266558826150",
+          "equity": "2068067806524",
+          "operating_cashflow": "30170002191"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2355"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9409,10 +12677,33 @@
       "preferred_excluded": false,
       "corp_code": "00161976",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002766"
+        ],
+        "metrics": {
+          "revenue": "861345121073",
+          "operating_profit": "21184219221",
+          "net_income": "4818695068",
+          "assets": "3079351338128",
+          "liabilities": "2144322639285",
+          "equity": "935028698843",
+          "operating_cashflow": "10632473155"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1810"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9428,10 +12719,33 @@
       "preferred_excluded": false,
       "corp_code": "00166573",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260513000328"
+        ],
+        "metrics": {
+          "revenue": "71175925746",
+          "operating_profit": "9381046639",
+          "net_income": "7465897216",
+          "assets": "481974692729",
+          "liabilities": "57832218708",
+          "equity": "424142474021",
+          "operating_cashflow": "971976623"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4710"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9447,10 +12761,33 @@
       "preferred_excluded": false,
       "corp_code": "00135777",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001652"
+        ],
+        "metrics": {
+          "revenue": "156500333076",
+          "operating_profit": "3778186518",
+          "net_income": "7907093830",
+          "assets": "933584929926",
+          "liabilities": "211208965037",
+          "equity": "722375964889",
+          "operating_cashflow": "18960310001"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5690"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9466,10 +12803,34 @@
       "preferred_excluded": false,
       "corp_code": "00115694",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000817"
+        ],
+        "metrics": {
+          "revenue": "1075176925000",
+          "net_income": "30431517000",
+          "assets": "14473677779000",
+          "liabilities": "13213324085000",
+          "equity": "1260353694000",
+          "operating_cashflow": "-32718110000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2920"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9485,10 +12846,33 @@
       "preferred_excluded": false,
       "corp_code": "00108940",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001703"
+        ],
+        "metrics": {
+          "revenue": "459321386541",
+          "operating_profit": "27853826536",
+          "net_income": "23693693977",
+          "assets": "1252280131761",
+          "liabilities": "621493083765",
+          "equity": "630787047996",
+          "operating_cashflow": "39304585624"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.1709"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9504,10 +12888,33 @@
       "preferred_excluded": false,
       "corp_code": "00119672",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260514001007"
+        ],
+        "metrics": {
+          "revenue": "201298074524",
+          "operating_profit": "5997202379",
+          "net_income": "3759623547",
+          "assets": "564951828095",
+          "liabilities": "279805119243",
+          "equity": "285146708852",
+          "operating_cashflow": "12160580952"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3927"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9523,10 +12930,33 @@
       "preferred_excluded": false,
       "corp_code": "00164618",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002785"
+        ],
+        "metrics": {
+          "revenue": "30068622485",
+          "operating_profit": "369786982",
+          "net_income": "1074835798",
+          "assets": "106425586767",
+          "liabilities": "36338477201",
+          "equity": "70087109566",
+          "operating_cashflow": "1666064528"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.6730"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9542,10 +12972,33 @@
       "preferred_excluded": false,
       "corp_code": "00161709",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002137"
+        ],
+        "metrics": {
+          "revenue": "97635259403",
+          "operating_profit": "-2070962623",
+          "net_income": "6650368848",
+          "assets": "675489940473",
+          "liabilities": "77196153920",
+          "equity": "598293786553",
+          "operating_cashflow": "1156187579"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.4565"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9561,10 +13014,33 @@
       "preferred_excluded": false,
       "corp_code": "00143651",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002893"
+        ],
+        "metrics": {
+          "revenue": "302632321735",
+          "operating_profit": "31743732048",
+          "net_income": "4244203716",
+          "assets": "5428932390971",
+          "liabilities": "5106097250185",
+          "equity": "322835140786",
+          "operating_cashflow": "71915233238"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.3699"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9580,10 +13056,33 @@
       "preferred_excluded": false,
       "corp_code": "00130684",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515000994"
+        ],
+        "metrics": {
+          "revenue": "769497178255",
+          "operating_profit": "22041981529",
+          "net_income": "21626235874",
+          "assets": "1911254349904",
+          "liabilities": "774292409824",
+          "equity": "1136961940080",
+          "operating_cashflow": "196837713710"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.2412"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9599,10 +13098,33 @@
       "preferred_excluded": false,
       "corp_code": "00135111",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515003135"
+        ],
+        "metrics": {
+          "revenue": "47325557471",
+          "operating_profit": "2809322894",
+          "net_income": "2933555997",
+          "assets": "289973625746",
+          "liabilities": "85979213516",
+          "equity": "203994412230",
+          "operating_cashflow": "-8848008292"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "0.5200"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9618,10 +13140,33 @@
       "preferred_excluded": false,
       "corp_code": "00159023",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515001207"
+        ],
+        "metrics": {
+          "revenue": "4392312000000",
+          "operating_profit": "537591000000",
+          "net_income": "316415000000",
+          "assets": "30021958000000",
+          "liabilities": "16674341000000",
+          "equity": "13347617000000",
+          "operating_cashflow": "1064237000000"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "1.3115"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],
@@ -9637,10 +13182,33 @@
       "preferred_excluded": false,
       "corp_code": "00164724",
       "mapping_status": "MAPPED",
-      "collection_status": "UNFETCHED",
-      "filing": null,
-      "ratios": {},
-      "ratio_sources": {},
+      "collection_status": "FETCHED_PARTIAL_NOT_VERIFIED",
+      "filing": {
+        "year": 2026,
+        "report_code": "11013",
+        "fs_div": "CFS",
+        "receipt_numbers": [
+          "20260515002809"
+        ],
+        "metrics": {
+          "revenue": "545847163885",
+          "operating_profit": "40486466882",
+          "net_income": "27068395335",
+          "assets": "3747621615038",
+          "liabilities": "2703173622005",
+          "equity": "1044447993033",
+          "operating_cashflow": "85366784827"
+        },
+        "issues": [],
+        "fetched_at_utc": "2026-11-15T21:40:50.512632+00:00",
+        "source": "OpenDART fnlttSinglAcntAll.json"
+      },
+      "ratios": {
+        "pbr_proxy": "2.4890"
+      },
+      "ratio_sources": {
+        "pbr_proxy": "market_cap / DART_equity; consolidated equity may include minority interest"
+      },
       "ratio_issues": [
         "ANNUAL_COMPARABLE_PER_ROE_NOT_AVAILABLE"
       ],

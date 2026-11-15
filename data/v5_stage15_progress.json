@@ -1,0 +1,37 @@
+{
+  "trading_date": "20261112",
+  "generated_at_utc": "2026-11-15T21:42:09.594475+00:00",
+  "market_universe": 1283,
+  "preferred_excluded_heuristic": 28,
+  "eligible_count": 1255,
+  "security_type_counts": {
+    "NUMERIC_6_DART_ELIGIBLE": 1257,
+    "ALPHANUMERIC_6_CLASSIFICATION_REQUIRED": 26
+  },
+  "dart_mapped": 1234,
+  "financial_cached": 295,
+  "financial_coverage_pct": 23.51,
+  "annual_target_years": [
+    2025,
+    2024
+  ],
+  "annual_filing_pairs": 7,
+  "annual_fetched_this_run": 15,
+  "annual_attempted_this_run": 15,
+  "annual_cached_filings": 15,
+  "ratio_counts": {
+    "per": 6,
+    "pbr": 8,
+    "roe": 7
+  },
+  "provisional_grade_counts": {
+    "A": 0,
+    "B+": 3,
+    "B": 1,
+    "WITHHELD": 1279
+  },
+  "verified_grade_count": 0,
+  "api_halted": false,
+  "batch_errors": [],
+  "classification": "PROVISIONAL_ONLY_NOT_VERIFIED_INVESTMENT_GRADES"
+}
