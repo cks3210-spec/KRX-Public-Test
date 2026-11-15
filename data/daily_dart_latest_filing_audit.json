@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-15T08:48:06.514942+00:00",
+  "generated_at_utc": "2026-11-15T09:11:15.895363+00:00",
   "searched_receipt_dates": [
     "20250514",
     "20261115"
@@ -48,7 +48,7 @@
       "financial_verified": false,
       "grade_authorized": false,
       "latest_receipt_matches_collected": true,
-      "periodic_filing_count": 3
+      "periodic_filing_count": 6
     },
     {
       "code": "030190",
@@ -57,12 +57,12 @@
       "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
       "errors": [],
       "latest_periodic": {
-        "report_code": "11012",
-        "quarter": 2,
+        "report_code": "11014",
+        "quarter": 3,
         "fiscal_year": 2026,
-        "report_name": "[첨부추가]반기보고서 (2026.06)",
-        "receipt_no": "20260813000967",
-        "receipt_date": "20260813",
+        "report_name": "분기보고서 (2026.09)",
+        "receipt_no": "20261113001008",
+        "receipt_date": "20261113",
         "remark": "",
         "amended": false,
         "withdrawn": false
@@ -88,7 +88,7 @@
       "financial_verified": false,
       "grade_authorized": false,
       "latest_receipt_matches_collected": true,
-      "periodic_filing_count": 3
+      "periodic_filing_count": 7
     },
     {
       "code": "053800",
@@ -97,12 +97,12 @@
       "status": "PERIOD_FOUND_AMENDMENT_REVIEW_PENDING",
       "errors": [],
       "latest_periodic": {
-        "report_code": "11012",
-        "quarter": 2,
+        "report_code": "11014",
+        "quarter": 3,
         "fiscal_year": 2026,
-        "report_name": "반기보고서 (2026.06)",
-        "receipt_no": "20260813000644",
-        "receipt_date": "20260813",
+        "report_name": "분기보고서 (2026.09)",
+        "receipt_no": "20261113000391",
+        "receipt_date": "20261113",
         "remark": "",
         "amended": false,
         "withdrawn": false
@@ -128,7 +128,7 @@
       "financial_verified": false,
       "grade_authorized": false,
       "latest_receipt_matches_collected": true,
-      "periodic_filing_count": 3
+      "periodic_filing_count": 7
     },
     {
       "code": "068270",
@@ -168,7 +168,7 @@
       "financial_verified": false,
       "grade_authorized": false,
       "latest_receipt_matches_collected": true,
-      "periodic_filing_count": 3
+      "periodic_filing_count": 6
     },
     {
       "code": "068930",
@@ -208,7 +208,7 @@
       "financial_verified": false,
       "grade_authorized": false,
       "latest_receipt_matches_collected": true,
-      "periodic_filing_count": 3
+      "periodic_filing_count": 6
     }
   ]
 }
