@@ -1,0 +1,43 @@
+name: KRX v5 R5 Research Continuity and Forward Returns
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * 1-5' # 09:30 KST, after R4 scheduled 09:15
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-research-continuity-r5
+  cancel-in-progress: false
+jobs:
+  continuity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify and archive R4 research evidence
+        run: python scripts/krx_v5_research_continuity_r5_20261116.py
+      - name: Persist R5 audit and performance evidence
+        if: success()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_research_r5/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R5: preserve research audit and forward returns'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload R5 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-research-continuity-r5
+          path: data/v5_research_r5/
+          retention-days: 90
+          if-no-files-found: warn
