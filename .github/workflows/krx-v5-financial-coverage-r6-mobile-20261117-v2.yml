@@ -1,0 +1,53 @@
+name: KRX v5 R6 Financial Coverage Continuity Mobile V2
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '45 0 * * 1-5' # 09:45 KST, after R4; verify actual market-date in report
+permissions:
+  contents: write
+jobs:
+  financial_coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install market calendar dependency for R4 helper import
+        run: python -m pip install 'exchange_calendars>=4.5,<5' pandas
+      - name: R6 incremental coverage and provisional research
+        id: research
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_MAX_REQUESTS: '120'
+          DART_REFRESH_DAYS: '30'
+        run: python scripts/krx_v5_financial_coverage_r6_mobile_20261117_v2.py
+      - name: Persist R6 independent cache and evidence
+        if: always()
+        run: |
+          if [ -d data/v5_financial_r6 ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/v5_financial_r6/
+            if ! git diff --cached --quiet; then
+              git commit -m 'v5 R6: accumulate financial coverage and audit'
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Upload R6 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-financial-coverage-r6
+          path: data/v5_financial_r6/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Fail if research failed
+        if: steps.research.outcome == 'failure'
+        run: exit 1
