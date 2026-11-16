@@ -1059,9 +1059,124 @@
       "name": "DB손해보험",
       "status": "FINANCIAL_INCOMPLETE",
       "checked_at_utc": "2026-11-16T01:43:42+00:00"
+    },
+    "005850": {
+      "name": "에스엘",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:48:00+00:00",
+      "period": "2026_H1"
+    },
+    "005880": {
+      "name": "대한해운",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:48:00+00:00",
+      "period": "2026_H1"
+    },
+    "005930": {
+      "name": "삼성전자",
+      "status": "VERIFIED",
+      "checked_at_utc": "2026-11-16T01:48:02+00:00",
+      "period": "2026_H1"
+    },
+    "005935": {
+      "name": "삼성전자우",
+      "status": "CORP_CODE_MISSING_OR_SHARE_CLASS",
+      "checked_at_utc": "2026-11-16T01:48:14+00:00"
+    },
+    "005940": {
+      "name": "NH투자증권",
+      "status": "FINANCIAL_INCOMPLETE",
+      "checked_at_utc": "2026-11-16T01:48:14+00:00"
+    },
+    "005945": {
+      "name": "NH투자증권우",
+      "status": "CORP_CODE_MISSING_OR_SHARE_CLASS",
+      "checked_at_utc": "2026-11-16T01:51:03+00:00"
+    },
+    "005950": {
+      "name": "이수화학",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:51:03+00:00",
+      "period": "2026_H1"
+    },
+    "005960": {
+      "name": "동부건설",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:51:04+00:00",
+      "period": "2026_H1"
+    },
+    "005990": {
+      "name": "매일홀딩스",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:51:05+00:00",
+      "period": "2026_H1"
+    },
+    "006040": {
+      "name": "동원산업",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:51:06+00:00",
+      "period": "2026_H1"
+    },
+    "006060": {
+      "name": "화승인더",
+      "status": "VERIFIED",
+      "checked_at_utc": "2026-11-16T01:51:07+00:00",
+      "period": "2026_Q3"
+    },
+    "006110": {
+      "name": "삼아알미늄",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:51:15+00:00",
+      "period": "2026_H1"
+    },
+    "006120": {
+      "name": "SK디스커버리",
+      "status": "VERIFIED",
+      "checked_at_utc": "2026-11-16T01:51:16+00:00",
+      "period": "2026_Q3"
+    },
+    "006220": {
+      "name": "제주은행",
+      "status": "FINANCIAL_INCOMPLETE",
+      "checked_at_utc": "2026-11-16T01:51:30+00:00"
+    },
+    "006260": {
+      "name": "LS",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:54:36+00:00",
+      "period": "2026_H1"
+    },
+    "006280": {
+      "name": "녹십자",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:54:38+00:00",
+      "period": "2026_H1"
+    },
+    "006340": {
+      "name": "대원전선",
+      "status": "VERIFIED",
+      "checked_at_utc": "2026-11-16T01:54:39+00:00",
+      "period": "2026_Q3"
+    },
+    "006360": {
+      "name": "GS건설",
+      "status": "VERIFIED",
+      "checked_at_utc": "2026-11-16T01:54:46+00:00",
+      "period": "2026_Q3"
+    },
+    "006400": {
+      "name": "삼성SDI",
+      "status": "UNCHANGED_FILING",
+      "checked_at_utc": "2026-11-16T01:54:54+00:00",
+      "period": "2026_H1"
+    },
+    "006405": {
+      "name": "삼성SDI우",
+      "status": "CORP_CODE_MISSING_OR_SHARE_CLASS",
+      "checked_at_utc": "2026-11-16T01:54:55+00:00"
     }
   },
-  "last_updated_utc": "2026-11-16T01:47:58+00:00",
+  "last_updated_utc": "2026-11-16T01:54:55+00:00",
   "cycle": "2026-W47",
   "universe_date": "20261112"
 }
