@@ -1,0 +1,44 @@
+name: KRX v5 R5 Official Run - No Concurrency
+'on':
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  continuity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify R5 script exists and compiles
+        run: |
+          test -f scripts/krx_v5_research_continuity_r5_20261116.py
+          python -m py_compile scripts/krx_v5_research_continuity_r5_20261116.py
+      - name: Execute R5 continuity and forward returns
+        run: python scripts/krx_v5_research_continuity_r5_20261116.py
+      - name: Upload R5 evidence even if script fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r5-official-run-evidence
+          path: data/v5_research_r5/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Persist verified R5 output
+        if: success()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_research_r5/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R5: archive research continuity and forward returns'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
