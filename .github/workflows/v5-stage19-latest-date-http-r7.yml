@@ -1,0 +1,27 @@
+name: V5 Stage19 R7 Latest Trading Date and HTTP 400 Diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check program latest market date and diagnose KRX response
+        run: |
+          python scripts/KRX19_Latest_Date_HTTP_Diagnostic_R7.py --summary data/summary.json --latest data/latest.csv --universe data/v5_full_market_universe.json --output-dir stage19_r7_output
+      - name: Upload diagnostic results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-latest-date-http-r7-${{ github.run_number }}
+          path: stage19_r7_output/
+          if-no-files-found: warn
