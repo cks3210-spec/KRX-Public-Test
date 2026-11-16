@@ -1,0 +1,30 @@
+name: V5 Stage19 Official Valuation Evidence Gate R1
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild Stage18 R3 read-only inputs
+        run: python scripts/KRX18_Financial_Audit_Nov16.py --data-dir data --output-dir /tmp/stage19_input
+      - name: Rebuild Stage18 R4 diagnostic
+        run: python scripts/KRX18_Deep_Audit_R4.py --input-dir /tmp/stage19_input --output-dir /tmp/stage19_input
+      - name: Run Stage19 official evidence gate
+        run: python scripts/KRX19_Official_Valuation_R2_New.py --input-dir /tmp/stage19_input --output-dir stage19_output
+      - name: Upload Stage19 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-valuation-evidence-r1-${{ github.run_number }}
+          path: stage19_output/
+          if-no-files-found: warn
