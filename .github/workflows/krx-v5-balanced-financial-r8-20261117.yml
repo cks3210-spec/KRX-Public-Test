@@ -1,0 +1,51 @@
+name: KRX v5 R8 Balanced Annual Financial Coverage
+'on':
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  balanced_financial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate R8 program
+        run: python -m py_compile scripts/krx_v5_balanced_financial_r8_20261117.py
+      - name: Run R8 balanced annual collector
+        id: collect
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_MAX_REQUESTS: '120'
+          R8_RETRY_DAYS: '7'
+        run: python scripts/krx_v5_balanced_financial_r8_20261117.py
+      - name: Save independent R8 evidence
+        if: always()
+        run: |
+          if [ -d data/v5_financial_r8 ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/v5_financial_r8/
+            if ! git diff --cached --quiet; then
+              git commit -m 'v5 R8: balanced annual financial coverage'
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Upload R8 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-balanced-financial-r8
+          path: data/v5_financial_r8/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Fail if collector failed
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
