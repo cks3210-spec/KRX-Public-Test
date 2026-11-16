@@ -1,0 +1,66 @@
+name: V5 Stage17 Main Cache Verification R2
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Verify persisted main cache without network or mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p stage17_main_verification
+          python - <<'PY'
+          import json, hashlib, pathlib, sys
+          p = pathlib.Path('data/v5_stage15_annual_cache.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          entries = data.get('entries')
+          if not isinstance(entries, dict):
+              raise SystemExit('INVALID: entries must be a dict')
+          successful = {k:v for k,v in entries.items() if isinstance(v,dict) and isinstance(v.get('filing'),dict) and bool(v['filing'])}
+          years = {str(y):sum(k.endswith(':'+str(y)) for k in successful) for y in (2025,2024)}
+          pairs = sum(f'{k.split(":")[0]}:2024' in successful for k in successful if k.endswith(':2025'))
+          comparable = 0
+          for k,v in successful.items():
+              if not k.endswith(':2025'): continue
+              other = successful.get(k[:-4]+'2024')
+              if not other: continue
+              f1,f2=v['filing'],other['filing']
+              if f1.get('fs_div') == f2.get('fs_div') and not f1.get('issues') and not f2.get('issues'):
+                  comparable += 1
+          result = {
+              'source': 'main:data/v5_stage15_annual_cache.json',
+              'total_entries':len(entries),
+              'successful_entries':len(successful),
+              'year_success_counts':years,
+              'annual_pairs':pairs,
+              'comparable_pairs_by_cache_basis':comparable,
+              'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+              'expected_successful_entries':1672,
+              'expected_2025':839,
+              'expected_2024':833,
+              'expected_comparable_pairs':752,
+          }
+          result['passed'] = (result['successful_entries']==1672 and years['2025']==839 and years['2024']==833 and comparable==752)
+          out=pathlib.Path('stage17_main_verification/verification.json')
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:
+              f.write('## Stage17 persisted main cache verification\n\n')
+              for key,value in result.items(): f.write(f'- **{key}**: `{value}`\n')
+          if not result['passed']:
+              raise SystemExit('FAIL: main cache has not reached Stage17 ZIP9 recovery targets')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stage17-main-cache-verification-${{ github.run_number }}
+          path: stage17_main_verification/verification.json
+          if-no-files-found: warn
