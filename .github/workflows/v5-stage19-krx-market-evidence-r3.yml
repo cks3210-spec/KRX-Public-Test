@@ -1,0 +1,41 @@
+name: V5 Stage19 KRX Market Evidence R3
+on:
+  workflow_dispatch:
+    inputs:
+      trading_date:
+        description: 'KRX trading date YYYYMMDD; blank uses universe trading_date'
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Collect official KRX market evidence (not PER/PBR)
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          REQUEST_DATE: ${{ inputs.trading_date }}
+        run: |
+          python - <<'PY'
+          import json,os,re,subprocess,sys
+          with open('data/v5_full_market_universe.json',encoding='utf-8') as f: universe=json.load(f)
+          date=(os.environ.get('REQUEST_DATE') or '').strip() or str(universe['trading_date'])
+          if not re.fullmatch(r'20\d{6}',date):sys.exit('Invalid YYYYMMDD trading date')
+          subprocess.run([sys.executable,'scripts/KRX19_KRX_Market_Evidence_R3.py','--date',date,'--output-dir','stage19_r3_output'],check=True)
+          PY
+      - name: Upload evidence and diagnostic even if API fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-krx-market-evidence-r3-${{ github.run_number }}
+          path: stage19_r3_output/
+          if-no-files-found: warn
