@@ -1,6 +1,6 @@
 {
   "trading_date": "20261112",
-  "generated_at_utc": "2026-11-16T03:31:54.276823+00:00",
+  "generated_at_utc": "2026-11-16T06:09:57.372316+00:00",
   "market_universe": 1283,
   "preferred_excluded_heuristic": 28,
   "eligible_count": 1255,
@@ -15,20 +15,20 @@
     2025,
     2024
   ],
-  "annual_filing_pairs": 240,
+  "annual_filing_pairs": 439,
   "annual_fetched_this_run": 0,
   "annual_attempted_this_run": 0,
-  "annual_cached_filings": 480,
+  "annual_cached_filings": 879,
   "ratio_counts": {
-    "per": 191,
-    "pbr": 239,
-    "roe": 237
+    "per": 357,
+    "pbr": 438,
+    "roe": 433
   },
   "provisional_grade_counts": {
-    "A": 13,
-    "B+": 53,
-    "B": 64,
-    "WITHHELD": 1153
+    "A": 31,
+    "B+": 97,
+    "B": 116,
+    "WITHHELD": 1039
   },
   "verified_grade_count": 0,
   "api_halted": false,
