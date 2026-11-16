@@ -1,6 +1,6 @@
 {
   "trading_date": "20261112",
-  "generated_at_utc": "2026-11-16T06:09:57.499023+00:00",
+  "generated_at_utc": "2026-11-16T06:38:25.528912+00:00",
   "phase": "COMPLETE",
   "eligible_count": 1255,
   "basic_cached": 1228,
@@ -12,24 +12,24 @@
     2024
   ],
   "annual_filing_counts": {
-    "2025": 440,
-    "2024": 439
+    "2025": 640,
+    "2024": 638
   },
-  "annual_pair_count": 439,
-  "annual_comparable_count": 398,
+  "annual_pair_count": 638,
+  "annual_comparable_count": 578,
   "valuation_proxy_counts": {
-    "per": 320,
-    "pbr": 438,
-    "roe": 396
+    "per": 458,
+    "pbr": 636,
+    "roe": 575
   },
   "provisional_grade_counts": {
-    "A": 31,
-    "B+": 97,
-    "B": 116,
-    "WITHHELD": 1011
+    "A": 62,
+    "B+": 139,
+    "B": 165,
+    "WITHHELD": 889
   },
   "verified_ab_count": 0,
-  "elapsed_seconds": 603.4,
+  "elapsed_seconds": 596.7,
   "limits": {
     "max_seconds": 4500,
     "basic_batches": 0,
