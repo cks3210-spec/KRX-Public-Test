@@ -9040,9 +9040,3015 @@
       },
       "errors": [],
       "status": "FETCHED"
+    },
+    "006120:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260317000867"
+        ],
+        "metrics": {
+          "revenue": "10164013989611",
+          "operating_profit": "361353559282",
+          "net_income": "144626599785",
+          "assets": "16299659050645",
+          "liabilities": "9448413351329",
+          "equity": "6851245699316",
+          "operating_cashflow": "660830683509"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:21.448520+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006120:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001277"
+        ],
+        "metrics": {
+          "revenue": "9039602889123",
+          "operating_profit": "172557836004",
+          "net_income": "31919087418",
+          "assets": "15077692130416",
+          "liabilities": "8624337888533",
+          "equity": "6453354241883",
+          "operating_cashflow": "115391782358"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:22.736952+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006220:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260316000708"
+        ],
+        "metrics": {
+          "net_income": "13930000000",
+          "assets": "8019927000000",
+          "liabilities": "7372657000000",
+          "equity": "647270000000",
+          "operating_cashflow": "24934000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:23.813217+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006220:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250317000569"
+        ],
+        "metrics": {
+          "net_income": "10416000000",
+          "assets": "7444771000000",
+          "liabilities": "6854663000000",
+          "equity": "590108000000",
+          "operating_cashflow": "-140902000000"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:24.965616+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006260:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001427"
+        ],
+        "metrics": {
+          "revenue": "31870031000000",
+          "operating_profit": "1052554000000",
+          "net_income": "485145000000",
+          "assets": "24994792000000",
+          "liabilities": "17315204000000",
+          "equity": "7679588000000",
+          "operating_cashflow": "206330000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:26.144416+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006260:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250814002856"
+        ],
+        "metrics": {
+          "revenue": "27544663000000",
+          "operating_profit": "1072943000000",
+          "net_income": "391515000000",
+          "assets": "20527939000000",
+          "liabilities": "13646786000000",
+          "equity": "6881153000000",
+          "operating_cashflow": "858072000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:27.333463+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006280:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001316"
+        ],
+        "metrics": {
+          "revenue": "1991279093821",
+          "operating_profit": "69149857151",
+          "net_income": "-29685159445",
+          "assets": "2971095184896",
+          "liabilities": "1576822440732",
+          "equity": "1394272744164",
+          "operating_cashflow": "99462778248"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:28.387497+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006280:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001288"
+        ],
+        "metrics": {
+          "revenue": "1679891941477",
+          "operating_profit": "32107347889",
+          "net_income": "-42637064523",
+          "assets": "2743875851979",
+          "liabilities": "1262860145974",
+          "equity": "1481015706005",
+          "operating_cashflow": "-53460079255"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:29.560141+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006340:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260331003244"
+        ],
+        "metrics": {
+          "revenue": "624542487406",
+          "operating_profit": "9351244955",
+          "net_income": "12916455490",
+          "assets": "346448665318",
+          "liabilities": "194400272027",
+          "equity": "152048393291",
+          "operating_cashflow": "-30136980330"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:30.625692+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006340:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313000035"
+        ],
+        "metrics": {
+          "revenue": "552777321378",
+          "operating_profit": "14338544095",
+          "net_income": "6794390393",
+          "assets": "226992976377",
+          "liabilities": "113147385668",
+          "equity": "113845590709",
+          "operating_cashflow": "4005645413"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:31.681040+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006360:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260701000624"
+        ],
+        "metrics": {
+          "revenue": "12450347000000",
+          "operating_profit": "437809000000",
+          "net_income": "93423000000",
+          "assets": "18459842000000",
+          "liabilities": "12936285000000",
+          "equity": "5523557000000",
+          "operating_cashflow": "591530000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:32.829879+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006360:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260701000540"
+        ],
+        "metrics": {
+          "revenue": "12863811468386",
+          "operating_profit": "285954335787",
+          "net_income": "263924031753",
+          "assets": "17803293924556",
+          "liabilities": "12716169965113",
+          "equity": "5087123959443",
+          "operating_cashflow": "267812354593"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:33.853759+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006400:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260310002954"
+        ],
+        "metrics": {
+          "revenue": "13266730679499",
+          "operating_profit": "-1722360788760",
+          "net_income": "-584875358534",
+          "assets": "42255338580919",
+          "liabilities": "18685225421089",
+          "equity": "23570113159830",
+          "operating_cashflow": "792385760879"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:35.011757+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006400:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250311001275"
+        ],
+        "metrics": {
+          "revenue": "16592248884388",
+          "operating_profit": "363304463263",
+          "net_income": "575512415979",
+          "assets": "40597344536357",
+          "liabilities": "19030107423830",
+          "equity": "21567237112527",
+          "operating_cashflow": "-137613377776"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:36.194506+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006650:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260305001191"
+        ],
+        "metrics": {
+          "revenue": "3347821791902",
+          "operating_profit": "52668902480",
+          "net_income": "55896051028",
+          "assets": "2700325545731",
+          "liabilities": "618855781516",
+          "equity": "2081469764215",
+          "operating_cashflow": "202790622580"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:37.223263+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006650:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250306000568"
+        ],
+        "metrics": {
+          "revenue": "2800102662159",
+          "operating_profit": "-59892625042",
+          "net_income": "-8528518983",
+          "assets": "2219743050345",
+          "liabilities": "412100919394",
+          "equity": "1807642130951",
+          "operating_cashflow": "133110723897"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:38.401873+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006730:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319000002"
+        ],
+        "metrics": {
+          "revenue": "248329962530",
+          "operating_profit": "70337173396",
+          "net_income": "116197439307",
+          "assets": "3255148135822",
+          "liabilities": "1868202291719",
+          "equity": "1386945844103",
+          "operating_cashflow": "106128379142"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:39.728324+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006730:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001411"
+        ],
+        "metrics": {
+          "revenue": "187479112967",
+          "operating_profit": "47986173901",
+          "net_income": "64654284400",
+          "assets": "2894459035854",
+          "liabilities": "1653580260893",
+          "equity": "1240878774961",
+          "operating_cashflow": "62886037142"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:40.909114+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006800:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260515002972"
+        ],
+        "metrics": {
+          "revenue": "29283028000000",
+          "net_income": "1582916000000",
+          "assets": "150283930000000",
+          "liabilities": "136805727000000",
+          "equity": "13478203000000",
+          "operating_cashflow": "-6860961000000"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:42.126382+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006800:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250814004060"
+        ],
+        "metrics": {
+          "revenue": "22242327609027",
+          "net_income": "925470295452",
+          "assets": "137176998056307",
+          "liabilities": "124913289504539",
+          "equity": "12263708551768",
+          "operating_cashflow": "-10250278932212"
+        },
+        "issues": [
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:43.435750+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006910:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260319000970"
+        ],
+        "metrics": {
+          "revenue": "147486453767",
+          "operating_profit": "26805989959",
+          "net_income": "20314421488",
+          "assets": "133280442520",
+          "liabilities": "23049380354",
+          "equity": "110231062166",
+          "operating_cashflow": "43704844510"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:45.165256+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "006910:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20250319000901"
+        ],
+        "metrics": {
+          "revenue": "77062181417",
+          "operating_profit": "4824105984",
+          "net_income": "5952224961",
+          "assets": "97163663127",
+          "liabilities": "6898945741",
+          "equity": "90264717386",
+          "operating_cashflow": "-10001822041"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:46.914462+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007070:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260311004487"
+        ],
+        "metrics": {
+          "revenue": "11957421688837",
+          "operating_profit": "292119604403",
+          "net_income": "50239032621",
+          "assets": "7483097413933",
+          "liabilities": "4207002646119",
+          "equity": "3276094767814",
+          "operating_cashflow": "938584394003"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:48.201474+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007070:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250312000991"
+        ],
+        "metrics": {
+          "revenue": "11626920274913",
+          "operating_profit": "239104876913",
+          "net_income": "9791708542",
+          "assets": "7581643378910",
+          "liabilities": "4400125241585",
+          "equity": "3181518137325",
+          "operating_cashflow": "660183401064"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:49.667984+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007160:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318000986"
+        ],
+        "metrics": {
+          "revenue": "706210125216",
+          "operating_profit": "33151862048",
+          "net_income": "-42808436080",
+          "assets": "1253228674215",
+          "liabilities": "617053790243",
+          "equity": "636174883972",
+          "operating_cashflow": "-20538767596"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:50.959641+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007160:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250312000903"
+        ],
+        "metrics": {
+          "revenue": "635200660442",
+          "operating_profit": "-9378468076",
+          "net_income": "15292243041",
+          "assets": "1216795673119",
+          "liabilities": "553184226975",
+          "equity": "663611446144",
+          "operating_cashflow": "27421946994"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:52.134867+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007310:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318000621"
+        ],
+        "metrics": {
+          "revenue": "3674545422005",
+          "operating_profit": "177251297728",
+          "net_income": "72135661488",
+          "assets": "3641076426477",
+          "liabilities": "1438289345393",
+          "equity": "2202787081084",
+          "operating_cashflow": "218874761016"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:53.474792+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007310:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000979"
+        ],
+        "metrics": {
+          "revenue": "3539120882890",
+          "operating_profit": "222014509063",
+          "net_income": "137599993733",
+          "assets": "3597403088294",
+          "liabilities": "1415871492212",
+          "equity": "2181531596082",
+          "operating_cashflow": "361114671353"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:55.517989+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007330:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260407003063"
+        ],
+        "metrics": {
+          "net_income": "19871582266",
+          "assets": "1557954685295",
+          "liabilities": "1237410892711",
+          "equity": "320543792584",
+          "operating_cashflow": "18020320408"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:57.217049+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007330:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260407002922"
+        ],
+        "metrics": {
+          "net_income": "7013527880",
+          "assets": "1325242935137",
+          "liabilities": "1017688463958",
+          "equity": "307554471179",
+          "operating_cashflow": "-11878383400"
+        },
+        "issues": [
+          "revenue_MISSING",
+          "operating_profit_MISSING"
+        ],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:29:59.069104+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007340:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260312001285"
+        ],
+        "metrics": {
+          "revenue": "3675704255000",
+          "operating_profit": "527907609000",
+          "net_income": "324985358000",
+          "assets": "5275680667000",
+          "liabilities": "2826018308000",
+          "equity": "2449662359000",
+          "operating_cashflow": "259273221000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:00.488738+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007340:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313001452"
+        ],
+        "metrics": {
+          "revenue": "3434542268000",
+          "operating_profit": "522916807000",
+          "net_income": "318229010000",
+          "assets": "5006031529000",
+          "liabilities": "2835259915000",
+          "equity": "2170771614000",
+          "operating_cashflow": "197148752000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:01.907441+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007390:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260323001523"
+        ],
+        "metrics": {
+          "revenue": "20734613571",
+          "operating_profit": "-3646243657",
+          "net_income": "-2838308819",
+          "assets": "74731473448",
+          "liabilities": "11701588109",
+          "equity": "63029885339",
+          "operating_cashflow": "156736518"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:03.211509+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007390:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250319000970"
+        ],
+        "metrics": {
+          "revenue": "32333908156",
+          "operating_profit": "597518893",
+          "net_income": "1226158108",
+          "assets": "71997508759",
+          "liabilities": "7373108088",
+          "equity": "64624400671",
+          "operating_cashflow": "1512985553"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:04.532583+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007570:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318000595"
+        ],
+        "metrics": {
+          "revenue": "272422211708",
+          "operating_profit": "4962569742",
+          "net_income": "7132764228",
+          "assets": "457330667955",
+          "liabilities": "215922084514",
+          "equity": "241408583441",
+          "operating_cashflow": "12040542630"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:09.454014+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007570:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250327001173"
+        ],
+        "metrics": {
+          "revenue": "268861229571",
+          "operating_profit": "11000497773",
+          "net_income": "10507661951",
+          "assets": "431211150640",
+          "liabilities": "189634840121",
+          "equity": "241576310519",
+          "operating_cashflow": "5614845806"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:10.698829+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007660:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260323000847"
+        ],
+        "metrics": {
+          "revenue": "1088025119176",
+          "operating_profit": "204724531402",
+          "net_income": "160482561697",
+          "assets": "1289510030680",
+          "liabilities": "533312849236",
+          "equity": "756197181444",
+          "operating_cashflow": "168752524669"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:11.949251+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007660:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250321001007"
+        ],
+        "metrics": {
+          "revenue": "836866961285",
+          "operating_profit": "101878836049",
+          "net_income": "74034111779",
+          "assets": "790136366426",
+          "liabilities": "462609658014",
+          "equity": "327526708412",
+          "operating_cashflow": "84900910242"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:13.177197+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007690:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260305001586"
+        ],
+        "metrics": {
+          "revenue": "1395556194366",
+          "operating_profit": "53170435543",
+          "net_income": "21898775802",
+          "assets": "1749499133148",
+          "liabilities": "873181013894",
+          "equity": "876318119254",
+          "operating_cashflow": "9036624024"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:14.480964+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007690:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250321001221"
+        ],
+        "metrics": {
+          "revenue": "1305775130486",
+          "operating_profit": "25333558032",
+          "net_income": "8940950262",
+          "assets": "1593312464298",
+          "liabilities": "739488447502",
+          "equity": "853824016796",
+          "operating_cashflow": "54551909272"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:15.666102+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007700:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001442"
+        ],
+        "metrics": {
+          "revenue": "1933800848582",
+          "operating_profit": "434194766171",
+          "net_income": "367905656969",
+          "assets": "4343643804753",
+          "liabilities": "700781175716",
+          "equity": "3642862629037",
+          "operating_cashflow": "361624481606"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:17.431822+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007700:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000985"
+        ],
+        "metrics": {
+          "revenue": "1898301562891",
+          "operating_profit": "416366707580",
+          "net_income": "321989239159",
+          "assets": "4033253443201",
+          "liabilities": "663353855362",
+          "equity": "3369899587839",
+          "operating_cashflow": "402151665279"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:18.619795+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007810:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319000865"
+        ],
+        "metrics": {
+          "revenue": "1509725133078",
+          "operating_profit": "53816253084",
+          "net_income": "53794771145",
+          "assets": "1392548104186",
+          "liabilities": "601954072823",
+          "equity": "790594031363",
+          "operating_cashflow": "39137875548"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:19.846029+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007810:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001351"
+        ],
+        "metrics": {
+          "revenue": "1406956573662",
+          "operating_profit": "-33153617896",
+          "net_income": "-129014306648",
+          "assets": "1255382149192",
+          "liabilities": "574186642619",
+          "equity": "681195506573",
+          "operating_cashflow": "99531409662"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:21.325076+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007860:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001577"
+        ],
+        "metrics": {
+          "revenue": "4916072967528",
+          "operating_profit": "199589955218",
+          "net_income": "93797410299",
+          "assets": "3719605160023",
+          "liabilities": "2089725341753",
+          "equity": "1629879818270",
+          "operating_cashflow": "238360731326"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:22.560966+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "007860:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001318"
+        ],
+        "metrics": {
+          "revenue": "4498780011654",
+          "operating_profit": "241938199007",
+          "net_income": "225729869603",
+          "assets": "3424466755541",
+          "liabilities": "1896835374301",
+          "equity": "1527631381240",
+          "operating_cashflow": "322987668450"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:23.731723+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008060:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319001087"
+        ],
+        "metrics": {
+          "revenue": "1384989854344",
+          "operating_profit": "11312935746",
+          "net_income": "6226179828",
+          "assets": "1838110447073",
+          "liabilities": "388480733168",
+          "equity": "1449629713905",
+          "operating_cashflow": "88791350645"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:24.826921+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008060:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001383"
+        ],
+        "metrics": {
+          "revenue": "1267194760967",
+          "operating_profit": "8416757822",
+          "net_income": "42964643518",
+          "assets": "1817762218175",
+          "liabilities": "299989343198",
+          "equity": "1517772874977",
+          "operating_cashflow": "148539333411"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:25.968854+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008350:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260323001569"
+        ],
+        "metrics": {
+          "revenue": "258921909120",
+          "operating_profit": "-3265896897",
+          "net_income": "3634987284",
+          "assets": "437277779372",
+          "liabilities": "153089502829",
+          "equity": "284188276543",
+          "operating_cashflow": "-5132085976"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:27.059628+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008350:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001238"
+        ],
+        "metrics": {
+          "revenue": "289539027472",
+          "operating_profit": "4824753722",
+          "net_income": "-26725073616",
+          "assets": "404717544888",
+          "liabilities": "107185227528",
+          "equity": "297532317360",
+          "operating_cashflow": "15590973538"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:28.262211+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008490:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319001055"
+        ],
+        "metrics": {
+          "revenue": "722308593846",
+          "operating_profit": "50206468443",
+          "net_income": "47142445014",
+          "assets": "1061135569567",
+          "liabilities": "520118845731",
+          "equity": "541016723836",
+          "operating_cashflow": "76864719894"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:29.505046+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008490:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320000847"
+        ],
+        "metrics": {
+          "revenue": "653264494420",
+          "operating_profit": "33843445254",
+          "net_income": "21552927392",
+          "assets": "1017698965497",
+          "liabilities": "509924601861",
+          "equity": "507774363636",
+          "operating_cashflow": "56161526434"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:30.694670+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008730:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20261113001266"
+        ],
+        "metrics": {
+          "revenue": "485382903935",
+          "operating_profit": "8514206208",
+          "net_income": "4165013001",
+          "assets": "687562082962",
+          "liabilities": "395344319586",
+          "equity": "292217763376",
+          "operating_cashflow": "27148417002"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:31.874615+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008730:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20261113001254"
+        ],
+        "metrics": {
+          "revenue": "457078095305",
+          "operating_profit": "-18354577060",
+          "net_income": "-8530216577",
+          "assets": "655469570993",
+          "liabilities": "364539143448",
+          "equity": "290930427545",
+          "operating_cashflow": "8339225924"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:32.866093+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008770:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260311004398"
+        ],
+        "metrics": {
+          "revenue": "4068306491409",
+          "operating_profit": "13512516028",
+          "net_income": "-172848550007",
+          "assets": "3541423621707",
+          "liabilities": "2435201838277",
+          "equity": "1106221783430",
+          "operating_cashflow": "103620502742"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:34.037842+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008770:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250515002269"
+        ],
+        "metrics": {
+          "revenue": "3947552203343",
+          "operating_profit": "-5184329302",
+          "net_income": "-61501483516",
+          "assets": "3813885971903",
+          "liabilities": "2529540898565",
+          "equity": "1284345073338",
+          "operating_cashflow": "68743231242"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:35.289469+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008830:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260317000606"
+        ],
+        "metrics": {
+          "revenue": "220939401126",
+          "operating_profit": "162438986",
+          "net_income": "-4739603789",
+          "assets": "269547086319",
+          "liabilities": "190400371595",
+          "equity": "79146714724",
+          "operating_cashflow": "9634279607"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:36.950800+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008830:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20250314000238"
+        ],
+        "metrics": {
+          "revenue": "257057008425",
+          "operating_profit": "4464399985",
+          "net_income": "1168268540",
+          "assets": "249413481258",
+          "liabilities": "163859772924",
+          "equity": "85553708334",
+          "operating_cashflow": "5612351362"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:38.709328+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008930:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260320001158"
+        ],
+        "metrics": {
+          "revenue": "1356957532846",
+          "operating_profit": "138727168534",
+          "net_income": "117709205494",
+          "assets": "1489047152886",
+          "liabilities": "529854025529",
+          "equity": "959193127357",
+          "operating_cashflow": "47658093135"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:40.031005+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008930:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001281"
+        ],
+        "metrics": {
+          "revenue": "1283432295647",
+          "operating_profit": "98867912225",
+          "net_income": "56693106363",
+          "assets": "1349078932369",
+          "liabilities": "510375220087",
+          "equity": "838703712282",
+          "operating_cashflow": "82986394448"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:41.431672+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008970:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001380"
+        ],
+        "metrics": {
+          "revenue": "234784294346",
+          "operating_profit": "-1621771745",
+          "net_income": "-3098551358",
+          "assets": "239457342235",
+          "liabilities": "98083472688",
+          "equity": "141373869547",
+          "operating_cashflow": "-31594037080"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:42.527054+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "008970:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250317000788"
+        ],
+        "metrics": {
+          "revenue": "250297485190",
+          "operating_profit": "6676989307",
+          "net_income": "-19644237286",
+          "assets": "192335715993",
+          "liabilities": "84284314182",
+          "equity": "108051401811",
+          "operating_cashflow": "32908015764"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:43.533133+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009070:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319001225"
+        ],
+        "metrics": {
+          "revenue": "986704713638",
+          "operating_profit": "38817769669",
+          "net_income": "23308739558",
+          "assets": "791695946689",
+          "liabilities": "457345351296",
+          "equity": "334350595393",
+          "operating_cashflow": "42755836868"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:44.703720+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009070:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313001313"
+        ],
+        "metrics": {
+          "revenue": "882147692479",
+          "operating_profit": "38991030847",
+          "net_income": "27633970078",
+          "assets": "762617949986",
+          "liabilities": "457113288707",
+          "equity": "305504661279",
+          "operating_cashflow": "52080526964"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:46.041960+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009150:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260310003071"
+        ],
+        "metrics": {
+          "revenue": "11314459238100",
+          "operating_profit": "913331178557",
+          "net_income": "730989517218",
+          "assets": "14595895255468",
+          "liabilities": "4798551372605",
+          "equity": "9797343882863",
+          "operating_cashflow": "1490090883051"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:47.246171+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009150:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250311001190"
+        ],
+        "metrics": {
+          "revenue": "10294102976435",
+          "operating_profit": "735005856995",
+          "net_income": "703215637082",
+          "assets": "12792402920884",
+          "liabilities": "3776548889114",
+          "equity": "9015854031770",
+          "operating_cashflow": "1429819006720"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:48.450769+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009160:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001274"
+        ],
+        "metrics": {
+          "revenue": "1179040874617",
+          "operating_profit": "45956315730",
+          "net_income": "22353244341",
+          "assets": "1333843317612",
+          "liabilities": "663504758040",
+          "equity": "670338559572",
+          "operating_cashflow": "48449676634"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:49.533084+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009160:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250814003101"
+        ],
+        "metrics": {
+          "revenue": "785061758000",
+          "operating_profit": "24452879000",
+          "net_income": "27454726000",
+          "assets": "1079604688000",
+          "liabilities": "474348566000",
+          "equity": "605256122000",
+          "operating_cashflow": "-20757668000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:50.727273+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009240:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319001167"
+        ],
+        "metrics": {
+          "revenue": "1744538347428",
+          "operating_profit": "18491334862",
+          "net_income": "46281084361",
+          "assets": "992956864953",
+          "liabilities": "593197506608",
+          "equity": "399759358345",
+          "operating_cashflow": "69368697267"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:51.836521+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009240:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313001195"
+        ],
+        "metrics": {
+          "revenue": "1908390760197",
+          "operating_profit": "31229315756",
+          "net_income": "151137006442",
+          "assets": "1067251785665",
+          "liabilities": "716587845787",
+          "equity": "350663939878",
+          "operating_cashflow": "48892466562"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:53.027229+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009270:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260814002718"
+        ],
+        "metrics": {
+          "revenue": "1092254154426",
+          "operating_profit": "18778913228",
+          "net_income": "-1631250295",
+          "assets": "642566644960",
+          "liabilities": "414516010603",
+          "equity": "228050634357",
+          "operating_cashflow": "-18553198456"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:54.264566+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009270:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250814002561"
+        ],
+        "metrics": {
+          "revenue": "939536833803",
+          "operating_profit": "25317728223",
+          "net_income": "5648419882",
+          "assets": "628902089244",
+          "liabilities": "402124433814",
+          "equity": "226777655430",
+          "operating_cashflow": "34340975738"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:55.440152+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009290:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001573"
+        ],
+        "metrics": {
+          "revenue": "1659512457700",
+          "operating_profit": "31045848005",
+          "net_income": "21328798564",
+          "assets": "1320329495616",
+          "liabilities": "608533108468",
+          "equity": "711796387148",
+          "operating_cashflow": "82341354027"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:56.752339+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009290:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250325000803"
+        ],
+        "metrics": {
+          "revenue": "1640718849226",
+          "operating_profit": "30097355344",
+          "net_income": "41844893500",
+          "assets": "1170275148654",
+          "liabilities": "552007659862",
+          "equity": "618267488792",
+          "operating_cashflow": "-12153334235"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:58.199825+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009410:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001574"
+        ],
+        "metrics": {
+          "revenue": "2174483568714",
+          "operating_profit": "52789167779",
+          "net_income": "95829321273",
+          "assets": "4127053459058",
+          "liabilities": "3484163079501",
+          "equity": "642890379557",
+          "operating_cashflow": "115087827658"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:30:59.534994+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009410:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250814003344"
+        ],
+        "metrics": {
+          "revenue": "2686174110954",
+          "operating_profit": "20642182140",
+          "net_income": "66803953317",
+          "assets": "4323923757006",
+          "liabilities": "3796724785337",
+          "equity": "527198971669",
+          "operating_cashflow": "61614346825"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:00.982502+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009420:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001637"
+        ],
+        "metrics": {
+          "revenue": "155184524107",
+          "operating_profit": "-915814382",
+          "net_income": "-5559162634",
+          "assets": "225224012033",
+          "liabilities": "63542611197",
+          "equity": "161681400836",
+          "operating_cashflow": "-2340357567"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:02.156116+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009420:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000750"
+        ],
+        "metrics": {
+          "revenue": "138943698757",
+          "operating_profit": "230474890",
+          "net_income": "-1804843479",
+          "assets": "212880605189",
+          "liabilities": "44529201856",
+          "equity": "168351403333",
+          "operating_cashflow": "9360058092"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:03.240700+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009450:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001570"
+        ],
+        "metrics": {
+          "revenue": "1502239729157",
+          "operating_profit": "143376893533",
+          "net_income": "89698872406",
+          "assets": "1522167095867",
+          "liabilities": "751671610276",
+          "equity": "770495485591",
+          "operating_cashflow": "71173203156"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:04.436336+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009450:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000908"
+        ],
+        "metrics": {
+          "revenue": "1353879442184",
+          "operating_profit": "132576050452",
+          "net_income": "124340920975",
+          "assets": "1358870104798",
+          "liabilities": "663453095174",
+          "equity": "695417009624",
+          "operating_cashflow": "52521650820"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:05.613399+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009470:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319000867"
+        ],
+        "metrics": {
+          "revenue": "230067797956",
+          "operating_profit": "12036508083",
+          "net_income": "11125404924",
+          "assets": "180647655408",
+          "liabilities": "60217551266",
+          "equity": "120430104142",
+          "operating_cashflow": "8371821693"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:06.607521+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009470:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313000817"
+        ],
+        "metrics": {
+          "revenue": "233116164397",
+          "operating_profit": "24788845997",
+          "net_income": "20673576344",
+          "assets": "173158472097",
+          "liabilities": "61084348626",
+          "equity": "112074123471",
+          "operating_cashflow": "25169294228"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:07.552017+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009520:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260318000807"
+        ],
+        "metrics": {
+          "revenue": "357432185147",
+          "operating_profit": "1034456160",
+          "net_income": "1411497670",
+          "assets": "155201620131",
+          "liabilities": "40949513215",
+          "equity": "114252106916",
+          "operating_cashflow": "1556128510"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:09.042748+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009520:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20250313001212"
+        ],
+        "metrics": {
+          "revenue": "346628290419",
+          "operating_profit": "1422749362",
+          "net_income": "567503575",
+          "assets": "149757864258",
+          "liabilities": "37944730555",
+          "equity": "111813133703",
+          "operating_cashflow": "-7687294340"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:10.544043+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009540:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260320001032"
+        ],
+        "metrics": {
+          "revenue": "29933215227000",
+          "operating_profit": "3904489578000",
+          "net_income": "2928395265000",
+          "assets": "39542213288000",
+          "liabilities": "22633860456000",
+          "equity": "16908352832000",
+          "operating_cashflow": "4422050644000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:11.633730+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009540:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001131"
+        ],
+        "metrics": {
+          "revenue": "25538577356000",
+          "operating_profit": "1434090492000",
+          "net_income": "1454580111000",
+          "assets": "36719137422000",
+          "liabilities": "22563324218000",
+          "equity": "14155813204000",
+          "operating_cashflow": "4288660178000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:12.836780+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009680:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318000984"
+        ],
+        "metrics": {
+          "revenue": "279697463554",
+          "operating_profit": "18535381001",
+          "net_income": "27000481551",
+          "assets": "530548802467",
+          "liabilities": "47725845830",
+          "equity": "482822956637",
+          "operating_cashflow": "56339700616"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:13.891565+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009680:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250313000748"
+        ],
+        "metrics": {
+          "revenue": "290604602023",
+          "operating_profit": "23779484995",
+          "net_income": "32361865325",
+          "assets": "499377343872",
+          "liabilities": "31205741041",
+          "equity": "468171602831",
+          "operating_cashflow": "24336523906"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:14.993116+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009780:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319000368"
+        ],
+        "metrics": {
+          "revenue": "197662693140",
+          "operating_profit": "29653839673",
+          "net_income": "23008450071",
+          "assets": "277193366709",
+          "liabilities": "87984935590",
+          "equity": "189208431119",
+          "operating_cashflow": "28207072933"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:16.207731+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009780:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320000679"
+        ],
+        "metrics": {
+          "revenue": "189756857111",
+          "operating_profit": "27518337355",
+          "net_income": "21763730360",
+          "assets": "259494039611",
+          "liabilities": "89919374737",
+          "equity": "169574664874",
+          "operating_cashflow": "33508077809"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:17.277196+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009830:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20261112000461"
+        ],
+        "metrics": {
+          "revenue": "13333055000000",
+          "operating_profit": "-364759000000",
+          "net_income": "-615282000000",
+          "assets": "33144011000000",
+          "liabilities": "21958972000000",
+          "equity": "11185039000000",
+          "operating_cashflow": "-655006000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:18.633440+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009830:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250317001024"
+        ],
+        "metrics": {
+          "revenue": "12394023649010",
+          "operating_profit": "-300237959946",
+          "net_income": "-1368980474463",
+          "assets": "30036831374114",
+          "liabilities": "19429975219652",
+          "equity": "10606856154462",
+          "operating_cashflow": "638486498245"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:19.758269+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009900:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260323000909"
+        ],
+        "metrics": {
+          "revenue": "1619154581776",
+          "operating_profit": "102591824890",
+          "net_income": "68334903349",
+          "assets": "1420721058269",
+          "liabilities": "651835347699",
+          "equity": "768885710570",
+          "operating_cashflow": "158876295088"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:20.809586+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009900:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000402"
+        ],
+        "metrics": {
+          "revenue": "1573818204184",
+          "operating_profit": "148119754582",
+          "net_income": "129093643417",
+          "assets": "1210314499204",
+          "liabilities": "512838006337",
+          "equity": "697476492867",
+          "operating_cashflow": "203697591841"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:22.039747+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009970:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319001240"
+        ],
+        "metrics": {
+          "revenue": "4895010142962",
+          "operating_profit": "735474578287",
+          "net_income": "606455450562",
+          "assets": "6995703461755",
+          "liabilities": "1709589395769",
+          "equity": "5286114065986",
+          "operating_cashflow": "540737658622"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:23.205527+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "009970:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250321001884"
+        ],
+        "metrics": {
+          "revenue": "4306038171138",
+          "operating_profit": "517045450910",
+          "net_income": "495633035941",
+          "assets": "6576715632460",
+          "liabilities": "1589606369987",
+          "equity": "4987109262473",
+          "operating_cashflow": "781001481488"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:24.282101+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010060:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318000617"
+        ],
+        "metrics": {
+          "revenue": "3380060390000",
+          "operating_profit": "-57627064000",
+          "net_income": "-146247800000",
+          "assets": "7870870449000",
+          "liabilities": "3139344072000",
+          "equity": "4731526377000",
+          "operating_cashflow": "553878733000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:25.498326+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010060:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318000381"
+        ],
+        "metrics": {
+          "revenue": "3577383349000",
+          "operating_profit": "101527729000",
+          "net_income": "113723638000",
+          "assets": "8093654722000",
+          "liabilities": "3258113380000",
+          "equity": "4835541342000",
+          "operating_cashflow": "116386068000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:26.724963+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010120:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001243"
+        ],
+        "metrics": {
+          "revenue": "4965798552980",
+          "operating_profit": "426407143017",
+          "net_income": "284256733172",
+          "assets": "4956680318372",
+          "liabilities": "2815381465996",
+          "equity": "2141298852376",
+          "operating_cashflow": "299948385888"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:27.896455+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010120:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250317000918"
+        ],
+        "metrics": {
+          "revenue": "4551837252467",
+          "operating_profit": "389717122317",
+          "net_income": "242237998768",
+          "assets": "4485197464384",
+          "liabilities": "2595105380936",
+          "equity": "1890092083448",
+          "operating_cashflow": "230146922129"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:29.233433+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010130:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260813001726"
+        ],
+        "metrics": {
+          "revenue": "16587850779912",
+          "operating_profit": "1231926775791",
+          "net_income": "770249337092",
+          "assets": "20210431697664",
+          "liabilities": "9211501849078",
+          "equity": "10998929848586",
+          "operating_cashflow": "-628210721953"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:30.568248+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010130:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260813001711"
+        ],
+        "metrics": {
+          "revenue": "12052918410249",
+          "operating_profit": "723472208523",
+          "net_income": "304669203777",
+          "assets": "14602501706413",
+          "liabilities": "7196894404555",
+          "equity": "7405607301858",
+          "operating_cashflow": "515812554313"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:31.904409+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010140:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260312001037"
+        ],
+        "metrics": {
+          "revenue": "10650010702818",
+          "operating_profit": "862210880029",
+          "net_income": "535753735212",
+          "assets": "14948871093928",
+          "liabilities": "10853831158873",
+          "equity": "4095039935055",
+          "operating_cashflow": "1562848761939"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:33.296706+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010140:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250319000397"
+        ],
+        "metrics": {
+          "revenue": "9903077919464",
+          "operating_profit": "502698683088",
+          "net_income": "53877228765",
+          "assets": "17194637128138",
+          "liabilities": "13445186022785",
+          "equity": "3749451105353",
+          "operating_cashflow": "654519940133"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:34.352904+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010170:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260319000854"
+        ],
+        "metrics": {
+          "revenue": "139446734970",
+          "operating_profit": "-21410712591",
+          "net_income": "-27972927775",
+          "assets": "219015700323",
+          "liabilities": "152364052262",
+          "equity": "66651648061",
+          "operating_cashflow": "-12219829801"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:35.419711+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010170:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001578"
+        ],
+        "metrics": {
+          "revenue": "152717431829",
+          "operating_profit": "-29704722792",
+          "net_income": "-56038066436",
+          "assets": "209661318184",
+          "liabilities": "168835060507",
+          "equity": "40826257677",
+          "operating_cashflow": "-23996964424"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:36.605248+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010580:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260320000787"
+        ],
+        "metrics": {
+          "revenue": "150271118361",
+          "operating_profit": "1573953345",
+          "net_income": "1650688607",
+          "assets": "100176500447",
+          "liabilities": "30013931659",
+          "equity": "70162568788",
+          "operating_cashflow": "6207788416"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:38.104167+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010580:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001174"
+        ],
+        "metrics": {
+          "revenue": "172548105255",
+          "operating_profit": "5216545654",
+          "net_income": "1115369744",
+          "assets": "105927863551",
+          "liabilities": "38611068175",
+          "equity": "67316795376",
+          "operating_cashflow": "233587568"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:39.017770+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010690:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260316000461"
+        ],
+        "metrics": {
+          "revenue": "1962483716837",
+          "operating_profit": "102447956813",
+          "net_income": "66688373511",
+          "assets": "1559099212744",
+          "liabilities": "987753021236",
+          "equity": "571346191508",
+          "operating_cashflow": "42043080329"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:39.937457+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010690:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250317000376"
+        ],
+        "metrics": {
+          "revenue": "1712315816922",
+          "operating_profit": "65310768287",
+          "net_income": "53561268072",
+          "assets": "1321669869758",
+          "liabilities": "804237462385",
+          "equity": "517432407373",
+          "operating_cashflow": "136921635841"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:40.964997+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010780:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260318001565"
+        ],
+        "metrics": {
+          "revenue": "1234356436787",
+          "operating_profit": "68122603774",
+          "net_income": "-71817706724",
+          "assets": "3457985098127",
+          "liabilities": "2036654090129",
+          "equity": "1421331007998",
+          "operating_cashflow": "133629547273"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:42.320779+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010780:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250319001050"
+        ],
+        "metrics": {
+          "revenue": "1514572538167",
+          "operating_profit": "169672413030",
+          "net_income": "-160188124268",
+          "assets": "3553988560322",
+          "liabilities": "1996798520994",
+          "equity": "1557190039328",
+          "operating_cashflow": "-130876724692"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:43.627529+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010820:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20260312000931"
+        ],
+        "metrics": {
+          "revenue": "294842426804",
+          "operating_profit": "10663228873",
+          "net_income": "14726828528",
+          "assets": "403060377892",
+          "liabilities": "320595354296",
+          "equity": "82465023596",
+          "operating_cashflow": "-20244567579"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:45.201369+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010820:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "OFS",
+        "receipts": [
+          "20250312000567"
+        ],
+        "metrics": {
+          "revenue": "207273257566",
+          "operating_profit": "4348353305",
+          "net_income": "10919360117",
+          "assets": "350454400155",
+          "liabilities": "286784104108",
+          "equity": "63670296047",
+          "operating_cashflow": "74784629742"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:46.652731+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010950:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260320000559"
+        ],
+        "metrics": {
+          "revenue": "34246957000000",
+          "operating_profit": "235631000000",
+          "net_income": "176952000000",
+          "assets": "26556957000000",
+          "liabilities": "17669556000000",
+          "equity": "8887401000000",
+          "operating_cashflow": "3942304000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:47.908664+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "010950:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250319000503"
+        ],
+        "metrics": {
+          "revenue": "36637031000000",
+          "operating_profit": "422177000000",
+          "net_income": "-193042000000",
+          "assets": "24451433000000",
+          "liabilities": "15755786000000",
+          "equity": "8695647000000",
+          "operating_cashflow": "1467583000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:49.101805+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "011040:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260320001252"
+        ],
+        "metrics": {
+          "revenue": "196273042787",
+          "operating_profit": "7666156975",
+          "net_income": "8450764230",
+          "assets": "321895468124",
+          "liabilities": "93022364679",
+          "equity": "228873103445",
+          "operating_cashflow": "16933991730"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:50.307662+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "011040:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250320001428"
+        ],
+        "metrics": {
+          "revenue": "193936297352",
+          "operating_profit": "2623604977",
+          "net_income": "5447789290",
+          "assets": "302872625623",
+          "liabilities": "82535668961",
+          "equity": "220336956662",
+          "operating_cashflow": "-8073911419"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:51.478190+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "011070:2025": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2025,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20260312001270"
+        ],
+        "metrics": {
+          "revenue": "21896603000000",
+          "operating_profit": "665007000000",
+          "net_income": "341262000000",
+          "assets": "11930883000000",
+          "liabilities": "6167829000000",
+          "equity": "5763054000000",
+          "operating_cashflow": "1331402000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:52.986480+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
+    },
+    "011070:2024": {
+      "attempted_on": "2026-11-16",
+      "filing": {
+        "year": 2024,
+        "report_code": "11011",
+        "fs_div": "CFS",
+        "receipts": [
+          "20250318001384"
+        ],
+        "metrics": {
+          "revenue": "21200755000000",
+          "operating_profit": "706043000000",
+          "net_income": "449274000000",
+          "assets": "11378212000000",
+          "liabilities": "6024347000000",
+          "equity": "5353865000000",
+          "operating_cashflow": "1110059000000"
+        },
+        "issues": [],
+        "source": "OpenDART fnlttSinglAcntAll.json",
+        "retrieved_at": "2026-11-16T03:31:54.079296+00:00"
+      },
+      "errors": [],
+      "status": "FETCHED"
     }
   },
-  "updated_at_utc": "2026-11-16T02:38:06.396355+00:00",
+  "updated_at_utc": "2026-11-16T03:31:54.261079+00:00",
   "target_years": [
     2025,
     2024

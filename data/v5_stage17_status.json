@@ -1,35 +1,35 @@
 {
   "schema": 1,
-  "run_started_utc": "2026-11-16T02:29:50.726088+00:00",
+  "run_started_utc": "2026-11-16T03:25:05.220716+00:00",
   "source_trading_date": "20261112",
   "mode": "SCHEDULED_CONTINUATION",
   "api_key_configured": true,
   "collector": "STAGE16",
   "result": "SUCCESS",
   "collector_exit_code": 0,
-  "collector_stdout_tail": "{\"trading_date\": \"20261112\", \"generated_at_utc\": \"2026-11-16T02:38:06.464782+00:00\", \"phase\": \"COMPLETE\", \"eligible_count\": 1255, \"basic_cached\": 1078, \"basic_missing\": 177, \"basic_coverage_pct\": 85.9, \"dart_mapped\": 1234, \"annual_years\": [2025, 2024], \"annual_filing_counts\": {\"2025\": 180, \"2024\": 180}, \"annual_pair_count\": 180, \"annual_comparable_count\": 158, \"valuation_proxy_counts\": {\"per\": 124, \"pbr\": 179, \"roe\": 157}, \"provisional_grade_counts\": {\"A\": 9, \"B+\": 37, \"B\": 47, \"WITHHELD\": 1162}, \"verified_ab_count\": 0, \"elapsed_seconds\": 495.6, \"limits\": {\"max_seconds\": 4500, \"basic_batches\": 3, \"basic_batch_size\": 70, \"annual_limit\": 120, \"retry_days\": 3}, \"events\": [\"BASIC_BATCH_1_NEW_70\", \"BASIC_BATCH_2_NEW_70\", \"BASIC_BATCH_3_NEW_70\", \"ANNUAL_ATTEMPTED_120_FETCHED_120\", \"STAGE15_REPORT_REFRESHED\"], \"classification\": \"UNVERIFIED_RESEARCH_ONLY\"}\n",
+  "collector_stdout_tail": "{\"trading_date\": \"20261112\", \"generated_at_utc\": \"2026-11-16T03:31:54.361175+00:00\", \"phase\": \"COMPLETE\", \"eligible_count\": 1255, \"basic_cached\": 1228, \"basic_missing\": 27, \"basic_coverage_pct\": 97.85, \"dart_mapped\": 1234, \"annual_years\": [2025, 2024], \"annual_filing_counts\": {\"2025\": 240, \"2024\": 240}, \"annual_pair_count\": 240, \"annual_comparable_count\": 214, \"valuation_proxy_counts\": {\"per\": 167, \"pbr\": 239, \"roe\": 213}, \"provisional_grade_counts\": {\"A\": 13, \"B+\": 53, \"B\": 64, \"WITHHELD\": 1125}, \"verified_ab_count\": 0, \"elapsed_seconds\": 409.0, \"limits\": {\"max_seconds\": 4500, \"basic_batches\": 3, \"basic_batch_size\": 70, \"annual_limit\": 120, \"retry_days\": 3}, \"events\": [\"BASIC_BATCH_1_NEW_67\", \"BASIC_BATCH_2_NEW_70\", \"BASIC_BATCH_3_NEW_13\", \"ANNUAL_ATTEMPTED_120_FETCHED_120\", \"STAGE15_REPORT_REFRESHED\"], \"classification\": \"UNVERIFIED_RESEARCH_ONLY\"}\n",
   "collector_stderr_tail": "",
-  "run_finished_utc": "2026-11-16T02:38:06.495152+00:00",
-  "elapsed_seconds": 495.8,
+  "run_finished_utc": "2026-11-16T03:31:54.391880+00:00",
+  "elapsed_seconds": 409.2,
   "eligible_count": 1255,
-  "basic_cached": 1078,
-  "basic_missing": 177,
-  "annual_comparable_count": 158,
+  "basic_cached": 1228,
+  "basic_missing": 27,
+  "annual_comparable_count": 214,
   "annual_filing_counts": {
-    "2025": 180,
-    "2024": 180
+    "2025": 240,
+    "2024": 240
   },
   "provisional_grade_counts": {
-    "A": 9,
-    "B+": 37,
-    "B": 47,
-    "WITHHELD": 1162
+    "A": 13,
+    "B+": 53,
+    "B": 64,
+    "WITHHELD": 1125
   },
   "verified_ab_count": 0,
   "events": [
-    "BASIC_BATCH_1_NEW_70",
+    "BASIC_BATCH_1_NEW_67",
     "BASIC_BATCH_2_NEW_70",
-    "BASIC_BATCH_3_NEW_70",
+    "BASIC_BATCH_3_NEW_13",
     "ANNUAL_ATTEMPTED_120_FETCHED_120",
     "STAGE15_REPORT_REFRESHED"
   ],
