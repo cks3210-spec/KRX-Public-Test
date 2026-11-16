@@ -1,0 +1,44 @@
+name: V5 Stage19 R5 Preferred Exclusion and Valuation Evidence Gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate Stage18 read-only audit
+        run: python scripts/KRX18_Financial_Audit_Nov16.py --data-dir data --output-dir stage19_r5_stage18
+      - name: Collect KRX market data for universe date
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          with open('data/v5_full_market_universe.json',encoding='utf-8') as f: d=json.load(f)
+          subprocess.run([sys.executable,'scripts/KRX19_KRX_Market_Evidence_R3.py','--date',str(d['trading_date']),'--output-dir','stage19_r5_market'],check=True)
+          PY
+      - name: Reconcile R4 inputs
+        run: |
+          python scripts/KRX19_Reconcile_Valuation_R4.py --stage18 stage19_r5_stage18/v5_stage18_financial_audit.csv --market stage19_r5_market/v5_stage19_r3_market_evidence.csv --output-dir stage19_r5_reconciliation
+      - name: Apply R5 gate without modifying historical caches
+        run: |
+          python scripts/KRX19_Valuation_Gate_R5.py --reconciliation stage19_r5_reconciliation/v5_stage19_r4_reconciliation.csv --market stage19_r5_market/v5_stage19_r3_market_evidence.csv --output-dir stage19_r5_output
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-valuation-gate-r5-${{ github.run_number }}
+          path: |
+            stage19_r5_output/
+            stage19_r5_reconciliation/v5_stage19_r4_summary.json
+            stage19_r5_market/v5_stage19_r3_summary.json
+          if-no-files-found: warn
