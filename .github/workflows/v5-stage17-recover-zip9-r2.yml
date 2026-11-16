@@ -1,0 +1,59 @@
+name: V5 Stage17 Recover ZIP9 Safely R2
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: v5-daily-discovery
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch original Stage17 artifact 9 (no DART calls)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARTIFACT_ID=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" --jq '.artifacts[] | select(.name == "stage17-financial-continuity-9" and .expired == false) | .id' | head -1)
+          test -n "$ARTIFACT_ID" || { echo 'STOP: artifact #9 unavailable'; exit 1; }
+          gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/stage17-9.zip
+          unzip -t /tmp/stage17-9.zip >/dev/null
+      - name: Merge and validate, no data deletion
+        run: python scripts/KRX17_Recovery_Nov16_R2.py --zip /tmp/stage17-9.zip
+      - name: Upload recovery report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage17-zip9-recovery-report-${{ github.run_number }}
+          path: stage17_recovery_output/
+          if-no-files-found: warn
+      - name: Save merged cache with conflict-safe retries
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/stage17-9.zip /tmp/recovery-source.zip
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/KRX17_Recovery_Nov16_R2.py --zip /tmp/recovery-source.zip
+            git add data/v5_stage15_annual_cache.json
+            if git diff --cached --quiet; then echo 'Already merged'; exit 0; fi
+            git commit -m 'data: safely recover Stage17 zip9 annual successes'
+            if git push origin HEAD:main; then echo 'Recovery committed'; exit 0; fi
+            sleep $((attempt * 3))
+          done
+          echo 'STOP: concurrent pushes prevented safe save' >&2
+          exit 1
