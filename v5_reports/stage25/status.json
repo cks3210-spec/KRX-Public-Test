@@ -1,14 +1,14 @@
 {
   "status": "RESEARCH_ONLY",
-  "generated_utc": "2026-11-13T18:44:47.525682+00:00",
-  "market_date": "20261112",
-  "source_rows": 15,
-  "eligible_rows": 15,
+  "generated_utc": "2026-11-16T21:14:17.132886+00:00",
+  "market_date": "20261113",
+  "source_rows": 16,
+  "eligible_rows": 16,
   "tiers": {
-    "A_RESEARCH": 1,
-    "B_RESEARCH": 1,
     "unrated": 13,
-    "incomplete": 4
+    "incomplete": 5,
+    "B_RESEARCH": 2,
+    "A_RESEARCH": 1
   },
   "verified_investment_recommendations": 0,
   "note": "Research ranking only. No confirmed A/B investment grades or buy signals."
