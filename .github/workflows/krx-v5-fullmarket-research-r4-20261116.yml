@@ -1,0 +1,55 @@
+name: KRX v5 Full Market Financial Research R4
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 0 * * 1-5' # 09:15 KST; follows Stage60 R3 08:30 collection
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-fullmarket-research-r4
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange calendar
+        run: python -m pip install 'exchange_calendars>=4.5,<5' pandas
+      - name: Incremental DART financials and full-market provisional evaluation
+        id: research
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_MAX_REQUESTS: '120'
+        run: python scripts/krx_v5_fullmarket_research_r4_20261116.py
+      - name: Persist independent financial cache and research evidence
+        if: always()
+        run: |
+          if [ -d data/v5_fullmarket_r4 ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/v5_fullmarket_r4/
+            if ! git diff --cached --quiet; then
+              git commit -m 'v5: preserve incremental full-market research evidence'
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Upload research diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-fullmarket-research-r4
+          path: data/v5_fullmarket_r4/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Report collection failure
+        if: steps.research.outcome == 'failure'
+        run: exit 1
