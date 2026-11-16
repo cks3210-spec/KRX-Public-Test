@@ -1,0 +1,58 @@
+name: KRX v5 Daily Collection Batch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 9 * * 1-5'  # 18:30 KST
+    - cron: '0 11 * * 1-5'  # 20:00 KST retry
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-daily-collection-batch
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange calendar
+        run: pip install 'exchange_calendars>=4.5,<5' pandas
+      - name: Collect official KRX and OpenDART disclosure metadata
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python scripts/v5_daily_collection_batch.py
+      - name: Persist collected evidence
+        if: always()
+        run: |
+          if [ ! -f data/v5_daily_collection/status.json ]; then exit 1; fi
+          python - <<'PY'
+          import json
+          s=json.load(open('data/v5_daily_collection/status.json'))
+          if s.get('market')=='SKIPPED_KRX_CLOSED':
+              print('KRX holiday; no commit');quit()
+          if s.get('market')!='SUCCESS' or s.get('dart')!='SUCCESS':
+              raise SystemExit('Incomplete collection: do not commit')
+          PY
+          if python -c "import json; assert json.load(open('data/v5_daily_collection/status.json'))['market']=='SKIPPED_KRX_CLOSED'" 2>/dev/null; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_daily_collection/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5: archive daily official market and DART disclosure metadata'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload collection evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-daily-collection-batch
+          path: data/v5_daily_collection/
+          retention-days: 90
+          if-no-files-found: warn
