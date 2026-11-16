@@ -1,47 +1,47 @@
 {
   "trading_date": "20261112",
-  "generated_at_utc": "2026-11-15T23:08:32.578892+00:00",
+  "generated_at_utc": "2026-11-16T02:10:28.893260+00:00",
   "phase": "COMPLETE",
   "eligible_count": 1255,
-  "basic_cached": 659,
-  "basic_missing": 596,
-  "basic_coverage_pct": 52.51,
+  "basic_cached": 868,
+  "basic_missing": 387,
+  "basic_coverage_pct": 69.16,
   "dart_mapped": 1234,
   "annual_years": [
     2025,
     2024
   ],
   "annual_filing_counts": {
-    "2025": 60,
-    "2024": 60
+    "2025": 120,
+    "2024": 120
   },
-  "annual_pair_count": 60,
-  "annual_comparable_count": 49,
+  "annual_pair_count": 120,
+  "annual_comparable_count": 101,
   "valuation_proxy_counts": {
-    "per": 36,
-    "pbr": 59,
-    "roe": 48
+    "per": 78,
+    "pbr": 119,
+    "roe": 100
   },
   "provisional_grade_counts": {
-    "A": 2,
-    "B+": 10,
-    "B": 16,
-    "WITHHELD": 1227
+    "A": 5,
+    "B+": 24,
+    "B": 30,
+    "WITHHELD": 1196
   },
   "verified_ab_count": 0,
-  "elapsed_seconds": 2524.0,
+  "elapsed_seconds": 747.0,
   "limits": {
-    "max_seconds": 4800,
+    "max_seconds": 4500,
     "basic_batches": 3,
     "basic_batch_size": 70,
-    "annual_limit": 90,
+    "annual_limit": 120,
     "retry_days": 3
   },
   "events": [
-    "BASIC_BATCH_1_NEW_70",
+    "BASIC_BATCH_1_NEW_69",
     "BASIC_BATCH_2_NEW_70",
-    "BASIC_BATCH_3_NEW_69",
-    "ANNUAL_ATTEMPTED_90_FETCHED_90",
+    "BASIC_BATCH_3_NEW_70",
+    "ANNUAL_ATTEMPTED_120_FETCHED_120",
     "STAGE15_REPORT_REFRESHED"
   ],
   "classification": "UNVERIFIED_RESEARCH_ONLY"
