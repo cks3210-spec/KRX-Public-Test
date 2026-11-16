@@ -68,5 +68,7 @@ jobs:
             echo 'No cache changes'
           else
             git commit -m 'data: checkpoint stage17 continuous financial collection'
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
           fi
