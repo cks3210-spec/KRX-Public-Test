@@ -1,0 +1,31 @@
+name: V5 Stage19 R6 Official PER PBR Source Probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source_probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe KRX information data system using universe date
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          with open('data/v5_full_market_universe.json',encoding='utf-8') as f: d=json.load(f)
+          subprocess.run([sys.executable,'scripts/KRX19_Official_PERPBR_Probe_R6.py','--date',str(d['trading_date']),'--universe','data/v5_full_market_universe.json','--output-dir','stage19_r6_output'],check=True)
+          PY
+      - name: Upload diagnostic regardless of source accessibility
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-official-perpbr-probe-r6-${{ github.run_number }}
+          path: stage19_r6_output/
+          if-no-files-found: warn
