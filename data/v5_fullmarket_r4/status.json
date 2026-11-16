@@ -1,0 +1,25 @@
+{
+  "version": "R4",
+  "run_at_kst": "2026-11-16T23:10:03.441390+09:00",
+  "mode": "INCREMENTAL_FINANCIAL_RESEARCH",
+  "final_buy_signals": 0,
+  "official_per_pbr_verified": false,
+  "target_market_date": "20261113",
+  "market_rows": 2770,
+  "eligible_rows": 1266,
+  "share_class": "UNVERIFIED_FOR_ALL",
+  "state": "RESEARCH_OUTPUT_BUILT_NOT_FINAL",
+  "dart_api_calls": 120,
+  "dart_records_refreshed": 70,
+  "financial_cache_entries": 70,
+  "financial_complete_in_universe": 66,
+  "provisional_ab_count": 40,
+  "official_valuation_verified": 0,
+  "errors": [],
+  "error_count": 0,
+  "warnings": [
+    "Provisional screening only; 2025/2026 annual and interim results are not directly comparable",
+    "No verified official PER/PBR, share-class, owner-share-count or investment-grade price targets",
+    "DART financials are refreshed incrementally; full market coverage requires multiple runs"
+  ]
+}
