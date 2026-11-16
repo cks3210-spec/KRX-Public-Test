@@ -1,0 +1,72 @@
+name: V5 Stage17 Financial Continuity
+on:
+  workflow_dispatch:
+  schedule:
+    # UTC: 17:10, 01:10, 07:10 => KST: 02:10, 10:10, 16:10 every day.
+    - cron: '10 17,1,7 * * *'
+permissions:
+  contents: write
+concurrency:
+  # Shares lock with original daily-discovery workflow: no simultaneous cache writers.
+  group: v5-daily-discovery
+  cancel-in-progress: false
+jobs:
+  financial-continuity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check DART secret
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        shell: bash
+        run: |
+          if [ -z "$DART_API_KEY" ]; then
+            echo 'Missing DART_API_KEY secret' >&2
+            exit 1
+          fi
+      - name: Continue Stage16 collection without market-day gate
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python scripts/build_v5_stage17_financial_continuity.py --max-seconds 4500 --basic-batches 3 --basic-batch-size 70 --annual-limit 120
+      - name: Upload status and accumulated evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage17-financial-continuity-${{ github.run_number }}
+          path: |
+            data/v5_stage17_status.json
+            data/v5_stage16_progress.json
+            data/v5_stage16_full_market.json
+            data/v5_stage16_full_market.csv
+            data/v5_stage15_annual_cache.json
+            data/v5_stage15_full_market.json
+            data/v5_stage15_full_market.csv
+            data/v5_stage15_progress.json
+            data/v5_stage14_progress.json
+            data/v5_stage14_full_market_financial.json
+            data/v5_stage14_full_market_financial.csv
+            data/v5_stage13_financial_cache.json
+            data/dart_corp_map.json
+          if-no-files-found: warn
+      - name: Commit financial cache and checkpoints
+        if: always()
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- data/v5_stage17_status.json data/v5_stage16_progress.json data/v5_stage16_full_market.json data/v5_stage16_full_market.csv data/v5_stage15_annual_cache.json data/v5_stage15_full_market.json data/v5_stage15_full_market.csv data/v5_stage15_progress.json data/v5_stage14_progress.json data/v5_stage14_full_market_financial.json data/v5_stage14_full_market_financial.csv data/v5_stage13_financial_cache.json data/dart_corp_map.json
+          if git diff --cached --quiet; then
+            echo 'No cache changes'
+          else
+            git commit -m 'data: checkpoint stage17 continuous financial collection'
+            git push origin HEAD:main
+          fi
