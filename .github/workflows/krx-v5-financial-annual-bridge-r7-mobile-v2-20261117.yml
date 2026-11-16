@@ -1,0 +1,51 @@
+name: KRX v5 R7 Annual Financial Bridge Mobile V2
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '15 1 * * 1-5' # 10:15 KST, after R6; KRX market date checked in report
+permissions:
+  contents: write
+jobs:
+  financial_annual_bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: R7 annual and interim financial collection
+        id: collect
+        continue-on-error: true
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_MAX_REQUESTS: '120'
+          R7_REFRESH_DAYS: '90'
+        run: python scripts/krx_v5_financial_annual_bridge_r7_mobile_v2_20261117.py
+      - name: Persist independent R7 cache
+        if: always()
+        run: |
+          if [ -d data/v5_financial_r7 ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/v5_financial_r7/
+            if ! git diff --cached --quiet; then
+              git commit -m 'v5 R7: accumulate annual and interim financial evidence'
+              git pull --rebase origin main
+              git push origin HEAD:main
+            fi
+          fi
+      - name: Upload R7 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-financial-annual-bridge-r7
+          path: data/v5_financial_r7/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Report failure
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
