@@ -1,0 +1,30 @@
+name: V5 Stage18 Deep Audit R4
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate Stage18 R3 source outputs read-only
+        run: python scripts/KRX18_Financial_Audit_Nov16.py --data-dir data --output-dir stage18_r3_temp
+      - name: Run Stage18 R4 independent audit
+        run: python scripts/KRX18_Deep_Audit_R4.py --input-dir stage18_r3_temp --output-dir stage18_r4_output
+      - name: Publish Stage18 R4 audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage18-deep-audit-r4-${{ github.run_number }}
+          path: |
+            stage18_r4_output/*.json
+            stage18_r4_output/*.csv
+          if-no-files-found: warn
