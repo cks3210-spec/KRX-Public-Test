@@ -36,7 +36,7 @@ jobs:
       - name: Continue Stage16 collection without market-day gate
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-        run: python scripts/build_v5_stage17_financial_continuity.py --max-seconds 4500 --basic-batches 3 --basic-batch-size 70 --annual-limit 120
+        run: python scripts/build_KRX17_Continuity_Nov16_New03.py --max-seconds 4500 --basic-batches 3 --basic-batch-size 70 --annual-limit 120
       - name: Upload status and accumulated evidence
         if: always()
         uses: actions/upload-artifact@v4
