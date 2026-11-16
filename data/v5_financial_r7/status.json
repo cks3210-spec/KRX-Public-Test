@@ -1,0 +1,30 @@
+{
+  "version": "R7",
+  "generated_kst": "2026-11-17T06:44:36.682035+09:00",
+  "state": "R7_RESEARCH_BUILT_NOT_FINAL",
+  "official_per_pbr_verified": 0,
+  "final_grades": 0,
+  "buy_signals": 0,
+  "market_date": "20261113",
+  "market_rows": 2770,
+  "eligible_rows": 1266,
+  "r6_legacy_cache_entries": 121,
+  "annual_cache_entries": 110,
+  "interim_cache_entries": 114,
+  "annual_comparable_in_universe": 110,
+  "interim_complete_in_universe": 114,
+  "dart_api_calls": 120,
+  "companies_attempted": 120,
+  "annual_records_updated": 110,
+  "interim_records_updated": 0,
+  "provisional_ab_count": 75,
+  "pending_annual": 1156,
+  "errors": [],
+  "error_count": 0,
+  "warnings": [
+    "Provisional reference ratios, not official PER/PBR",
+    "Owner-attributable consolidated data only; share class remains unverified",
+    "Annual profit is not mixed with interim profit",
+    "No final buy signal or verified fair value"
+  ]
+}
