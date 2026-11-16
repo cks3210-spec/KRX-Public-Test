@@ -1,0 +1,50 @@
+name: V5 Stage19 R4 Market Valuation Reconciliation
+on:
+  workflow_dispatch:
+    inputs:
+      trading_date:
+        description: 'KRX trading date YYYYMMDD; blank uses universe trading_date'
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate read-only Stage18 audit
+        run: python scripts/KRX18_Financial_Audit_Nov16.py --data-dir data --output-dir stage19_r4_stage18
+      - name: Collect fresh KRX market evidence
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          REQUEST_DATE: ${{ inputs.trading_date }}
+        run: |
+          python - <<'PY'
+          import json,os,re,subprocess,sys
+          with open('data/v5_full_market_universe.json',encoding='utf-8') as f: universe=json.load(f)
+          date=(os.environ.get('REQUEST_DATE') or '').strip() or str(universe['trading_date'])
+          if date!=str(universe['trading_date']):sys.exit('Requested date must match universe trading_date to prevent stale comparisons')
+          if not re.fullmatch(r'20\d{6}',date):sys.exit('Invalid trading date')
+          subprocess.run([sys.executable,'scripts/KRX19_KRX_Market_Evidence_R3.py','--date',date,'--output-dir','stage19_r4_market'],check=True)
+          PY
+      - name: Reconcile and verify source/date
+        run: |
+          python scripts/KRX19_Reconcile_Valuation_R4.py --stage18 stage19_r4_stage18/v5_stage18_financial_audit.csv --market stage19_r4_market/v5_stage19_r3_market_evidence.csv --output-dir stage19_r4_output
+      - name: Upload evidence even if validation fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage19-reconcile-valuation-r4-${{ github.run_number }}
+          path: |
+            stage19_r4_output/
+            stage19_r4_market/
+            stage19_r4_stage18/v5_stage18_financial_audit_summary.json
+          if-no-files-found: warn
