@@ -1,0 +1,21 @@
+name: KRX v5 R5 Queue Diagnostic (No Concurrency)
+'on':
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runner_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Runner availability check
+        run: |
+          echo "GitHub-hosted runner started successfully"
+          date -u
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Verify R5 program exists
+        run: |
+          test -f scripts/krx_v5_research_continuity_r5_20261116.py
+          python3 -m py_compile scripts/krx_v5_research_continuity_r5_20261116.py
+          echo "R5 source file present and syntax valid"
