@@ -1,8 +1,28 @@
 {
-  "checked_kst": "2026-11-14T02:29:01.384302+09:00",
-  "expected_today": "20261114",
+  "checked_kst": "2026-11-17T04:58:37.602457+09:00",
+  "expected_today": "20261117",
   "attempts": [
     {
+      "day": "20261117",
+      "source": "pykrx",
+      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
+    },
+    {
+      "day": "20261117",
+      "source": "FDR",
+      "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
+    },
+    {
+      "day": "20261116",
+      "source": "pykrx",
+      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
+    },
+    {
+      "day": "20261116",
+      "source": "FDR",
+      "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
+    },
+    {
       "day": "20261113",
       "source": "pykrx",
       "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
@@ -39,16 +59,6 @@
     },
     {
       "day": "20261110",
-      "source": "FDR",
-      "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
-    },
-    {
-      "day": "20261109",
-      "source": "pykrx",
-      "error": "\"None of [Index(['시가', '고가', '저가', '종가'], dtype='object')] are in the [columns]\""
-    },
-    {
-      "day": "20261109",
       "source": "FDR",
       "error": "FDR listing available but daily OHLCV/cap snapshot not verified; fallback deliberately blocked"
     }
