@@ -1,0 +1,72 @@
+name: KRX v5 R14 OpenDART Auto Continue
+on:
+  workflow_dispatch:
+  schedule:
+    # 21:30 KST daily; separate from the 08:00 KRX collection
+    - cron: '30 12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-dart-m
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate collector and key
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$DART_API_KEY" || { echo 'DART_API_KEY secret missing'; exit 1; }
+          test -s scripts/krx_v5_r14_dart_incremental_m.py
+          test -s data/v5_financial_foundation_l/unified_financial_index.csv
+          python -m py_compile scripts/krx_v5_r14_dart_incremental_m.py
+      - name: Incremental batches with checkpoint commits
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          M_BATCH_LIMIT: '80'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for batch in 1 2 3 4 5; do
+            echo "=== OpenDART incremental batch $batch / 5 ==="
+            # Start from the newest persisted checkpoint on main.
+            git fetch origin main
+            git pull --ff-only origin main
+            python scripts/krx_v5_r14_dart_incremental_m.py
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('data/v5_financial_m/status.json').read_text(encoding='utf-8'))
+          print('BATCH STATUS:', {k:s.get(k) for k in ('cache_records','fetched_this_run','failed_this_run','api_rejected_this_run','annual_verified_rows')})
+          if s.get('failed_this_run',0)>0 or s.get('api_rejected_this_run',0)>0:
+              print('Warning: some requests were unsuccessful; retained verified records will remain available')
+          PY
+            git add data/v5_financial_m/
+            if ! git diff --cached --quiet; then
+              git commit -m "R14 M: incremental OpenDART checkpoint batch ${batch}"
+              git push origin HEAD:main
+            else
+              echo 'No new checkpoint changes'
+              break
+            fi
+          done
+      - name: Upload final checkpoint artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-dart-auto-checkpoint
+          path: |
+            data/v5_financial_m/status.json
+            data/v5_financial_m/annual_financial_index_m.csv
+          retention-days: 30
