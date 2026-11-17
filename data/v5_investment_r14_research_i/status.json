@@ -1,0 +1,33 @@
+{
+  "version": "R14_INTEGRATED_RESEARCH_I",
+  "generated_utc": "2026-11-17T08:31:14.865201+00:00",
+  "input": "data/v5_investment_r14_valuation_h/full_market_valuation_h.csv",
+  "market_date": "20261116",
+  "rows": 2675,
+  "provisional_ab": 179,
+  "grades": {
+    "B": 47,
+    "A": 38,
+    "B+": 94
+  },
+  "official_per_count": 0,
+  "official_pbr_count": 0,
+  "sector_verified_count": 0,
+  "scenario_price_count": 0,
+  "official_input_present": false,
+  "sector_input_present": false,
+  "official_records_rejected": {},
+  "tracking_observations": 179,
+  "forward_5d_complete": 0,
+  "forward_10d_complete": 0,
+  "forward_20d_complete": 0,
+  "golden_cross_used": false,
+  "final_buy_signals": 0,
+  "notes": [
+    "No official PER/PBR asserted without explicit same-date source provenance",
+    "Unknown sector is not guessed; financials excluded from generic PE scenarios",
+    "Illustrative H ranges not treated as validated fair prices",
+    "Forward outcomes use future sessions only, not trailing historical returns",
+    "Only provisional A/B shown; no final recommendation without official evidence"
+  ]
+}
