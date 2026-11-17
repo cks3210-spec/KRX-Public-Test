@@ -8971,29 +8971,29 @@
   },
   "030520": {
     "status": "COMPLETE",
-    "ttm_net_income_krw": 33959559832,
+    "ttm_net_income_krw": 24165858303,
     "prior_fy_net_income_krw": 24577732451,
-    "current_ytd_net_income_krw": 30983212543,
-    "previous_ytd_net_income_krw": 21601385162,
+    "current_ytd_net_income_krw": 33474077533,
+    "previous_ytd_net_income_krw": 33885951681,
     "equity_start_krw": 496500543690,
-    "equity_end_krw": 515962656857,
-    "roe_ttm_pct_diagnostic": 6.708,
-    "cfo_ttm_krw": 54810087703,
+    "equity_end_krw": 516011853218,
+    "roe_ttm_pct_diagnostic": 4.773,
+    "cfo_ttm_krw": 43853093291,
     "prior_fy_cfo_krw": 69730080098,
-    "current_ytd_cfo_krw": -2389188551,
-    "previous_ytd_cfo_krw": 12530803844,
+    "current_ytd_cfo_krw": 11823554095,
+    "previous_ytd_cfo_krw": 37700540902,
     "cfo_source_basis": "CF_YTD_amount",
     "cfo_missing_reason": null,
     "formula": "FY_prior + current_YTD - previous_YTD",
     "caveat": "CFS total profit and total equity; attributable earnings/equity and financial-sector rules not validated.",
     "identity": [
       "2026",
-      "11012",
+      "11014",
       "CFS",
-      "2026-11-03T09:46:10+00:00"
+      "2026-11-16T02:19:58+00:00"
     ],
     "ISU_NM": "한컴",
-    "period": "2026_H1"
+    "period": "2026_Q3"
   },
   "030530": {
     "status": "COMPLETE",
