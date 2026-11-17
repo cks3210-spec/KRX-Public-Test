@@ -1,0 +1,55 @@
+name: KRX v5 R14 Cached Ratios K
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-ratios-k
+  cancel-in-progress: false
+jobs:
+  ratios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild F through K from existing inputs
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        run: |
+          set -euo pipefail
+          python scripts/krx_v5_r14_existing_history_link_20261117_f.py
+          python scripts/krx_v5_r14_integrated_16day_20261117_g.py
+          python scripts/krx_v5_r14_valuation_engine_20261117_h.py
+          python scripts/krx_v5_r14_integrated_research_20261117_i.py
+          python scripts/krx_v5_r14_evidence_bridge_20261117_j.py
+          python scripts/krx_v5_r14_cached_ratios_20261117_k.py
+      - name: Upload K outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-cached-ratios-k
+          path: data/v5_investment_r14_research_k/
+          retention-days: 90
+      - name: Save K results only
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp -a data/v5_investment_r14_research_k /tmp/r14-k-results
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data/v5_investment_r14_research_k
+            cp -a /tmp/r14-k-results/. data/v5_investment_r14_research_k/
+            git add data/v5_investment_r14_research_k/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14 K cached annual valuation ratios'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
