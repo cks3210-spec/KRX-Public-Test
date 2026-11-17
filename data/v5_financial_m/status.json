@@ -1,0 +1,19 @@
+{
+  "version": "R14_M_DART_INCREMENTAL",
+  "generated_utc": "2026-11-17T09:19:38.091901+00:00",
+  "market_date": "20261116",
+  "base_rows": 2675,
+  "cache_records": 80,
+  "fetched_this_run": 80,
+  "failed_this_run": 0,
+  "annual_verified_rows": 0,
+  "batch_limit": 80,
+  "ttm_calculated": 0,
+  "final_buy_signals": 0,
+  "golden_cross_used": false,
+  "notes": [
+    "TTM not calculated: cumulative quarterly comparability must be validated",
+    "Financial statement data are sourced from OpenDART; no official KRX PER/PBR verification",
+    "Source caches and prior R14 stages are not modified"
+  ]
+}
