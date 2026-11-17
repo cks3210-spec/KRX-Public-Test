@@ -16,10 +16,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Run R14 valuation H
+      - name: Run R14 valuation H  
         run: |
-          python -m py_compile scripts/krx_v5_r14_valuation_engine_20261117_h.py
+          set -euo pipefail
+          python scripts/krx_v5_r14_existing_history_link_20261117_f.py
+          python scripts/krx_v5_r14_integrated_16day_20261117_g.py
+          test -s data/v5_investment_r14_integrated_g/full_market_integrated.csv
           python scripts/krx_v5_r14_valuation_engine_20261117_h.py
+
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
