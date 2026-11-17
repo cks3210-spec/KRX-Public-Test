@@ -1,0 +1,59 @@
+name: KRX v5 R11 Financial Recheck Rev2
+'on':
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r11-owner-equity
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate R11
+        run: python -m py_compile scripts/krx_v5_r11_financial_recheck_mobile_rev2_846.py
+      - name: Run R11 account reconciliation
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          R11_DART_MAX_REQUESTS: '120'
+        run: python scripts/krx_v5_r11_financial_recheck_mobile_rev2_846.py
+      - name: Verify outputs
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('data/v5_financial_r11')
+          s=json.loads((p/'status.json').read_text())
+          assert s['state']=='RESEARCH_ONLY_NOT_FINAL'
+          assert s['annual_in_scope']>0
+          assert s['final_grades']==0 and s['buy_signals']==0
+          for f in ('reconciliation_audit.csv','provisional_ab_research_only.csv','dart_account_evidence_cache.json'):
+              assert (p/f).is_file(),f
+          print('R11 verified:',s['r10_flags_reconciled'])
+          PY
+      - name: Persist R11 results only
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_financial_r11/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R11: reconcile owner equity and total equity evidence'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload R11 audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r11-owner-equity-audit
+          path: data/v5_financial_r11/
+          retention-days: 90
+          if-no-files-found: warn
