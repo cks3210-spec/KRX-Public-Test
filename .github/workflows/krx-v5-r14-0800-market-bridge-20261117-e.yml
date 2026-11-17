@@ -1,0 +1,64 @@
+name: KRX v5 R14 0800 Official Market Bridge E
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 23 * * 0-4' # 08:00 KST Monday-Friday; preceding KRX session
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-market-bridge-e
+  cancel-in-progress: false
+jobs:
+  collect_and_connect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Collect official previous-session KRX prices
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        run: |
+          python -m py_compile scripts/krx_v5_r14_0800_market_bridge_20261117_e.py
+          python scripts/krx_v5_r14_0800_market_bridge_20261117_e.py
+      - name: Connect fresh market snapshot to existing R14 growth engine
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_GROWTH_MAX_CALLS: '60'
+        run: |
+          python scripts/krx_v5_r14_growth_archive_continuation_20261117_d.py
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-0800-market-bridge-e
+          path: |
+            data/v5_r14_market_bridge/
+            data/v5_investment_r14_fundamental/status.json
+          retention-days: 30
+      - name: Persist verified market and R14 results
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p /tmp/krx_bridge_save
+          cp data/latest.csv /tmp/krx_bridge_save/latest.csv
+          cp -a data/v5_r14_market_bridge /tmp/krx_bridge_save/
+          cp -a data/v5_investment_r14_fundamental /tmp/krx_bridge_save/
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/krx_bridge_save/latest.csv data/latest.csv
+            mkdir -p data/v5_r14_market_bridge data/v5_investment_r14_fundamental
+            cp -a /tmp/krx_bridge_save/v5_r14_market_bridge/. data/v5_r14_market_bridge/
+            cp -a /tmp/krx_bridge_save/v5_investment_r14_fundamental/. data/v5_investment_r14_fundamental/
+            git add data/latest.csv data/v5_r14_market_bridge/ data/v5_investment_r14_fundamental/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14: official previous-session KRX snapshot and growth bridge'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
