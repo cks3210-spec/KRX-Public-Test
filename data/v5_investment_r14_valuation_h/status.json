@@ -1,0 +1,17 @@
+{
+  "version": "R14_VALUATION_H",
+  "generated_utc": "2026-11-17T08:23:20.374925+00:00",
+  "input": "data/v5_investment_r14_integrated_g/full_market_integrated.csv",
+  "latest_market_date": "20261116",
+  "rows": 2675,
+  "provisional_ab": 179,
+  "confidence": {
+    "HIGH": 0,
+    "MEDIUM": 170,
+    "LOW": 2505
+  },
+  "official_verified": 0,
+  "final_buy_signals": 0,
+  "golden_cross_used": false,
+  "caution": "Reference valuations are illustrative; official PER/PBR not established by this engine. Provisional grades are not final recommendations."
+}
