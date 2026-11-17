@@ -1,0 +1,51 @@
+name: KRX v5 R14 Fast Validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/krx_v5_r14_dart_incremental_m.py'
+      - 'scripts/krx_v5_r14_financial_pipeline_n.py'
+      - '.github/workflows/krx-v5-r14-fast-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test financial logic without API or cache writes
+        run: |
+          python -m py_compile scripts/krx_v5_r14_dart_incremental_m.py scripts/krx_v5_r14_financial_pipeline_n.py
+          python - <<'PY'
+          import importlib.util, json, pathlib, csv, datetime as dt
+          root=pathlib.Path('.')
+          spec=importlib.util.spec_from_file_location('r14_n',root/'scripts/krx_v5_r14_financial_pipeline_n.py')
+          n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n)
+          def rec(profit,basis='CFS'):
+              return {'status':'000','fs_div':basis,'accounts':{'profit':profit}}
+          cache={'000020:2025:annual':rec(100),'000020:2026:q3':rec(90),'000020:2025:q3':rec(60)}
+          assert n.ttm(cache,'000020',2025,2026,'q3')==(130,'VERIFIED_CUMULATIVE')
+          assert n.ttm(cache,'000020',2025,2026,'half')[1]=='MISSING_QUARTER'
+          cache['000020:2026:q3']=rec(90,'OFS')
+          assert n.ttm(cache,'000020',2025,2026,'q3')[1]=='BASIS_MISMATCH'
+          assert n.qkind('20261117')=='q3'
+          assert n.qkind('20260820')=='half'
+          assert n.qkind('20260520')=='q1'
+          assert n.qkind('20260320') is None
+          p=root/'data/v5_financial_m/status.json'
+          if p.exists():
+              status=json.loads(p.read_text(encoding='utf-8-sig'))
+              print('READ_ONLY_CACHE_STATUS',json.dumps({k:status.get(k) for k in ('cache_records','annual_verified_rows','ttm_calculated','market_date')},ensure_ascii=False))
+          index=root/'data/v5_financial_m/annual_financial_index_m.csv'
+          if index.exists():
+              with index.open(encoding='utf-8-sig',newline='') as f:
+                  rows=list(csv.DictReader(f))
+              assert rows and {'code','annual_profit','ttm_profit','ttm_status'}.issubset(rows[0])
+              print('INDEX_ROWS',len(rows))
+          print('FAST_VALIDATION_PASS: syntax, TTM, basis mismatch, period selection, read-only index')
+          PY
