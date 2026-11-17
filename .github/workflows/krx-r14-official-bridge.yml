@@ -1,0 +1,40 @@
+name: KRX R14 Official Snapshot Bridge (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download latest successful official collector artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/krx_official
+          gh run list --workflow v5-official-market-date-collector.yml --limit 20 --json databaseId,conclusion --jq '.[] | select(.conclusion=="success") | .databaseId' > /tmp/krx_run_ids
+          found=0
+          while read -r run_id; do
+            [ -z "$run_id" ] && continue
+            if gh run download "$run_id" --name krx-v5-official-market-snapshot --dir /tmp/krx_official 2>/dev/null && [ -s /tmp/krx_official/official_daily_market.csv ]; then found=1; break; fi
+          done < /tmp/krx_run_ids
+          [ "$found" -eq 1 ] || { echo 'No verified official artifact available'; exit 1; }
+      - name: Validate and bridge without touching production
+        run: |
+          python scripts/krx_official_r14_bridge.py \
+            --official /tmp/krx_official/official_daily_market.csv \
+            --status /tmp/krx_official/status.json \
+            --existing data/latest.csv \
+            --out /tmp/krx_bridge_output
+      - name: Upload bridge audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-r14-official-bridge-audit
+          path: /tmp/krx_bridge_output/
+          if-no-files-found: warn
