@@ -1,0 +1,55 @@
+name: KRX v5 R14 Growth Archive Continuation D
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 8 * * 1-5' # 17:15 KST, weekdays; no alert is sent
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-growth-archive-continuation-d
+  cancel-in-progress: false
+jobs:
+  growth_archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run incremental growth and history archive
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_GROWTH_MAX_CALLS: '60'
+        run: |
+          python -m py_compile scripts/krx_v5_r14_growth_archive_continuation_20261117_d.py
+          python scripts/krx_v5_r14_growth_archive_continuation_20261117_d.py
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-growth-archive-continuation-d
+          path: data/v5_investment_r14_fundamental/
+          retention-days: 90
+      - name: Persist incremental outputs
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p /tmp/r14-output
+          cp -a data/v5_investment_r14_fundamental/. /tmp/r14-output/
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data/v5_investment_r14_fundamental
+            cp -a /tmp/r14-output/. data/v5_investment_r14_fundamental/
+            git add data/v5_investment_r14_fundamental/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14: accumulate DART growth and market history (no cross)'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent push detected; retry $attempt"
+          done
+          exit 1
