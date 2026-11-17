@@ -1,0 +1,52 @@
+name: KRX v5 R14 Integrated Research I
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-research-i
+  cancel-in-progress: false
+jobs:
+  integrated_research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build F G H and integrated I
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/krx_v5_r14_existing_history_link_20261117_f.py scripts/krx_v5_r14_integrated_16day_20261117_g.py scripts/krx_v5_r14_valuation_engine_20261117_h.py scripts/krx_v5_r14_integrated_research_20261117_i.py
+          python scripts/krx_v5_r14_existing_history_link_20261117_f.py
+          python scripts/krx_v5_r14_integrated_16day_20261117_g.py
+          python scripts/krx_v5_r14_valuation_engine_20261117_h.py
+          python scripts/krx_v5_r14_integrated_research_20261117_i.py
+      - name: Upload research artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-integrated-research-i
+          path: data/v5_investment_r14_research_i/
+          retention-days: 90
+      - name: Persist I results only
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp -a data/v5_investment_r14_research_i /tmp/r14-research-i
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data/v5_investment_r14_research_i
+            cp -a /tmp/r14-research-i/. data/v5_investment_r14_research_i/
+            git add data/v5_investment_r14_research_i/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14: integrated research evidence and forward observation I'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
