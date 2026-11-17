@@ -1,0 +1,27 @@
+name: KRX v5 R14 Existing History Link F
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  link_history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Link real historical closes without changing R14 originals
+        run: |
+          python -m py_compile scripts/krx_v5_r14_existing_history_link_20261117_f.py
+          python scripts/krx_v5_r14_existing_history_link_20261117_f.py
+      - name: Upload linked history and source audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-existing-history-link-f
+          path: data/v5_investment_r14_history_link/
+          retention-days: 30
