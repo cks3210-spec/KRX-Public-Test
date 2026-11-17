@@ -1,25 +1,25 @@
 {
-  "checked_kst": "2026-11-16T15:44:38.301363+09:00",
+  "checked_kst": "2026-11-17T17:04:33.359696+09:00",
   "source": "KRX_OFFICIAL_OPEN_API",
   "status": "SOURCE_VERIFIED",
   "production_data_modified": false,
   "raw_market_data_published": false,
   "attempts": [
     {
-      "date": "20261113",
+      "date": "20261116",
       "counts": {
         "KOSPI": 936,
-        "KOSDAQ": 1834
+        "KOSDAQ": 1835
       },
       "errors": {}
     }
   ],
-  "source_date": "20261113",
+  "source_date": "20261116",
   "market_counts": {
     "KOSPI": 936,
-    "KOSDAQ": 1834
+    "KOSDAQ": 1835
   },
-  "total_rows": 2770,
+  "total_rows": 2771,
   "fresh_for_latest_expected_date": true,
   "note": "Validation only. Raw KRX data is not saved. Existing v4 and golden-cross production pipelines are not modified or connected."
 }
