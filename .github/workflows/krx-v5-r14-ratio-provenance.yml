@@ -1,0 +1,31 @@
+name: KRX v5 R14 Ratio Provenance and Code Reconciliation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fast self-test
+        run: |
+          python -m py_compile scripts/krx_v5_r14_ratio_provenance.py
+          python scripts/krx_v5_r14_ratio_provenance.py
+      - name: Reconcile existing data without API calls or writes
+        run: |
+          python scripts/krx_v5_r14_ratio_provenance.py \
+            --financial data/v5_financial_m/annual_financial_index_m.csv \
+            --market data/v5_investment_r14_research_k/full_market_ratios_k.csv \
+            --output r14-ratio-provenance.json
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r14-ratio-provenance-evidence
+          path: r14-ratio-provenance.json
+          retention-days: 30
