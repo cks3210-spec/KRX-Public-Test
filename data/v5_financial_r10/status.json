@@ -1,0 +1,54 @@
+{
+  "version": "R10",
+  "generated_kst": "2026-11-17T10:28:43.427415+09:00",
+  "state": "RESEARCH_ONLY_NOT_FINAL",
+  "r9_cache_modified": false,
+  "official_per_pbr_verified": 0,
+  "final_grades": 0,
+  "buy_signals": 0,
+  "market_date": "20261113",
+  "market_snapshot_stale": true,
+  "r9_status_market_date": "20261113",
+  "input_date_mismatch": false,
+  "annual_year": 2025,
+  "eligible_rows": 1266,
+  "annual_cache_entries": 279,
+  "annual_fields_present": 163,
+  "provisional_ab_count": 100,
+  "market_breakdown": {
+    "KOSPI": {
+      "eligible": 609,
+      "annual_fields_present": 108,
+      "provisional_ab": 61
+    },
+    "KOSDAQ": {
+      "eligible": 657,
+      "annual_fields_present": 55,
+      "provisional_ab": 39
+    }
+  },
+  "issue_counts": {
+    "STALE_MARKET_PRICE": 1266,
+    "OWNER_ATTRIBUTION_UNVERIFIED": 1266,
+    "OFFICIAL_PER_PBR_UNVERIFIED": 1266,
+    "SECTOR_CLASSIFICATION_UNVERIFIED": 1266,
+    "SHARE_CLASS_UNVERIFIED": 1266,
+    "BALANCE_SHEET_INCONSISTENT": 115,
+    "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 45,
+    "NO_ANNUAL_RECORD": 987,
+    "REFERENCE_PE_UNAVAILABLE": 1049,
+    "REFERENCE_PB_UNAVAILABLE": 988,
+    "POSSIBLE_PREFERRED_SHARE": 23,
+    "NONPOSITIVE_EQUITY": 1
+  },
+  "ttm_computable": 0,
+  "official_source_used": false,
+  "limitations": [
+    "No period-matched prior-year and current-year YTD inputs; TTM withheld",
+    "Owner-attributable income and equity not identified; multiples are reference-only",
+    "No independent official PER/PBR source; comparison withheld",
+    "Sector is a name heuristic only; financial-sector grading withheld",
+    "Stale market prices cannot support current valuation or trading",
+    "Preferred-share exclusion is heuristic only; no official class verification"
+  ]
+}
