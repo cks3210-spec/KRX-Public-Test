@@ -1,0 +1,17 @@
+{
+  "version": "R14_KRX_0800_BRIDGE_E",
+  "run_kst": "2026-11-17T14:54:15.319944+09:00",
+  "target_market_date": "20261116",
+  "previous_latest_date": "20261116",
+  "latest_market_date": "20261116",
+  "raw_market_counts": {
+    "KOSPI": 936,
+    "KOSDAQ": 1835
+  },
+  "valid_market_rows": 2675,
+  "archive_rows": 2675,
+  "archive_dates": 1,
+  "golden_cross_used": false,
+  "source": "KRX Open API stk_bydd_trd + ksq_bydd_trd",
+  "official_per_pbr_verified": false
+}
