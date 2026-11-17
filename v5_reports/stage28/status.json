@@ -1,42 +1,41 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-17T06:14:17.840903+09:00",
+  "generated_kst": "2026-11-18T05:00:03.233926+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
     "DECISION": "success",
     "PERFORMANCE": "success"
   },
-  "source_date_in_existing_data": "20261113",
+  "source_date_in_existing_data": "20261116",
   "existing_data_fresh_for_today": false,
   "component_status": {
     "stage24": {
       "status": "SOURCE_UNAVAILABLE",
-      "checked_kst": "2026-11-17T06:14:12.281096+09:00",
+      "checked_kst": "2026-11-18T04:59:59.039153+09:00",
       "source": "pykrx/KRX",
       "production_data_modified": false,
       "attempted_dates": [
+        "20261118",
         "20261117",
         "20261116",
         "20261115",
         "20261114",
         "20261113",
         "20261112",
-        "20261111",
-        "20261110"
+        "20261111"
       ]
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-16T21:14:17.132886+00:00",
-      "market_date": "20261113",
-      "source_rows": 16,
-      "eligible_rows": 16,
+      "generated_utc": "2026-11-17T20:00:02.736493+00:00",
+      "market_date": "20261116",
+      "source_rows": 15,
+      "eligible_rows": 15,
       "tiers": {
+        "incomplete": 6,
         "unrated": 13,
-        "incomplete": 5,
-        "B_RESEARCH": 2,
-        "A_RESEARCH": 1
+        "B_RESEARCH": 2
       },
       "verified_investment_recommendations": 0,
       "note": "Research ranking only. No confirmed A/B investment grades or buy signals."
@@ -44,12 +43,12 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-16T21:14:17.187092+00:00",
-      "market_date": "20261113",
-      "stage25_input_rows": 16,
-      "candidate_rows": 3,
+      "generated_utc": "2026-11-17T20:00:02.782230+00:00",
+      "market_date": "20261116",
+      "stage25_input_rows": 15,
+      "candidate_rows": 2,
       "signal_groups": {
-        "V": 2,
+        "V": 1,
         "NONE": 1
       },
       "verified_buy_signals": 0,
@@ -62,12 +61,12 @@
     },
     "stage27": {
       "stage": 27,
-      "generated_utc": "2026-11-16T21:14:17.225991+00:00",
+      "generated_utc": "2026-11-17T20:00:02.819157+00:00",
       "status": "TRACKING",
-      "new_signals": 2,
-      "ledger_events": 23,
-      "matured_horizon_observations": 15,
-      "historical_tickers": 2798,
+      "new_signals": 1,
+      "ledger_events": 24,
+      "matured_horizon_observations": 16,
+      "historical_tickers": 2799,
       "history_note": "",
       "method": "Trading-day forward close-to-close returns; gross of fees and taxes; no inferred price; research signals only, not executed orders."
     }
