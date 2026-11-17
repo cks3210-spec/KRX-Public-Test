@@ -1,0 +1,52 @@
+name: KRX v5 R14 OpenDART Incremental M
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-dart-m
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Collect only missing OpenDART records
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          M_BATCH_LIMIT: '80'
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/krx_v5_r14_dart_incremental_m.py
+          python scripts/krx_v5_r14_dart_incremental_m.py
+      - name: Upload M results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-dart-incremental-m
+          path: data/v5_financial_m/
+          retention-days: 30
+      - name: Save M cache only
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp -a data/v5_financial_m /tmp/r14-m-results
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data/v5_financial_m
+            cp -a /tmp/r14-m-results/. data/v5_financial_m/
+            git add data/v5_financial_m/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14 M incremental OpenDART financial cache'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
