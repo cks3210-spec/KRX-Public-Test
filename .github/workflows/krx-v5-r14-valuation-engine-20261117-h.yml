@@ -1,0 +1,46 @@
+name: KRX v5 R14 Valuation Engine H
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-valuation-h
+  cancel-in-progress: false
+jobs:
+  valuation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run R14 valuation H
+        run: |
+          python -m py_compile scripts/krx_v5_r14_valuation_engine_20261117_h.py
+          python scripts/krx_v5_r14_valuation_engine_20261117_h.py
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-valuation-h
+          path: data/v5_investment_r14_valuation_h/
+          retention-days: 90
+      - name: Persist results without touching upstream caches
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp -a data/v5_investment_r14_valuation_h /tmp/r14-valuation-h
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p data/v5_investment_r14_valuation_h
+            cp -a /tmp/r14-valuation-h/. data/v5_investment_r14_valuation_h/
+            git add data/v5_investment_r14_valuation_h/
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'R14: reference valuation and growth grades H'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
