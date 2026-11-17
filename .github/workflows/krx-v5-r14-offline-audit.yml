@@ -1,0 +1,33 @@
+name: KRX v5 R14 Offline Financial Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/krx_v5_r14_offline_audit.py'
+      - '.github/workflows/krx-v5-r14-offline-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read-only full financial cache audit
+        run: |
+          test -s data/v5_financial_m/status.json
+          test -s data/v5_financial_m/dart_financial_cache.json
+          test -s data/v5_financial_m/annual_financial_index_m.csv
+          python -m py_compile scripts/krx_v5_r14_offline_audit.py
+          python scripts/krx_v5_r14_offline_audit.py --root . | tee /tmp/r14_audit.log
+      - name: Publish audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r14-offline-audit-log
+          path: /tmp/r14_audit.log
+          if-no-files-found: ignore
