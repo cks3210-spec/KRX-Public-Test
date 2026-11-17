@@ -1,0 +1,64 @@
+name: KRX v5 R10 Read Only Valuation Quality Audit
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '20 3 * * 1-5' # 12:20 KST, after R9 11:30 KST (not a dependency guarantee)
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r10-quality-audit
+  cancel-in-progress: false
+jobs:
+  quality_audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate program
+        run: python -m py_compile scripts/krx_v5_r10_quality_valuation_mobile_n17_build642.py
+      - name: Verify R9 input exists
+        run: |
+          test -s data/v5_financial_r9/annual_financial_cache.json
+          test -s data/v5_financial_r9/status.json
+          test -s data/latest.csv
+      - name: Run R10 read-only quality audit
+        run: python scripts/krx_v5_r10_quality_valuation_mobile_n17_build642.py
+      - name: Verify status and output files
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('data/v5_financial_r10')
+          s=json.loads((p/'status.json').read_text())
+          assert s['state']=='RESEARCH_ONLY_NOT_FINAL',s
+          assert s['eligible_rows']>0
+          assert s['official_per_pbr_verified']==0
+          assert s['final_grades']==0 and s['buy_signals']==0
+          for n in ('financial_quality_audit.csv','provisional_ab_research_only.csv'):
+              assert (p/n).stat().st_size>0,n
+          print('R10 audit verified:',s['annual_fields_present'])
+          PY
+      - name: Persist R10 audit only
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_financial_r10/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R10: persist read-only financial quality audit'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload R10 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r10-quality-valuation-audit
+          path: data/v5_financial_r10/
+          retention-days: 90
+          if-no-files-found: warn
