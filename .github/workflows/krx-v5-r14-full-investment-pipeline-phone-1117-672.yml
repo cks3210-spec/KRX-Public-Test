@@ -1,0 +1,46 @@
+name: KRX v5 R14 Full Investment Pipeline
+'on':
+  workflow_dispatch:
+  schedule:
+    - cron: '50 7 * * 1-5' # 16:50 KST weekdays
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-full-investment-pipeline
+  cancel-in-progress: false
+jobs:
+  integrated_research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate Python
+        run: python -m py_compile scripts/krx_v5_r14_full_investment_pipeline_mobile_1117_672.py
+      - name: Run full market integrated research
+        run: python scripts/krx_v5_r14_full_investment_pipeline_mobile_1117_672.py
+      - name: Persist R14 outputs only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_investment_r14/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R14: integrated valuation technical and tracking research'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload R14 audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-full-investment-pipeline
+          path: data/v5_investment_r14/
+          retention-days: 90
+          if-no-files-found: warn
