@@ -1,0 +1,5642 @@
+{
+  "000020|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "401439663390",
+      "owner_equity": "379526943267",
+      "noncontrolling": "21912720123",
+      "assets": "642168098413",
+      "liabilities": "240728435023",
+      "owner_profit": "8686052916"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "000070|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2652535097234",
+      "owner_equity": "1824995442526",
+      "noncontrolling": "827539654708",
+      "assets": "5272055814759",
+      "liabilities": "2619520717525",
+      "owner_profit": "-199950170956"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "000120|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "4439637704423",
+      "owner_equity": "4145790841567",
+      "noncontrolling": "293846862856",
+      "assets": "10339205686286",
+      "liabilities": "5899567981863",
+      "owner_profit": "242080917610"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업 소유주 귀속 당기순이익"
+      }
+    }
+  },
+  "000140|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1140161316659",
+      "owner_equity": "553938460383",
+      "noncontrolling": "586222856276",
+      "assets": "3908162305446",
+      "liabilities": "2768000988787",
+      "owner_profit": "-2579360131"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업지분순이익"
+      }
+    }
+  },
+  "000150|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "12234321000000",
+      "owner_equity": "1559193000000",
+      "noncontrolling": "10675128000000",
+      "assets": "32927788000000",
+      "liabilities": "20693467000000",
+      "owner_profit": "75785000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "000210|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "4921075694028",
+      "owner_equity": "4021543844050",
+      "noncontrolling": "899531849978",
+      "assets": "12182144221519",
+      "liabilities": "7261068527491",
+      "owner_profit": "-88007769786"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자  본  총  계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자  산  총  계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부  채  총  계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업주주 귀속 당기순이익(손실)"
+      }
+    }
+  },
+  "000250|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "363593225648",
+      "owner_equity": "276019546060",
+      "noncontrolling": "87573679588",
+      "assets": "561231384431",
+      "liabilities": "197638158783",
+      "owner_profit": "5261822741"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000320|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "811924393550",
+      "owner_equity": "502771595047",
+      "noncontrolling": "309152798503",
+      "assets": "1279356692133",
+      "liabilities": "467432298583",
+      "owner_profit": "32416748888"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "000430|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "730205422000",
+      "owner_equity": "561545424000",
+      "noncontrolling": "168659998000",
+      "assets": "1449297103000",
+      "liabilities": "719091681000",
+      "owner_profit": "36422853000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000480|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "808194985000",
+      "owner_equity": "561308631000",
+      "noncontrolling": "246886354000",
+      "assets": "1565188415000",
+      "liabilities": "756993430000",
+      "owner_profit": "-27409333000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000490|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "646506208741",
+      "owner_equity": "484822395599",
+      "noncontrolling": "161683813142",
+      "assets": "2275000906820",
+      "liabilities": "1628494698079",
+      "owner_profit": "-16843721401"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000670|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "4018786224502",
+      "owner_equity": "3596920882242",
+      "noncontrolling": "421865342260",
+      "assets": "6002694219498",
+      "liabilities": "1983907994996",
+      "owner_profit": "-8302537183"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배주주지분 당기순이익"
+      }
+    }
+  },
+  "000680|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1277959906601",
+      "owner_equity": "892467219287",
+      "noncontrolling": "385492687314",
+      "assets": "11685359914888",
+      "liabilities": "10407400008287",
+      "owner_profit": "-31943593078"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000700|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "412155706832",
+      "owner_equity": "334463492110",
+      "noncontrolling": "77692214722",
+      "assets": "479684093581",
+      "liabilities": "67528386749",
+      "owner_profit": "4570342520"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "000720|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "10112865000000",
+      "owner_equity": "8264726000000",
+      "noncontrolling": "1848139000000",
+      "assets": "27791708000000",
+      "liabilities": "17678843000000",
+      "owner_profit": "373147000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "000860|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "708767942201",
+      "owner_equity": "619619383633",
+      "noncontrolling": "89148558568",
+      "assets": "974015674336",
+      "liabilities": "265247732135",
+      "owner_profit": "-2688360980"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배주주지분당기순이익"
+      }
+    }
+  },
+  "000880|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "48435327000000",
+      "owner_equity": "11840206000000",
+      "noncontrolling": "36595121000000",
+      "assets": "289329420000000",
+      "liabilities": "240894093000000",
+      "owner_profit": "372479000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 주주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배주주"
+      }
+    }
+  },
+  "000990|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2243995457046",
+      "owner_equity": "2142364349472",
+      "noncontrolling": "101631107574",
+      "assets": "2992581747645",
+      "liabilities": "748586290599",
+      "owner_profit": "256071900592"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "001040|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "17017052447000",
+      "owner_equity": "5208897884000",
+      "noncontrolling": "11808154563000",
+      "assets": "46966393292000",
+      "liabilities": "29949340845000",
+      "owner_profit": "143329782000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "001120|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "3535707599884",
+      "owner_equity": "2771998158385",
+      "noncontrolling": "763709441499",
+      "assets": "9328302981413",
+      "liabilities": "5792595381529",
+      "owner_profit": "141810366263"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "001210|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "10115013712",
+      "owner_equity": "24245257168",
+      "noncontrolling": "-14130243456",
+      "assets": "30776225371",
+      "liabilities": "20661211659",
+      "owner_profit": "-3395679737"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "001230|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1955749132475",
+      "owner_equity": "1795520178636",
+      "noncontrolling": "160228953839",
+      "assets": "2693396462019",
+      "liabilities": "737647329544",
+      "owner_profit": "16075280676"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "001390|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "3937401957646",
+      "owner_equity": "998971750055",
+      "noncontrolling": "2938430207591",
+      "assets": "8343678242449",
+      "liabilities": "4406276284803",
+      "owner_profit": "69656031047"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "001520|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "756895047618",
+      "owner_equity": "726754309845",
+      "noncontrolling": "30140737773",
+      "assets": "1454847945012",
+      "liabilities": "697952897394",
+      "owner_profit": "20076904636"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "001630|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "913055351744",
+      "owner_equity": "637023671963",
+      "noncontrolling": "276031679781",
+      "assets": "1628780738713",
+      "liabilities": "715725386969",
+      "owner_profit": "40429772068"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "001780|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "404858804415",
+      "owner_equity": "326552093873",
+      "noncontrolling": "78306710542",
+      "assets": "912972459028",
+      "liabilities": "508113654613",
+      "owner_profit": "15519208023"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "001800|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "5155936347634",
+      "owner_equity": "2463569687398",
+      "noncontrolling": "2692366660236",
+      "assets": "6183410426053",
+      "liabilities": "1027474078419",
+      "owner_profit": "120991845518"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "001940|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1494288788942",
+      "owner_equity": "1143065471427",
+      "noncontrolling": "351223317515",
+      "assets": "1657184856346",
+      "liabilities": "162896067404",
+      "owner_profit": "-18243214919"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주 지분"
+      }
+    }
+  },
+  "002020|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2423307276517",
+      "owner_equity": "1862590524430",
+      "noncontrolling": "560716752087",
+      "assets": "7446985208816",
+      "liabilities": "5023677932299",
+      "owner_profit": "-158471993477"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "002030|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2035747890000",
+      "owner_equity": "1187749013000",
+      "noncontrolling": "847998877000",
+      "assets": "3319139223000",
+      "liabilities": "1283391333000",
+      "owner_profit": "30950321000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "002100|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "288352573768",
+      "owner_equity": "263520289353",
+      "noncontrolling": "24832284415",
+      "assets": "486456900345",
+      "liabilities": "198104326577",
+      "owner_profit": "18648471484"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "002240|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1961649790761",
+      "owner_equity": "1817142349708",
+      "noncontrolling": "144507441053",
+      "assets": "2660051901199",
+      "liabilities": "698402110438",
+      "owner_profit": "9610519262"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "002320|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1523278806854",
+      "owner_equity": "1399782662320",
+      "noncontrolling": "123496144534",
+      "assets": "4316986683575",
+      "liabilities": "2793707876721",
+      "owner_profit": "-1553950918"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "002620|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "469116853696",
+      "owner_equity": "318740640258",
+      "noncontrolling": "150376213438",
+      "assets": "876664145825",
+      "liabilities": "407547292129",
+      "owner_profit": "14635277022"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "002790|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "7235423628719",
+      "owner_equity": "3482154028036",
+      "noncontrolling": "3753269600683",
+      "assets": "8769409589796",
+      "liabilities": "1533985961077",
+      "owner_profit": "124038133589"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "002810|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "666743914687",
+      "owner_equity": "607348995042",
+      "noncontrolling": "59394919645",
+      "assets": "771043913314",
+      "liabilities": "104299998627",
+      "owner_profit": "58622144407"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분 순이익"
+      }
+    }
+  },
+  "003030|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2733117514567",
+      "owner_equity": "2062557507294",
+      "noncontrolling": "670560007273",
+      "assets": "6046779971967",
+      "liabilities": "3313662457400",
+      "owner_profit": "63259086548"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "003090|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1767325630187",
+      "owner_equity": "1176637791557",
+      "noncontrolling": "590687838630",
+      "assets": "3232157201634",
+      "liabilities": "1464831571447",
+      "owner_profit": "175062902534"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "003160|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "185897332896",
+      "owner_equity": "163568120352",
+      "noncontrolling": "22329212544",
+      "assets": "373777690545",
+      "liabilities": "187880357649",
+      "owner_profit": "5095642324"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "003200|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "949645970553",
+      "owner_equity": "925285143386",
+      "noncontrolling": "24360827167",
+      "assets": "1120711123137",
+      "liabilities": "171065152584",
+      "owner_profit": "33186975116"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업지분"
+      }
+    }
+  },
+  "003300|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2349825497227",
+      "owner_equity": "1679508026254",
+      "noncontrolling": "670317470973",
+      "assets": "3736407092143",
+      "liabilities": "1386581594916",
+      "owner_profit": "31568668948"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배주주지분순이익"
+      }
+    }
+  },
+  "003380|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "6277593000000",
+      "owner_equity": "3234052000000",
+      "noncontrolling": "3043541000000",
+      "assets": "17008288000000",
+      "liabilities": "10730695000000",
+      "owner_profit": "229743000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "003550|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "30334813000000",
+      "owner_equity": "28708510000000",
+      "noncontrolling": "1626303000000",
+      "assets": "33982889000000",
+      "liabilities": "3648076000000",
+      "owner_profit": "737248000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "005160|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "471041761530",
+      "owner_equity": "370717409303",
+      "noncontrolling": "100324352227",
+      "assets": "872019766188",
+      "liabilities": "400978004658",
+      "owner_profit": "-9989794725"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본(B)"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채(A)"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "005490|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "62377691037383",
+      "owner_equity": "55730184535521",
+      "noncontrolling": "6647506501862",
+      "assets": "105192437963565",
+      "liabilities": "42814746926182",
+      "owner_profit": "657654060164"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "005990|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "856077493776",
+      "owner_equity": "431283659620",
+      "noncontrolling": "424793834156",
+      "assets": "1423606242799",
+      "liabilities": "567528749023",
+      "owner_profit": "32497097268"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "006120|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "6851245699316",
+      "owner_equity": "2907925661951",
+      "noncontrolling": "3943320037365",
+      "assets": "16299659050645",
+      "liabilities": "9448413351329",
+      "owner_profit": "129346876663"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "006260|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "7679588000000",
+      "owner_equity": "5003131000000",
+      "noncontrolling": "2676457000000",
+      "assets": "24994792000000",
+      "liabilities": "17315204000000",
+      "owner_profit": "270815000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "006360|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "5523557000000",
+      "owner_equity": "4792962000000",
+      "noncontrolling": "730595000000",
+      "assets": "18459842000000",
+      "liabilities": "12936285000000",
+      "owner_profit": "93518000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "006730|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1386945844103",
+      "owner_equity": "1061133092390",
+      "noncontrolling": "325812751713",
+      "assets": "3255148135822",
+      "liabilities": "1868202291719",
+      "owner_profit": "79133576338"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "007340|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2449662359000",
+      "owner_equity": "2007332574000",
+      "noncontrolling": "442329785000",
+      "assets": "5275680667000",
+      "liabilities": "2826018308000",
+      "owner_profit": "281602585000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "007700|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "3642862629037",
+      "owner_equity": "2312118904091",
+      "noncontrolling": "1330743724946",
+      "assets": "4343643804753",
+      "liabilities": "700781175716",
+      "owner_profit": "125724901800"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주에 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유지분 당기순이익"
+      }
+    }
+  },
+  "009070|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "334350595393",
+      "owner_equity": "316496616748",
+      "noncontrolling": "17853978645",
+      "assets": "791695946689",
+      "liabilities": "457345351296",
+      "owner_profit": "21159368647"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "009540|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "16908352832000",
+      "owner_equity": "13286077746000",
+      "noncontrolling": "3622275086000",
+      "assets": "39542213288000",
+      "liabilities": "22633860456000",
+      "owner_profit": "2168412429000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "010060|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "4731526377000",
+      "owner_equity": "3931910194000",
+      "noncontrolling": "799616183000",
+      "assets": "7870870449000",
+      "liabilities": "3139344072000",
+      "owner_profit": "-89880075000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배회사의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배회사의 소유주지분"
+      }
+    }
+  },
+  "011790|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2025734428681",
+      "owner_equity": "832066725740",
+      "noncontrolling": "1193667702941",
+      "assets": "6740499643049",
+      "liabilities": "4714765214368",
+      "owner_profit": "-734388238284"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본 총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산 총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채 총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주에게 귀속되는 지분"
+      }
+    }
+  },
+  "012630|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "5428726196750",
+      "owner_equity": "2920918753025",
+      "noncontrolling": "2507807443725",
+      "assets": "12685578705605",
+      "liabilities": "7256852508855",
+      "owner_profit": "300976366813"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "017890|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "594752912232",
+      "owner_equity": "535436810436",
+      "noncontrolling": "59316101796",
+      "assets": "703581690943",
+      "liabilities": "108828778711",
+      "owner_profit": "30644100318"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본 총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산 총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채 총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배지분순이익"
+      }
+    }
+  },
+  "017940|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2609252670735",
+      "owner_equity": "2022023758134",
+      "noncontrolling": "587228912601",
+      "assets": "15915640404006",
+      "liabilities": "13306387733271",
+      "owner_profit": "104790066993"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "018120|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "94127896562",
+      "owner_equity": "91567660431",
+      "noncontrolling": "2560236131",
+      "assets": "102329386031",
+      "liabilities": "8201489469",
+      "owner_profit": "12146175801"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "018290|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "253256712469",
+      "owner_equity": "242372388429",
+      "noncontrolling": "10884324040",
+      "assets": "353501351205",
+      "liabilities": "100244638736",
+      "owner_profit": "60933123064"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "018670|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "3144548995496",
+      "owner_equity": "2928065570208",
+      "noncontrolling": "216483425288",
+      "assets": "8031885593897",
+      "liabilities": "4887336598401",
+      "owner_profit": "235249768492"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "019010|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "445377353144",
+      "owner_equity": "390646638136",
+      "noncontrolling": "54730715008",
+      "assets": "726258937366",
+      "liabilities": "280881584222",
+      "owner_profit": "93736333999"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "023160|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "669616725985",
+      "owner_equity": "624576985598",
+      "noncontrolling": "45039740387",
+      "assets": "740815619979",
+      "liabilities": "71198893994",
+      "owner_profit": "63873179704"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "023410|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1050190440045",
+      "owner_equity": "882070559156",
+      "noncontrolling": "168119880889",
+      "assets": "2369584586592",
+      "liabilities": "1319394146547",
+      "owner_profit": "-10237266420"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "023600|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "669307873322",
+      "owner_equity": "599701244836",
+      "noncontrolling": "69606628486",
+      "assets": "858872719177",
+      "liabilities": "189564845855",
+      "owner_profit": "26951386308"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "024800|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "553456879873",
+      "owner_equity": "530488216201",
+      "noncontrolling": "22968663672",
+      "assets": "649670178537",
+      "liabilities": "96213298664",
+      "owner_profit": "54840862063"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "024840|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "141237762985",
+      "owner_equity": "121381057513",
+      "noncontrolling": "19856705472",
+      "assets": "389288152677",
+      "liabilities": "248050389692",
+      "owner_profit": "-44220967"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "024850|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "221320256952",
+      "owner_equity": "210501698399",
+      "noncontrolling": "10818558553",
+      "assets": "268750045052",
+      "liabilities": "47429788100",
+      "owner_profit": "-33366888737"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "025900|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "880173716773",
+      "owner_equity": "813951539785",
+      "noncontrolling": "66222176988",
+      "assets": "2270110568943",
+      "liabilities": "1389936852170",
+      "owner_profit": "-45765602104"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "027410|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2022289384989",
+      "owner_equity": "1787293189210",
+      "noncontrolling": "234996195779",
+      "assets": "2397352251294",
+      "liabilities": "375062866305",
+      "owner_profit": "59116923589"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "027710|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "338161741400",
+      "owner_equity": "282087387757",
+      "noncontrolling": "56074353643",
+      "assets": "969038633846",
+      "liabilities": "630876892446",
+      "owner_profit": "30108748614"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배주주지분"
+      }
+    }
+  },
+  "028300|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "494413769060",
+      "owner_equity": "418457232961",
+      "noncontrolling": "75956536099",
+      "assets": "930177639023",
+      "liabilities": "435763869963",
+      "owner_profit": "-220500871611"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배주주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "030200|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "19458023000000",
+      "owner_equity": "17655653000000",
+      "noncontrolling": "1802370000000",
+      "assets": "42948573000000",
+      "liabilities": "23490550000000",
+      "owner_profit": "1731038000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "030520|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "496500543690",
+      "owner_equity": "366695020087",
+      "noncontrolling": "129805523603",
+      "assets": "728546530735",
+      "liabilities": "232045987045",
+      "owner_profit": "34376854655"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "030530|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1301244027671",
+      "owner_equity": "999715698860",
+      "noncontrolling": "301528328811",
+      "assets": "1969723238243",
+      "liabilities": "668479210572",
+      "owner_profit": "27383644782"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "032190|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "7711894424418",
+      "owner_equity": "1610400122370",
+      "noncontrolling": "6101494302048",
+      "assets": "83638241038415",
+      "liabilities": "75926346613997",
+      "owner_profit": "218813594173"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "032620|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "158889237131",
+      "owner_equity": "141545775058",
+      "noncontrolling": "17343462073",
+      "assets": "227700115281",
+      "liabilities": "68810878150",
+      "owner_profit": "36976647865"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "033160|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1001507418416",
+      "owner_equity": "377773202837",
+      "noncontrolling": "623734215579",
+      "assets": "2534008826164",
+      "liabilities": "1532501407748",
+      "owner_profit": "1329994800"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "033640|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "245425030775",
+      "owner_equity": "123589969402",
+      "noncontrolling": "121835061373",
+      "assets": "696198458357",
+      "liabilities": "450773427582",
+      "owner_profit": "16582539420"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "034220|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "7839238000000",
+      "owner_equity": "6604124000000",
+      "noncontrolling": "1235114000000",
+      "assets": "26916700000000",
+      "liabilities": "19077462000000",
+      "owner_profit": "226312000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "034310|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1404485211551",
+      "owner_equity": "756223294985",
+      "noncontrolling": "648261916566",
+      "assets": "3680345644320",
+      "liabilities": "2275860432769",
+      "owner_profit": "37646313853"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "034730|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "85691335000000",
+      "owner_equity": "25187196000000",
+      "noncontrolling": "60504139000000",
+      "assets": "213519668000000",
+      "liabilities": "127828333000000",
+      "owner_profit": "1597498000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주에 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "034810|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1288929938416",
+      "owner_equity": "715601468191",
+      "noncontrolling": "573328470225",
+      "assets": "2591018293239",
+      "liabilities": "1302088354823",
+      "owner_profit": "-24039661566"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "034950|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "146019077956",
+      "owner_equity": "132249756912",
+      "noncontrolling": "13769321044",
+      "assets": "187503476182",
+      "liabilities": "41484398226",
+      "owner_profit": "25228631626"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유지분"
+      }
+    }
+  },
+  "035080|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "723239057204",
+      "owner_equity": "442469116083",
+      "noncontrolling": "280769941121",
+      "assets": "1746643370954",
+      "liabilities": "1023404313750",
+      "owner_profit": "-35786594636"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "035420|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "28953013365595",
+      "owner_equity": "27581956984245",
+      "noncontrolling": "1371056381350",
+      "assets": "41084496327318",
+      "liabilities": "12131482961723",
+      "owner_profit": "1953214734956"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업 소유주지분"
+      }
+    }
+  },
+  "035600|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "758220694106",
+      "owner_equity": "498534389912",
+      "noncontrolling": "259686304194",
+      "assets": "1985094451263",
+      "liabilities": "1226873757157",
+      "owner_profit": "47855897508"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "035610|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "311885742952",
+      "owner_equity": "212610245805",
+      "noncontrolling": "99275497147",
+      "assets": "374525990937",
+      "liabilities": "62640247985",
+      "owner_profit": "20869284844"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유지분"
+      }
+    }
+  },
+  "035760|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "3445841457803",
+      "owner_equity": "2789359250082",
+      "noncontrolling": "656482207721",
+      "assets": "8666766089199",
+      "liabilities": "5220924631396",
+      "owner_profit": "29501603742"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순손실"
+      }
+    }
+  },
+  "035810|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1235439344107",
+      "owner_equity": "698105929400",
+      "noncontrolling": "537333414707",
+      "assets": "2896618126429",
+      "liabilities": "1661178782322",
+      "owner_profit": "26762892568"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주"
+      }
+    }
+  },
+  "036710|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "373911861641",
+      "owner_equity": "25619521480",
+      "noncontrolling": "348292340161",
+      "assets": "1596446603155",
+      "liabilities": "1222534741514",
+      "owner_profit": "-37812693853"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배주주지분"
+      }
+    }
+  },
+  "036800|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "437666418098",
+      "owner_equity": "395979560877",
+      "noncontrolling": "41686857221",
+      "assets": "1196040535411",
+      "liabilities": "758374117313",
+      "owner_profit": "42873858115"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의소유주지분"
+      }
+    }
+  },
+  "037460|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "744671855207",
+      "owner_equity": "484385699965",
+      "noncontrolling": "260286155242",
+      "assets": "1825577701009",
+      "liabilities": "1080905845802",
+      "owner_profit": "75660276148"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "038290|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "172307748915",
+      "owner_equity": "157257679015",
+      "noncontrolling": "15050069900",
+      "assets": "351624587019",
+      "liabilities": "179316838104",
+      "owner_profit": "2030024763"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "039200|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "186847579442",
+      "owner_equity": "181307409042",
+      "noncontrolling": "5540170400",
+      "assets": "229853200876",
+      "liabilities": "43005621434",
+      "owner_profit": "52343085512"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "041020|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "502894789118",
+      "owner_equity": "89311776494",
+      "noncontrolling": "413583012624",
+      "assets": "644668196602",
+      "liabilities": "141773407484",
+      "owner_profit": "4859947616"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "041510|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1358745854879",
+      "owner_equity": "1002623745976",
+      "noncontrolling": "356122108903",
+      "assets": "2007711293863",
+      "liabilities": "648965438984",
+      "owner_profit": "347212781579"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분순이익"
+      }
+    }
+  },
+  "042420|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "725006922453",
+      "owner_equity": "350284582458",
+      "noncontrolling": "374722339995",
+      "assets": "895906543845",
+      "liabilities": "170899621392",
+      "owner_profit": "33843721433"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의소유지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주 귀속 당기순이익(손실)"
+      }
+    }
+  },
+  "042600|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "94183091114",
+      "owner_equity": "88999711810",
+      "noncontrolling": "5183379304",
+      "assets": "216888398118",
+      "liabilities": "122705307004",
+      "owner_profit": "-31549713850"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "051910|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "47105545000000",
+      "owner_equity": "32845600000000",
+      "noncontrolling": "14259945000000",
+      "assets": "101061661000000",
+      "liabilities": "53956116000000",
+      "owner_profit": "-1819449000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채 총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "066570|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "28552025000000",
+      "owner_equity": "23887393000000",
+      "noncontrolling": "4664632000000",
+      "assets": "68620167000000",
+      "liabilities": "40068142000000",
+      "owner_profit": "960579000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "078930|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "19194117000000",
+      "owner_equity": "14703329000000",
+      "noncontrolling": "4490788000000",
+      "assets": "35707911000000",
+      "liabilities": "16513794000000",
+      "owner_profit": "798737000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업소유주지분순이익"
+      }
+    }
+  },
+  "092230|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1641915205141",
+      "owner_equity": "1105468112147",
+      "noncontrolling": "536447092994",
+      "assets": "2176813167529",
+      "liabilities": "534897962388",
+      "owner_profit": "79311842834"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "당기순이익의 귀속 - 지배기업의 소유주"
+      }
+    }
+  },
+  "093050|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1846793949430",
+      "owner_equity": "1630803463666",
+      "noncontrolling": "215990485764",
+      "assets": "3026661178694",
+      "liabilities": "1179867229264",
+      "owner_profit": "98892646618"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배주주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배주주지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분"
+      }
+    }
+  },
+  "096760|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "594627233516",
+      "owner_equity": "266962289857",
+      "noncontrolling": "327664943659",
+      "assets": "1231185786714",
+      "liabilities": "636558553198",
+      "owner_profit": "58504802638"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업지분순손익"
+      }
+    }
+  },
+  "097950|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "11551202624000",
+      "owner_equity": "7058604079000",
+      "noncontrolling": "4492598545000",
+      "assets": "29744790534000",
+      "liabilities": "18193587910000",
+      "owner_profit": "-571455619874"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "181710|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1770817089443",
+      "owner_equity": "1463109810462",
+      "noncontrolling": "307707278981",
+      "assets": "3851415641250",
+      "liabilities": "2080598551807",
+      "owner_profit": "32091574976"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "204320|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2875816804068",
+      "owner_equity": "2713805689016",
+      "noncontrolling": "162011115052",
+      "assets": "7136602919112",
+      "liabilities": "4260786115044",
+      "owner_profit": "100037573498"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "229640|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "225768642125",
+      "owner_equity": "209188487673",
+      "noncontrolling": "16580154452",
+      "assets": "491338506590",
+      "liabilities": "265569864465",
+      "owner_profit": "42064947281"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주"
+      }
+    }
+  },
+  "267250|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "30335091114000",
+      "owner_equity": "10116362882000",
+      "noncontrolling": "20218728232000",
+      "assets": "78685890494000",
+      "liabilities": "48350799380000",
+      "owner_profit": "962697249000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주지분순이익"
+      }
+    }
+  },
+  "267270|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1930295930000",
+      "owner_equity": "1805220579000",
+      "noncontrolling": "125075351000",
+      "assets": "3602695392000",
+      "liabilities": "1672399462000",
+      "owner_profit": "99380124000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "302440|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2037454202719",
+      "owner_equity": "1788799862235",
+      "noncontrolling": "248654340484",
+      "assets": "2955743509068",
+      "liabilities": "918289306349",
+      "owner_profit": "-57424481989"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  },
+  "373220|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "29321676000000",
+      "owner_equity": "20215549000000",
+      "noncontrolling": "9106127000000",
+      "assets": "67147953000000",
+      "liabilities": "37826277000000",
+      "owner_profit": "-1072810000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "499790|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1258600788881",
+      "owner_equity": "854876608787",
+      "noncontrolling": "403724180094",
+      "assets": "2458495051224",
+      "liabilities": "1199894262343",
+      "owner_profit": "19371206401"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "000050|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "811826797534",
+      "owner_equity": "811845969050",
+      "noncontrolling": "-19171516",
+      "assets": "1255644259736",
+      "liabilities": "443817462202",
+      "owner_profit": "47383236498"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "000080|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "1142138785882",
+      "owner_equity": "1121101872935",
+      "noncontrolling": "21036912947",
+      "assets": "3272507702370",
+      "liabilities": "2130368916488",
+      "owner_profit": "41492231483"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주지분"
+      }
+    }
+  },
+  "000240|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "4781079225610",
+      "owner_equity": "4781079225610",
+      "noncontrolling": "0",
+      "assets": "5259624597652",
+      "liabilities": "478545372042",
+      "owner_profit": "347229288109"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 자본"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업소유주"
+      }
+    }
+  },
+  "000270|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "61190464000000",
+      "owner_equity": "61187884000000",
+      "noncontrolling": "2580000000",
+      "assets": "98979055000000",
+      "liabilities": "37788591000000",
+      "owner_profit": "7560983000000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배기업 소유주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "IS",
+        "account_nm": "지배기업소유주지분순이익"
+      }
+    }
+  },
+  "000370|2025|11011|CFS": {
+    "state": "OK",
+    "year": "2025",
+    "report": "11011",
+    "fs_div": "CFS",
+    "checked_at": "2026-11-17T11:02:50.268164+09:00",
+    "accounts": {
+      "total_equity": "2707580443000",
+      "owner_equity": "2669558297000",
+      "noncontrolling": "38022146000",
+      "assets": "20492834690000",
+      "liabilities": "17785254247000",
+      "owner_profit": "299017018000"
+    },
+    "evidence": {
+      "total_equity": {
+        "account_id": "ifrs-full_Equity",
+        "sj_div": "BS",
+        "account_nm": "자본총계"
+      },
+      "owner_equity": {
+        "account_id": "ifrs-full_EquityAttributableToOwnersOfParent",
+        "sj_div": "BS",
+        "account_nm": "지배주주지분"
+      },
+      "noncontrolling": {
+        "account_id": "ifrs-full_NoncontrollingInterests",
+        "sj_div": "BS",
+        "account_nm": "비지배지분"
+      },
+      "assets": {
+        "account_id": "ifrs-full_Assets",
+        "sj_div": "BS",
+        "account_nm": "자산총계"
+      },
+      "liabilities": {
+        "account_id": "ifrs-full_Liabilities",
+        "sj_div": "BS",
+        "account_nm": "부채총계"
+      },
+      "owner_profit": {
+        "account_id": "ifrs-full_ProfitLossAttributableToOwnersOfParent",
+        "sj_div": "CIS",
+        "account_nm": "지배기업의 소유주에게 귀속되는 당기순이익(손실)"
+      }
+    }
+  }
+}

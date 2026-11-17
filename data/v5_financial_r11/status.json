@@ -1,0 +1,32 @@
+{
+  "version": "R11",
+  "state": "RESEARCH_ONLY_NOT_FINAL",
+  "generated_kst": "2026-11-17T11:02:50.268164+09:00",
+  "r9_cache_modified": false,
+  "r10_cache_modified": false,
+  "official_per_pbr_verified": 0,
+  "final_grades": 0,
+  "buy_signals": 0,
+  "year": "2025",
+  "annual_in_scope": 279,
+  "r10_balance_flags_in_scope": 115,
+  "r10_flags_reconciled": 115,
+  "balance_breakdown": {
+    "BALANCED_WITH_TOTAL_EQUITY": 120,
+    "UNVERIFIED_TOTAL_EQUITY_MISSING": 159
+  },
+  "owner_account_confirmed": 120,
+  "provisional_ab_count": 3,
+  "dart_api_calls": 120,
+  "new_dart_evidence": 120,
+  "evidence_cache_entries": 120,
+  "error_count": 0,
+  "errors": [],
+  "limitations": [
+    "R9/R10 original caches are read-only",
+    "R10 asset-liability-owner-equity mismatch does not prove accounting error",
+    "Reference multiples are not official PER/PBR",
+    "Market cap may include share classes and stale price",
+    "No final grades or buy signals"
+  ]
+}
