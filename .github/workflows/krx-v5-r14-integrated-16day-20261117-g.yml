@@ -1,0 +1,33 @@
+name: KRX v5 R14 Integrated 16-Day G
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrated_research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild linked real close history
+        run: |
+          python -m py_compile scripts/krx_v5_r14_existing_history_link_20261117_f.py
+          python scripts/krx_v5_r14_existing_history_link_20261117_f.py
+      - name: Integrate price history and R14 fundamentals
+        run: |
+          python -m py_compile scripts/krx_v5_r14_integrated_16day_20261117_g.py
+          python scripts/krx_v5_r14_integrated_16day_20261117_g.py
+      - name: Upload R14 integrated research
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-integrated-16day-g
+          path: |
+            data/v5_investment_r14_history_link/status.json
+            data/v5_investment_r14_integrated_g/
+          retention-days: 90
