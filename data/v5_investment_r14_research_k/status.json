@@ -1,0 +1,22 @@
+{
+  "version": "R14_K_CACHED_ANNUAL_RATIOS",
+  "generated_utc": "2026-11-17T08:56:34.885310+00:00",
+  "market_date": "20261116",
+  "rows": 2675,
+  "provisional_ab": 179,
+  "cache_path": "data/v5_financial_r7/annual_financial_cache.json",
+  "cache_records": 110,
+  "cache_matched": 110,
+  "annual_per_calculated": 87,
+  "annual_pbr_calculated": 110,
+  "roe_calculated": 0,
+  "official_ratios_not_fabricated": true,
+  "golden_cross_used": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "PER uses most recent cached ANNUAL profit, not TTM; annual earnings can be stale",
+    "ROE requires previous-year equity; absent values remain blank",
+    "Financial numerator and market capitalization must be in KRW; inspect cache provenance before investment use",
+    "No buy signal or intrinsic value is inferred from these ratios"
+  ]
+}
