@@ -1,0 +1,45 @@
+name: KRX v5 R14 History Growth Bridge
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-history-growth-bridge
+  cancel-in-progress: false
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate and run
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          DART_GROWTH_MAX_CALLS: '60'
+        run: |
+          python -m py_compile scripts/krx_v5_r14_history_growth_bridge_20261117_a.py
+          python scripts/krx_v5_r14_history_growth_bridge_20261117_a.py
+      - name: Persist bridge outputs only
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v5_investment_r14_bridge/
+          if ! git diff --cached --quiet; then
+            git commit -m 'v5 R14: connect existing technical and DART growth data'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Upload bridge audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-history-growth-bridge
+          path: data/v5_investment_r14_bridge/
+          retention-days: 90
