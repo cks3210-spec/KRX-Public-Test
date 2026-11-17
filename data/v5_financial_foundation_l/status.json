@@ -1,0 +1,27 @@
+{
+  "version": "R14_L_FINANCIAL_FOUNDATION",
+  "generated_utc": "2026-11-17T09:06:30.255318+00:00",
+  "market_input_present": true,
+  "market_rows": 2675,
+  "cache_sources": 3,
+  "unique_financial_codes": 279,
+  "conflicts": 0,
+  "matched": 279,
+  "annual_per_calculated": 217,
+  "annual_pbr_calculated": 278,
+  "annual_roe_calculated": 0,
+  "ttm_calculated": 0,
+  "official_verified": 0,
+  "final_buy_signals": 0,
+  "upstream_caches_modified": false,
+  "notes": [
+    "Read-only inventory of existing annual caches; no DART API collection in L",
+    "Annual PER is not TTM; no investment signal generated",
+    "A/B are provisional grades from K, not new valuation grades"
+  ],
+  "input_sha256": {
+    "data/v5_financial_r7/annual_financial_cache.json": "253e07f6a5ee483a5b3b93fdb2b7295767ec8799771365f191571a024d6c6d9e",
+    "data/v5_financial_r8/annual_financial_cache.json": "b6c4aaeb625678875b1db13b9d8e955570a55f8da1a7ccf5c45a097630e9e19e",
+    "data/v5_financial_r9/annual_financial_cache.json": "b5546cc7c94beb3145854264df62e6880d3b7ee88c027a489369c95dbb9504e7"
+  }
+}
