@@ -1,0 +1,55 @@
+name: KRX R14 Financial Gap Audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose existing R14 cache without modifying data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r14_gap
+          python - <<'PY'
+          import csv,json,collections,pathlib,datetime
+          root=pathlib.Path('data/v5_financial_m')
+          with (root/'annual_financial_index_m.csv').open(encoding='utf-8-sig',newline='') as f:
+              rows=list(csv.DictReader(f))
+          cache=json.loads((root/'dart_financial_cache.json').read_text(encoding='utf-8-sig'))
+          status=json.loads((root/'status.json').read_text(encoding='utf-8-sig'))
+          def verified(r):
+              return isinstance(r,dict) and r.get('status')=='000' and bool(r.get('accounts'))
+          report=collections.Counter()
+          samples=collections.defaultdict(list)
+          year=int(str(status['market_date'])[:4])-1
+          for row in rows:
+              code=row['code']
+              annual=cache.get(f'{code}:{year}:annual',{})
+              if not verified(annual):
+                  reason='ANNUAL_'+str(annual.get('status','MISSING'))
+              elif row.get('ttm_status')!='VERIFIED_CUMULATIVE':
+                  reason='TTM_'+str(row.get('ttm_status','MISSING'))
+              else:
+                  reason='FINANCIAL_EVIDENCE_AVAILABLE'
+              report[reason]+=1
+              if len(samples[reason])<8:samples[reason].append(code)
+          result={'state':'READ_ONLY_GAP_DIAGNOSTIC','market_date':status.get('market_date'),
+                  'rows':len(rows),'cache_records':len(cache),
+                  'counts':dict(report),'sample_codes':dict(samples),
+                  'original_data_modified':False,
+                  'disclosure_asof_verified':False,'investment_signals_authorized':False}
+          out=pathlib.Path('/tmp/r14_gap/diagnostic.json')
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: krx-r14-financial-gap-diagnostic
+          path: /tmp/r14_gap/diagnostic.json
+          retention-days: 30
