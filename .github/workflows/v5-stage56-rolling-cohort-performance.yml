@@ -89,7 +89,7 @@ jobs:
 
         git add data/v5_tracking/episodes.csv data/v5_tracking/performance.csv data/v5_tracking/daily_prices.csv
 
-        if ! git diff --cached --quiet; then git commit -m "v5: update cohort performance tracking" && git push;
+        if ! git diff --cached --quiet; then git commit -m "v5: update cohort performance tracking" && git pull --rebase origin main && git push origin HEAD:main;
         fi'
     - name: Upload consolidated result
       if: always()
