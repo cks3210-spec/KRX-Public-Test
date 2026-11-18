@@ -120,7 +120,7 @@ jobs:
 
         git add data/v5_tracking/candidate_changes.csv data/v5_tracking/daily_candidate_snapshots.csv
 
-        if ! git diff --cached --quiet; then git commit -m "v5: daily provisional cohorts and performance"; git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" stash push --include-untracked -m "stage57 temporary generated files"; git pull --rebase origin main; git push origin HEAD:main; fi
+        if ! git diff --cached --quiet; then git commit -m "v5: daily provisional cohorts and performance"; git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" stash push --include-untracked -m "stage57 temporary generated files"; git pull --rebase origin main; git push origin HEAD:main; fi'
     - name: Upload result even if commit fails
       if: always()
       uses: actions/upload-artifact@v4
