@@ -7,8 +7,7 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '30 9 * * 1-5'  # 18:30 KST
-    - cron: '0 11 * * 1-5'  # 20:00 KST retry
+    - cron: '30 23 * * 0-4'  # 08:30 KST   
 permissions:
   contents: read
   actions: read
@@ -24,6 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install KRX exchange calendar
+        run: python -m pip install 'exchange-calendars>=4.5,<5'
       - name: Reuse last successful official snapshot when needed
         env:
           GH_TOKEN: ${{ github.token }}
@@ -43,7 +44,22 @@ jobs:
           from zoneinfo import ZoneInfo
           OUT=pathlib.Path('krx_v5_official_output'); OUT.mkdir(exist_ok=True)
           KST=ZoneInfo('Asia/Seoul'); now=dt.datetime.now(KST)
-          day=os.environ.get('TARGET_DATE','').strip() or now.strftime('%Y%m%d')
+                    import exchange_calendars as xcals
+          calendar=xcals.get_calendar('XKRX')
+          manual_day=os.environ.get('TARGET_DATE','').strip()
+          if manual_day:
+              day=manual_day
+          else:
+              today=now.date()
+              if not calendar.is_session(today.isoformat()):
+                  (OUT/'status.json').write_text(
+                      json.dumps({
+                          'state':'SKIPPED_NON_TRADING_DAY',
+                          'checked_kst':now.isoformat()
+                      }),encoding='utf-8')
+                  raise SystemExit(0)
+              day=calendar.previous_session(
+                  today.isoformat()).strftime('%Y%m%d')
           if not re.fullmatch(r'\d{8}',day): raise SystemExit('Invalid target date')
           target=dt.datetime.strptime(day,'%Y%m%d').date()
           if target>now.date(): raise SystemExit('Future target date not allowed')
