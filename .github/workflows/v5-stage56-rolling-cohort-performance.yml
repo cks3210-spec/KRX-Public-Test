@@ -88,7 +88,7 @@ jobs:
 
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        git add data/v5_tracking/
+        git add data/v5_tracking/episodes.csv data/v5_tracking/performance.csv data/v5_tracking/daily_prices.csv
 
         if ! git diff --cached --quiet; then git commit -m "v5: update cohort performance tracking" && git push;
         fi'
