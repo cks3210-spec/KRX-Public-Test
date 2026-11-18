@@ -1,44 +1,44 @@
 {
   "version": "R10",
-  "generated_kst": "2026-11-17T21:02:44.186779+09:00",
+  "generated_kst": "2026-11-18T20:55:05.657982+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
   "r9_cache_modified": false,
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "market_date": "20261116",
+  "market_date": "20261117",
   "market_snapshot_stale": false,
-  "r9_status_market_date": "20261116",
+  "r9_status_market_date": "20261117",
   "input_date_mismatch": false,
   "annual_year": 2025,
-  "eligible_rows": 1245,
-  "annual_cache_entries": 380,
-  "annual_fields_present": 234,
-  "provisional_ab_count": 153,
+  "eligible_rows": 1232,
+  "annual_cache_entries": 480,
+  "annual_fields_present": 294,
+  "provisional_ab_count": 189,
   "market_breakdown": {
     "KOSPI": {
-      "eligible": 606,
-      "annual_fields_present": 136,
-      "provisional_ab": 82
+      "eligible": 605,
+      "annual_fields_present": 160,
+      "provisional_ab": 98
     },
     "KOSDAQ": {
-      "eligible": 639,
-      "annual_fields_present": 98,
-      "provisional_ab": 71
+      "eligible": 627,
+      "annual_fields_present": 134,
+      "provisional_ab": 91
     }
   },
   "issue_counts": {
-    "BALANCE_SHEET_INCONSISTENT": 144,
-    "OWNER_ATTRIBUTION_UNVERIFIED": 1245,
-    "OFFICIAL_PER_PBR_UNVERIFIED": 1245,
-    "SECTOR_CLASSIFICATION_UNVERIFIED": 1245,
-    "SHARE_CLASS_UNVERIFIED": 1245,
+    "BALANCE_SHEET_INCONSISTENT": 183,
+    "OWNER_ATTRIBUTION_UNVERIFIED": 1232,
+    "OFFICIAL_PER_PBR_UNVERIFIED": 1232,
+    "SECTOR_CLASSIFICATION_UNVERIFIED": 1232,
+    "SHARE_CLASS_UNVERIFIED": 1232,
     "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 45,
-    "REFERENCE_PE_UNAVAILABLE": 949,
-    "NO_ANNUAL_RECORD": 866,
-    "REFERENCE_PB_UNAVAILABLE": 867,
+    "REFERENCE_PE_UNAVAILABLE": 864,
+    "NO_ANNUAL_RECORD": 754,
+    "REFERENCE_PB_UNAVAILABLE": 756,
     "POSSIBLE_PREFERRED_SHARE": 23,
-    "NONPOSITIVE_EQUITY": 1
+    "NONPOSITIVE_EQUITY": 2
   },
   "ttm_computable": 0,
   "official_source_used": false,
