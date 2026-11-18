@@ -7,7 +7,7 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: v5-stage57-daily
+  group: v5-stage56-tracking
   cancel-in-progress: false
 jobs:
   daily:
