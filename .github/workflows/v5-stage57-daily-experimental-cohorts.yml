@@ -1,8 +1,6 @@
 name: KRX v5 Stage57 Daily Experimental Cohorts
 'on':
   workflow_dispatch: {}
-  schedule:
-  - cron: 10 10 * * 1-5
 permissions:
   contents: write
   actions: read
