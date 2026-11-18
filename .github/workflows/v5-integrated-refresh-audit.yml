@@ -1,8 +1,6 @@
 name: KRX v5 Integrated Daily Refresh Audit
 'on':
   workflow_dispatch: {}
-  schedule:
-    - cron: '20 11 * * 1-5'
 permissions:
   actions: write
   contents: read
