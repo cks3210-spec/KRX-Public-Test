@@ -83,7 +83,6 @@ jobs:
         for name in ('episodes.csv','performance.csv','daily_prices.csv'):\n (OUT/name).write_bytes((ROOT/name).read_bytes())\n\
         print(json.dumps(summary,ensure_ascii=False,indent=2))\n\nPYCODE\npython /tmp/v5_stage56.py"
     - name: Persist V5-only tracking files (best effort)
-      continue-on-error: true
       run: 'git config user.name "github-actions[bot]"
 
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
