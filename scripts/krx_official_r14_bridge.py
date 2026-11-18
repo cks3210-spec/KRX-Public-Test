@@ -25,7 +25,7 @@ def main():
     keys=[];valid=[]
     for r in rows:
         code=r.get('ISU_CD','');market=r.get('MARKET','');close=integer(r.get('TDD_CLSPRC'));cap=integer(r.get('MKTCAP'))
-        if r.get('BAS_DD')!=date or market not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'\d{6}',code) or not close or not cap:
+        if r.get('BAS_DD')!=date or market not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'[0-9A-Z]{6}',code) or not close or not cap:
             issues.append('INVALID_OFFICIAL_ROW');continue
         keys.append((market,code));valid.append(r)
     if len(keys)!=len(set(keys)):issues.append('DUPLICATE_OFFICIAL_KEY')
