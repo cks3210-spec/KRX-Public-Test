@@ -1,42 +1,42 @@
 {
   "version": "R10",
-  "generated_kst": "2026-11-18T20:55:05.657982+09:00",
+  "generated_kst": "2026-11-19T20:52:01.548666+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
   "r9_cache_modified": false,
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "market_date": "20261117",
+  "market_date": "20261118",
   "market_snapshot_stale": false,
-  "r9_status_market_date": "20261117",
+  "r9_status_market_date": "20261118",
   "input_date_mismatch": false,
   "annual_year": 2025,
-  "eligible_rows": 1232,
-  "annual_cache_entries": 480,
-  "annual_fields_present": 294,
-  "provisional_ab_count": 189,
+  "eligible_rows": 1236,
+  "annual_cache_entries": 580,
+  "annual_fields_present": 360,
+  "provisional_ab_count": 234,
   "market_breakdown": {
     "KOSPI": {
-      "eligible": 605,
-      "annual_fields_present": 160,
-      "provisional_ab": 98
+      "eligible": 606,
+      "annual_fields_present": 190,
+      "provisional_ab": 120
     },
     "KOSDAQ": {
-      "eligible": 627,
-      "annual_fields_present": 134,
-      "provisional_ab": 91
+      "eligible": 630,
+      "annual_fields_present": 170,
+      "provisional_ab": 114
     }
   },
   "issue_counts": {
-    "BALANCE_SHEET_INCONSISTENT": 183,
-    "OWNER_ATTRIBUTION_UNVERIFIED": 1232,
-    "OFFICIAL_PER_PBR_UNVERIFIED": 1232,
-    "SECTOR_CLASSIFICATION_UNVERIFIED": 1232,
-    "SHARE_CLASS_UNVERIFIED": 1232,
+    "BALANCE_SHEET_INCONSISTENT": 216,
+    "OWNER_ATTRIBUTION_UNVERIFIED": 1236,
+    "OFFICIAL_PER_PBR_UNVERIFIED": 1236,
+    "SECTOR_CLASSIFICATION_UNVERIFIED": 1236,
+    "SHARE_CLASS_UNVERIFIED": 1236,
     "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 45,
-    "REFERENCE_PE_UNAVAILABLE": 864,
-    "NO_ANNUAL_RECORD": 754,
-    "REFERENCE_PB_UNAVAILABLE": 756,
+    "REFERENCE_PE_UNAVAILABLE": 788,
+    "NO_ANNUAL_RECORD": 659,
+    "REFERENCE_PB_UNAVAILABLE": 661,
     "POSSIBLE_PREFERRED_SHARE": 23,
     "NONPOSITIVE_EQUITY": 2
   },
