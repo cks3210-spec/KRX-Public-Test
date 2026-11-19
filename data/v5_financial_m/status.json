@@ -1,21 +1,25 @@
 {
   "version": "R14_N_ANNUAL_QUARTER_TTM",
-  "generated_utc": "2026-11-19T03:15:27.150402+00:00",
+  "generated_utc": "2026-11-19T03:48:16.177285+00:00",
   "market_date": "20261116",
   "base_rows": 2675,
-  "cache_records": 2320,
+  "cache_records": 2400,
   "fetched_this_run": 0,
   "failed_this_run": 0,
   "api_rejected_this_run": 0,
-  "annual_verified_rows": 1516,
+  "annual_verified_rows": 1556,
   "batch_limit": 80,
-  "ttm_calculated": 333,
+  "ttm_calculated": 348,
   "ttm_period": "q3",
   "financial_snapshot_date_source": "EXISTING_FINANCIAL_STATUS",
   "prior_financial_snapshot_date": "20261116",
   "financial_snapshot_date_changed": false,
   "financial_disclosure_asof_verified": false,
   "point_in_time_financials_authorized": false,
+  "disclosure_evidence_records": 30,
+  "disclosure_evidence_added_this_run": 0,
+  "disclosure_evidence_ambiguous_this_run": 0,
+  "disclosure_evidence_failed_this_run": 0,
   "unmapped_corp_codes": 0,
   "pending_annual": 0,
   "pending_quarters": 0,
@@ -25,9 +29,8 @@
   "golden_cross_used": false,
   "investment_decisions_authorized": false,
   "notes": [
-    "TTM requires annual and matching cumulative quarter with same CFS/OFS basis",
-    "Financial cache market_date is not proof of actual disclosure date",
-    "Official PER/PBR and point-in-time disclosure verification pending; no buy signals",
-    "Previously verified cache records are preserved; failures use retry cooldown"
+    "Disclosure receipt date is evidence only, not proof that cached financial values match that filing",
+    "Corrections and point-in-time versions require independent validation before any trading signals",
+    "Original verified financial cache is preserved; official PER/PBR still unverified"
   ]
 }
