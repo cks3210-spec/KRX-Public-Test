@@ -1,0 +1,162 @@
+name: KRX v5 R14 OpenDART Auto Continue
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 12 * * *' # 21:30 KST
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-dart-m
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate collector and key
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$DART_API_KEY" || { echo 'DART_API_KEY secret missing'; exit 1; }
+          test -s scripts/krx_v5_r14_dart_incremental_m.py
+          test -s scripts/krx_v5_r14_financial_pipeline_n.py
+          test -s data/v5_financial_foundation_l/unified_financial_index.csv
+          python -m py_compile scripts/krx_v5_r14_dart_incremental_m.py scripts/krx_v5_r14_financial_pipeline_n.py
+      - name: Prepare safe cache merger
+        run: |
+          cat > /tmp/merge_r14_m.py <<'PY'
+          import datetime as dt, json, os, subprocess, sys
+          from pathlib import Path
+          remote=Path('data/v5_financial_m')
+          local=Path('/tmp/r14-m-pending')
+          remote.mkdir(parents=True,exist_ok=True)
+          def read(p,default):
+              try: return json.loads(p.read_text(encoding='utf-8-sig'))
+              except (OSError,ValueError): return default
+          def valid(r):
+              return isinstance(r,dict) and r.get('status')=='000' and bool(r.get('accounts'))
+          def atomic(p,obj):
+              tmp=p.with_suffix('.tmp')
+              tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2),encoding='utf-8')
+              tmp.replace(p)
+          old=read(remote/'dart_financial_cache.json',{})
+          new=read(local/'dart_financial_cache.json',{})
+          merged=dict(old)
+          conflicts=0
+          for key,entry in new.items():
+              previous=merged.get(key)
+              if previous is None:
+                  merged[key]=entry
+              elif previous!=entry:
+                  conflicts+=1
+                  if valid(entry) and not valid(previous):
+                      merged[key]=entry
+                  elif valid(entry)==valid(previous) and str(entry.get('fetched_utc',''))>str(previous.get('fetched_utc','')):
+                      merged[key]=entry
+          atomic(remote/'dart_financial_cache.json',merged)
+          mapping=read(remote/'corp_map.json',{})
+          mapping.update({k:v for k,v in read(local/'corp_map.json',{}).items() if k not in mapping})
+          if mapping: atomic(remote/'corp_map.json',mapping)
+          # Filing evidence is additive, independent of financial cache records.
+          # Never replace an existing candidate set with less information.
+          evidence=read(remote/'dart_disclosure_evidence.json',{})
+          new_evidence=read(local/'dart_disclosure_evidence.json',{})
+          evidence_conflicts=0
+          for key,item in new_evidence.items():
+              old_item=evidence.get(key)
+              if old_item is None:
+                  evidence[key]=item
+              elif old_item!=item:
+                  evidence_conflicts+=1
+                  if (old_item.get('state')!='FILING_CANDIDATES_FOUND'
+                      and item.get('state')=='FILING_CANDIDATES_FOUND'):
+                      evidence[key]=item
+          atomic(remote/'dart_disclosure_evidence.json',evidence)
+          current=read(remote/'status.json',{})
+          pending=read(local/'status.json',{})
+          previous_date=str(current.get('market_date',''))
+          incoming_date=str(pending.get('market_date',''))
+          if previous_date and incoming_date and incoming_date<previous_date:
+              raise SystemExit('BLOCKED_FINANCIAL_DATE_REGRESSION')
+          # Keep the snapshot date sourced from the original financial status;
+          # never pretend that a KRX evaluation date is a disclosure date.
+          status=dict(current)
+          status.update(pending)
+          status['market_date']=incoming_date or previous_date
+          status['cache_records']=len(merged)
+          status['disclosure_evidence_records']=len(evidence)
+          status['merge_conflicts_seen']=conflicts
+          status['disclosure_evidence_conflicts_seen']=evidence_conflicts
+          status['financial_disclosure_asof_verified']=False
+          status['point_in_time_financials_authorized']=False
+          status['investment_decisions_authorized']=False
+          status['final_buy_signals']=0
+          atomic(remote/'status.json',status)
+          env=os.environ.copy();env['R14_REBUILD_ONLY']='1'
+          subprocess.run([sys.executable,'scripts/krx_v5_r14_financial_pipeline_n.py'],check=True,env=env)
+          print('MERGED',json.dumps({'cache_records':len(merged),'evidence_records':len(evidence),
+            'cache_conflicts':conflicts,'evidence_conflicts':evidence_conflicts},ensure_ascii=False))
+          PY
+      - name: Incremental batches with collision-safe checkpoint commits
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          M_BATCH_LIMIT: '80'
+          R14_DISCLOSURE_BATCH_LIMIT: '30'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for batch in 1 2 3 4 5; do
+            echo "=== OpenDART batch $batch / 5 ==="
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/krx_v5_r14_financial_pipeline_n.py
+            mkdir -p /tmp/r14-m-pending
+            cp -a data/v5_financial_m/. /tmp/r14-m-pending/
+            saved=false
+            for attempt in 1 2 3 4 5; do
+              echo "Checkpoint attempt $attempt / 5"
+              git fetch origin main
+              git reset --hard origin/main
+              python /tmp/merge_r14_m.py
+              git add data/v5_financial_m/
+              if git diff --cached --quiet; then
+                saved=true
+                break
+              fi
+              git commit -m "R14 M: preserve financial and filing-evidence checkpoint batch ${batch}"
+              if git push origin HEAD:main; then
+                saved=true
+                break
+              fi
+              echo 'Concurrent main update; retrying merged checkpoint'
+              sleep 2
+            done
+            if [ "$saved" != true ]; then
+              echo 'ERROR: checkpoint not persisted after 5 merge retries'
+              exit 1
+            fi
+            # Continue if either financial data or disclosure evidence increased.
+            if python -c "import json; s=json.load(open('/tmp/r14-m-pending/status.json')); exit(0 if s.get('fetched_this_run',0)==0 and s.get('disclosure_evidence_added_this_run',0)==0 else 1)"; then
+              echo 'No new financial records or disclosure evidence; stopping'
+              break
+            fi
+          done
+      - name: Upload final checkpoint artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-dart-auto-checkpoint
+          path: |
+            data/v5_financial_m/status.json
+            data/v5_financial_m/annual_financial_index_m.csv
+            data/v5_financial_m/dart_disclosure_evidence.json
+          retention-days: 30
