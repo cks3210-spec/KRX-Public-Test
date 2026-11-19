@@ -1,29 +1,29 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-19T04:34:43.394701+09:00",
+  "generated_kst": "2026-11-20T04:37:51.040720+09:00",
   "component_results": {
-    "COLLECT": "success",
-    "FUNDAMENTAL": "success",
-    "DECISION": "success",
-    "PERFORMANCE": "success"
+    "COLLECT": "skipped",
+    "FUNDAMENTAL": "skipped",
+    "DECISION": "skipped",
+    "PERFORMANCE": "skipped"
   },
-  "source_date_in_existing_data": "20261117",
+  "source_date_in_existing_data": "20261118",
   "existing_data_fresh_for_today": false,
   "component_status": {
     "stage24": {
       "status": "SOURCE_UNAVAILABLE",
-      "checked_kst": "2026-11-19T04:34:36.000363+09:00",
+      "checked_kst": "2026-11-20T03:40:06.368172+09:00",
       "source": "pykrx/KRX",
       "production_data_modified": false,
       "attempted_dates": [
+        "20261120",
         "20261119",
         "20261118",
         "20261117",
         "20261116",
         "20261115",
         "20261114",
-        "20261113",
-        "20261112"
+        "20261113"
       ]
     },
     "stage25": {
@@ -60,14 +60,34 @@
     },
     "stage27": {
       "stage": 27,
-      "generated_utc": "2026-11-18T19:34:42.885368+00:00",
       "status": "TRACKING",
-      "new_signals": 1,
+      "generated_utc": "2026-11-19T15:18:09.177359+00:00",
+      "market_date": "20261118",
+      "new_signals": 0,
+      "stage26_new_signals": 0,
+      "r14_new_research_cohorts": 0,
+      "r14_cohort_status": "NOT_SAME_DAY_MARKET_SNAPSHOT_NO_BACKFILL",
+      "r14_cohorts_total": 0,
+      "legacy_v_g_vg_events_total": 25,
       "ledger_events": 25,
-      "matured_horizon_observations": 22,
-      "historical_tickers": 2800,
-      "history_note": "",
-      "method": "Trading-day forward close-to-close returns; gross of fees and taxes; no inferred price; research signals only, not executed orders."
+      "prior_ledger_events": 25,
+      "matured_horizon_observations": 29,
+      "horizon_status_counts": {
+        "MATURED": 29,
+        "PENDING_HISTORY": 46
+      },
+      "historical_tickers": 2801,
+      "historical_market_sessions": 70,
+      "research_only": true,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "method": "Frozen research signal-date closes vs exact 5/10/20 subsequent MARKET trading sessions; gross of fees/taxes; no implied orders or synthetic prices",
+      "notes": [
+        "V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling",
+        "Research A/B is not an investment-grade verification or buy recommendation",
+        "Financial filing point-in-time verification is not complete",
+        "R14 research snapshots are captured only on the matching KST market date and never backfilled; filing point-in-time remains unverified"
+      ]
     }
   },
   "verified_investment_recommendations": 0,
