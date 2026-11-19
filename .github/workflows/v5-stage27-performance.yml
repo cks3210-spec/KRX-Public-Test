@@ -1,0 +1,322 @@
+name: KRX v5 Stage27 Performance Tracking
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage28-integration
+  cancel-in-progress: false
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore existing Stage27 tracking with R14 cohort bridge
+        run: |
+          mkdir -p /tmp/v5-stage27
+          cat > /tmp/v5-stage27/tracker.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage27: preserve V/G/VG history, append frozen R14 A/B research cohorts, compute close-to-close returns."""
+          import csv
+          import datetime as dt
+          import gzip
+          import json
+          import math
+          import pathlib
+          import subprocess
+          import sys
+          from collections import Counter
+          from zoneinfo import ZoneInfo
+          
+          ROOT = pathlib.Path('v5_reports/stage27')
+          LEDGER = ROOT / 'signal_ledger.csv'
+          RESULTS = ROOT / 'performance_5_10_20.csv'
+          SNAPSHOTS = ROOT / 'r14_research_snapshots.csv'
+          HISTORY = pathlib.Path('data/daily_70d.csv.gz')
+          GRADE_ENGINE = pathlib.Path('scripts/krx_v5_r14_grade_engine.py')
+          LATEST = pathlib.Path('data/latest.csv')
+          FINANCIAL = pathlib.Path('data/v5_financial_m/annual_financial_index_m.csv')
+          CACHE = pathlib.Path('data/v5_financial_m/dart_financial_cache.json')
+          STAGE26 = pathlib.Path('v5_reports/stage26/decision_research.csv')
+          KEY = ('signal_date', 'ISU_CD', 'signal_group')
+          BASE = [*KEY, 'ISU_NM', 'research_tier', 'research_score', 'entry_close_krw',
+                  'recorded_at_utc', 'investment_grade', 'buy_decision']
+          EXTRA = [f'{field}_{n}d' for n in (5, 10, 20) for field in ('date', 'close', 'return', 'status')]
+          SNAP_FIELDS = ['signal_date', 'ISU_CD', 'ISU_NM', 'research_tier', 'research_score',
+                         'entry_close_krw', 'research_reference_value_krw', 'research_scenario_upper_krw',
+                         'research_scenario_mid_krw', 'research_scenario_lower_krw',
+                         'research_valuation_model', 'ttm_per_est', 'pbr_est', 'roe_pct',
+                         'financial_disclosure_asof_verified', 'investment_decisions_authorized',
+                         'recorded_at_utc']
+          
+          
+          def read_rows(path):
+              if not path.is_file():
+                  return []
+              with path.open(encoding='utf-8-sig', newline='') as file:
+                  return list(csv.DictReader(file))
+          
+          
+          def write_rows(path, fields, rows):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              tmp = path.with_suffix(path.suffix + '.tmp')
+              with tmp.open('w', encoding='utf-8', newline='') as file:
+                  writer = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore')
+                  writer.writeheader()
+                  writer.writerows(rows)
+              tmp.replace(path)
+          
+          
+          def positive(value):
+              try:
+                  n = float(str(value).strip().replace(',', ''))
+                  return n if math.isfinite(n) and n > 0 else None
+              except (ValueError, TypeError):
+                  return None
+          
+          
+          def date8(value):
+              value = str(value or '').strip().replace('-', '')
+              return value if len(value) == 8 and value.isdigit() else ''
+          
+          
+          def market_snapshot():
+              rows = read_rows(LATEST)
+              days = {date8(row.get('BAS_DD')) for row in rows if date8(row.get('BAS_DD'))}
+              if len(days) != 1:
+                  raise ValueError('MARKET_DATE_MIXED_OR_MISSING')
+              day = days.pop()
+              by_code = {r.get('ISU_CD', '').strip(): r for r in rows if r.get('ISU_CD', '').strip()}
+              return day, by_code
+          
+          
+          def stage26_events(existing, market_date, market, now):
+              added = 0
+              for r in read_rows(STAGE26):
+                  code = r.get('ISU_CD', '').strip()
+                  group = r.get('signal_group', '').strip()
+                  day = date8(r.get('BAS_DD'))
+                  current = market.get(code)
+                  if day != market_date or group not in ('V', 'G', 'VG') or not current:
+                      continue
+                  price = positive(current.get('TDD_CLSPRC'))
+                  if price is None or positive(r.get('last_close_krw')) != price:
+                      continue
+                  key = (day, code, group)
+                  if key in existing:
+                      continue
+                  existing[key] = {
+                      'signal_date': day, 'ISU_CD': code, 'signal_group': group,
+                      'ISU_NM': current.get('ISU_NM', ''),
+                      'research_tier': r.get('research_tier', ''),
+                      'research_score': r.get('research_score', ''),
+                      'entry_close_krw': price, 'recorded_at_utc': now,
+                      'investment_grade': 'NOT_VERIFIED', 'buy_decision': 'ON_HOLD'}
+                  added += 1
+              return added
+          
+          
+          def r14_events(existing, market_date, market, now):
+              old_snapshots = read_rows(SNAPSHOTS)
+              snap_index = {(r['signal_date'], r['ISU_CD']) for r in old_snapshots}
+              # A snapshot is frozen on the first successful record for a date. Do not add
+              # candidates retrospectively when future financial disclosures arrive.
+              recorded_dates = {r.get('signal_date', '') for r in old_snapshots}
+              recorded_dates |= {k[0] for k in existing if k[2].startswith('R14_')}
+              if market_date in recorded_dates:
+                  return 0, old_snapshots, 'ALREADY_FROZEN'
+              if recorded_dates and market_date < max(recorded_dates):
+                  return 0, old_snapshots, 'OLDER_THAN_FROZEN_COHORT'
+              today = dt.datetime.now(ZoneInfo('Asia/Seoul')).date()
+              snapshot_day = dt.datetime.strptime(market_date, '%Y%m%d').date()
+              # Never backdate a new cohort to a prior market session using financial
+              # cache entries that may have been fetched after that session. This is
+              # only a research snapshot gate, NOT financial point-in-time proof.
+              if snapshot_day != today:
+                  return 0, old_snapshots, 'NOT_SAME_DAY_MARKET_SNAPSHOT_NO_BACKFILL'
+              if not all(p.is_file() and p.stat().st_size for p in (GRADE_ENGINE, FINANCIAL, CACHE)):
+                  return 0, old_snapshots, 'GRADE_INPUTS_UNAVAILABLE'
+              import tempfile
+              with tempfile.TemporaryDirectory() as folder:
+                  path = pathlib.Path(folder) / 'grade.json'
+                  subprocess.run([sys.executable, str(GRADE_ENGINE),
+                                  '--financial', str(FINANCIAL), '--market', str(LATEST),
+                                  '--cache', str(CACHE), '--output', str(path)],
+                                 check=True, timeout=120)
+                  result = json.loads(path.read_text(encoding='utf-8'))
+              if (result.get('result') != 'PRELIMINARY_RESEARCH_ONLY'
+                      or result.get('investment_decisions_authorized') is not False
+                      or result.get('final_buy_signals') != 0
+                      or result.get('market_date') != market_date):
+                  raise ValueError('R14_RESEARCH_SAFETY_GATE_FAILED')
+              added = 0
+              pending = []
+              for c in result.get('candidates', []):
+                  code = str(c.get('code', '')).strip()
+                  grade = c.get('grade')
+                  day = date8(c.get('market_date'))
+                  current = market.get(code)
+                  close = positive(c.get('close_krw'))
+                  if not current or grade not in ('A', 'B') or day != market_date:
+                      continue
+                  if c.get('buy_signal') is not False or close is None:
+                      raise ValueError('R14_CANDIDATE_BUY_SIGNAL_OR_PRICE_INVALID')
+                  if positive(current.get('TDD_CLSPRC')) != close:
+                      raise ValueError(f'R14_MARKET_PRICE_MISMATCH_{code}')
+                  if (day, code) in snap_index:
+                      continue
+                  key = (day, code, 'R14_' + grade)
+                  if key in existing:
+                      continue
+                  existing[key] = {
+                      'signal_date': day, 'ISU_CD': code, 'signal_group': 'R14_' + grade,
+                      'ISU_NM': c.get('name', ''), 'research_tier': grade + '_RESEARCH',
+                      'research_score': c.get('score', ''), 'entry_close_krw': close,
+                      'recorded_at_utc': now, 'investment_grade': 'NOT_VERIFIED',
+                      'buy_decision': 'ON_HOLD'}
+                  pending.append({
+                      'signal_date': day, 'ISU_CD': code, 'ISU_NM': c.get('name', ''),
+                      'research_tier': grade + '_RESEARCH', 'research_score': c.get('score', ''),
+                      'entry_close_krw': close,
+                      'research_reference_value_krw': c.get('research_reference_value_krw', ''),
+                      'research_scenario_upper_krw': c.get('research_scenario_upper_krw', ''),
+                      'research_scenario_mid_krw': c.get('research_scenario_mid_krw', ''),
+                      'research_scenario_lower_krw': c.get('research_scenario_lower_krw', ''),
+                      'research_valuation_model': c.get('research_valuation_model', ''),
+                      'ttm_per_est': c.get('ttm_per_est', ''), 'pbr_est': c.get('pbr_est', ''),
+                      'roe_pct': c.get('roe_pct', ''),
+                      'financial_disclosure_asof_verified': False,
+                      'investment_decisions_authorized': False,
+                      'recorded_at_utc': now})
+                  added += 1
+              # For a valid empty cohort, report no signals. Never backfill that date later.
+              return added, old_snapshots + pending, 'RESEARCH_COHORT_CAPTURED' if added else 'NO_QUALIFYING_RESEARCH_CANDIDATES'
+          
+          
+          def historical_prices(path):
+              if not path.is_file() or path.stat().st_size <= 0:
+                  raise ValueError('HISTORICAL_PRICE_ARCHIVE_MISSING')
+              series, sessions = {}, set()
+              with gzip.open(path, 'rt', encoding='utf-8-sig', newline='') as file:
+                  reader = csv.DictReader(file)
+                  fields = set(reader.fieldnames or [])
+                  date_field = next((x for x in ('BAS_DD', 'date', 'Date') if x in fields), None)
+                  code_field = next((x for x in ('ISU_CD', 'code', 'Code') if x in fields), None)
+                  price_field = next((x for x in ('TDD_CLSPRC', 'close', 'Close') if x in fields), None)
+                  if not (date_field and code_field and price_field):
+                      raise ValueError('HISTORICAL_ARCHIVE_SCHEMA_INVALID')
+                  for row in reader:
+                      day = date8(row.get(date_field))
+                      code = str(row.get(code_field, '')).strip()
+                      price = positive(row.get(price_field))
+                      if day and code and price is not None:
+                          sessions.add(day)
+                          series.setdefault(code, {})[day] = price
+              if not sessions:
+                  raise ValueError('HISTORICAL_PRICE_ARCHIVE_EMPTY')
+              return series, sorted(sessions)
+          
+          
+          def calculate(events, prices, sessions):
+              ranks = {day: i for i, day in enumerate(sessions)}
+              out = []
+              observations = 0
+              statuses = Counter()
+              for event in events:
+                  result = {field: event.get(field, '') for field in BASE}
+                  code, day = event['ISU_CD'], event['signal_date']
+                  entry = positive(event.get('entry_close_krw'))
+                  base_idx = ranks.get(day)
+                  for horizon in (5, 10, 20):
+                      exit_idx = base_idx + horizon if base_idx is not None else None
+                      if entry is None or base_idx is None or exit_idx is None or exit_idx >= len(sessions):
+                          status = 'PENDING_HISTORY'
+                      else:
+                          exit_day = sessions[exit_idx]
+                          exit_price = prices.get(code, {}).get(exit_day)
+                          if exit_price is None:
+                              status = 'MISSING_EXIT_PRICE'
+                          else:
+                              status = 'MATURED'
+                              result[f'date_{horizon}d'] = exit_day
+                              result[f'close_{horizon}d'] = exit_price
+                              result[f'return_{horizon}d'] = round(100 * (exit_price / entry - 1), 4)
+                              observations += 1
+                      result[f'status_{horizon}d'] = status
+                      statuses[status] += 1
+                  out.append(result)
+              return out, observations, dict(statuses)
+          
+          
+          def main():
+              market_date, market = market_snapshot()
+              prices, sessions = historical_prices(HISTORY)
+              ROOT.mkdir(parents=True, exist_ok=True)
+              prior = read_rows(LEDGER)
+              events = {tuple(r.get(k, '') for k in KEY): {k: r.get(k, '') for k in BASE}
+                        for r in prior if all(r.get(k) for k in KEY)}
+              before = len(events)
+              now = dt.datetime.now(dt.timezone.utc).isoformat()
+              stage26_added = stage26_events(events, market_date, market, now)
+              r14_added, snapshots, r14_state = r14_events(events, market_date, market, now)
+              ordered = sorted(events.values(), key=lambda r: tuple(str(r.get(k, '')) for k in KEY))
+              performance, matured, status_counts = calculate(ordered, prices, sessions)
+              # Everything is computed before any output is written. Existing caches are never modified.
+              write_rows(LEDGER, BASE, ordered)
+              write_rows(RESULTS, BASE + EXTRA, performance)
+              write_rows(SNAPSHOTS, SNAP_FIELDS, snapshots)
+              summary = {
+                  'stage': 27, 'status': 'TRACKING', 'generated_utc': now,
+                  'market_date': market_date, 'new_signals': stage26_added + r14_added,
+                  'stage26_new_signals': stage26_added, 'r14_new_research_cohorts': r14_added,
+                  'r14_cohort_status': r14_state,
+                  'r14_cohorts_total': sum(row['signal_group'].startswith('R14_') for row in ordered),
+                  'legacy_v_g_vg_events_total': sum(row['signal_group'] in ('V', 'G', 'VG') for row in ordered),
+                  'ledger_events': len(ordered), 'prior_ledger_events': before,
+                  'matured_horizon_observations': matured,
+                  'horizon_status_counts': status_counts,
+                  'historical_tickers': len(prices), 'historical_market_sessions': len(sessions),
+                  'research_only': True, 'investment_decisions_authorized': False,
+                  'final_buy_signals': 0,
+                  'method': 'Frozen research signal-date closes vs exact 5/10/20 subsequent MARKET trading sessions; gross of fees/taxes; no implied orders or synthetic prices',
+                  'notes': ['V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling',
+                            'Research A/B is not an investment-grade verification or buy recommendation',
+                            'Financial filing point-in-time verification is not complete',
+                            'R14 research snapshots are captured only on the matching KST market date and never backfilled; filing point-in-time remains unverified']}
+              temp = ROOT / 'status.json.tmp'
+              temp.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              temp.replace(ROOT / 'status.json')
+              print(json.dumps(summary, ensure_ascii=False))
+          
+          
+          if __name__ == '__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/v5-stage27/tracker.py
+      - name: Validate historical outcomes and append R14 research-only cohorts
+        run: python /tmp/v5-stage27/tracker.py
+      - name: Commit performance ledger and frozen cohort evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/stage27/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Stage27: correct forward returns and join frozen R14 research cohorts'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Preserve Stage27 tracking evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage27-performance
+          path: v5_reports/stage27/
+          if-no-files-found: warn
