@@ -65922,5 +65922,1869 @@
     "corp_code": "00463342",
     "year": 2025,
     "fetched_utc": "2026-11-19T04:12:47.532307+00:00"
+  },
+  "382800:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 6322146420,
+      "previous_profit": 12514385768,
+      "revenue": 91919436496,
+      "previous_revenue": 70763128588,
+      "assets": 139485581860,
+      "previous_assets": 135086453187,
+      "liabilities": 21664343886,
+      "previous_liabilities": 23711051633
+    },
+    "report": "annual",
+    "records_seen": 152,
+    "matched_accounts": {
+      "profit": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00958327",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:02.337119+00:00"
+  },
+  "041920:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -810990524,
+      "revenue": 22133457754,
+      "assets": 156439950221,
+      "liabilities": 15351427428
+    },
+    "report": "q3",
+    "records_seen": 144,
+    "matched_accounts": {
+      "profit": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00273439",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:14:07.204183+00:00"
+  },
+  "382840:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -13147391994,
+      "previous_profit": 3739132676,
+      "equity": 105850631620,
+      "previous_equity": 119195867997,
+      "revenue": 149100259243,
+      "previous_revenue": 149851159615,
+      "assets": 173929159460,
+      "previous_assets": 246392416681,
+      "liabilities": 68078527840,
+      "previous_liabilities": 127196548684
+    },
+    "report": "annual",
+    "records_seen": 162,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01459212",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:12.799067+00:00"
+  },
+  "041920:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 2273539294,
+      "revenue": 15003243410,
+      "assets": 147437603625,
+      "liabilities": 15077162834
+    },
+    "report": "q3",
+    "records_seen": 177,
+    "matched_accounts": {
+      "profit": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00273439",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:18.759866+00:00"
+  },
+  "382900:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 1590158950,
+      "previous_profit": 834542837,
+      "equity": 161305568174,
+      "previous_equity": 164067071364,
+      "revenue": 43361093941,
+      "previous_revenue": 36194682101,
+      "assets": 352360772024,
+      "previous_assets": 312418925631,
+      "liabilities": 189667514432,
+      "previous_liabilities": 146566519144
+    },
+    "report": "annual",
+    "records_seen": 236,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01435489",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:26.400605+00:00"
+  },
+  "041930:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -5299785838,
+      "equity": 176743093952,
+      "revenue": 101977869289,
+      "assets": 301183190799,
+      "liabilities": 123519430857
+    },
+    "report": "q3",
+    "records_seen": 118,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00199988",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:14:30.573691+00:00"
+  },
+  "383310:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 304707967175,
+      "previous_equity": 296274226160,
+      "revenue": 141057118027,
+      "previous_revenue": 234500459609,
+      "assets": 458920378557,
+      "previous_assets": 466652782080,
+      "liabilities": 154212411382,
+      "previous_liabilities": 170378555920
+    },
+    "report": "annual",
+    "records_seen": 172,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01566248",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:36.536097+00:00"
+  },
+  "041930:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 8591829359,
+      "equity": 182101978375,
+      "revenue": 101747529455,
+      "assets": 317096982431,
+      "liabilities": 133831785944
+    },
+    "report": "q3",
+    "records_seen": 119,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00199988",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:40.863952+00:00"
+  },
+  "383930:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 47747299019,
+      "previous_revenue": 35970935118,
+      "assets": 90376879221,
+      "previous_assets": 81085698640,
+      "liabilities": 65286669494,
+      "previous_liabilities": 52418295827
+    },
+    "report": "annual",
+    "records_seen": 121,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01437432",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:45.801116+00:00"
+  },
+  "042040:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -3397639595,
+      "equity": 63976284278,
+      "revenue": 18984590148,
+      "assets": 119149821927,
+      "liabilities": 53385845702
+    },
+    "report": "q3",
+    "records_seen": 204,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00206686",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:14:52.270939+00:00"
+  },
+  "384470:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -14496260923,
+      "previous_profit": -14137902346,
+      "equity": 18172083684,
+      "previous_equity": 3664069400,
+      "assets": 40792632929,
+      "previous_assets": 24664846746,
+      "liabilities": 22620549245,
+      "previous_liabilities": 21000777346
+    },
+    "report": "annual",
+    "records_seen": 151,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01512575",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:14:57.717187+00:00"
+  },
+  "042040:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -8214370687,
+      "equity": 65561269469,
+      "revenue": 22891474102,
+      "assets": 147503120206,
+      "liabilities": 80114541668
+    },
+    "report": "q3",
+    "records_seen": 177,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00206686",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:03.291049+00:00"
+  },
+  "386380:2025:annual": {
+    "status": "UNVERIFIED",
+    "reason": "API_UNVERIFIED",
+    "api_status": null,
+    "fetched_utc": "2026-11-19T04:13:57.196917+00:00",
+    "retry_after_utc": "2026-11-26T04:13:57.196917+00:00"
+  },
+  "042110:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 134918883108,
+      "revenue": 54115335438,
+      "assets": 173426877228,
+      "liabilities": 38507994120
+    },
+    "report": "q3",
+    "records_seen": 96,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00171867",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:15:08.296073+00:00"
+  },
+  "387570:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -1877915520,
+      "previous_profit": -24152328,
+      "equity": 19003394878,
+      "previous_equity": 20784222124,
+      "revenue": 9522704304,
+      "previous_revenue": 9960360985,
+      "assets": 25521054978,
+      "previous_assets": 26898440044,
+      "liabilities": 6517660100,
+      "previous_liabilities": 6114217920
+    },
+    "report": "annual",
+    "records_seen": 140,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01455410",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:13.163190+00:00"
+  },
+  "042110:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 133518001982,
+      "revenue": 53076725335,
+      "assets": 171012650644,
+      "liabilities": 37494648662
+    },
+    "report": "q3",
+    "records_seen": 94,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00171867",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:16.592200+00:00"
+  },
+  "387690:2025:annual": {
+    "status": "UNVERIFIED",
+    "reason": "API_UNVERIFIED",
+    "api_status": null,
+    "fetched_utc": "2026-11-19T04:13:57.196917+00:00",
+    "retry_after_utc": "2026-11-26T04:13:57.196917+00:00"
+  },
+  "042370:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 253928425914,
+      "revenue": 113825506981,
+      "assets": 692156833036,
+      "liabilities": 194788788679
+    },
+    "report": "q3",
+    "records_seen": 140,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00103644",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:15:23.156812+00:00"
+  },
+  "388050:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 5554279670,
+      "previous_profit": 4211239677,
+      "equity": 42133751966,
+      "previous_equity": 36695004882,
+      "revenue": 77377777992,
+      "previous_revenue": 55423270415,
+      "assets": 89876159965,
+      "previous_assets": 64087221342,
+      "liabilities": 47742407999,
+      "previous_liabilities": 27392216460
+    },
+    "report": "annual",
+    "records_seen": 158,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01462605",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:28.938760+00:00"
+  },
+  "042370:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 235797106122,
+      "revenue": 102454536010,
+      "assets": 610064661105,
+      "liabilities": 169083323917
+    },
+    "report": "q3",
+    "records_seen": 137,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00103644",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:33.462857+00:00"
+  },
+  "388210:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -25055373345,
+      "previous_profit": 13516475464,
+      "equity": 178097785190,
+      "previous_equity": -38475338487,
+      "revenue": 160555762764,
+      "previous_revenue": 108665913336,
+      "assets": 275447075073,
+      "previous_assets": 180356867590,
+      "liabilities": 93040375826,
+      "previous_liabilities": 218312543858
+    },
+    "report": "annual",
+    "records_seen": 177,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01529982",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:39.651652+00:00"
+  },
+  "042500:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 4383309609,
+      "equity": 128118326143,
+      "revenue": 56591017711,
+      "assets": 203552047426,
+      "liabilities": 75433721283
+    },
+    "report": "q3",
+    "records_seen": 133,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00352499",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:15:44.352522+00:00"
+  },
+  "388610:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 17714780998,
+      "previous_revenue": 16804533739,
+      "assets": 33833189088,
+      "previous_assets": 20055239779,
+      "liabilities": 10034613357,
+      "previous_liabilities": 9155129810
+    },
+    "report": "annual",
+    "records_seen": 187,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01221752",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:51.228160+00:00"
+  },
+  "042500:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 3793540425,
+      "equity": 112467351433,
+      "revenue": 43670341779,
+      "assets": 155098778680,
+      "liabilities": 42631427247
+    },
+    "report": "q3",
+    "records_seen": 137,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00352499",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:15:56.034846+00:00"
+  },
+  "388720:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "assets": 108220768704,
+      "previous_assets": 117411457218,
+      "liabilities": 18517025245,
+      "previous_liabilities": 22383208789
+    },
+    "report": "annual",
+    "records_seen": 181,
+    "matched_accounts": {
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01152586",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:02.976376+00:00"
+  },
+  "042940:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -1757226407,
+      "equity": 93150604642,
+      "revenue": 3393256988,
+      "assets": 213332281138,
+      "liabilities": 120181676496
+    },
+    "report": "q3",
+    "records_seen": 129,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00232007",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:16:07.498717+00:00"
+  },
+  "388790:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 17688068719,
+      "previous_revenue": 13136686476,
+      "assets": 28681322068,
+      "previous_assets": 28093515775,
+      "liabilities": 7039027132,
+      "previous_liabilities": 7244052788
+    },
+    "report": "annual",
+    "records_seen": 105,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01569102",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:12.294291+00:00"
+  },
+  "042940:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -4860123659,
+      "equity": 105802637158,
+      "revenue": 8305283601,
+      "assets": 197536979907,
+      "liabilities": 91734342749
+    },
+    "report": "q3",
+    "records_seen": 139,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00232007",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:16.968234+00:00"
+  },
+  "388870:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -10701530323,
+      "previous_profit": -10352059798,
+      "equity": 13925701441,
+      "previous_equity": 18613510107,
+      "assets": 29868258308,
+      "previous_assets": 19628332286,
+      "liabilities": 15942556867,
+      "previous_liabilities": 1014822179
+    },
+    "report": "annual",
+    "records_seen": 109,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01495180",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:21.127797+00:00"
+  },
+  "043100:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -1329918319,
+      "equity": 25187222720,
+      "revenue": 2996572162,
+      "assets": 72777749073,
+      "liabilities": 47590526353
+    },
+    "report": "q3",
+    "records_seen": 168,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00220109",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:16:26.533800+00:00"
+  },
+  "389020:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 10643506120,
+      "previous_revenue": 22170389666,
+      "assets": 76999420852,
+      "previous_assets": 78440340806,
+      "liabilities": 41325598501,
+      "previous_liabilities": 35922102046
+    },
+    "report": "annual",
+    "records_seen": 119,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01365038",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:31.896867+00:00"
+  },
+  "043100:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -2161434739,
+      "equity": 33192654016,
+      "revenue": 4799295342,
+      "assets": 62587508814,
+      "liabilities": 29771981750
+    },
+    "report": "q3",
+    "records_seen": 156,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00220109",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:36.953010+00:00"
+  },
+  "389030:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 9101612449,
+      "previous_equity": 22237105916,
+      "revenue": 10483373195,
+      "previous_revenue": 6455439519,
+      "assets": 39349106619,
+      "previous_assets": 33089010698,
+      "liabilities": 30247494170,
+      "previous_liabilities": 10851904782
+    },
+    "report": "annual",
+    "records_seen": 168,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01494154",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:42.686091+00:00"
+  },
+  "043150:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -3597578461,
+      "equity": 522166663577,
+      "revenue": 110896601006,
+      "assets": 702022309531,
+      "liabilities": 178713956056
+    },
+    "report": "q3",
+    "records_seen": 183,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00264255",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:16:48.850742+00:00"
+  },
+  "389140:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -10356954771,
+      "previous_profit": -11505075212,
+      "equity": 39934412008,
+      "previous_equity": 29663210798,
+      "assets": 75780348550,
+      "previous_assets": 59001944111,
+      "liabilities": 35592702967,
+      "previous_liabilities": 28490873991
+    },
+    "report": "annual",
+    "records_seen": 181,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01513699",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:16:54.950452+00:00"
+  },
+  "043150:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 13886211051,
+      "equity": 486167949154,
+      "revenue": 100113437487,
+      "assets": 658613961355,
+      "liabilities": 170424442926
+    },
+    "report": "q3",
+    "records_seen": 182,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00264255",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:01.085984+00:00"
+  },
+  "389260:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 14143966250,
+      "previous_profit": 7790210227,
+      "equity": 164653849372,
+      "previous_equity": 128742443077,
+      "revenue": 130971472403,
+      "previous_revenue": 67761578359,
+      "assets": 381763739175,
+      "previous_assets": 369924041346,
+      "liabilities": 217109889803,
+      "previous_liabilities": 241181598269
+    },
+    "report": "annual",
+    "records_seen": 186,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01150515",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:07.522899+00:00"
+  },
+  "043200:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -661006001,
+      "equity": 25708878182,
+      "revenue": 6314525461,
+      "assets": 58285809756,
+      "liabilities": 32711446520
+    },
+    "report": "q3",
+    "records_seen": 117,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00266934",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:17:11.695124+00:00"
+  },
+  "389470:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -8458360176,
+      "previous_profit": -16996522887,
+      "equity": 64462351796,
+      "previous_equity": 32564948597,
+      "revenue": 2938787928,
+      "previous_revenue": 1782929379,
+      "assets": 110641375467,
+      "previous_assets": 72253325951,
+      "liabilities": 29790704078,
+      "previous_liabilities": 39688377354
+    },
+    "report": "annual",
+    "records_seen": 174,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01516456",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:17.622146+00:00"
+  },
+  "043200:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 24484443053,
+      "revenue": 7895042911,
+      "assets": 58091072514,
+      "liabilities": 33702471303
+    },
+    "report": "q3",
+    "records_seen": 106,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00266934",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:21.269294+00:00"
+  },
+  "389500:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 7198979874,
+      "previous_revenue": 5465590414,
+      "assets": 32233141630,
+      "previous_assets": 28895548697,
+      "liabilities": 19728989796,
+      "previous_liabilities": 16752201609
+    },
+    "report": "annual",
+    "records_seen": 102,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00567897",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:25.747864+00:00"
+  },
+  "043220:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -907187162,
+      "equity": 19104512140,
+      "revenue": 960769685,
+      "assets": 37712585083,
+      "liabilities": 17404822312
+    },
+    "report": "q3",
+    "records_seen": 163,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00317487",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:17:31.121044+00:00"
+  },
+  "389650:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 16476802680,
+      "previous_revenue": 9542630855,
+      "assets": 59265165446,
+      "previous_assets": 58844401306,
+      "liabilities": 11158190910,
+      "previous_liabilities": 13653007339
+    },
+    "report": "annual",
+    "records_seen": 142,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01385050",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:36.942390+00:00"
+  },
+  "043220:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -1803790577,
+      "equity": 42071533542,
+      "revenue": 2909760932,
+      "assets": 86297308014,
+      "liabilities": 44284238677
+    },
+    "report": "q3",
+    "records_seen": 177,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00317487",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:42.718916+00:00"
+  },
+  "389680:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 3213108855,
+      "previous_revenue": 6072035307,
+      "assets": 14896746425,
+      "previous_assets": 18114443560,
+      "liabilities": 4381995675,
+      "previous_liabilities": 5111508907
+    },
+    "report": "annual",
+    "records_seen": 149,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01498576",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:48.544857+00:00"
+  },
+  "043260:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -47062334747,
+      "equity": 483723067976,
+      "revenue": 79745265687,
+      "assets": 1343882564196,
+      "liabilities": 850704135385
+    },
+    "report": "q3",
+    "records_seen": 192,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00317210",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:17:55.000695+00:00"
+  },
+  "391710:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 30100048633,
+      "previous_revenue": 55510910029,
+      "assets": 48292162796,
+      "previous_assets": 39226719456,
+      "liabilities": 23698821253,
+      "previous_liabilities": 13112062563
+    },
+    "report": "annual",
+    "records_seen": 120,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01573284",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:17:59.930813+00:00"
+  },
+  "043260:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "equity": 159573081030,
+      "revenue": 55603044857,
+      "assets": 430630902287,
+      "liabilities": 268063771026
+    },
+    "report": "q3",
+    "records_seen": 217,
+    "matched_accounts": {
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00317210",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:06.957569+00:00"
+  },
+  "393210:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -2001837644,
+      "previous_profit": -1594496050,
+      "equity": 25886318171,
+      "previous_equity": 27775001006,
+      "revenue": 27263988093,
+      "previous_revenue": 21621873977,
+      "assets": 57110295500,
+      "previous_assets": 35194731690,
+      "liabilities": 32380499537,
+      "previous_liabilities": 7802773979
+    },
+    "report": "annual",
+    "records_seen": 154,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01436479",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:12.376363+00:00"
+  },
+  "043340:2026:q3": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 15515554877,
+      "assets": 70800869785,
+      "liabilities": 43829510843
+    },
+    "report": "q3",
+    "records_seen": 114,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00203209",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:18:16.986435+00:00"
+  },
+  "393890:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -162065805577,
+      "previous_profit": -72205558117,
+      "equity": 894477802551,
+      "previous_equity": 968642145051,
+      "revenue": 110812962474,
+      "previous_revenue": 322073352106,
+      "assets": 1945436490500,
+      "previous_assets": 1810190530958,
+      "liabilities": 1050958687949,
+      "previous_liabilities": 841548385907
+    },
+    "report": "annual",
+    "records_seen": 135,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01291317",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:21.938177+00:00"
+  },
+  "043340:2025:q3": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 13139989231,
+      "assets": 67959415342,
+      "liabilities": 42638488280
+    },
+    "report": "q3",
+    "records_seen": 119,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00203209",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:26.742216+00:00"
+  },
+  "393970:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -38286535468,
+      "previous_profit": -867394632,
+      "equity": 52403458407,
+      "previous_equity": 61237193878,
+      "revenue": 84513320058,
+      "previous_revenue": 88992921600,
+      "assets": 151918119774,
+      "previous_assets": 142980234628,
+      "liabilities": 100136465420,
+      "previous_liabilities": 81222804320
+    },
+    "report": "annual",
+    "records_seen": 219,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01549472",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:34.558165+00:00"
+  },
+  "043360:2026:q3": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 3671261434,
+      "assets": 79663977099,
+      "liabilities": 11936611917
+    },
+    "report": "q3",
+    "records_seen": 116,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00295547",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:18:39.345003+00:00"
+  },
+  "394280:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -30132691582,
+      "previous_profit": -27287195585,
+      "equity": 17069337165,
+      "previous_equity": 60717226016,
+      "revenue": 16058809323,
+      "previous_revenue": 15328473450,
+      "assets": 47545450105,
+      "previous_assets": 86678233603,
+      "liabilities": 30476112940,
+      "previous_liabilities": 25961007587
+    },
+    "report": "annual",
+    "records_seen": 186,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01571107",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:45.881266+00:00"
+  },
+  "043360:2025:q3": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 5272702850,
+      "assets": 45075085816,
+      "liabilities": 4444807533
+    },
+    "report": "q3",
+    "records_seen": 115,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00295547",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:50.664842+00:00"
+  },
+  "394420:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -19118985424,
+      "previous_profit": -7843656177,
+      "equity": 6976986455,
+      "previous_equity": -90562875410,
+      "revenue": 8828610805,
+      "previous_revenue": 6259262256,
+      "assets": 12006602024,
+      "previous_assets": 20097230957,
+      "liabilities": 5029615569,
+      "previous_liabilities": 110660106367
+    },
+    "report": "annual",
+    "records_seen": 185,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01685677",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:18:57.347155+00:00"
+  },
+  "043370:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -5100726562,
+      "equity": 844762384384,
+      "revenue": 314056194236,
+      "assets": 1139599401956,
+      "liabilities": 294837017572
+    },
+    "report": "q3",
+    "records_seen": 190,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00155151",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:19:03.656635+00:00"
+  },
+  "394800:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -5411302059,
+      "previous_profit": -6571645547,
+      "equity": 23597400088,
+      "previous_equity": 28270627465,
+      "revenue": 11708662411,
+      "previous_revenue": 5772098148,
+      "assets": 29669043902,
+      "previous_assets": 30215589397,
+      "liabilities": 6071643814,
+      "previous_liabilities": 1944961932
+    },
+    "report": "annual",
+    "records_seen": 152,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01506617",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:09.087513+00:00"
+  },
+  "043370:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 8765567626,
+      "equity": 820021712364,
+      "revenue": 290645560781,
+      "assets": 1098302277048,
+      "liabilities": 278280564684
+    },
+    "report": "q3",
+    "records_seen": 186,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00155151",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:15.481120+00:00"
+  },
+  "396270:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 39653511990,
+      "previous_revenue": 32252135197,
+      "assets": 58285876155,
+      "previous_assets": 55549237089,
+      "liabilities": 40131061235,
+      "previous_liabilities": 46735669385
+    },
+    "report": "annual",
+    "records_seen": 128,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01515864",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:20.680430+00:00"
+  },
+  "043590:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -455898400,
+      "equity": 33396923297,
+      "revenue": 3682565421,
+      "assets": 52630231960,
+      "liabilities": 19233308663
+    },
+    "report": "q3",
+    "records_seen": 126,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00260611",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:19:25.131711+00:00"
+  },
+  "396300:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 85827035655,
+      "previous_revenue": 92337581175,
+      "assets": 149252510929,
+      "previous_assets": 131950373014,
+      "liabilities": 75005041508,
+      "previous_liabilities": 60273326146
+    },
+    "report": "annual",
+    "records_seen": 114,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00534701",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:30.051229+00:00"
+  },
+  "043590:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -361094444,
+      "equity": 37481973519,
+      "revenue": 5238031892,
+      "assets": 57638043699,
+      "liabilities": 20156070180
+    },
+    "report": "q3",
+    "records_seen": 139,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00260611",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:34.620661+00:00"
+  },
+  "396470:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 3568663895,
+      "previous_profit": 3391770084,
+      "equity": 66041023876,
+      "previous_equity": 63278508345,
+      "revenue": 15220856646,
+      "previous_revenue": 15184230309,
+      "assets": 68036241159,
+      "previous_assets": 65200719845,
+      "liabilities": 1995217283,
+      "previous_liabilities": 1922211500
+    },
+    "report": "annual",
+    "records_seen": 105,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00866451",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:38.438350+00:00"
+  },
+  "043610:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 2094550994,
+      "equity": 145196828239,
+      "revenue": 78150323126,
+      "assets": 340723790182,
+      "liabilities": 129500407347
+    },
+    "report": "q3",
+    "records_seen": 159,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00223762",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:19:44.261476+00:00"
+  },
+  "397030:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "assets": 97119844414,
+      "previous_assets": 99598583008,
+      "liabilities": 803765530,
+      "previous_liabilities": 8610820851
+    },
+    "report": "annual",
+    "records_seen": 125,
+    "matched_accounts": {
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01375822",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:49.735070+00:00"
+  },
+  "043610:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 2280665490,
+      "equity": 169965488336,
+      "revenue": 83047581764,
+      "assets": 360943535016,
+      "liabilities": 123629089411
+    },
+    "report": "q3",
+    "records_seen": 175,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00223762",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:19:55.907783+00:00"
+  },
+  "397810:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -2067670406,
+      "previous_profit": 3106195850,
+      "equity": 35616329560,
+      "previous_equity": 20269768427,
+      "revenue": 30598804671,
+      "previous_revenue": 31742025289,
+      "assets": 47576350569,
+      "previous_assets": 27610103336,
+      "liabilities": 9815343032,
+      "previous_liabilities": 5340103774
+    },
+    "report": "annual",
+    "records_seen": 143,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01551042",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:01.166182+00:00"
+  },
+  "043650:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -3649509372,
+      "equity": 234107290121,
+      "revenue": 15925442905,
+      "assets": 254887446893,
+      "liabilities": 18892518841
+    },
+    "report": "q3",
+    "records_seen": 197,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00256715",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:20:07.884820+00:00"
+  },
+  "398120:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 935599848,
+      "previous_profit": -3547493617,
+      "equity": 23929926774,
+      "previous_equity": 22620960735,
+      "revenue": 24601049961,
+      "previous_revenue": 16104629986,
+      "assets": 40505560917,
+      "previous_assets": 32728665643,
+      "liabilities": 16154454511,
+      "previous_liabilities": 10028067834
+    },
+    "report": "annual",
+    "records_seen": 149,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01179866",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:13.169164+00:00"
+  },
+  "043650:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 3182929642,
+      "equity": 237743747189,
+      "revenue": 18759188789,
+      "assets": 260250663523,
+      "liabilities": 20470993637
+    },
+    "report": "q3",
+    "records_seen": 165,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00256715",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:18.796525+00:00"
+  },
+  "399720:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -14369143365,
+      "previous_profit": 7530549168,
+      "equity": 54688158517,
+      "previous_equity": 69355020044,
+      "revenue": 68510181008,
+      "previous_revenue": 96492001688,
+      "assets": 159310899656,
+      "previous_assets": 112708406447,
+      "liabilities": 104622741139,
+      "previous_liabilities": 43353386403
+    },
+    "report": "annual",
+    "records_seen": 117,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01364747",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:23.021974+00:00"
+  },
+  "043710:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 1376663523,
+      "equity": 26680080305,
+      "revenue": 48612301696,
+      "assets": 246748411490,
+      "liabilities": 214843863385
+    },
+    "report": "q3",
+    "records_seen": 199,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00305570",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:20:29.566130+00:00"
+  },
+  "402030:2025:annual": {
+    "status": "000",
+    "fs_div": "OFS",
+    "accounts": {
+      "revenue": 33979970427,
+      "previous_revenue": 26318506558,
+      "assets": 45520926373,
+      "previous_assets": 44386378693,
+      "liabilities": 15962754206,
+      "previous_liabilities": 24762292934
+    },
+    "report": "annual",
+    "records_seen": 118,
+    "matched_accounts": {
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00601988",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:34.714284+00:00"
+  },
+  "043710:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -1992329850,
+      "equity": 55171627395,
+      "revenue": 10560436691,
+      "assets": 126211161650,
+      "liabilities": 71040496817
+    },
+    "report": "q3",
+    "records_seen": 164,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00305570",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:40.241706+00:00"
+  },
+  "402490:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": 10246364518,
+      "previous_profit": 2316135973,
+      "equity": 69865816884,
+      "previous_equity": 59325352879,
+      "revenue": 102155379135,
+      "previous_revenue": 18498939484,
+      "assets": 147237264962,
+      "previous_assets": 111842711182,
+      "liabilities": 75137626196,
+      "previous_liabilities": 50297546530
+    },
+    "report": "annual",
+    "records_seen": 203,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01370863",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:47.205977+00:00"
+  },
+  "043910:2026:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -10717636,
+      "equity": 82763149004,
+      "revenue": 10714426754,
+      "assets": 140703998297,
+      "liabilities": 53339309611
+    },
+    "report": "q3",
+    "records_seen": 125,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00418379",
+    "year": 2026,
+    "fetched_utc": "2026-11-19T04:20:51.601437+00:00"
+  },
+  "403490:2025:annual": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -4101452144,
+      "previous_profit": 2936183255,
+      "equity": 37417089478,
+      "previous_equity": 40836220398,
+      "revenue": 63676776798,
+      "previous_revenue": 63906049261,
+      "assets": 76258893433,
+      "previous_assets": 72571026505,
+      "liabilities": 38158675999,
+      "previous_liabilities": 30798636844
+    },
+    "report": "annual",
+    "records_seen": 143,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "01299106",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:20:56.814349+00:00"
+  },
+  "043910:2025:q3": {
+    "status": "000",
+    "fs_div": "CFS",
+    "accounts": {
+      "profit": -710463430,
+      "equity": 87388197259,
+      "revenue": 8703085388,
+      "assets": 137207593662,
+      "liabilities": 44848439097
+    },
+    "report": "q3",
+    "records_seen": 125,
+    "matched_accounts": {
+      "profit": 1,
+      "equity": 1,
+      "revenue": 1,
+      "assets": 1,
+      "liabilities": 1
+    },
+    "corp_code": "00418379",
+    "year": 2025,
+    "fetched_utc": "2026-11-19T04:21:01.013914+00:00"
   }
 }

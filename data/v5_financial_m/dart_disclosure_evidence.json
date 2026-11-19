@@ -1360,5 +1360,406 @@
     "corp_code": "00113261",
     "financial_cache_key": "010170:2025:annual",
     "checked_utc": "2026-11-19T04:13:54.998609+00:00"
+  },
+  "011040:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260320001252",
+        "rcept_dt": "20260320",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260320",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00101549",
+    "financial_cache_key": "011040:2025:annual",
+    "checked_utc": "2026-11-19T04:21:03.037274+00:00"
+  },
+  "011070:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 2,
+    "corp_code": "00105961",
+    "financial_cache_key": "011070:2025:annual",
+    "checked_utc": "2026-11-19T04:21:05.696254+00:00"
+  },
+  "011200:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 2,
+    "corp_code": "00164645",
+    "financial_cache_key": "011200:2025:annual",
+    "checked_utc": "2026-11-19T04:21:08.008282+00:00"
+  },
+  "011560:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260814000768",
+        "rcept_dt": "20260814",
+        "report_nm": "[기재정정]사업보고서 (2025.12)"
+      },
+      {
+        "rcept_no": "20260318001704",
+        "rcept_dt": "20260318",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260318",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00133876",
+    "financial_cache_key": "011560:2025:annual",
+    "checked_utc": "2026-11-19T04:21:10.120717+00:00"
+  },
+  "011790:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 3,
+    "corp_code": "00139889",
+    "financial_cache_key": "011790:2025:annual",
+    "checked_utc": "2026-11-19T04:21:13.017331+00:00"
+  },
+  "012030:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260323001119",
+        "rcept_dt": "20260323",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260323",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00163345",
+    "financial_cache_key": "012030:2025:annual",
+    "checked_utc": "2026-11-19T04:21:15.126467+00:00"
+  },
+  "012630:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 3,
+    "corp_code": "00164636",
+    "financial_cache_key": "012630:2025:annual",
+    "checked_utc": "2026-11-19T04:21:17.614335+00:00"
+  },
+  "012860:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260318000473",
+        "rcept_dt": "20260318",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260318",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00137234",
+    "financial_cache_key": "012860:2025:annual",
+    "checked_utc": "2026-11-19T04:21:19.060882+00:00"
+  },
+  "013030:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260312001217",
+        "rcept_dt": "20260312",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260312",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00165060",
+    "financial_cache_key": "013030:2025:annual",
+    "checked_utc": "2026-11-19T04:21:20.817497+00:00"
+  },
+  "013120:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260319000997",
+        "rcept_dt": "20260319",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260319",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00117966",
+    "financial_cache_key": "013120:2025:annual",
+    "checked_utc": "2026-11-19T04:21:22.938625+00:00"
+  },
+  "013990:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260814000097",
+        "rcept_dt": "20260814",
+        "report_nm": "[기재정정]사업보고서 (2025.12)"
+      },
+      {
+        "rcept_no": "20260320001348",
+        "rcept_dt": "20260320",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260320",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00138446",
+    "financial_cache_key": "013990:2025:annual",
+    "checked_utc": "2026-11-19T04:21:24.691668+00:00"
+  },
+  "014620:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260708000008",
+        "rcept_dt": "20260708",
+        "report_nm": "[기재정정]사업보고서 (2025.12)"
+      },
+      {
+        "rcept_no": "20260319000739",
+        "rcept_dt": "20260319",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260319",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00132318",
+    "financial_cache_key": "014620:2025:annual",
+    "checked_utc": "2026-11-19T04:21:27.251010+00:00"
+  },
+  "014940:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260316000206",
+        "rcept_dt": "20260316",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260316",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00141608",
+    "financial_cache_key": "014940:2025:annual",
+    "checked_utc": "2026-11-19T04:21:28.488242+00:00"
+  },
+  "015360:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 3,
+    "corp_code": "00105101",
+    "financial_cache_key": "015360:2025:annual",
+    "checked_utc": "2026-11-19T04:21:30.753749+00:00"
+  },
+  "015590:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 3,
+    "corp_code": "00108746",
+    "financial_cache_key": "015590:2025:annual",
+    "checked_utc": "2026-11-19T04:21:33.067962+00:00"
+  },
+  "016380:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 2,
+    "corp_code": "00115676",
+    "financial_cache_key": "016380:2025:annual",
+    "checked_utc": "2026-11-19T04:21:35.732584+00:00"
+  },
+  "016610:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 14,
+    "corp_code": "00115694",
+    "financial_cache_key": "016610:2025:annual",
+    "checked_utc": "2026-11-19T04:21:38.086467+00:00"
+  },
+  "017890:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260318001201",
+        "rcept_dt": "20260318",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260318",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00158565",
+    "financial_cache_key": "017890:2025:annual",
+    "checked_utc": "2026-11-19T04:21:40.379533+00:00"
+  },
+  "017940:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 2,
+    "corp_code": "00165583",
+    "financial_cache_key": "017940:2025:annual",
+    "checked_utc": "2026-11-19T04:21:42.746529+00:00"
+  },
+  "018000:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 2,
+    "corp_code": "00144243",
+    "financial_cache_key": "018000:2025:annual",
+    "checked_utc": "2026-11-19T04:21:45.210414+00:00"
+  },
+  "018120:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260319001276",
+        "rcept_dt": "20260319",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260319",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00170877",
+    "financial_cache_key": "018120:2025:annual",
+    "checked_utc": "2026-11-19T04:21:46.437092+00:00"
+  },
+  "018290:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260319001002",
+        "rcept_dt": "20260319",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260319",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00150165",
+    "financial_cache_key": "018290:2025:annual",
+    "checked_utc": "2026-11-19T04:21:48.184394+00:00"
+  },
+  "018310:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260323001658",
+        "rcept_dt": "20260323",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260323",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00125646",
+    "financial_cache_key": "018310:2025:annual",
+    "checked_utc": "2026-11-19T04:21:50.010097+00:00"
+  },
+  "018670:2025:annual": {
+    "state": "PAGINATED_UNVERIFIED",
+    "total_page": 3,
+    "corp_code": "00144164",
+    "financial_cache_key": "018670:2025:annual",
+    "checked_utc": "2026-11-19T04:21:52.638292+00:00"
+  },
+  "019010:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260319001236",
+        "rcept_dt": "20260319",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260319",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00267906",
+    "financial_cache_key": "019010:2025:annual",
+    "checked_utc": "2026-11-19T04:21:54.233703+00:00"
+  },
+  "019210:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260318000988",
+        "rcept_dt": "20260318",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260318",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00139719",
+    "financial_cache_key": "019210:2025:annual",
+    "checked_utc": "2026-11-19T04:21:56.525202+00:00"
+  },
+  "023160:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260326001150",
+        "rcept_dt": "20260326",
+        "report_nm": "[첨부정정]사업보고서 (2025.12)"
+      },
+      {
+        "rcept_no": "20260320000407",
+        "rcept_dt": "20260320",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260320",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00153375",
+    "financial_cache_key": "023160:2025:annual",
+    "checked_utc": "2026-11-19T04:21:58.801182+00:00"
+  },
+  "023410:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260320001208",
+        "rcept_dt": "20260320",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260320",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00184667",
+    "financial_cache_key": "023410:2025:annual",
+    "checked_utc": "2026-11-19T04:22:00.805752+00:00"
+  },
+  "023600:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260320000317",
+        "rcept_dt": "20260320",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260320",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00125938",
+    "financial_cache_key": "023600:2025:annual",
+    "checked_utc": "2026-11-19T04:22:02.216867+00:00"
+  },
+  "024800:2025:annual": {
+    "state": "FILING_CANDIDATES_FOUND",
+    "candidates": [
+      {
+        "rcept_no": "20260323001724",
+        "rcept_dt": "20260323",
+        "report_nm": "사업보고서 (2025.12)"
+      }
+    ],
+    "earliest_filing_date": "20260323",
+    "cached_values_matched_to_filing": false,
+    "point_in_time_verified": false,
+    "corp_code": "00173999",
+    "financial_cache_key": "024800:2025:annual",
+    "checked_utc": "2026-11-19T04:22:03.655318+00:00"
   }
 }
