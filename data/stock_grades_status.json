@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-11-18T04:46:04.895721+00:00",
+  "generated_at_utc": "2026-11-19T04:26:29.526121+00:00",
   "price_snapshot_dates": [
-    "20261117"
+    "20261118"
   ],
-  "technical_rows": 1257,
+  "technical_rows": 1261,
   "annual_rows": 11,
   "latest_report_rows": 11,
   "v4_screen_rows": 6,
@@ -11,9 +11,10 @@
   "grade_B": 0,
   "v4_graded": 0,
   "excluded_by_reason": {
-    "latest_report_incomplete": 8,
-    "latest_earnings_not_profitable_and_growing": 3,
-    "no_eligible_screen": 1246
+    "latest_report_incomplete": 7,
+    "annual_data_missing_or_stale": 1,
+    "no_eligible_screen": 1250,
+    "latest_earnings_not_profitable_and_growing": 3
   },
   "disclaimer": "Preliminary only. Latest filed report YTD comparisons, 2025 annual valuation estimates, no validated institutional/foreign flow. Newer provisional disclosures require review."
 }
