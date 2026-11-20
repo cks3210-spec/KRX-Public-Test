@@ -20,9 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install original Stage24-26 dependencies
-        run: python -m pip install --disable-pip-version-check 'pykrx>=1.0.48,<2' pandas requests
-      - name: Restore original Stage24-26 development modules only
+      - name: Restore original Stage25-26 development modules only
         shell: bash
         run: |
           mkdir -p stage28 v5_reports/stage28
@@ -38,7 +36,6 @@ jobs:
               m=re.search(r"write_bytes\(base64\.b64decode\('([A-Za-z0-9+/=]+)'\)\)",s)
               if not m:raise ValueError('Embedded Python missing: '+n)
               pathlib.Path(output).write_bytes(base64.b64decode(m.group(1),validate=True))
-          embedded('v5-stage24-krx-source.yml','stage28/stage24.py')
           embedded('v5-stage26-decision-engine.yml','stage28/stage26.py')
           s=source('v5-stage25-fundamental-engine.yml')
           m=re.search(r"cat > /tmp/stage25\.py <<'PY'\n(.*?)\n\s*PY\n",s,re.S)
@@ -46,15 +43,70 @@ jobs:
           lines=m.group(1).splitlines()
           indent=min(len(x)-len(x.lstrip()) for x in lines if x.strip())
           pathlib.Path('stage28/stage25.py').write_text('\n'.join(x[indent:] for x in lines)+'\n',encoding='utf-8')
-          for n in (24,25,26):
+          for n in (25,26):
               compile(pathlib.Path(f'stage28/stage{n}.py').read_text(encoding='utf-8'),f'stage{n}.py','exec')
-          print('Stage24-26 restored; independent Stage27 workflow and ledger untouched')
+          print('Stage25-26 restored; official KRX production data checked separately; Stage27 untouched')
           PY
           python stage28/restore.py
-      - name: Run Stage24 source collector (isolated snapshot)
+      - name: Verify official KRX operating market and 70-session archive (no collection)
         id: collect
-        continue-on-error: true
-        run: python stage28/stage24.py
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv,gzip,json,datetime,pathlib,collections
+          d=pathlib.Path('data'); out=pathlib.Path('v5_reports/stage28');out.mkdir(parents=True,exist_ok=True)
+          meta=json.loads((d/'summary.json').read_text(encoding='utf-8-sig'))
+          with (d/'latest.csv').open(encoding='utf-8-sig',newline='') as f: latest=list(csv.DictReader(f))
+          dates={r.get('BAS_DD','') for r in latest}
+          if len(dates)!=1 or dates!={str(meta.get('latest_trading_date',''))}:raise ValueError('LATEST_DATE_MISMATCH')
+          if len(latest)<2000:raise ValueError('LATEST_MARKET_UNIVERSE_TOO_SMALL')
+          latest_keys={(r.get('MARKET'),r.get('ISU_CD')) for r in latest}
+          if len(latest_keys)!=len(latest):raise ValueError('LATEST_DUPLICATE_SECURITY')
+          counts=collections.Counter(r.get('MARKET') for r in latest)
+          if counts.get('KOSPI')!=meta.get('kospi_rows_latest') or counts.get('KOSDAQ')!=meta.get('kosdaq_rows_latest'):
+              raise ValueError('LATEST_MARKET_COUNTS_MISMATCH')
+          sessions=set(); nrows=0; tail={}; seen=set()
+          with gzip.open(d/'daily_70d.csv.gz','rt',encoding='utf-8-sig',newline='') as f:
+              for r in csv.DictReader(f):
+                  day=r.get('BAS_DD','');sessions.add(day);nrows+=1
+                  if day==next(iter(dates)):
+                      key=(r.get('MARKET'),r.get('ISU_CD'))
+                      if key in tail:raise ValueError('HISTORY_DUPLICATE_LATEST')
+                      tail[key]=r
+          if len(sessions)!=70 or max(sessions)!=next(iter(dates)) or nrows!=meta.get('total_rows_stored'):
+              raise ValueError('HISTORY_70_SESSIONS_MISMATCH')
+          cols=('BAS_DD','MARKET','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')
+          if len(tail)!=len(latest) or any(tuple(tail.get((r['MARKET'],r['ISU_CD']),{}).get(k) for k in cols)!=tuple(r.get(k) for k in cols) for r in latest):
+              raise ValueError('HISTORY_LATEST_CLOSE_MISMATCH')
+          result={'state':'VERIFIED_OPERATING_MARKET_DATA','market_date':next(iter(dates)),'market_rows':len(latest),
+                  'history_sessions':len(sessions),'history_rows':nrows,'source':'data/latest.csv + data/daily_70d.csv.gz',
+                  'read_only':True,'investment_decisions_authorized':False,'final_buy_signals':0}
+          (out/'official_market_check.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - name: Evaluate R14 read-only FULL MARKET with existing grading engine
+        id: full_market_grade
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/krx_v5_r14_grade_engine.py
+          python scripts/krx_v5_r14_grade_engine.py --self-test
+          python scripts/krx_v5_r14_grade_engine.py \
+            --financial data/v5_financial_m/annual_financial_index_m.csv \
+            --market data/latest.csv \
+            --cache data/v5_financial_m/dart_financial_cache.json \
+            --output v5_reports/stage28/r14_full_market_grade_research.json
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('v5_reports/stage28/r14_full_market_grade_research.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          market=json.loads(pathlib.Path('v5_reports/stage28/official_market_check.json').read_text(encoding='utf-8'))
+          assert r['market_date']==market['market_date']
+          assert r['market_rows']==market['market_rows']
+          assert r['result']=='PRELIMINARY_RESEARCH_ONLY'
+          assert r['investment_decisions_authorized'] is False and r['final_buy_signals']==0
+          print('R14_FULL_MARKET_RESEARCH_ONLY',r['market_date'],r.get('candidate_count'))
+          PY
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -85,16 +137,18 @@ jobs:
           FUNDAMENTAL_RESULT: ${{ steps.fundamental.outcome }}
           DECISION_RESULT: ${{ steps.decision.outcome }}
           PERFORMANCE_RESULT: ${{ steps.performance.outcome }}
+          FULL_MARKET_GRADE_RESULT: ${{ steps.full_market_grade.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE')}
           status_files={
-            'stage24':'v5_sources/krx/status.json',
+            'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
             'stage26':'v5_reports/stage26/status.json',
-            'stage27':'v5_reports/stage27/status.json'
+            'stage27':'v5_reports/stage27/status.json',
+            'r14_full_market_research':'v5_reports/stage28/r14_full_market_grade_research.json'
           }
           details={}
           for name,p in status_files.items():
@@ -116,24 +170,27 @@ jobs:
             'generated_kst':now.isoformat(),
             'component_results':statuses,
             'stage27_mode':'READ_ONLY_SEPARATE_WORKFLOW',
+            'market_source_mode':'VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA',
+            'legacy_stage25_scope':'ORIGINAL_LIMITED_FUNDAMENTALS_CSV; NOT_FULL_MARKET',
+            'r14_scope':'READ_ONLY_FULL_MARKET',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Stage28 tracks isolated Stage24-26 development only. Stage27 is independent and never overwritten or re-executed here. Research only, no trading signals.'
+            'notice':'Uses existing official KRX operating prices + 70 sessions; R14 read-only full-market grade is separate from legacy Stage25/26 limited-source research. Stage27 never rewritten. No trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
           PY
-      - name: Commit isolated research outputs ONLY (never Stage27)
+      - name: Commit official-source checks and research ONLY (never Stage27)
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for p in v5_sources/krx v5_reports/stage25 v5_reports/stage26 v5_reports/stage28; do
+          for p in v5_reports/stage25 v5_reports/stage26 v5_reports/stage28; do
             if [ -d "$p" ]; then git add "$p"; fi
           done
           if ! git diff --cached --quiet; then
@@ -141,7 +198,7 @@ jobs:
             git pull --rebase origin main
             git push origin HEAD:main
           fi
-      - name: Upload Stage28 isolated integration evidence
+      - name: Upload Stage28 official-source integration evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -150,5 +207,4 @@ jobs:
             v5_reports/stage28/
             v5_reports/stage25/
             v5_reports/stage26/
-            v5_sources/krx/
           if-no-files-found: warn
