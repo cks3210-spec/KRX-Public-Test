@@ -495,6 +495,264 @@ jobs:
           python -m py_compile /tmp/r14_filing_receipt_audit.py
           python /tmp/r14_filing_receipt_audit.py --self-test
           python /tmp/r14_filing_receipt_audit.py
+      - name: Reconcile current DART financial account values against frozen receipt IDs (read-only)
+        id: financial_values
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          R14_VALUE_COMPARE_BATCH_LIMIT: '6'
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_financial_values.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """R14 financial cache vs live OpenDART account figures, receipt-bound research audit.
+          
+          Live fnlttSinglAcntAll is not a historical revision API. Never claim
+          point-in-time equivalence, official PER/PBR, or actionable investment grades.
+          The original financial/disclosure caches and Stage27 are read-only.
+          """
+          import argparse
+          import collections
+          import datetime as dt
+          import importlib.util
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import time
+          from urllib import parse, request, error
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          FILINGS = ROOT / 'r14_filing_receipt_cache.json'
+          FINANCE = Path('data/v5_financial_m/dart_financial_cache.json')
+          OUT = ROOT / 'r14_financial_value_reconciliation.json'
+          PERSIST = ROOT / 'r14_financial_value_reconciliation_cache.json'
+          REPORT_CODES = {'annual':'11011', 'q3':'11014', 'half':'11012','q1':'11013'}
+          FIELDNAMES = ('profit','equity','previous_equity','assets','liabilities','revenue')
+          
+          
+          def load(path, default):
+              try:
+                  return json.loads(path.read_text(encoding='utf-8-sig'))
+              except (OSError, ValueError):
+                  return default
+          
+          
+          def valid_receipt(value):
+              return bool(re.fullmatch(r'20\d{12}', str(value or '')))
+          
+          
+          def expected_receipt(row, period_key):
+              p = (row.get('filing_periods') or {}).get(period_key, {})
+              receipt = str(p.get('latest_available_asof_evaluation') or '')
+              filings = p.get('pre_evaluation_receipts') or []
+              if not valid_receipt(receipt) or not any(x.get('rcept_no') == receipt for x in filings):
+                  return ''
+              cutoff = str(row.get('evaluation_date') or '')
+              match = next((x for x in filings if x.get('rcept_no') == receipt), {})
+              filing_date = str(match.get('rcept_dt') or '')
+              if not re.fullmatch(r'20\d{6}', cutoff) or not re.fullmatch(r'20\d{6}', filing_date) or filing_date > cutoff:
+                  return ''
+              return receipt
+          
+          
+          def compare(cache_entry, response, expected, kind, basis, original_parser):
+              if response.get('status') != '000' or not isinstance(response.get('list'), list):
+                  return {'status':'DART_API_NO_VERIFIED_FINANCIAL_LIST',
+                          'api_status':str(response.get('status',''))[:12]}
+              data = response['list']
+              accounted = set().union(*original_parser.ACCOUNTS.values())
+              relevant = [x for x in data if isinstance(x, dict) and x.get('account_id') in accounted]
+              receipt_set = {str(x.get('rcept_no','')) for x in relevant}
+              if not relevant or any(not valid_receipt(x) for x in receipt_set):
+                  return {'status':'DART_FINANCIAL_ROWS_RECEIPT_UNATTESTED',
+                          'receipt_ids': sorted(receipt_set)[:12]}
+              if receipt_set != {expected}:
+                  return {'status':'DART_RECEIPT_MISMATCH',
+                          'expected_receipt':expected,'returned_receipts':sorted(receipt_set)[:12]}
+              parsed = original_parser.parse(response, kind, basis)
+              if parsed.get('status') != '000':
+                  return {'status':'DART_FINANCIAL_FIELDS_UNUSABLE',
+                          'parse_status': parsed.get('status')}
+              original = cache_entry.get('accounts', {})
+              live = parsed.get('accounts', {})
+              if not isinstance(original, dict) or not original or not isinstance(live, dict):
+                  return {'status':'FINANCIAL_ACCOUNT_DATA_MISSING'}
+              fields = [k for k in FIELDNAMES if k in original]
+              missing = [k for k in fields if k not in live]
+              if missing or len(fields) < 2:
+                  return {'status':'FINANCIAL_FIELDS_INCOMPLETE', 'missing_fields':missing,
+                          'comparable_fields':len(fields)}
+              delta = {k:{'cached':original[k],'live':live[k]} for k in fields
+                       if type(original[k]) not in (int,float) or type(live[k]) not in (int,float)
+                       or original[k] != live[k]}
+              if delta:
+                  return {'status':'FINANCIAL_VALUE_MISMATCH', 'mismatched_fields':delta,
+                          'compared_fields':fields}
+              return {'status':'CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE',
+                      'compared_fields':fields,'compared_count':len(fields),
+                      'receipt_no':expected,'fs_div':basis,
+                      'point_in_time_verified':False}
+          
+          
+          def live_request(corp, year, kind, basis, token):
+              url='https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json?'+parse.urlencode({
+                  'crtfc_key':token,'corp_code':corp,'bsns_year':year,
+                  'reprt_code':REPORT_CODES[kind],'fs_div':basis})
+              try:
+                  with request.urlopen(request.Request(url,headers={'User-Agent':'KRX-v5-Cached-Receipt-Compare/1.0'}),timeout=25) as f:
+                      if int(f.headers.get('Content-Length','0') or 0)>8_000_000:
+                          return {'status':'BLOCKED_RESPONSE_TOO_LARGE'}
+                      b=f.read(8_000_001)
+                  if len(b)>8_000_000: return {'status':'BLOCKED_RESPONSE_TOO_LARGE'}
+                  obj=json.loads(b)
+                  return obj if isinstance(obj,dict) else {'status':'INVALID_RESPONSE_SCHEMA'}
+              except (error.URLError,TimeoutError,OSError,ValueError) as exc:
+                  return {'status':'API_NETWORK_OR_JSON_FAILURE','reason':type(exc).__name__}
+          
+          
+          def current_cache_key(r, p):
+              cutoff = str(r.get('evaluation_date',''))
+              receipts = (r.get('filing_periods') or {})
+              return {'evaluation_date':cutoff,
+                      'receipts':{period:expected_receipt(r,period) for period in sorted(receipts)}}
+          
+          
+          def main():
+              p=argparse.ArgumentParser()
+              p.add_argument('--self-test',action='store_true')
+              args=p.parse_args()
+              if args.self_test:
+                  class Parser:
+                      ACCOUNTS={'profit':{'ifrs-full_ProfitLossAttributableToOwnersOfParent'},'equity':{'ifrs-full_EquityAttributableToOwnersOfParent'}}
+                      @staticmethod
+                      def parse(response,kind,basis):
+                          return {'status':'000','accounts':{'profit':10,'equity':30}}
+                  receipt='20260318001027'
+                  data={'status':'000','list':[{'rcept_no':receipt,'account_id':'ifrs-full_ProfitLossAttributableToOwnersOfParent'},
+                                                {'rcept_no':receipt,'account_id':'ifrs-full_EquityAttributableToOwnersOfParent'}]}
+                  cached={'accounts':{'profit':10,'equity':30}}
+                  assert compare(cached,data,receipt,'annual','CFS',Parser)['status']=='CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE'
+                  assert compare(cached,data,'20260318001234','annual','CFS',Parser)['status']=='DART_RECEIPT_MISMATCH'
+                  assert compare({'accounts':{'profit':11,'equity':30}},data,receipt,'annual','CFS',Parser)['status']=='FINANCIAL_VALUE_MISMATCH'
+                  assert compare(cached,{'status':'013'},receipt,'annual','CFS',Parser)['status']=='DART_API_NO_VERIFIED_FINANCIAL_LIST'
+                  assert compare(cached,{'status':'000','list':[{'account_id':'ifrs-full_EquityAttributableToOwnersOfParent'}]},receipt,'annual','CFS',Parser)['status']=='DART_FINANCIAL_ROWS_RECEIPT_UNATTESTED'
+                  row={'evaluation_date':'20261120','filing_periods':{'2025_annual':{'latest_available_asof_evaluation':receipt,
+                       'pre_evaluation_receipts':[{'rcept_no':receipt,'rcept_dt':'20260318'}]}}}
+                  assert expected_receipt(row,'2025_annual') == receipt
+                  row['evaluation_date']='20260317'
+                  assert expected_receipt(row,'2025_annual') == ''
+                  print(json.dumps({'result':'SELF_TEST_PASS','tests':7}))
+                  return
+              ROOT.mkdir(parents=True,exist_ok=True)
+              filings=load(FILINGS,{})
+              cache=load(FINANCE,{})
+              persistent=load(PERSIST,{})
+              rows=dict(persistent.get('rows',{}))
+              if not isinstance(cache,dict) or not cache:
+                  raise SystemExit('MISSING_OR_INVALID_FINANCIAL_CACHE')
+              if filings.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1' or not isinstance(filings.get('rows'),dict):
+                  raise SystemExit('MISSING_OR_INVALID_RECEIPT_CACHE')
+              # Re-use the original R14 parser, preserving exact financial account rules.
+              from importlib import util
+              spec=util.spec_from_file_location('existing_r14_parser','scripts/krx_v5_r14_dart_incremental_m.py')
+              original_parser=util.module_from_spec(spec)
+              spec.loader.exec_module(original_parser)
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+              now_day=now.strftime('%Y%m%d')
+              token=os.getenv('DART_API_KEY','').strip()
+              limit=max(0,min(20,int(os.getenv('R14_VALUE_COMPARE_BATCH_LIMIT','6'))))
+              company_queries=0
+              api_requests=0
+              counts=collections.Counter()
+              candidates=filings['rows']
+              ordering=sorted(candidates.items(),key=lambda kv:(kv[1].get('grade_research_only')!='A',kv[0]))
+              for code, record in ordering:
+                  if record.get('api_state')!='COMPLETE_DART_API':
+                      counts['WAITING_COMPLETE_FILING_RECEIPT_EVIDENCE']+=1
+                      continue
+                  if not re.fullmatch(r'\d{6}',code) or not re.fullmatch(r'\d{8}',str(record.get('corp_code',''))):
+                      counts['INVALID_COMPANY_IDENTIFIERS']+=1
+                      continue
+                  periods=record.get('filing_periods') or {}
+                  needed=[x for x in sorted(periods) if re.fullmatch(r'20\d{2}_(annual|q1|half|q3)',x)]
+                  desired=current_cache_key(record,periods)
+                  prev=rows.get(code,{})
+                  if prev.get('receipt_selection')==desired and prev.get('status') in (
+                      'CURRENT_ACCOUNT_VALUES_MATCHED','FINANCIAL_ACCOUNT_MISMATCH','RECEIPT_VERSION_MISMATCH'):
+                      counts['CACHED_FINISHED']+=1
+                      continue
+                  if not token:
+                      counts['BLOCKED_MISSING_DART_KEY']+=1
+                      continue
+                  if company_queries>=limit:
+                      counts['PENDING_BATCH_CAP']+=1
+                      continue
+                  company_queries+=1
+                  per={}
+                  for period in needed:
+                      year,kind=period.split('_',1)
+                      receipt=expected_receipt(record,period)
+                      financial=cache.get(f'{code}:{year}:{kind}',{})
+                      basis=financial.get('fs_div','') if isinstance(financial,dict) else ''
+                      if not receipt:
+                          per[period]={'status':'MISSING_RECEIPT_BEFORE_EVALUATION'}
+                      elif not isinstance(financial,dict) or financial.get('status')!='000' or not financial.get('accounts'):
+                          per[period]={'status':'CACHE_FINANCIAL_UNVERIFIED'}
+                      elif basis not in ('CFS','OFS'):
+                          per[period]={'status':'CACHE_FINANCIAL_BASIS_UNVERIFIED'}
+                      else:
+                          res=live_request(record['corp_code'],year,kind,basis,token)
+                          api_requests+=1
+                          per[period]=compare(financial,res,receipt,kind,basis,original_parser)
+                          time.sleep(.12)
+                  kinds={x.get('status') for x in per.values()}
+                  if len(per)>=3 and kinds=={'CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE'}:
+                      state='CURRENT_ACCOUNT_VALUES_MATCHED'
+                  elif 'FINANCIAL_VALUE_MISMATCH' in kinds:
+                      state='FINANCIAL_ACCOUNT_MISMATCH'
+                  elif 'DART_RECEIPT_MISMATCH' in kinds:
+                      state='RECEIPT_VERSION_MISMATCH'
+                  else:
+                      state='INCOMPLETE_OR_UNVERIFIED_COMPARISON'
+                  rows[code]={'code':code,'status':state,'receipt_selection':desired,
+                              'checked_kst':now.isoformat(),'periods':per,
+                              'source':'OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT',
+                              'historical_point_in_time_verified':False,
+                              'investment_decisions_authorized':False}
+                  counts[state]+=1
+              # Cache must retain earlier companies even when new market grades change.
+              persistent={'format':'R14_FINANCIAL_COMPARISON_CACHE_V1','updated_kst':now.isoformat(),
+                          'rows':rows,'investment_decisions_authorized':False,'final_buy_signals':0}
+              report={'result':'R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT',
+                      'generated_kst':now.isoformat(), 'company_queries_this_run':company_queries,
+                      'dart_financial_api_requests_this_run':api_requests,
+                      'candidate_count':len(candidates),'cached_company_count':len(rows),
+                      'current_api_matched_company_count':sum(v.get('status')=='CURRENT_ACCOUNT_VALUES_MATCHED' for v in rows.values()),
+                      'historical_point_in_time_verified_company_count':0,
+                      'official_per_pbr_verified_count':0,
+                      'status_counts_this_run':dict(counts),
+                      'data_fetched_by_this_audit':bool(api_requests and token),
+                      'financial_cache_modified':False,'filing_receipt_cache_modified':False,'stage27_modified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'limitations':['fnlttSinglAcntAll is a current structured API, not an as-of historical source',
+                                     'Receipt IDs and account values must both match; mismatches block verification',
+                                     'Even matched present-day API data cannot certify old investment decision-time availability']}
+              def atomic(p,value):
+                  tmp=p.with_suffix('.json.tmp')
+                  tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+                  tmp.replace(p)
+              atomic(PERSIST,persistent)
+              atomic(OUT,report)
+              print(json.dumps({k:v for k,v in report.items() if k!='limitations'},ensure_ascii=False))
+          
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/r14_financial_values.py
+          python /tmp/r14_financial_values.py --self-test
+          python /tmp/r14_financial_values.py
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -528,11 +786,12 @@ jobs:
           FULL_MARKET_GRADE_RESULT: ${{ steps.full_market_grade.outcome }}
           RATIO_PROVENANCE_RESULT: ${{ steps.ratio_provenance.outcome }}
           DART_RECEIPTS_RESULT: ${{ steps.dart_receipts.outcome }}
+          FINANCIAL_VALUES_RESULT: ${{ steps.financial_values.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -541,7 +800,8 @@ jobs:
             'r14_full_market_research':'v5_reports/stage28/r14_full_market_grade_research.json',
             'r14_universe_coverage':'v5_reports/stage28/r14_universe_coverage.json',
             'r14_valuation_disclosure_gate':'v5_reports/stage28/r14_valuation_disclosure_gate.json',
-            'r14_filing_receipt_audit':'v5_reports/stage28/r14_filing_receipt_audit.json'
+            'r14_filing_receipt_audit':'v5_reports/stage28/r14_filing_receipt_audit.json',
+            'r14_financial_value_reconciliation':'v5_reports/stage28/r14_financial_value_reconciliation.json'
           }
           details={}
           for name,p in status_files.items():
@@ -574,6 +834,7 @@ jobs:
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
+            'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
