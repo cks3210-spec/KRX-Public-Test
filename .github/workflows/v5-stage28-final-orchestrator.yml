@@ -173,6 +173,328 @@ jobs:
           (root/'r14_valuation_disclosure_gate.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(report,ensure_ascii=False))
           PY
+      - name: Incremental OpenDART original filing and correction receipts (read-only)
+        id: dart_receipts
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          R14_FILING_RECEIPT_BATCH_LIMIT: '24'
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_filing_receipt_audit.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Bounded, incremental DART filing receipt audit for R14 research candidates.
+
+          Receipt evidence is NOT financial-value/point-in-time verification. Never change buy signals.
+          """
+          import csv
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import sys
+          import time
+          from collections import Counter
+          from urllib import parse, request, error
+          from zoneinfo import ZoneInfo
+
+          ROOT = Path('v5_reports/stage28')
+          OUT = ROOT / 'r14_filing_receipt_audit.json'
+          CACHE_OUT = ROOT / 'r14_filing_receipt_cache.json'
+          RESEARCH = ROOT / 'r14_full_market_grade_research.json'
+          EVIDENCE = Path('data/v5_financial_m/dart_disclosure_evidence.json')
+          CORP_MAP = Path('data/v5_financial_m/corp_map.json')
+          SNAPSHOTS = Path('v5_reports/stage27/r14_research_snapshots.csv')
+          REPORTS = {'annual': ('사업보고서', '12'), 'q1': ('분기보고서', '03'),
+                     'half': ('반기보고서', '06'), 'q3': ('분기보고서', '09')}
+
+          def required_periods(market_date):
+              year = int(market_date[:4]); month_day = market_date[4:]
+              kind = ('q3' if month_day >= '1115' else 'half' if month_day >= '0814'
+                      else 'q1' if month_day >= '0515' else None)
+              plan = {f'{year-1}_annual': ('사업보고서', f'{year-1}.12')}
+              if kind:
+                  title, mm = REPORTS[kind]
+                  plan[f'{year-1}_{kind}'] = (title, f'{year-1}.{mm}')
+                  plan[f'{year}_{kind}'] = (title, f'{year}.{mm}')
+              return plan
+
+          CORRECTION_WORDS = ('정정', '첨부추가', '재제출')
+          DART_URL = 'https://opendart.fss.or.kr/api/list.json'
+
+
+          def load(path, default):
+              try:
+                  return json.loads(path.read_text(encoding='utf-8-sig'))
+              except (OSError, ValueError):
+                  return default
+
+
+          def date8(s):
+              s = str(s or '').strip().replace('-', '')
+              return s if re.fullmatch(r'20\d{6}', s) else ''
+
+
+          def report_type(name, periods):
+              name = str(name or '')
+              normalized = re.sub(r'\s+', '', name)
+              for kind, (title, period) in periods.items():
+                  if title in normalized and '(' + period + ')' in normalized:
+                      return kind
+              return None
+
+
+          def normalize_filings(raw, periods):
+              results = {}
+              for row in raw:
+                  if not isinstance(row, dict):
+                      continue
+                  name = str(row.get('report_nm', '')).strip()
+                  kind = report_type(name, periods)
+                  no = str(row.get('rcept_no', '')).strip()
+                  day = date8(row.get('rcept_dt'))
+                  if not kind or not re.fullmatch(r'\d{14}', no) or not day or no[:8] != day:
+                      continue
+                  results[no] = {'rcept_no': no, 'rcept_dt': day, 'report_nm': name, 'period_key': kind,
+                                 'possible_correction': any(x in name for x in CORRECTION_WORDS)}
+              return sorted(results.values(), key=lambda r: (r['rcept_dt'], r['rcept_no']))
+
+
+          def analyze(rows, cutoff, periods):
+              by_kind = {k: [] for k in periods}
+              for item in rows:
+                  if item['period_key'] in by_kind:
+                      by_kind[item['period_key']].append(item)
+              period_analysis = {}
+              any_late = any_correction = False
+              for period, items in by_kind.items():
+                  before = [x for x in items if x['rcept_dt'] <= cutoff]
+                  after = [x for x in items if x['rcept_dt'] > cutoff]
+                  revision = len(items) > 1 or any(x['possible_correction'] for x in items)
+                  any_late |= bool(after)
+                  any_correction |= revision
+                  period_analysis[period] = {
+                      'pre_evaluation_receipts': before,
+                      'post_evaluation_receipts': after,
+                      'latest_available_asof_evaluation': before[-1]['rcept_no'] if before else None,
+                      'multiple_or_corrected_receipts': revision,
+                  }
+              before_all = all(period_analysis[p]['pre_evaluation_receipts'] for p in by_kind)
+              return {'filing_periods': period_analysis,
+                      'all_required_period_receipts_found_before_evaluation': bool(before_all),
+                      'post_evaluation_filing_exists': bool(any_late),
+                      'correction_or_multiple_receipts_present': bool(any_correction),
+                      'financial_values_matched_to_receipts': False,
+                      'point_in_time_financials_verified': False}
+
+
+          def get_list(corp, token, now_day, periods):
+              if not re.fullmatch(r'\d{8}', str(corp or '')):
+                  return {'state': 'INVALID_CORP_CODE', 'filings': [], 'pages_checked': 0}
+              raw = []
+              pages_seen = 0
+              page_count = None
+              for page in range(1, 11):
+                  params = {'crtfc_key': token, 'corp_code': corp, 'bgn_de': f"{min(int(p[:4]) for p in periods):04d}0101",
+                            'end_de': now_day, 'last_reprt_at': 'N', 'pblntf_ty': 'A',
+                            'page_count': '100', 'page_no': str(page)}
+                  try:
+                      url = DART_URL + '?' + parse.urlencode(params)
+                      with request.urlopen(request.Request(url, headers={'User-Agent': 'KRX-v5-Receipt-Audit/1.0'}), timeout=20) as resp:
+                          data = json.load(resp)
+                  except (error.URLError, TimeoutError, ValueError, OSError):
+                      return {'state': 'API_NETWORK_OR_JSON_ERROR', 'filings': [], 'pages_checked': pages_seen}
+                  status = data.get('status') if isinstance(data, dict) else None
+                  if status == '013':
+                      return {'state': 'API_NO_DISCLOSURES', 'filings': [], 'pages_checked': pages_seen + 1}
+                  if status != '000':
+                      return {'state': 'API_REJECTED_' + str(status)[:8], 'filings': [], 'pages_checked': pages_seen}
+                  try:
+                      count = int(data['total_page'])
+                      items = data['list']
+                      if count < 1 or count > 100000 or not isinstance(items, list):
+                          raise ValueError('API_BAD_PAGINATION')
+                  except (KeyError, ValueError, TypeError):
+                      return {'state': 'API_INVALID_PAGE_METADATA', 'filings': [], 'pages_checked': pages_seen}
+                  if page_count is not None and page_count != count:
+                      return {'state': 'API_PAGINATION_CHANGED', 'filings': [], 'pages_checked': pages_seen}
+                  page_count = count
+                  raw.extend(items)
+                  pages_seen += 1
+                  if page >= count:
+                      return {'state': 'COMPLETE_DART_API', 'filings': normalize_filings(raw, periods),
+                              'pages_checked': pages_seen, 'total_pages': count}
+                  time.sleep(.12)
+              return {'state': 'API_PAGINATION_EXCEEDED', 'filings': [], 'pages_checked': pages_seen,
+                      'total_pages': page_count}
+
+
+          def previous_evidence(code, periods, evidence):
+              raw = []
+              for period in periods:
+                  year, kind = period.split('_', 1)
+                  entry = evidence.get(f'{code}:{year}:{kind}', {})
+                  if entry.get('state') == 'FILING_CANDIDATES_FOUND':
+                      raw.extend(entry.get('candidates', []))
+              return normalize_filings(raw, periods)
+
+
+          def historical_eval_dates(market_date):
+              if not SNAPSHOTS.exists():
+                  return {}
+              by_code = {}
+              with SNAPSHOTS.open(encoding='utf-8-sig', newline='') as f:
+                  for row in csv.DictReader(f):
+                      if row.get('source_market_date') == market_date:
+                          date = date8(row.get('evaluation_date_kst'))
+                          if date and row.get('ISU_CD') not in by_code:
+                              by_code[row['ISU_CD']] = date
+              return by_code
+
+
+          def run():
+              research = load(RESEARCH, {})
+              if research.get('result') != 'PRELIMINARY_RESEARCH_ONLY' or research.get('final_buy_signals') != 0 or research.get('investment_decisions_authorized') is not False:
+                  raise ValueError('UNSAFE_OR_MISSING_R14_RESEARCH')
+              market_date = date8(research.get('market_date'))
+              periods = required_periods(market_date) if market_date else {}
+              candidates = research.get('candidates', [])
+              if not market_date or not isinstance(candidates, list) or research.get('candidate_count') != len(candidates):
+                  raise ValueError('INVALID_RESEARCH_CANDIDATE_LIST')
+              corp_map = load(CORP_MAP, {})
+              prior_evidence = load(EVIDENCE, {})
+              old = load(OUT, {})
+              persistent = load(CACHE_OUT, {})
+              # Preserve API-fetched evidence across changing daily market dates; otherwise
+              # a 24-company batch would restart each day and never cover the universe.
+              rows = dict(persistent.get('rows', {}))
+              if not rows and isinstance(old.get('rows'), dict):
+                  rows.update(old['rows'])
+              dates = historical_eval_dates(market_date)
+              now = dt.datetime.now(ZoneInfo('Asia/Seoul'))
+              now_day = now.strftime('%Y%m%d')
+              key = os.getenv('DART_API_KEY', '').strip()
+              limit = max(0, min(60, int(os.getenv('R14_FILING_RECEIPT_BATCH_LIMIT', '24'))))
+              # Prioritize A candidates and new missing records; all receipts are audit evidence only.
+              codes = sorted((c for c in candidates if c.get('grade') in ('A', 'B') and re.fullmatch(r'\d{6}', str(c.get('code', '')))),
+                             key=lambda x: (x['grade'] != 'A', -int(x.get('score', 0)), x['code']))
+              scanned = 0
+              issues = Counter()
+              for c in codes:
+                  code = c['code']
+                  cutoff = dates.get(code, now_day)
+                  prev = rows.get(code, {})
+                  last_checked = date8(prev.get('last_live_check_kst'))
+                  recently_checked = bool(last_checked and (now.date() - dt.datetime.strptime(last_checked, '%Y%m%d').date()).days < 7)
+                  previously_complete = prev.get('api_state') in ('COMPLETE_DART_API', 'API_NO_DISCLOSURES')
+                  if previously_complete:
+                      # Preserve the stronger old live evidence until a successful refresh.
+                      filing_rows = prev.get('filings', [])
+                      provenance = 'SAVED_DART_API_RESULT'
+                      state = prev['api_state']
+                  else:
+                      filing_rows = previous_evidence(code, periods, prior_evidence)
+                      provenance = 'PREVIOUS_R14_FILING_EVIDENCE_PARTIAL'
+                      state = 'PENDING_LIVE_DART_API'
+                  refresh_error = None
+                  if not (previously_complete and recently_checked):
+                      if scanned < limit and key and re.fullmatch(r'\d{8}', str(corp_map.get(code, ''))):
+                          fresh = get_list(corp_map[code], key, now_day, periods)
+                          scanned += 1
+                          if fresh['state'] in ('COMPLETE_DART_API', 'API_NO_DISCLOSURES'):
+                              filing_rows = fresh['filings']
+                              provenance = 'LIVE_DART_LIST_COMPLETE'
+                              state = fresh['state']
+                          else:
+                              refresh_error = fresh['state']
+                              if not previously_complete:
+                                  state = fresh['state']
+                      elif not key and not previously_complete:
+                          state = 'BLOCKED_MISSING_DART_KEY'
+                      elif not re.fullmatch(r'\d{8}', str(corp_map.get(code, ''))) and not previously_complete:
+                          state = 'CORP_MAPPING_UNAVAILABLE'
+                  assessed = analyze(filing_rows, cutoff, periods)
+                  rows[code] = {'code': code, 'grade_research_only': c['grade'],
+                                'financial_reference_market_date': market_date,
+                                'evaluation_date': cutoff,
+                                'evaluation_date_source': 'FROZEN_STAGE27_RESEARCH_SNAPSHOT' if code in dates else 'AUDIT_TIME_NOT_HISTORICAL_SIGNAL',
+                                'corp_code': str(corp_map.get(code, '')),
+                                'api_state': state, 'source_evidence_level': provenance,
+                                'last_refresh_failure': refresh_error,
+                                'last_live_check_kst': now_day if state in ('COMPLETE_DART_API', 'API_NO_DISCLOSURES') and provenance == 'LIVE_DART_LIST_COMPLETE' else prev.get('last_live_check_kst',''),
+                                'filings': filing_rows, **assessed}
+                  issues[state] += 1
+              selected_codes = {c['code'] for c in codes}
+              saved = {k: v for k, v in rows.items() if k in selected_codes}
+              counts = Counter(v['api_state'] for v in saved.values())
+              report = {'result': 'R14_FILING_RECEIPT_VERSION_AUDIT',
+                        'generated_kst': now.isoformat(),
+                        'market_date': market_date,
+                        'candidate_count': len(codes),
+                        'required_financial_periods': sorted(periods),
+                        'live_company_queries_this_run': scanned,
+                        'remaining_not_live_verified': sum(v['api_state'] not in ('COMPLETE_DART_API', 'API_NO_DISCLOSURES') for v in saved.values()),
+                        'live_dart_filing_metadata_complete_count': counts['COMPLETE_DART_API'],
+                        'all_required_periods_pre_evaluation_count': sum(v['all_required_period_receipts_found_before_evaluation'] for v in saved.values()),
+                        'correction_or_multiple_receipt_companies': sum(v['correction_or_multiple_receipts_present'] for v in saved.values()),
+                        'post_evaluation_revision_or_filing_companies': sum(v['post_evaluation_filing_exists'] for v in saved.values()),
+                        'api_state_counts': dict(counts),
+                        'cached_financial_values_to_receipts_verified': 0,
+                        'point_in_time_financials_verified': False,
+                        'official_per_independently_verified': 0,
+                        'official_pbr_independently_verified': 0,
+                        'investment_decisions_authorized': False,
+                        'final_buy_signals': 0,
+                        'notes': ['Financial receipt metadata is not an account-by-account financial version match',
+                                  'Before-evaluation filings are only availability evidence; numbers and corrections still require independent reconciliation',
+                                  'No orders, no new research recommendations, no edits to Stage27 or financial caches'],
+                        'rows': saved}
+              ROOT.mkdir(parents=True, exist_ok=True)
+              cache_doc = {'format': 'R14_RECEIPT_EVIDENCE_CACHE_V1',
+                           'updated_kst': now.isoformat(), 'rows': rows,
+                           'investment_decisions_authorized': False, 'final_buy_signals': 0}
+              tmp_cache = CACHE_OUT.with_suffix('.tmp')
+              tmp_cache.write_text(json.dumps(cache_doc, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              tmp_cache.replace(CACHE_OUT)
+              tmp = OUT.with_suffix('.tmp')
+              tmp.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              tmp.replace(OUT)
+              print(json.dumps({k: v for k, v in report.items() if k != 'rows'}, ensure_ascii=False))
+
+
+          def self_test():
+              r = [{'rcept_no': '20260318000001', 'rcept_dt': '20260318', 'report_nm': '사업보고서 (2025.12)'},
+                   {'rcept_no': '20261114000001', 'rcept_dt': '20261114', 'report_nm': '분기보고서 (2026.09)'},
+                   {'rcept_no': '20261122000001', 'rcept_dt': '20261122', 'report_nm': '[기재정정] 분기보고서 (2026.09)'},
+                   {'rcept_no': '20251114000001', 'rcept_dt': '20251114', 'report_nm': '분기보고서 (2025.09)'}]
+              periods = required_periods('20261119')
+              normalized = normalize_filings(r, periods)
+              assert len(normalized) == 4
+              a = analyze(normalized, '20261120', periods)
+              assert a['all_required_period_receipts_found_before_evaluation'] is True
+              assert a['post_evaluation_filing_exists'] is True
+              assert a['correction_or_multiple_receipts_present'] is True
+              assert a['filing_periods']['2026_q3']['latest_available_asof_evaluation'] == '20261114000001'
+              assert analyze(normalized[:1], '20261120', periods)['all_required_period_receipts_found_before_evaluation'] is False
+              assert report_type('［기재정정］사업보고서 (2025.12)', periods) == '2025_annual'
+              assert not normalize_filings([{'rcept_no': '20260318000001', 'rcept_dt': '20260319', 'report_nm': '사업보고서 (2025.12)'}], periods)
+              assert not normalize_filings([{'rcept_no': 'not-a-receipt', 'rcept_dt': '20260318', 'report_nm': '사업보고서 (2025.12)'}], periods)
+              assert date8('2026-11-20') == '20261120'
+              assert sorted(required_periods('20270312')) == ['2026_annual']
+              assert sorted(required_periods('20260520')) == ['2025_annual', '2025_q1', '2026_q1']
+              print(json.dumps({'self_test': 'PASS', 'tests': 11}))
+
+
+          if __name__ == '__main__':
+              if '--self-test' in sys.argv:
+                  self_test()
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_filing_receipt_audit.py
+          python /tmp/r14_filing_receipt_audit.py --self-test
+          python /tmp/r14_filing_receipt_audit.py
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -205,11 +527,12 @@ jobs:
           PERFORMANCE_RESULT: ${{ steps.performance.outcome }}
           FULL_MARKET_GRADE_RESULT: ${{ steps.full_market_grade.outcome }}
           RATIO_PROVENANCE_RESULT: ${{ steps.ratio_provenance.outcome }}
+          DART_RECEIPTS_RESULT: ${{ steps.dart_receipts.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -217,7 +540,8 @@ jobs:
             'stage27':'v5_reports/stage27/status.json',
             'r14_full_market_research':'v5_reports/stage28/r14_full_market_grade_research.json',
             'r14_universe_coverage':'v5_reports/stage28/r14_universe_coverage.json',
-            'r14_valuation_disclosure_gate':'v5_reports/stage28/r14_valuation_disclosure_gate.json'
+            'r14_valuation_disclosure_gate':'v5_reports/stage28/r14_valuation_disclosure_gate.json',
+            'r14_filing_receipt_audit':'v5_reports/stage28/r14_filing_receipt_audit.json'
           }
           details={}
           for name,p in status_files.items():
@@ -226,7 +550,7 @@ jobs:
                   try:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
-                      if name=='r14_full_market_research':
+                      if name in ('r14_full_market_research','r14_filing_receipt_audit'):
                           data={k:v for k,v in data.items() if k!='candidates'}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
@@ -249,12 +573,13 @@ jobs:
             'r14_scope':'READ_ONLY_FULL_MARKET',
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
+            'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Uses existing official KRX operating prices + 70 sessions; R14 read-only full-market grade is separate from legacy Stage25/26. KRX official PER/PBR and filing versions not verified; no research grade is an investment signal. Stage27 never rewritten.'
+            'notice':'Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Stage27 untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
