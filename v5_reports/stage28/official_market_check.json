@@ -1,0 +1,11 @@
+{
+  "state": "VERIFIED_OPERATING_MARKET_DATA",
+  "market_date": "20261119",
+  "market_rows": 2771,
+  "history_sessions": 70,
+  "history_rows": 193549,
+  "source": "data/latest.csv + data/daily_70d.csv.gz",
+  "read_only": true,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0
+}
