@@ -58,8 +58,9 @@ jobs:
           STAGE26 = pathlib.Path('v5_reports/stage26/decision_research.csv')
           KEY = ('signal_date', 'ISU_CD', 'signal_group')
           BASE = [*KEY, 'ISU_NM', 'research_tier', 'research_score', 'entry_close_krw',
-                  'recorded_at_utc', 'investment_grade', 'buy_decision']
-          EXTRA = ['entry_session_date', 'entry_price_method'] + [f'{field}_{n}d' for n in (5, 10, 20) for field in ('date', 'close', 'return', 'status')]
+                  'recorded_at_utc', 'investment_grade', 'buy_decision',
+                  'entry_session_date', 'entry_price_method']
+          EXTRA = [f'{field}_{n}d' for n in (5, 10, 20) for field in ('date', 'close', 'return', 'status')]
           SNAP_FIELDS = ['signal_date', 'ISU_CD', 'ISU_NM', 'research_tier', 'research_score',
                          'entry_close_krw', 'research_reference_value_krw', 'research_scenario_upper_krw',
                          'research_scenario_mid_krw', 'research_scenario_lower_krw',
@@ -259,8 +260,9 @@ jobs:
               return series, sorted(sessions)
           
           
-          def calculate(events, prices, sessions):
+          def calculate(events, prices, sessions, previous_results=None):
               ranks = {day: i for i, day in enumerate(sessions)}
+              previous_results = previous_results or {}
               out = []
               observations = 0
               statuses = Counter()
@@ -268,33 +270,44 @@ jobs:
                   result = {field: event.get(field, '') for field in BASE}
                   code, day = event['ISU_CD'], event['signal_date']
                   entry = positive(event.get('entry_close_krw'))
+                  entry_day = date8(event.get('entry_session_date'))
                   base_idx = ranks.get(day)
+                  prior = previous_results.get(tuple(event.get(k, '') for k in KEY), {})
                   if event['signal_group'].startswith('R14_'):
-                      # R14 is evaluated AFTER its source close. Do not pretend
-                      # that the source-day close was an obtainable entry.
-                      # Freeze candidates on their genuine evaluation date.
-                      # The FIRST SUBSEQUENT verified KRX close becomes a
-                      # prospective, observational baseline (not an order fill).
-                      first_future = next((d for d in sessions if d > day), None)
-                      if first_future is None:
-                          entry, base_idx = None, None
-                          result['entry_price_method'] = 'PENDING_FIRST_FUTURE_OFFICIAL_CLOSE'
+                      # Price on the prior official source day is research evidence ONLY.
+                      # First subsequent verified exchange close is the research baseline.
+                      # Once frozen in the LEDGER it must NEVER be changed by later runs.
+                      if entry_day:
+                          if entry_day <= day or entry is None:
+                              raise ValueError('INVALID_FROZEN_R14_ENTRY_' + code)
+                          base_idx = ranks.get(entry_day)
+                          result['entry_price_method'] = 'FROZEN_FIRST_FUTURE_OFFICIAL_CLOSE'
                       else:
-                          entry = prices.get(code, {}).get(first_future)
-                          base_idx = ranks[first_future] if entry is not None else None
-                          result['entry_session_date'] = first_future
-                          result['entry_price_method'] = (
-                              'FIRST_FUTURE_OFFICIAL_SESSION_CLOSE_RESEARCH_ONLY'
-                              if entry is not None else 'MISSING_ENTRY_PRICE')
+                          first_future = next((d for d in sessions if d > day), None)
+                          if first_future is None:
+                              entry, base_idx = None, None
+                              result['entry_price_method'] = 'PENDING_FIRST_FUTURE_OFFICIAL_CLOSE'
+                          else:
+                              first_close = prices.get(code, {}).get(first_future)
+                              if first_close is None:
+                                  entry, base_idx = None, None
+                                  result['entry_price_method'] = 'MISSING_FIRST_FUTURE_PRICE'
+                              else:
+                                  entry, entry_day = first_close, first_future
+                                  base_idx = ranks[entry_day]
+                                  event['entry_close_krw'] = entry
+                                  event['entry_session_date'] = entry_day
+                                  event['entry_price_method'] = 'FROZEN_FIRST_FUTURE_OFFICIAL_CLOSE'
+                                  result['entry_price_method'] = event['entry_price_method']
                       result['entry_close_krw'] = entry if entry is not None else ''
+                      result['entry_session_date'] = entry_day
                   else:
-                      result['entry_session_date'] = day
-                      result['entry_price_method'] = 'LEGACY_SIGNAL_CLOSE'
+                      result['entry_session_date'] = entry_day or day
+                      result['entry_price_method'] = event.get('entry_price_method') or 'LEGACY_SIGNAL_CLOSE'
                   for horizon in (5, 10, 20):
                       exit_idx = base_idx + horizon if base_idx is not None else None
-                      if entry is None or base_idx is None or exit_idx is None or exit_idx >= len(sessions):
-                          status = 'PENDING_HISTORY'
-                      else:
+                      status = 'PENDING_HISTORY'
+                      if entry is not None and exit_idx is not None and exit_idx < len(sessions):
                           exit_day = sessions[exit_idx]
                           exit_price = prices.get(code, {}).get(exit_day)
                           if exit_price is None:
@@ -304,13 +317,21 @@ jobs:
                               result[f'date_{horizon}d'] = exit_day
                               result[f'close_{horizon}d'] = exit_price
                               result[f'return_{horizon}d'] = round(100 * (exit_price / entry - 1), 4)
-                              observations += 1
+                      # Keep previously computed, immutable forward observations after
+                      # the rolling 70-session source window has dropped those dates.
+                      if status != 'MATURED' and prior.get(f'status_{horizon}d') == 'MATURED':
+                          if (positive(prior.get('entry_close_krw')) == entry
+                                  and (date8(prior.get('entry_session_date')) or day) == (entry_day or day)):
+                              for item in ('date', 'close', 'return'):
+                                  result[f'{item}_{horizon}d'] = prior.get(f'{item}_{horizon}d', '')
+                              status = 'MATURED'
                       result[f'status_{horizon}d'] = status
+                      observations += int(status == 'MATURED')
                       statuses[status] += 1
                   out.append(result)
               return out, observations, dict(statuses)
-          
-          
+
+
           def main():
               market_date, market = market_snapshot()
               prices, sessions = historical_prices(HISTORY)
@@ -323,7 +344,8 @@ jobs:
               stage26_added = stage26_events(events, market_date, market, now)
               r14_added, snapshots, r14_state = r14_events(events, market_date, market, now)
               ordered = sorted(events.values(), key=lambda r: tuple(str(r.get(k, '')) for k in KEY))
-              performance, matured, status_counts = calculate(ordered, prices, sessions)
+              old_performance = {tuple(r.get(k, '') for k in KEY): r for r in read_rows(RESULTS)}
+              performance, matured, status_counts = calculate(ordered, prices, sessions, old_performance)
               # Everything is computed before any output is written. Existing caches are never modified.
               write_rows(LEDGER, BASE, ordered)
               write_rows(RESULTS, BASE + EXTRA, performance)
@@ -343,13 +365,14 @@ jobs:
                   'matured_horizon_observations': matured,
                   'horizon_status_counts': status_counts,
                   'historical_tickers': len(prices), 'historical_market_sessions': len(sessions),
+                  'r14_frozen_entry_prices': sum(bool(positive(r.get('entry_close_krw'))) and bool(date8(r.get('entry_session_date'))) for r in ordered if r['signal_group'].startswith('R14_')), 
                   'research_only': True, 'investment_decisions_authorized': False,
                   'final_buy_signals': 0,
-                  'method': 'V/G/VG: signal-day close; R14: first subsequently verified KRX session close used as prospective RESEARCH baseline, then exact 5/10/20 future sessions; gross of fees/taxes, no implied execution',
+                  'method': 'V/G/VG legacy close unchanged; R14 first future official session research baseline IMMUTABLY FROZEN in ledger; preserve matured 5/10/20 returns past rolling window; no implied orders',
                   'notes': ['V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling',
                             'Research A/B is not an investment-grade verification or buy recommendation',
                             'Financial filing point-in-time verification is not complete',
-                            'R14 captured only on actual evaluation date; source close is reference only, never entry; forward first-session close baseline is observational only; filing point-in-time unverified']}
+                            'R14 captured only on actual evaluation date; source close is reference only, never entry; first future-session reference and matured results frozen, filing point-in-time unverified']}
               temp = ROOT / 'status.json.tmp'
               temp.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
               temp.replace(ROOT / 'status.json')
