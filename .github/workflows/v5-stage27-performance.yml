@@ -59,13 +59,13 @@ jobs:
           KEY = ('signal_date', 'ISU_CD', 'signal_group')
           BASE = [*KEY, 'ISU_NM', 'research_tier', 'research_score', 'entry_close_krw',
                   'recorded_at_utc', 'investment_grade', 'buy_decision']
-          EXTRA = [f'{field}_{n}d' for n in (5, 10, 20) for field in ('date', 'close', 'return', 'status')]
+          EXTRA = ['entry_session_date', 'entry_price_method'] + [f'{field}_{n}d' for n in (5, 10, 20) for field in ('date', 'close', 'return', 'status')]
           SNAP_FIELDS = ['signal_date', 'ISU_CD', 'ISU_NM', 'research_tier', 'research_score',
                          'entry_close_krw', 'research_reference_value_krw', 'research_scenario_upper_krw',
                          'research_scenario_mid_krw', 'research_scenario_lower_krw',
                          'research_valuation_model', 'ttm_per_est', 'pbr_est', 'roe_pct',
                          'financial_disclosure_asof_verified', 'investment_decisions_authorized',
-                         'recorded_at_utc', 'evaluation_date_kst', 'source_market_date']
+                         'recorded_at_utc', 'evaluation_date_kst', 'source_market_date', 'source_close_krw']
           
           
           def read_rows(path):
@@ -212,13 +212,13 @@ jobs:
                   existing[key] = {
                       'signal_date': evaluation_date, 'ISU_CD': code, 'signal_group': 'R14_' + grade,
                       'ISU_NM': c.get('name', ''), 'research_tier': grade + '_RESEARCH',
-                      'research_score': c.get('score', ''), 'entry_close_krw': close,
+                      'research_score': c.get('score', ''), 'entry_close_krw': '',
                       'recorded_at_utc': now, 'investment_grade': 'NOT_VERIFIED',
                       'buy_decision': 'ON_HOLD'}
                   pending.append({
                       'signal_date': evaluation_date, 'ISU_CD': code, 'ISU_NM': c.get('name', ''),
                       'research_tier': grade + '_RESEARCH', 'research_score': c.get('score', ''),
-                      'entry_close_krw': close,
+                      'entry_close_krw': '',
                       'research_reference_value_krw': c.get('research_reference_value_krw', ''),
                       'research_scenario_upper_krw': c.get('research_scenario_upper_krw', ''),
                       'research_scenario_mid_krw': c.get('research_scenario_mid_krw', ''),
@@ -229,7 +229,7 @@ jobs:
                       'financial_disclosure_asof_verified': False,
                       'investment_decisions_authorized': False,
                       'recorded_at_utc': now, 'evaluation_date_kst': evaluation_date,
-                      'source_market_date': market_date})
+                      'source_market_date': market_date, 'source_close_krw': close})
                   added += 1
               # For a valid empty cohort, report no signals. Never backfill that date later.
               return added, old_snapshots + pending, 'RESEARCH_COHORT_CAPTURED' if added else 'NO_QUALIFYING_RESEARCH_CANDIDATES'
@@ -269,6 +269,27 @@ jobs:
                   code, day = event['ISU_CD'], event['signal_date']
                   entry = positive(event.get('entry_close_krw'))
                   base_idx = ranks.get(day)
+                  if event['signal_group'].startswith('R14_'):
+                      # R14 is evaluated AFTER its source close. Do not pretend
+                      # that the source-day close was an obtainable entry.
+                      # Freeze candidates on their genuine evaluation date.
+                      # The FIRST SUBSEQUENT verified KRX close becomes a
+                      # prospective, observational baseline (not an order fill).
+                      first_future = next((d for d in sessions if d > day), None)
+                      if first_future is None:
+                          entry, base_idx = None, None
+                          result['entry_price_method'] = 'PENDING_FIRST_FUTURE_OFFICIAL_CLOSE'
+                      else:
+                          entry = prices.get(code, {}).get(first_future)
+                          base_idx = ranks[first_future] if entry is not None else None
+                          result['entry_session_date'] = first_future
+                          result['entry_price_method'] = (
+                              'FIRST_FUTURE_OFFICIAL_SESSION_CLOSE_RESEARCH_ONLY'
+                              if entry is not None else 'MISSING_ENTRY_PRICE')
+                      result['entry_close_krw'] = entry if entry is not None else ''
+                  else:
+                      result['entry_session_date'] = day
+                      result['entry_price_method'] = 'LEGACY_SIGNAL_CLOSE'
                   for horizon in (5, 10, 20):
                       exit_idx = base_idx + horizon if base_idx is not None else None
                       if entry is None or base_idx is None or exit_idx is None or exit_idx >= len(sessions):
@@ -324,11 +345,11 @@ jobs:
                   'historical_tickers': len(prices), 'historical_market_sessions': len(sessions),
                   'research_only': True, 'investment_decisions_authorized': False,
                   'final_buy_signals': 0,
-                  'method': 'V/G/VG: signal-day close. R14: latest verified market close known on KST evaluation date; subsequent 5/10/20 MARKET sessions counted strictly after evaluation date; gross of fees/taxes',
+                  'method': 'V/G/VG: signal-day close; R14: first subsequently verified KRX session close used as prospective RESEARCH baseline, then exact 5/10/20 future sessions; gross of fees/taxes, no implied execution',
                   'notes': ['V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling',
                             'Research A/B is not an investment-grade verification or buy recommendation',
                             'Financial filing point-in-time verification is not complete',
-                            'R14 research is captured only on actual KST evaluation date, using same/prior KRX session official close; no backdating, filing point-in-time remains unverified']}
+                            'R14 captured only on actual evaluation date; source close is reference only, never entry; forward first-session close baseline is observational only; filing point-in-time unverified']}
               temp = ROOT / 'status.json.tmp'
               temp.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
               temp.replace(ROOT / 'status.json')
