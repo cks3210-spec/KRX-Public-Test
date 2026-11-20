@@ -124,6 +124,55 @@ jobs:
               json.dumps(coverage,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print('R14_NUMERIC_UNIVERSE_RECONCILED',json.dumps(coverage,ensure_ascii=False))
           PY
+      - name: Audit official PER PBR provenance and research filing-date safety (read-only)
+        id: ratio_provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/krx_v5_r14_ratio_audit.py
+          python scripts/krx_v5_r14_ratio_audit.py --self-test
+          # KRX market price API does not supply authenticated PER/PBR.
+          # No supplied official ratio export exists here: DO NOT synthesize one.
+          python scripts/krx_v5_r14_ratio_audit.py \
+            --research v5_reports/stage28/r14_full_market_grade_research.json \
+            --output v5_reports/stage28/r14_official_ratio_provenance_audit.json
+          python - <<'PY'
+          import json,pathlib,collections
+          root=pathlib.Path('v5_reports/stage28')
+          ratio=json.loads((root/'r14_official_ratio_provenance_audit.json').read_text(encoding='utf-8'))
+          research=json.loads((root/'r14_full_market_grade_research.json').read_text(encoding='utf-8'))
+          fin=json.loads(pathlib.Path('data/v5_financial_m/status.json').read_text(encoding='utf-8'))
+          assert ratio['result']=='R14_OFFICIAL_RATIO_RESEARCH_AUDIT'
+          assert ratio['market_date']==research['market_date']
+          assert ratio['candidate_count']==research['candidate_count']
+          assert ratio['official_rows_supplied']==0
+          assert ratio['independently_verified_ratio_count']==0
+          assert ratio['crosschecked_count']==0
+          assert ratio['research_grades_changed'] is False
+          assert ratio['investment_decisions_authorized'] is False and ratio['final_buy_signals']==0
+          assert fin.get('financial_disclosure_asof_verified') is False
+          assert fin.get('point_in_time_financials_authorized') is False
+          assert fin.get('final_buy_signals')==0
+          counts=collections.Counter(c.get('grade') for c in research['candidates'])
+          assert set(counts).issubset({'A','B'})
+          report={
+            'result':'R14_VALUATION_AND_DISCLOSURE_SAFETY_AUDIT',
+            'market_date':research['market_date'],
+            'financial_status_source_date':fin.get('market_date'),
+            'candidate_count':research['candidate_count'],
+            'research_grade_counts':dict(counts),
+            'official_per_independently_verified':0,
+            'official_pbr_independently_verified':0,
+            'point_in_time_filing_verified':False,
+            'open_dart_cache_records':fin.get('cache_records'),
+            'data_fetched_by_this_audit':False,
+            'next_requirement':'Independent dated PER/PBR evidence and filing-version reconciliation',
+            'investment_decisions_authorized':False,
+            'final_buy_signals':0
+          }
+          (root/'r14_valuation_disclosure_gate.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -155,23 +204,31 @@ jobs:
           DECISION_RESULT: ${{ steps.decision.outcome }}
           PERFORMANCE_RESULT: ${{ steps.performance.outcome }}
           FULL_MARKET_GRADE_RESULT: ${{ steps.full_market_grade.outcome }}
+          RATIO_PROVENANCE_RESULT: ${{ steps.ratio_provenance.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
             'stage26':'v5_reports/stage26/status.json',
             'stage27':'v5_reports/stage27/status.json',
-            'r14_full_market_research':'v5_reports/stage28/r14_full_market_grade_research.json'
+            'r14_full_market_research':'v5_reports/stage28/r14_full_market_grade_research.json',
+            'r14_universe_coverage':'v5_reports/stage28/r14_universe_coverage.json',
+            'r14_valuation_disclosure_gate':'v5_reports/stage28/r14_valuation_disclosure_gate.json'
           }
           details={}
           for name,p in status_files.items():
               f=pathlib.Path(p)
               if f.exists():
-                  try:details[name]=json.loads(f.read_text(encoding='utf-8'))
+                  try:
+                      data=json.loads(f.read_text(encoding='utf-8'))
+                      # Keep summary small: full 114-candidate evidence stays in its own JSON.
+                      if name=='r14_full_market_research':
+                          data={k:v for k,v in data.items() if k!='candidates'}
+                      details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
               else:details[name]={'status_file':'not_present'}
           def market_date(path):
@@ -190,12 +247,14 @@ jobs:
             'market_source_mode':'VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA',
             'legacy_stage25_scope':'ORIGINAL_LIMITED_FUNDAMENTALS_CSV; NOT_FULL_MARKET',
             'r14_scope':'READ_ONLY_FULL_MARKET',
+            'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
+            'financial_filing_point_in_time':'NOT_VERIFIED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Uses existing official KRX operating prices + 70 sessions; R14 read-only full-market grade is separate from legacy Stage25/26 limited-source research. Stage27 never rewritten. No trading signals.'
+            'notice':'Uses existing official KRX operating prices + 70 sessions; R14 read-only full-market grade is separate from legacy Stage25/26. KRX official PER/PBR and filing versions not verified; no research grade is an investment signal. Stage27 never rewritten.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
