@@ -1,0 +1,261 @@
+name: KRX Official Promotion Readiness Gate (Controlled Integration)
+'on':
+  workflow_dispatch:
+    inputs:
+      target_market_date:
+        description: 'Exact KRX BAS_DD YYYYMMDD; blank = latest verified available artifact'
+        required: false
+        type: string
+  workflow_run:
+    workflows: ['KRX v5 Official Market Date Collector']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: krx-v5-operational-market-promotion
+  cancel-in-progress: false
+jobs:
+  promote:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install KRX calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Select exact triggering official artifact or latest verified manual artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id || '' }}
+          REQUESTED_DATE: ${{ inputs.target_market_date || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/krx_official_input market_promotion_output
+          if [ -n "$SOURCE_RUN" ]; then
+            runs="$SOURCE_RUN"
+          else
+            runs=$(gh run list --repo "$GH_REPO" --workflow v5-official-market-date-collector.yml --status success --limit 35 --json databaseId --jq '.[].databaseId')
+          fi
+          found=0
+          for run_id in $runs; do
+            rm -f /tmp/krx_official_input/*
+            if ! gh run download "$run_id" --repo "$GH_REPO" --name krx-v5-official-market-snapshot --dir /tmp/krx_official_input >/dev/null 2>&1; then continue; fi
+            if OFFICIAL_RUN_ID="$run_id" python - <<'CHECK'
+          import csv,json,os,pathlib,re
+          path=pathlib.Path('/tmp/krx_official_input')
+          try:
+              status=json.loads((path/'status.json').read_text(encoding='utf-8-sig'))
+              day=str(status.get('market_date',''))
+              wanted=os.environ.get('REQUESTED_DATE','').strip()
+              assert re.fullmatch(r'20\d{6}',day) and (not wanted or day==wanted)
+              assert status.get('state')=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT'
+              assert status.get('source')=='KRX_OPEN_API'
+              assert status.get('final_buy_signals')==0
+              assert status.get('investment_decisions_authorized') is False
+              assert str(status.get('github_run_id'))==os.environ['OFFICIAL_RUN_ID']
+              with (path/'official_daily_market.csv').open(encoding='utf-8-sig',newline='') as f:
+                  reader=csv.DictReader(f)
+                  rows=list(reader)
+              assert len(rows)>=2000 and {r['BAS_DD'] for r in rows}=={day}
+          except (OSError,ValueError,AssertionError,KeyError,csv.Error):raise SystemExit(1)
+          CHECK
+            then
+              echo "OFFICIAL_RUN_ID=$run_id" >> "$GITHUB_ENV"
+              found=1
+              break
+            fi
+          done
+          if [ "$found" != 1 ]; then
+            echo 'No verified official artifact; no operational update.'
+            echo 'OFFICIAL_RUN_ID=NONE' >> "$GITHUB_ENV"
+          fi
+      - name: Validate, merge, and stage verified 70-session market data
+        env:
+          REQUESTED_DATE: ${{ inputs.target_market_date || '' }}
+        run: |
+          cat > /tmp/krx_auto_promotion.py <<'PYCODE'
+          import csv
+          import datetime as dt
+          import gzip
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path
+          import re
+          from zoneinfo import ZoneInfo
+          from collections import Counter
+          import exchange_calendars as xc
+          
+          DATA = Path('data')
+          SOURCE = Path('/tmp/krx_official_input')
+          OUT = Path('market_promotion_output')
+          OUT.mkdir(exist_ok=True)
+          COLUMNS = ['BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP','MARKET']
+          
+          def put_status(state, **kw):
+              doc = {'state':state,'generated_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                     'production_data_modified':False,'technical_indicator_files_modified':False,
+                     'investment_decisions_authorized':False,'final_buy_signals':0,**kw}
+              (OUT/'status.json').write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print(json.dumps(doc,ensure_ascii=False))
+              return doc
+          
+          def load(path,compressed=False):
+              op = gzip.open if compressed else open
+              with op(path,'rt',newline='',encoding='utf-8-sig') as f:
+                  reader=csv.DictReader(f)
+                  if not set(COLUMNS).issubset(reader.fieldnames or []):
+                      raise ValueError('MISSING_COLUMNS_'+str(path))
+                  return list(reader)
+          
+          def canonical(row):
+              r={x:str(row.get(x,'')).strip() for x in COLUMNS}
+              if not re.fullmatch(r'20\d{6}',r['BAS_DD']):raise ValueError('BAD_DATE')
+              if r['MARKET'] not in ('KOSPI','KOSDAQ') or not re.fullmatch(r'[A-Z0-9]{6}',r['ISU_CD']):
+                  raise ValueError('BAD_SECURITY_KEY')
+              for k in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):
+                  v=r[k].replace(',','')
+                  if not re.fullmatch(r'\d+',v):raise ValueError('BAD_NUMERIC_'+k)
+                  r[k]=str(int(v))
+              if int(r['TDD_CLSPRC'])<=0 or int(r['MKTCAP'])<=0:raise ValueError('NONPOSITIVE_CLOSE_OR_CAP')
+              return r
+          
+          def checked(rows,name):
+              ret=[canonical(x) for x in rows]
+              keys=[(r['BAS_DD'],r['MARKET'],r['ISU_CD']) for r in ret]
+              if len(keys)!=len(set(keys)):raise ValueError('DUPLICATE_'+name)
+              return ret
+          
+          def csv_bytes(rows):
+              s=io.StringIO(newline='')
+              w=csv.DictWriter(s,fieldnames=COLUMNS)
+              w.writeheader();w.writerows(rows)
+              return s.getvalue().encode('utf-8-sig')
+          
+          def run():
+              source_path=SOURCE/'status.json'
+              if not source_path.is_file():
+                  return put_status('SKIPPED_NO_VALIDATED_ARTIFACT',reason='No official artifact selected')
+              src=json.loads(source_path.read_text(encoding='utf-8-sig'))
+              day=str(src.get('market_date') or '')
+              requested=os.getenv('REQUESTED_DATE','').strip()
+              if requested and requested!=day:raise ValueError('REQUESTED_DATE_MISMATCH')
+              if src.get('state')!='VERIFIED_OFFICIAL_MARKET_SNAPSHOT' or src.get('source')!='KRX_OPEN_API':
+                  raise ValueError('UNVERIFIED_OFFICIAL_ARTIFACT')
+              if src.get('investment_decisions_authorized') is not False or src.get('final_buy_signals')!=0:
+                  raise ValueError('INVALID_SOURCE_INVESTMENT_GATE')
+              if str(src.get('github_run_id'))!=os.environ.get('OFFICIAL_RUN_ID'):
+                  raise ValueError('SOURCE_RUN_ID_MISMATCH')
+              if not re.fullmatch(r'20\d{6}',day):raise ValueError('SOURCE_MARKET_DATE_INVALID')
+              if day>dt.datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y%m%d'):
+                  raise ValueError('FUTURE_MARKET_SESSION')
+              current=checked(load(DATA/'latest.csv'),'LATEST')
+              old_date_set={r['BAS_DD'] for r in current}
+              if len(old_date_set)!=1:raise ValueError('MIXED_OPERATIONAL_MARKET_DATES')
+              previous=old_date_set.pop()
+              if day<=previous:
+                  return put_status('SKIPPED_ALREADY_APPLIED_OR_OLDER',source_date=day,operational_date=previous,
+                                    source_run_id=src.get('github_run_id'))
+              cal=xc.get_calendar('XKRX')
+              if not cal.is_session(day) or cal.next_session(previous).strftime('%Y%m%d')!=day:
+                  raise ValueError('GAP_OR_NONTRADING_MARKET_DATE')
+              original=checked(load(DATA/'daily_70d.csv.gz',True),'HISTORY')
+              sessions=sorted({r['BAS_DD'] for r in original})
+              if len(sessions)!=70 or sessions[-1]!=previous:
+                  raise ValueError('HISTORY_70_SESSION_BASELINE_INVALID')
+              tail={(r['MARKET'],r['ISU_CD']):r for r in original if r['BAS_DD']==previous}
+              if len(tail)!=len(current) or any(tail.get((r['MARKET'],r['ISU_CD']))!=r for r in current):
+                  raise ValueError('LATEST_HISTORY_BASELINE_MISMATCH')
+              srcrows=load(SOURCE/'official_daily_market.csv')
+              if {r.get('BAS_DD') for r in srcrows}!={day} or {r.get('source') for r in srcrows}!={'KRX_OPEN_API'}:
+                  raise ValueError('INVALID_SOURCE_ROWS')
+              official=checked(srcrows,'OFFICIAL')
+              counts=Counter(r['MARKET'] for r in official)
+              if counts['KOSPI']<500 or counts['KOSDAQ']<1000 or dict(counts)!=src.get('market_counts'):
+                  raise ValueError('OFFICIAL_MARKET_COUNTS_INVALID')
+              for market in ('KOSPI','KOSDAQ'):
+                  proof=src.get('response_sha256',{}).get(market)
+                  if not isinstance(proof,str) or not re.fullmatch('[0-9a-f]{64}',proof):
+                      raise ValueError('MISSING_RESPONSE_HASH')
+                  if any(r.get('source_sha256')!=proof for r in srcrows if r['MARKET']==market):
+                      raise ValueError('OFFICIAL_HASH_ROW_MISMATCH')
+              if len(official)<.8*len(current):raise ValueError('MARKET_UNIVERSE_SHRINKAGE')
+              history=checked([r for r in original if r['BAS_DD']!=sessions[0]]+official,'MERGED')
+              history.sort(key=lambda r:(r['BAS_DD'],r['MARKET'],r['ISU_CD']))
+              new_sessions=sorted({r['BAS_DD'] for r in history})
+              if len(new_sessions)!=70 or new_sessions[-1]!=day:
+                  raise ValueError('ROLLING_70_SESSIONS_INVALID')
+              old_summary=json.loads((DATA/'summary.json').read_text(encoding='utf-8-sig'))
+              if old_summary.get('latest_trading_date')!=previous:
+                  raise ValueError('SUMMARY_DATE_MISMATCH')
+              old_summary.update(latest_trading_date=day,sessions_stored=70,
+                  total_rows_stored=len(history),kospi_rows_latest=counts['KOSPI'],
+                  kosdaq_rows_latest=counts['KOSDAQ'],
+                  marketcap_1000uk_screened=sum(int(r['MKTCAP'])>=100_000_000_000 for r in official),
+                  technical_indicators_asof=old_summary.get('technical_indicators_asof',previous),
+                  technical_indicators_status='STALE_PENDING_ORIGINAL_V4_G_REBUILD',
+                  indicator_metrics_asof=old_summary.get('indicator_metrics_asof',previous),
+                  note='Official KRX price source updated. V4/Golden-Cross indicators deliberately preserved at earlier date; research-only.')
+              (OUT/'latest.csv').write_bytes(csv_bytes(sorted(official,key=lambda x:(x['MARKET'],x['ISU_CD']))))
+              with (OUT/'daily_70d.csv.gz').open('wb') as handle:
+                  with gzip.GzipFile(fileobj=handle,mode='wb',mtime=0,compresslevel=6) as compressed:
+                      compressed.write(csv_bytes(history))
+              (OUT/'summary.json').write_text(json.dumps(old_summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              return put_status('READY_FOR_MARKET_ONLY_COMMIT',source_date=day,
+                  previous_market_date=previous,source_run_id=src['github_run_id'],
+                  source_trigger=src.get('trigger_mode'),market_counts=dict(counts),
+                  history_sessions=70,history_rows=len(history),
+                  technical_indicators_asof=old_summary['technical_indicators_asof'],
+                  output_sha256={p:hashlib.sha256((OUT/p).read_bytes()).hexdigest()
+                                 for p in ('latest.csv','daily_70d.csv.gz','summary.json')})
+          
+          try:run()
+          except Exception as exc:
+              put_status('BLOCKED_NO_PRODUCTION_CHANGES',error=type(exc).__name__+': '+str(exc)[:240])
+              raise
+          PYCODE
+          python -m py_compile /tmp/krx_auto_promotion.py
+          python /tmp/krx_auto_promotion.py
+      - name: Commit only official price, 70-session history, and summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          state=$(python -c "import json;print(json.load(open('market_promotion_output/status.json'))['state'])")
+          if [ "$state" = 'SKIPPED_ALREADY_APPLIED_OR_OLDER' ] || [ "$state" = 'SKIPPED_NO_VALIDATED_ARTIFACT' ]; then
+            echo "No change: $state"
+            exit 0
+          fi
+          test "$state" = 'READY_FOR_MARKET_ONLY_COMMIT'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" || { echo 'Main changed; refusing stale commit'; exit 1; }
+          cp market_promotion_output/latest.csv data/latest.csv
+          cp market_promotion_output/daily_70d.csv.gz data/daily_70d.csv.gz
+          cp market_promotion_output/summary.json data/summary.json
+          git add data/latest.csv data/daily_70d.csv.gz data/summary.json
+          if git diff --cached --quiet; then
+            echo 'No change to commit'
+          else
+            git commit -m 'KRX v5: automatically promote validated official session (market only)'
+            git push origin HEAD:main
+          fi
+      - name: Preserve promotion state and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-official-promotion-evidence
+          path: market_promotion_output/status.json
+          if-no-files-found: warn
+          retention-days: 30
