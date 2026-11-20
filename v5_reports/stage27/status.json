@@ -1,31 +1,33 @@
 {
   "stage": 27,
   "status": "TRACKING",
-  "generated_utc": "2026-11-19T15:18:09.177359+00:00",
-  "market_date": "20261118",
+  "generated_utc": "2026-11-20T03:38:28.523102+00:00",
+  "market_date": "20261119",
+  "evaluation_date_kst": "20261120",
+  "r14_price_source_market_date": "20261119",
   "new_signals": 0,
   "stage26_new_signals": 0,
   "r14_new_research_cohorts": 0,
-  "r14_cohort_status": "NOT_SAME_DAY_MARKET_SNAPSHOT_NO_BACKFILL",
+  "r14_cohort_status": "WAIT_FOR_EVALUATION_DAY_CLOSE",
   "r14_cohorts_total": 0,
   "legacy_v_g_vg_events_total": 25,
   "ledger_events": 25,
   "prior_ledger_events": 25,
-  "matured_horizon_observations": 29,
+  "matured_horizon_observations": 32,
   "horizon_status_counts": {
-    "MATURED": 29,
-    "PENDING_HISTORY": 46
+    "MATURED": 32,
+    "PENDING_HISTORY": 43
   },
   "historical_tickers": 2801,
   "historical_market_sessions": 70,
   "research_only": true,
   "investment_decisions_authorized": false,
   "final_buy_signals": 0,
-  "method": "Frozen research signal-date closes vs exact 5/10/20 subsequent MARKET trading sessions; gross of fees/taxes; no implied orders or synthetic prices",
+  "method": "V/G/VG: signal-day close. R14: latest verified market close known on KST evaluation date; subsequent 5/10/20 MARKET sessions counted strictly after evaluation date; gross of fees/taxes",
   "notes": [
     "V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling",
     "Research A/B is not an investment-grade verification or buy recommendation",
     "Financial filing point-in-time verification is not complete",
-    "R14 research snapshots are captured only on the matching KST market date and never backfilled; filing point-in-time remains unverified"
+    "R14 research is captured only on actual KST evaluation date, using same/prior KRX session official close; no backdating, filing point-in-time remains unverified"
   ]
 }
