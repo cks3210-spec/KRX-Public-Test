@@ -262,6 +262,8 @@ jobs:
           
           def calculate(events, prices, sessions, previous_results=None):
               ranks = {day: i for i, day in enumerate(sessions)}
+              import exchange_calendars as xcals
+              krx_calendar = xcals.get_calendar('XKRX')
               previous_results = previous_results or {}
               out = []
               observations = 0
@@ -274,26 +276,32 @@ jobs:
                   base_idx = ranks.get(day)
                   prior = previous_results.get(tuple(event.get(k, '') for k in KEY), {})
                   if event['signal_group'].startswith('R14_'):
-                      # Price on the prior official source day is research evidence ONLY.
-                      # First subsequent verified exchange close is the research baseline.
-                      # Once frozen in the LEDGER it must NEVER be changed by later runs.
+                      # The FIRST KRX session after the real research evaluation date
+                      # is the only permissible prospective observation baseline.
+                      # Never choose a later archived date if that session is missing.
+                      if not krx_calendar.is_session(f'{day[:4]}-{day[4:6]}-{day[6:8]}'):
+                          raise ValueError('R14_EVALUATION_NOT_EXCHANGE_SESSION_' + day)
+                      required_date = krx_calendar.next_session(
+                          f'{day[:4]}-{day[4:6]}-{day[6:8]}').strftime('%Y%m%d')
                       if entry_day:
-                          if entry_day <= day or entry is None:
+                          if entry_day != required_date or entry is None:
                               raise ValueError('INVALID_FROZEN_R14_ENTRY_' + code)
                           base_idx = ranks.get(entry_day)
                           result['entry_price_method'] = 'FROZEN_FIRST_FUTURE_OFFICIAL_CLOSE'
                       else:
-                          first_future = next((d for d in sessions if d > day), None)
-                          if first_future is None:
+                          # Do not mislabel a later session as the first future close.
+                          if required_date not in ranks:
                               entry, base_idx = None, None
-                              result['entry_price_method'] = 'PENDING_FIRST_FUTURE_OFFICIAL_CLOSE'
+                              result['entry_price_method'] = (
+                                  'PENDING_FIRST_FUTURE_OFFICIAL_CLOSE' if not sessions or
+                                  sessions[-1] < required_date else 'MISSING_REQUIRED_FIRST_SESSION')
                           else:
-                              first_close = prices.get(code, {}).get(first_future)
+                              first_close = prices.get(code, {}).get(required_date)
                               if first_close is None:
                                   entry, base_idx = None, None
                                   result['entry_price_method'] = 'MISSING_FIRST_FUTURE_PRICE'
                               else:
-                                  entry, entry_day = first_close, first_future
+                                  entry, entry_day = first_close, required_date
                                   base_idx = ranks[entry_day]
                                   event['entry_close_krw'] = entry
                                   event['entry_session_date'] = entry_day
@@ -368,7 +376,7 @@ jobs:
                   'r14_frozen_entry_prices': sum(bool(positive(r.get('entry_close_krw'))) and bool(date8(r.get('entry_session_date'))) for r in ordered if r['signal_group'].startswith('R14_')), 
                   'research_only': True, 'investment_decisions_authorized': False,
                   'final_buy_signals': 0,
-                  'method': 'V/G/VG legacy close unchanged; R14 first future official session research baseline IMMUTABLY FROZEN in ledger; preserve matured 5/10/20 returns past rolling window; no implied orders',
+                  'method': 'V/G/VG legacy unchanged; R14 ONLY first calendar-confirmed KRX session after evaluation is frozen as research baseline; never shift to later date on missing data; 5/10/20 future sessions; no implied orders',
                   'notes': ['V/G/VG and R14_A/R14_B cohorts are distinct; no strategy performance pooling',
                             'Research A/B is not an investment-grade verification or buy recommendation',
                             'Financial filing point-in-time verification is not complete',
