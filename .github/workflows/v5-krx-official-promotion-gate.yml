@@ -6,6 +6,9 @@ name: KRX Official Promotion Readiness Gate (Controlled Integration)
         description: 'Exact KRX BAS_DD YYYYMMDD; blank = latest verified available artifact'
         required: false
         type: string
+  schedule:
+    - cron: '30 2 * * 1-5'  # 11:30 KST
+    - cron: '30 9 * * 1-5'  # 18:30 KST
   workflow_run:
     workflows: ['KRX v5 Official Market Date Collector']
     types: [completed]
