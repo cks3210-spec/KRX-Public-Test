@@ -1,12 +1,12 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-20T16:51:22.844893+09:00",
+  "generated_kst": "2026-11-20T16:56:50.554213+09:00",
   "component_results": {
     "COLLECT": "success",
-    "FUNDAMENTAL": "skipped",
-    "DECISION": "skipped",
-    "PERFORMANCE": "skipped",
-    "FULL_MARKET_GRADE": "failure"
+    "FUNDAMENTAL": "success",
+    "DECISION": "success",
+    "PERFORMANCE": "success",
+    "FULL_MARKET_GRADE": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -28,7 +28,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-20T07:43:23.561022+00:00",
+      "generated_utc": "2026-11-20T07:56:50.425583+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -43,7 +43,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-20T07:43:23.617915+00:00",
+      "generated_utc": "2026-11-20T07:56:50.479855+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
