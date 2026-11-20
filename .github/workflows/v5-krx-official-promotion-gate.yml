@@ -22,7 +22,8 @@ jobs:
           ref: main
           persist-credentials: true
       - uses: actions/setup-python@v5
-        with:
+      - name: Install KRX calendar
+        run: python -m pip install 'exchange-calendars>=4.5,<5'          with:
           python-version: '3.11'
       - name: Download verified official artifact for exact market date
         env:
