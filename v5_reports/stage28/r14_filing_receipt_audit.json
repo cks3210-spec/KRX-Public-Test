@@ -1,6 +1,6 @@
 {
   "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-  "generated_kst": "2026-11-21T07:30:57.115924+09:00",
+  "generated_kst": "2026-11-21T07:46:42.502556+09:00",
   "market_date": "20261119",
   "candidate_count": 128,
   "required_financial_periods": [
@@ -9,14 +9,14 @@
     "2026_q3"
   ],
   "live_company_queries_this_run": 24,
-  "remaining_not_live_verified": 104,
-  "live_dart_filing_metadata_complete_count": 24,
-  "all_required_periods_pre_evaluation_count": 27,
-  "correction_or_multiple_receipt_companies": 22,
+  "remaining_not_live_verified": 80,
+  "live_dart_filing_metadata_complete_count": 48,
+  "all_required_periods_pre_evaluation_count": 51,
+  "correction_or_multiple_receipt_companies": 25,
   "post_evaluation_revision_or_filing_companies": 0,
   "api_state_counts": {
-    "COMPLETE_DART_API": 24,
-    "PENDING_LIVE_DART_API": 104
+    "COMPLETE_DART_API": 48,
+    "PENDING_LIVE_DART_API": 80
   },
   "cached_financial_values_to_receipts_verified": 0,
   "point_in_time_financials_verified": false,
@@ -38,7 +38,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00167208",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -122,7 +122,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00133876",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -220,7 +220,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00220057",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -304,7 +304,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00361381",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -402,7 +402,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00576798",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -486,7 +486,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00625942",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -598,7 +598,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00106641",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -682,7 +682,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00127167",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -766,7 +766,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00121154",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -850,7 +850,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00170877",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -934,7 +934,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00232821",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1018,7 +1018,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00176516",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1130,7 +1130,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00231664",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1214,7 +1214,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00260879",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1298,7 +1298,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00325112",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1382,7 +1382,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00331016",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1466,7 +1466,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00363486",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1550,7 +1550,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00406046",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1634,7 +1634,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00540863",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1718,7 +1718,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00476036",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1802,7 +1802,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00528515",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1886,7 +1886,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00482426",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -1998,7 +1998,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00623661",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -2082,7 +2082,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01568413",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -2165,16 +2165,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00117230",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251113000254",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001226",
           "rcept_dt": "20260318",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000170",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2194,19 +2208,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000254",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000254",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000170",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000170",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2219,16 +2249,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00111810",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001251",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001178",
           "rcept_dt": "20260318",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001515",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2248,19 +2292,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001251",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001251",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001515",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001515",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2273,11 +2333,18 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00131896",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000801",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001613",
           "rcept_dt": "20260318",
@@ -2291,6 +2358,13 @@
           "report_nm": "[기재정정]사업보고서 (2025.12)",
           "period_key": "2025_annual",
           "possible_correction": true
+        },
+        {
+          "rcept_no": "20261116000352",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
         }
       ],
       "filing_periods": {
@@ -2316,19 +2390,35 @@
           "multiple_or_corrected_receipts": true
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000801",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000801",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000352",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000352",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
@@ -2341,16 +2431,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00116949",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000659",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260312001285",
           "rcept_dt": "20260312",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000242",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2370,19 +2474,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000659",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000659",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000242",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000242",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2395,16 +2515,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00165060",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001009",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260312001217",
           "rcept_dt": "20260312",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000401",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2424,19 +2558,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001009",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001009",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000401",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000401",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2449,16 +2599,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00141608",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000611",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260316000206",
           "rcept_dt": "20260316",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261111000211",
+          "rcept_dt": "20261111",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2478,19 +2642,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000611",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000611",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261111000211",
+              "rcept_dt": "20261111",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261111000211",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2503,16 +2683,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00150165",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001429",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260319001002",
           "rcept_dt": "20260319",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000876",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2532,19 +2726,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001429",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001429",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000876",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000876",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2557,16 +2767,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00159342",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251111000341",
+          "rcept_dt": "20251111",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260312001132",
           "rcept_dt": "20260312",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001320",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2586,19 +2810,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251111000341",
+              "rcept_dt": "20251111",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251111000341",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001320",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001320",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2611,16 +2851,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00158325",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251113000809",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260313001207",
           "rcept_dt": "20260313",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001008",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2640,19 +2894,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000809",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000809",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001008",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001008",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2665,11 +2935,18 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00231105",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000898",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001705",
           "rcept_dt": "20260318",
@@ -2683,6 +2960,13 @@
           "report_nm": "[첨부정정]사업보고서 (2025.12)",
           "period_key": "2025_annual",
           "possible_correction": true
+        },
+        {
+          "rcept_no": "20261113000999",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
         }
       ],
       "filing_periods": {
@@ -2708,19 +2992,35 @@
           "multiple_or_corrected_receipts": true
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000898",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000898",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000999",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000999",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
@@ -2733,11 +3033,18 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00140168",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001611",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260312000821",
           "rcept_dt": "20260312",
@@ -2751,6 +3058,13 @@
           "report_nm": "[기재정정]사업보고서 (2025.12)",
           "period_key": "2025_annual",
           "possible_correction": true
+        },
+        {
+          "rcept_no": "20261113000908",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
         }
       ],
       "filing_periods": {
@@ -2776,19 +3090,35 @@
           "multiple_or_corrected_receipts": true
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001611",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001611",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000908",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000908",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
@@ -2801,16 +3131,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00258689",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114002061",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001519",
           "rcept_dt": "20260318",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001566",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2830,19 +3174,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002061",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114002061",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001566",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001566",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2855,16 +3215,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00260930",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114002727",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260317000781",
           "rcept_dt": "20260317",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001370",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2884,19 +3258,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002727",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114002727",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001370",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001370",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -2909,16 +3299,37 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00256380",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001648",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20251114003069",
+          "rcept_dt": "20251114",
+          "report_nm": "[기재정정]분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": true
+        },
         {
           "rcept_no": "20260319001180",
           "rcept_dt": "20260319",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001059",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2938,21 +3349,44 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001648",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            },
+            {
+              "rcept_no": "20251114003069",
+              "rcept_dt": "20251114",
+              "report_nm": "[기재정정]분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": true
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
-          "multiple_or_corrected_receipts": false
+          "latest_available_asof_evaluation": "20251114003069",
+          "multiple_or_corrected_receipts": true
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001059",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113001059",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
-      "correction_or_multiple_receipts_present": false,
+      "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
       "point_in_time_financials_verified": false
     },
@@ -2963,16 +3397,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00389110",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251113000123",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260320000711",
           "rcept_dt": "20260320",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000147",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -2992,19 +3440,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000123",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000123",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000147",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000147",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3017,16 +3481,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00306454",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251113000551",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318001623",
           "rcept_dt": "20260318",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000895",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -3046,19 +3524,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000551",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000551",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000895",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000895",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3071,16 +3565,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00139834",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114001161",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260316000832",
           "rcept_dt": "20260316",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116001319",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -3100,19 +3608,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001161",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001161",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001319",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116001319",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3125,16 +3649,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00398808",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000193",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260318000608",
           "rcept_dt": "20260318",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000918",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -3154,19 +3692,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000193",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000193",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000918",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000918",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3179,16 +3733,30 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00422284",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
+      "last_live_check_kst": "20261121",
       "filings": [
+        {
+          "rcept_no": "20251114000186",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
         {
           "rcept_no": "20260319000354",
           "rcept_dt": "20260319",
           "report_nm": "사업보고서 (2025.12)",
           "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000286",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
           "possible_correction": false
         }
       ],
@@ -3208,19 +3776,35 @@
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000186",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114000186",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000286",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000286",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3233,34 +3817,94 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00478900",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
-      "filings": [],
+      "last_live_check_kst": "20261121",
+      "filings": [
+        {
+          "rcept_no": "20251112000066",
+          "rcept_dt": "20251112",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260312000427",
+          "rcept_dt": "20260312",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260703000506",
+          "rcept_dt": "20260703",
+          "report_nm": "[기재정정]사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": true
+        },
+        {
+          "rcept_no": "20261116000226",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
       "filing_periods": {
         "2025_annual": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260312000427",
+              "rcept_dt": "20260312",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            },
+            {
+              "rcept_no": "20260703000506",
+              "rcept_dt": "20260703",
+              "report_nm": "[기재정정]사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": true
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
-          "multiple_or_corrected_receipts": false
+          "latest_available_asof_evaluation": "20260703000506",
+          "multiple_or_corrected_receipts": true
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251112000066",
+              "rcept_dt": "20251112",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251112000066",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000226",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000226",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
-      "correction_or_multiple_receipts_present": false,
+      "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
       "point_in_time_financials_verified": false
     },
@@ -3271,32 +3915,78 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00596677",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
-      "filings": [],
+      "last_live_check_kst": "20261121",
+      "filings": [
+        {
+          "rcept_no": "20251112000530",
+          "rcept_dt": "20251112",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318000498",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000604",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
       "filing_periods": {
         "2025_annual": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318000498",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20260318000498",
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251112000530",
+              "rcept_dt": "20251112",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251112000530",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000604",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261113000604",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3309,34 +3999,94 @@
       "evaluation_date": "20261120",
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00485177",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
-      "filings": [],
+      "last_live_check_kst": "20261121",
+      "filings": [
+        {
+          "rcept_no": "20251114001144",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260324001034",
+          "rcept_dt": "20260324",
+          "report_nm": "[첨부추가]사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": true
+        },
+        {
+          "rcept_no": "20260630000845",
+          "rcept_dt": "20260630",
+          "report_nm": "[기재정정]사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": true
+        },
+        {
+          "rcept_no": "20261112000046",
+          "rcept_dt": "20261112",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
       "filing_periods": {
         "2025_annual": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260324001034",
+              "rcept_dt": "20260324",
+              "report_nm": "[첨부추가]사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": true
+            },
+            {
+              "rcept_no": "20260630000845",
+              "rcept_dt": "20260630",
+              "report_nm": "[기재정정]사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": true
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
-          "multiple_or_corrected_receipts": false
+          "latest_available_asof_evaluation": "20260630000845",
+          "multiple_or_corrected_receipts": true
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001144",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251114001144",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261112000046",
+              "rcept_dt": "20261112",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261112000046",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
-      "correction_or_multiple_receipts_present": false,
+      "correction_or_multiple_receipts_present": true,
       "financial_values_matched_to_receipts": false,
       "point_in_time_financials_verified": false
     },
@@ -3347,32 +4097,78 @@
       "evaluation_date": "20261121",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00411048",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
-      "filings": [],
+      "last_live_check_kst": "20261121",
+      "filings": [
+        {
+          "rcept_no": "20251113000316",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260316000487",
+          "rcept_dt": "20260316",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261112000291",
+          "rcept_dt": "20261112",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
       "filing_periods": {
         "2025_annual": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260316000487",
+              "rcept_dt": "20260316",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20260316000487",
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000316",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000316",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261112000291",
+              "rcept_dt": "20261112",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261112000291",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
@@ -3385,32 +4181,78 @@
       "evaluation_date": "20261121",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00530185",
-      "api_state": "PENDING_LIVE_DART_API",
-      "source_evidence_level": "PREVIOUS_R14_FILING_EVIDENCE_PARTIAL",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
       "last_refresh_failure": null,
-      "last_live_check_kst": "",
-      "filings": [],
+      "last_live_check_kst": "20261121",
+      "filings": [
+        {
+          "rcept_no": "20251113000732",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260316000534",
+          "rcept_dt": "20260316",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000654",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
       "filing_periods": {
         "2025_annual": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260316000534",
+              "rcept_dt": "20260316",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20260316000534",
           "multiple_or_corrected_receipts": false
         },
         "2025_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000732",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20251113000732",
           "multiple_or_corrected_receipts": false
         },
         "2026_q3": {
-          "pre_evaluation_receipts": [],
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000654",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
           "post_evaluation_receipts": [],
-          "latest_available_asof_evaluation": null,
+          "latest_available_asof_evaluation": "20261116000654",
           "multiple_or_corrected_receipts": false
         }
       },
-      "all_required_period_receipts_found_before_evaluation": false,
+      "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,

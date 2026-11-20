@@ -1,0 +1,27 @@
+{
+  "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
+  "generated_kst": "2026-11-21T07:47:05.964798+09:00",
+  "company_queries_this_run": 6,
+  "dart_financial_api_requests_this_run": 18,
+  "candidate_count": 128,
+  "cached_company_count": 6,
+  "current_api_matched_company_count": 6,
+  "historical_point_in_time_verified_company_count": 0,
+  "official_per_pbr_verified_count": 0,
+  "status_counts_this_run": {
+    "CURRENT_ACCOUNT_VALUES_MATCHED": 6,
+    "PENDING_BATCH_CAP": 42,
+    "WAITING_COMPLETE_FILING_RECEIPT_EVIDENCE": 80
+  },
+  "data_fetched_by_this_audit": true,
+  "financial_cache_modified": false,
+  "filing_receipt_cache_modified": false,
+  "stage27_modified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "fnlttSinglAcntAll is a current structured API, not an as-of historical source",
+    "Receipt IDs and account values must both match; mismatches block verification",
+    "Even matched present-day API data cannot certify old investment decision-time availability"
+  ]
+}
