@@ -97,15 +97,32 @@ jobs:
             --cache data/v5_financial_m/dart_financial_cache.json \
             --output v5_reports/stage28/r14_full_market_grade_research.json
           python - <<'PY'
-          import json,pathlib
+          import csv,json,pathlib,re
           p=pathlib.Path('v5_reports/stage28/r14_full_market_grade_research.json')
           r=json.loads(p.read_text(encoding='utf-8'))
           market=json.loads(pathlib.Path('v5_reports/stage28/official_market_check.json').read_text(encoding='utf-8'))
-          assert r['market_date']==market['market_date']
-          assert r['market_rows']==market['market_rows']
-          assert r['result']=='PRELIMINARY_RESEARCH_ONLY'
-          assert r['investment_decisions_authorized'] is False and r['final_buy_signals']==0
-          print('R14_FULL_MARKET_RESEARCH_ONLY',r['market_date'],r.get('candidate_count'))
+          # R14 only accepts strictly numeric six-digit codes. KRX's 2771
+          # rows also contain nonnumeric security codes, so the two universe
+          # counts must NOT be asserted equal. Check the exact numeric-code
+          # universe instead; never silently treat exclusions as verified shares.
+          with pathlib.Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f:
+              rows=list(csv.DictReader(f))
+          numeric_codes={str(x.get('ISU_CD','')).strip() for x in rows
+                         if re.fullmatch(r'[0-9]{6}',str(x.get('ISU_CD','')).strip())}
+          assert r['market_date']==market['market_date'], 'MARKET_DATE_MISMATCH'
+          assert len(rows)==market['market_rows'], 'OFFICIAL_MARKET_ROWS_MISMATCH'
+          assert r['market_rows']==len(numeric_codes), 'R14_NUMERIC_MARKET_UNIVERSE_MISMATCH'
+          assert r['financial_rows']>0 and r['candidate_count']==len(r['candidates']), 'R14_COUNTS_INVALID'
+          assert r['result']=='PRELIMINARY_RESEARCH_ONLY', 'R14_RESEARCH_SAFETY_FAILED'
+          assert r['investment_decisions_authorized'] is False and r['final_buy_signals']==0, 'BUY_GATE_FAILED'
+          coverage={'official_market_rows':len(rows),'r14_numeric_code_rows':len(numeric_codes),
+                    'excluded_non_numeric_codes':len(rows)-len(numeric_codes),
+                    'r14_financial_rows':r['financial_rows'],
+                    'r14_research_candidates':r['candidate_count'],
+                    'ordinary_share_class_verified':False,'investment_decisions_authorized':False}
+          pathlib.Path('v5_reports/stage28/r14_universe_coverage.json').write_text(
+              json.dumps(coverage,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('R14_NUMERIC_UNIVERSE_RECONCILED',json.dumps(coverage,ensure_ascii=False))
           PY
       - name: Run Stage25 fundamental research
         id: fundamental
