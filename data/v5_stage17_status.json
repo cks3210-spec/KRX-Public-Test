@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "run_started_utc": "2026-11-19T23:30:43.408378+00:00",
+  "run_started_utc": "2026-11-20T08:26:37.294575+00:00",
   "source_trading_date": "20261112",
   "mode": "SCHEDULED_CONTINUATION",
   "api_key_configured": true,
   "collector": "STAGE16",
   "result": "SUCCESS",
   "collector_exit_code": 0,
-  "collector_stdout_tail": "{\"trading_date\": \"20261112\", \"generated_at_utc\": \"2026-11-19T23:30:44.154002+00:00\", \"phase\": \"COMPLETE\", \"eligible_count\": 1255, \"basic_cached\": 1228, \"basic_missing\": 27, \"basic_coverage_pct\": 97.85, \"dart_mapped\": 1234, \"annual_years\": [2025, 2024], \"annual_filing_counts\": {\"2025\": 1213, \"2024\": 1182}, \"annual_pair_count\": 1182, \"annual_comparable_count\": 1061, \"valuation_proxy_counts\": {\"per\": 794, \"pbr\": 1208, \"roe\": 1057}, \"provisional_grade_counts\": {\"A\": 160, \"B+\": 235, \"B\": 265, \"WITHHELD\": 595}, \"verified_ab_count\": 0, \"elapsed_seconds\": 0.5, \"limits\": {\"max_seconds\": 4500, \"basic_batches\": 0, \"basic_batch_size\": 70, \"annual_limit\": 400, \"retry_days\": 3}, \"events\": [\"ANNUAL_ATTEMPTED_0_FETCHED_0\", \"STAGE15_REPORT_REFRESHED\"], \"classification\": \"UNVERIFIED_RESEARCH_ONLY\"}\n",
+  "collector_stdout_tail": "{\"trading_date\": \"20261112\", \"generated_at_utc\": \"2026-11-20T08:27:56.512341+00:00\", \"phase\": \"COMPLETE\", \"eligible_count\": 1255, \"basic_cached\": 1228, \"basic_missing\": 27, \"basic_coverage_pct\": 97.85, \"dart_mapped\": 1234, \"annual_years\": [2025, 2024], \"annual_filing_counts\": {\"2025\": 1213, \"2024\": 1182}, \"annual_pair_count\": 1182, \"annual_comparable_count\": 1061, \"valuation_proxy_counts\": {\"per\": 794, \"pbr\": 1208, \"roe\": 1057}, \"provisional_grade_counts\": {\"A\": 160, \"B+\": 235, \"B\": 265, \"WITHHELD\": 595}, \"verified_ab_count\": 0, \"elapsed_seconds\": 79.1, \"limits\": {\"max_seconds\": 4500, \"basic_batches\": 0, \"basic_batch_size\": 70, \"annual_limit\": 400, \"retry_days\": 3}, \"events\": [\"ANNUAL_ATTEMPTED_53_FETCHED_0\", \"STAGE15_REPORT_REFRESHED\"], \"classification\": \"UNVERIFIED_RESEARCH_ONLY\"}\n",
   "collector_stderr_tail": "",
-  "run_finished_utc": "2026-11-19T23:30:44.194054+00:00",
-  "elapsed_seconds": 0.8,
+  "run_finished_utc": "2026-11-20T08:27:56.544301+00:00",
+  "elapsed_seconds": 79.2,
   "eligible_count": 1255,
   "basic_cached": 1228,
   "basic_missing": 27,
@@ -27,7 +27,7 @@
   },
   "verified_ab_count": 0,
   "events": [
-    "ANNUAL_ATTEMPTED_0_FETCHED_0",
+    "ANNUAL_ATTEMPTED_53_FETCHED_0",
     "STAGE15_REPORT_REFRESHED"
   ],
   "caveat": "Collection continues across runs; provisional grades are not investment recommendations."
