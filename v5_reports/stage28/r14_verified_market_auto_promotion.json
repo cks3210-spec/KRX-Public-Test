@@ -1,0 +1,20 @@
+{
+  "api_calls": 0,
+  "attempted_sessions": [],
+  "checked_kst": "2026-11-21T16:14:49.810723+09:00",
+  "data_provider_base": "https://data-dbg.krx.co.kr/svc/apis/sto/",
+  "final_buy_signals": 0,
+  "investment_decisions_authorized": false,
+  "last_completed_krx_session": "20261120",
+  "market_data_verified_and_promoted": false,
+  "market_data_was_promoted": false,
+  "no_missing_corrected_filing_queries": true,
+  "reason": "ValueError:BASELINE_HISTORY_COLUMNS_UNEXPECTED",
+  "report_is_not_per_pbr": true,
+  "research_only": true,
+  "source": "KRX_OPEN_API_DAILY_KOSPI_KOSDAQ",
+  "stage27_modified": false,
+  "state": "WAITING_KRX_SOURCE_OR_VALIDATION_ERROR",
+  "technical_indicators_rebuilt_by_this_stage": false,
+  "version": "STAGE28_R14_VERIFIED_OFFICIAL_MARKET_AUTO_PUBLISH_V1"
+}
