@@ -1961,6 +1961,377 @@ jobs:
           python -m py_compile /tmp/r14_xbrl_structure_probe.py
           python /tmp/r14_xbrl_structure_probe.py --self-test
           python /tmp/r14_xbrl_structure_probe.py
+      - name: Recover dimensioned original and corrected IFRS fact candidates (research only)
+        id: xbrl_dimension_recovery
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_xbrl_dimension_recovery.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 dimension-aware, research-only original/amended XBRL fact recovery.
+          
+          Why: six 2025 annual XBRL instances contain direct IFRS concepts, but their
+          monetary facts point to dimensioned contexts; the earlier strict undimensioned
+          extractor therefore found no values. This step records candidate *facts with
+          context and unit provenance*. It cannot authenticate CFS/OFS, historical
+          availability at the evaluation instant, official KRX ratios or orders.
+          
+          Never writes Stage27, any original financial caches or previous XBRL caches.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import time
+          import zipfile
+          import xml.etree.ElementTree as ET
+          from urllib import request, parse, error
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          SOURCE = ROOT/'r14_xbrl_receipt_financial_cache.json'
+          DELTA = ROOT/'r14_xbrl_revision_delta_research.json'
+          RESEARCH = ROOT/'r14_full_market_grade_research.json'
+          PERSIST = ROOT/'r14_xbrl_dimension_fact_cache.json'
+          OUTPUT = ROOT/'r14_xbrl_dimension_financial_research.json'
+          VERSION = 'R14_DIMENSION_AWARE_XBRL_RESEARCH_V1'
+          ENDPOINT = 'https://opendart.fss.or.kr/api/fnlttXbrl.xml'
+          XBRLI = 'http://www.xbrl.org/2003/instance'
+          XBRLDI = 'http://xbrl.org/2006/xbrldi'
+          DIRECT = {'profit':'ProfitLossAttributableToOwnersOfParent',
+                    'equity':'EquityAttributableToOwnersOfParent',
+                    'revenue':'Revenue', 'assets':'Assets', 'liabilities':'Liabilities'}
+          REVERSE = {v:k for k,v in DIRECT.items()}
+          INSTANT_FIELDS = {'assets','liabilities','equity'}
+          MAX_ZIP = 16_000_000
+          MAX_XML = 24_000_000
+          MAX_UNCOMPRESSED = 48_000_000
+          MAX_MEMBERS = 60
+          MAX_FACT_ITEMS = 50
+          
+          
+          def now():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def load(path, default):
+              try:
+                  return json.loads(path.read_text('utf-8-sig'))
+              except (OSError, ValueError):
+                  return default
+          
+          
+          def save(path, value):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              temporary=path.with_name(path.name+'.tmp')
+              temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2)+'\n','utf-8')
+              temporary.replace(path)
+          
+          
+          def local(tag):
+              return tag.rsplit('}',1)[-1] if isinstance(tag,str) else ''
+          
+          
+          def safe_xml(blob, year):
+              if len(blob)>MAX_XML or b'<!DOCTYPE' in blob.upper() or b'<!ENTITY' in blob.upper():
+                  return {'state':'UNSAFE_XML_OR_TOO_LARGE'}
+              try:
+                  root=ET.fromstring(blob)
+              except ET.ParseError:
+                  return {'state':'INVALID_XML'}
+              if root.tag != '{'+XBRLI+'}xbrl':
+                  return {'state':'NOT_XBRL_INSTANCE'}
+              year=str(year)
+              if not re.fullmatch(r'20\d{2}',year):
+                  return {'state':'INVALID_YEAR'}
+              annual_start,annual_end=year+'-01-01',year+'-12-31'
+              units=set()
+              contexts={}
+              for node in root:
+                  if node.tag=='{'+XBRLI+'}unit':
+                      if any(local(p.tag)=='divide' for p in node.iter()):
+                          continue
+                      m=[str(x.text or '').strip() for x in node.iter() if local(x.tag)=='measure']
+                      if len(m)==1 and m[0].split(':')[-1].upper()=='KRW' and node.attrib.get('id'):
+                          units.add(node.attrib['id'])
+                  elif node.tag=='{'+XBRLI+'}context':
+                      cid=node.attrib.get('id')
+                      if not cid:continue
+                      period=next((e for e in node if e.tag=='{'+XBRLI+'}period'),None)
+                      if period is None:continue
+                      times={local(e.tag):(e.text or '').strip() for e in period if local(e.tag) in ('instant','startDate','endDate')}
+                      if times.get('instant')==annual_end:
+                          kind='instant'
+                      elif times.get('startDate')==annual_start and times.get('endDate')==annual_end:
+                          kind='duration'
+                      else:
+                          kind='other'
+                      dimensions=[]; unsupported=False
+                      for container in node.iter():
+                          if local(container.tag) not in ('segment','scenario'):continue
+                          for dim in container:
+                              if dim.tag=='{'+XBRLDI+'}explicitMember':
+                                  dimensions.append({'axis':str(dim.attrib.get('dimension') or '')[:160],
+                                                     'member':str(dim.text or '').strip()[:160],
+                                                     'kind':'explicit'})
+                              elif dim.tag=='{'+XBRLDI+'}typedMember':
+                                  dimensions.append({'axis':str(dim.attrib.get('dimension') or '')[:160],
+                                                     'member':'TYPED_MEMBER_REDACTED','kind':'typed'})
+                              else:
+                                  unsupported=True
+                      contexts[cid]={'kind':kind,'dimensions':sorted(dimensions,key=lambda x:(x['axis'],x['member'])),
+                                     'unsupported_segment':unsupported}
+              candidates={k:[] for k in DIRECT}
+              counts=collections.Counter()
+              for node in root:
+                  if not isinstance(node.tag,str) or not node.tag.startswith('{'):continue
+                  uri,_,name=node.tag[1:].partition('}')
+                  field=REVERSE.get(name)
+                  if field is None or not (uri.endswith('/ifrs-full') or uri.endswith('/ifrs')):continue
+                  counts['direct_ifrs_facts']+=1
+                  ctx=contexts.get(str(node.attrib.get('contextRef') or ''))
+                  if ctx is None or ctx['kind']=='other':
+                      counts['wrong_period_or_no_context']+=1;continue
+                  if ctx['kind']!=('instant' if field in INSTANT_FIELDS else 'duration'):
+                      counts['wrong_fact_period_type']+=1;continue
+                  if ctx['unsupported_segment']:
+                      counts['unsupported_segment']+=1;continue
+                  if str(node.attrib.get('unitRef') or '') not in units:
+                      counts['non_krw_unit']+=1;continue
+                  if node.attrib.get('{http://www.w3.org/2001/XMLSchema-instance}nil')=='true':
+                      counts['nil_fact']+=1;continue
+                  raw=(node.text or '').strip()
+                  if not re.fullmatch(r'[+-]?\d{1,30}',raw):
+                      counts['non_integer_fact']+=1;continue
+                  value=int(raw)
+                  counts['candidate_facts']+=1
+                  if len(candidates[field])<MAX_FACT_ITEMS:
+                      candidates[field].append({'value_krw':value,
+                                                'context_ref':str(node.attrib.get('contextRef') or '')[:160],
+                                                'period':ctx['kind'],
+                                                'dimensions':ctx['dimensions'],
+                                                'basis_verified':False})
+                  else:counts['items_truncated']+=1
+              result={}
+              for field,items in candidates.items():
+                  if not items:continue
+                  values=sorted({v['value_krw'] for v in items})
+                  result[field]={'unique_values':values[:12],
+                                 'value_count':len(values),
+                                 'candidate_contexts':items,
+                                 'has_dimensioned_context':any(e['dimensions'] for e in items),
+                                 'financial_basis_verified':False,
+                                 'research_only':True}
+              return {'state':'ANNUAL_DIMENSIONED_FACT_CANDIDATES' if result else 'NO_CANDIDATE_FACTS',
+                      'financial_year':year,'annual_context_count':sum(v['kind']!='other' for v in contexts.values()),
+                      'dimensioned_annual_context_count':sum(v['kind']!='other' and bool(v['dimensions']) for v in contexts.values()),
+                      'counts':dict(counts),'fields':result,
+                      'financial_basis_verified':False,
+                      'point_in_time_financial_values_verified':False}
+          
+          
+          def inspect_zip(blob,year,source):
+              if not blob.startswith(b'PK'):
+                  status=re.search(rb'<status>\s*([0-9A-Za-z_-]{2,12})\s*</status>',blob[:8192],re.I)
+                  return {'state':'DART_API_STATUS_'+status.group(1).decode('ascii').upper() if status else 'NOT_ZIP_RESPONSE'}
+              if len(blob)>MAX_ZIP:return {'state':'ZIP_TOO_LARGE'}
+              if hashlib.sha256(blob).hexdigest()!=source.get('zip_sha256'):
+                  return {'state':'ZIP_HASH_CHANGED_FROM_PREVIOUS_RECEIPT','investigation_required':True}
+              try:
+                  with zipfile.ZipFile(io.BytesIO(blob)) as z:
+                      files=z.infolist()
+                      if len(files)>MAX_MEMBERS or sum(f.file_size for f in files)>MAX_UNCOMPRESSED:
+                          return {'state':'ZIP_TOO_MANY_FILES_OR_BYTES'}
+                      previous={str(f.get('name')):f.get('xml_sha256') for f in source.get('files',[]) if f.get('name')}
+                      out=[]
+                      for f in files:
+                          name=f.filename.replace('\\','/')
+                          if name.startswith('/') or '..' in name.split('/'):
+                              return {'state':'UNSAFE_ZIP_PATH'}
+                          if f.is_dir() or not name.lower().endswith(('.xbrl','.xml')):continue
+                          if f.file_size>MAX_XML:return {'state':'XML_MEMBER_TOO_LARGE'}
+                          contents=z.read(f)
+                          if name not in previous:continue
+                          digest=hashlib.sha256(contents).hexdigest()
+                          if digest!=previous[name]:
+                              return {'state':'XML_HASH_CHANGED_FROM_PREVIOUS_RECEIPT','investigation_required':True}
+                          item=safe_xml(contents,year)
+                          if item['state']!='NOT_XBRL_INSTANCE':
+                              out.append({'name':name[:200],'xml_sha256':digest,**item})
+                      if not out:return {'state':'NO_MATCHING_XBRL_INSTANCE'}
+                      return {'state':'SOURCE_HASH_CONFIRMED_FACT_CANDIDATES',
+                              'zip_sha256':source['zip_sha256'],'files':out,
+                              'source_hashes_verified':True,
+                              'historical_point_in_time_financials_verified':False,
+                              'financial_basis_verified':False}
+              except (zipfile.BadZipFile,RuntimeError,ValueError,OSError,NotImplementedError):
+                  return {'state':'ZIP_UNREADABLE'}
+          
+          
+          def get_zip(receipt,token):
+              url=ENDPOINT+'?'+parse.urlencode({'crtfc_key':token,'rcept_no':receipt,'reprt_code':'11011'})
+              try:
+                  req=request.Request(url,headers={'User-Agent':'KRX-v5-XBRL-Dimension-Research/1.0'})
+                  with request.urlopen(req,timeout=35) as response:
+                      if int(response.headers.get('Content-Length','0') or 0)>MAX_ZIP:return {'state':'ZIP_TOO_LARGE'}
+                      b=response.read(MAX_ZIP+1)
+                  if len(b)>MAX_ZIP:return {'state':'ZIP_TOO_LARGE'}
+                  return {'state':'RAW_ZIP','data':b}
+              except error.HTTPError as ex:
+                  return {'state':'HTTP_ERROR','http_status':ex.code}
+              except (error.URLError,TimeoutError,OSError,ValueError):
+                  return {'state':'NETWORK_ERROR'}
+          
+          
+          def discrepancy_comparisons(deltas, byreceipt):
+              records=[]
+              for x in deltas.get('comparisons') or []:
+                  original=str(x.get('original_receipt') or '')
+                  latest=str(x.get('latest_pre_evaluation_receipt') or '')
+                  a,b=byreceipt.get(original) or {},byreceipt.get(latest) or {}
+                  def values(report):
+                      v=collections.defaultdict(set)
+                      for file in report.get('files',[]):
+                          if file.get('state')!='ANNUAL_DIMENSIONED_FACT_CANDIDATES':continue
+                          for k,item in file.get('fields',{}).items():
+                              for amount in item.get('unique_values',[]):v[k].add(amount)
+                      return {k:sorted(xs) for k,xs in v.items()}
+                  av,bv=values(a),values(b)
+                  fields=sorted(set(av)&set(bv))
+                  same=[f for f in fields if av[f]==bv[f]]
+                  diff=[f for f in fields if av[f]!=bv[f]]
+                  status='CANDIDATE_VALUES_DIFFER_BASIS_UNVERIFIED' if diff else ('CANDIDATE_VALUES_EQUAL_BASIS_UNVERIFIED' if same else 'NO_SHARED_RESEARCH_FACTS')
+                  records.append({'code':x.get('code'),'original_receipt':original,'revised_receipt':latest,
+                                  'status':status,'candidate_equal_fields':same,'candidate_differing_fields':diff,
+                                  'both_xbrl_receipts_available':a.get('state')=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES' and b.get('state')=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES',
+                                  'financial_basis_verified':False,'historical_point_in_time_verified':False,
+                                  'investment_decisions_authorized':False})
+              return records
+          
+          
+          def run():
+              src, delta=load(SOURCE,{}),load(DELTA,{})
+              if src.get('format')!='R14_RECEIPT_XBRL_RESEARCH_CACHE_V1' or delta.get('result')!='R14_XBRL_REVISION_DELTA_RESEARCH_ONLY':
+                  raise SystemExit('UNSAFE_OR_MISSING_STAGE28_INPUTS')
+              research=load(RESEARCH,{})
+              date=str(research.get('market_date') or '')
+              if not re.fullmatch(r'20\d{6}',date):raise SystemExit('INVALID_RESEARCH_MARKET_DATE')
+              prev=load(PERSIST,{})
+              if prev and prev.get('format')!=VERSION:
+                  raise SystemExit('UNKNOWN_DIMENSION_CACHE_FORMAT')
+              # Cache rows are keyed by immutable receipt, not by current market date.
+              # Reuse across trading dates only if the source ZIP digest and report year agree.
+              cached=dict(prev.get('rows') or {})
+              available={r:v for r,v in (src.get('rows') or {}).items() if v.get('state')=='XBRL_RECEIPT_ZIP_RETRIEVED'
+                         and re.fullmatch(r'20\d{12}',r)}
+              wanted=set();years={}
+              for item in delta.get('comparisons') or []:
+                  period=re.fullmatch(r'(20\d{2})_annual',str(item.get('period') or ''))
+                  if not period:continue
+                  for key in ('original_receipt','latest_pre_evaluation_receipt'):
+                      receipt=str(item.get(key) or '')
+                      if years.get(receipt) not in (None,period.group(1)):
+                          raise SystemExit('AMBIGUOUS_XBRL_FINANCIAL_YEAR')
+                      wanted.add(receipt);years[receipt]=period.group(1)
+              # Bound to six already verified XBRL sources; not a new broad crawl.
+              receipts=sorted(set(available)&wanted)[:6]
+              states=collections.Counter()
+              token=str(os.getenv('DART_API_KEY') or '').strip()
+              checked=0
+              for receipt in receipts:
+                  previous=available[receipt]
+                  if ((cached.get(receipt) or {}).get('state')=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES'
+                          and cached[receipt].get('zip_sha256')==previous.get('zip_sha256')
+                          and cached[receipt].get('financial_year')==years[receipt]):
+                      states['REUSED_DIMENSION_RESEARCH_CACHE']+=1
+                      continue
+                  if not token:states['NO_DART_API_KEY']+=1;continue
+                  fetched=get_zip(receipt,token)
+                  checked+=1
+                  if fetched.get('state')!='RAW_ZIP':
+                      states[fetched['state']]+=1
+                      continue
+                  analyzed=inspect_zip(fetched['data'],years[receipt],previous)
+                  states[analyzed['state']]+=1
+                  if analyzed['state']=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES':
+                      analyzed['financial_year']=years[receipt]
+                      cached[receipt]=analyzed
+                  time.sleep(.22)
+              comparisons=discrepancy_comparisons(delta,cached)
+              research_report={'result':'R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY',
+                               'generated_kst':now(),'research_market_date':date,
+                               'available_prior_xbrl_receipts':len(available),'considered_receipts':len(receipts),
+                               'verified_source_hashes_with_candidate_extraction':sum((cached.get(r) or {}).get('state')=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES' for r in receipts),
+                               'requests_this_run':checked,'run_states':dict(states),
+                               'receipts':{r:{'state':(cached.get(r) or {}).get('state','NOT_EXTRACTED'),
+                                               'accounts_with_candidates':sorted({name for f in (cached.get(r) or {}).get('files',[]) for name in f.get('fields',{})}),
+                                               'dimensioned_contexts':sum(f.get('dimensioned_annual_context_count',0) for f in (cached.get(r) or {}).get('files',[]))} for r in receipts},
+                               'revision_comparisons':comparisons,
+                               'financial_basis_verified':False,
+                               'historical_point_in_time_financials_verified':False,
+                               'official_per_pbr_independently_verified':0,
+                               'financial_cache_modified':False,'stage27_modified':False,
+                               'investment_decisions_authorized':False,'final_buy_signals':0,
+                               'limitations':['Dimensioned IFRS facts are research candidates, not CFS/OFS verified amounts',
+                                              'Values may include multiple members, contexts or financial bases and cannot be treated as financial revision proof',
+                                              'Document retrieval and hash comparisons today do not attest historical decision-time availability']}
+              save(PERSIST,{'format':VERSION,'market_date':date,'updated_kst':now(),'rows':cached,
+                            'investment_decisions_authorized':False,'final_buy_signals':0})
+              save(OUTPUT,research_report)
+              print(json.dumps({k:v for k,v in research_report.items() if k not in ('receipts','revision_comparisons','limitations')},ensure_ascii=False))
+          
+          
+          def selftest():
+              # The critical regression: annual dimensioned reporting contexts are now
+              # retained as research candidates, without claiming CFS/OFS verification.
+              xml=f'''<xbrli:xbrl xmlns:xbrli="{XBRLI}" xmlns:xbrldi="{XBRLDI}" xmlns:ifrs="http://xbrl.ifrs.org/taxonomy/2025-03-27/ifrs-full">
+          <xbrli:context id="A"><xbrli:entity><xbrli:identifier scheme="test">issuer</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension="dart:StatementAxis">dart:ConsolidatedMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>
+          <xbrli:context id="P"><xbrli:entity><xbrli:identifier scheme="test">issuer</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension="dart:StatementAxis">dart:ConsolidatedMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>
+          <xbrli:context id="OLD"><xbrli:entity><xbrli:identifier scheme="test">issuer</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2024-12-31</xbrli:instant></xbrli:period></xbrli:context>
+          <xbrli:unit id="U"><xbrli:measure>iso4217:KRW</xbrli:measure></xbrli:unit>
+          <ifrs:Assets contextRef="A" unitRef="U">130</ifrs:Assets><ifrs:EquityAttributableToOwnersOfParent contextRef="A" unitRef="U">80</ifrs:EquityAttributableToOwnersOfParent>
+          <ifrs:Revenue contextRef="P" unitRef="U">200</ifrs:Revenue><ifrs:ProfitLossAttributableToOwnersOfParent contextRef="P" unitRef="U">20</ifrs:ProfitLossAttributableToOwnersOfParent>
+          <ifrs:Assets contextRef="OLD" unitRef="U">999</ifrs:Assets>
+          </xbrli:xbrl>'''.encode()
+              r=safe_xml(xml,'2025')
+              assert r['state']=='ANNUAL_DIMENSIONED_FACT_CANDIDATES'
+              assert set(r['fields'])=={'assets','revenue','profit','equity'}
+              assert r['fields']['assets']['unique_values']==[130]
+              assert r['fields']['assets']['has_dimensioned_context'] is True
+              assert r['counts']['wrong_period_or_no_context']==1
+              assert not r['financial_basis_verified']
+              assert safe_xml(xml,'2024')['fields']['assets']['unique_values']==[999]
+              assert safe_xml(b'<!DOCTYPE x>','2025')['state']=='UNSAFE_XML_OR_TOO_LARGE'
+              bio=io.BytesIO()
+              with zipfile.ZipFile(bio,'w') as z:z.writestr('entity_2025.xbrl',xml)
+              blob=bio.getvalue();sha=hashlib.sha256(blob).hexdigest()
+              meta={'zip_sha256':sha,'files':[{'name':'entity_2025.xbrl','xml_sha256':hashlib.sha256(xml).hexdigest()}]}
+              assert inspect_zip(blob,'2025',meta)['state']=='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES'
+              assert inspect_zip(blob,'2025',{**meta,'zip_sha256':'0'*64})['state']=='ZIP_HASH_CHANGED_FROM_PREVIOUS_RECEIPT'
+              d={'comparisons':[{'code':'000001','original_receipt':'20260318000001','latest_pre_evaluation_receipt':'20260319000002'}]}
+              base=inspect_zip(blob,'2025',meta)
+              assert discrepancy_comparisons(d,{'20260318000001':base,'20260319000002':base})[0]['status']=='CANDIDATE_VALUES_EQUAL_BASIS_UNVERIFIED'
+              other=inspect_zip(blob,'2025',meta)
+              other['files'][0]['fields']['assets']['unique_values']=[155]
+              assert discrepancy_comparisons(d,{'20260318000001':base,'20260319000002':other})[0]['status']=='CANDIDATE_VALUES_DIFFER_BASIS_UNVERIFIED'
+              return 12
+          
+          if __name__=='__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'status':'SELF_TEST_PASS','tests':selftest()}))
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_xbrl_dimension_recovery.py
+          python /tmp/r14_xbrl_dimension_recovery.py --self-test
+          python /tmp/r14_xbrl_dimension_recovery.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -2036,11 +2407,12 @@ jobs:
           ORIGINAL_XBRL_RECONCILIATION_RESULT: ${{ steps.original_xbrl_reconciliation.outcome }}
           XBRL_REVISION_DELTA_RESULT: ${{ steps.xbrl_revision_delta.outcome }}
           XBRL_STRUCTURE_DIAG_RESULT: ${{ steps.xbrl_structure_diag.outcome }}
+          XBRL_DIMENSION_RECOVERY_RESULT: ${{ steps.xbrl_dimension_recovery.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -2055,7 +2427,8 @@ jobs:
             'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json',
             'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json',
             'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json',
-            'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json'
+            'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json',
+            'r14_xbrl_dimension_recovery':'v5_reports/stage28/r14_xbrl_dimension_financial_research.json'
           }
           details={}
           for name,p in status_files.items():
@@ -2091,6 +2464,7 @@ jobs:
             'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
             'filing_document_original_correction':'ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF',
             'xbrl_receipt_financial_comparison':'RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED',
+            'xbrl_dimension_fact_recovery':'RESEARCH_CANDIDATES_WITH_EXPLICIT_CONTEXT_AND_SOURCE_HASH_ONLY; BASIS_AND_PIT_UNVERIFIED',
             'official_ratio_source_gate':'DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
