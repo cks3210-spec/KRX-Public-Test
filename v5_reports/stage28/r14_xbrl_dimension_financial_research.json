@@ -1,13 +1,13 @@
 {
   "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
-  "generated_kst": "2026-11-21T10:29:00.489921+09:00",
+  "generated_kst": "2026-11-21T10:32:39.981414+09:00",
   "research_market_date": "20261119",
   "available_prior_xbrl_receipts": 6,
   "considered_receipts": 5,
   "verified_source_hashes_with_candidate_extraction": 5,
-  "requests_this_run": 5,
+  "requests_this_run": 0,
   "run_states": {
-    "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES": 5
+    "REUSED_DIMENSION_RESEARCH_CACHE": 5
   },
   "receipts": {
     "20260310002563": {

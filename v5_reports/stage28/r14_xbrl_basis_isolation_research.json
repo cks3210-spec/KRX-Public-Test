@@ -1,0 +1,829 @@
+{
+  "result": "R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1",
+  "generated_kst": "2026-11-21T10:32:40.070725+09:00",
+  "research_market_date": null,
+  "comparison_periods": 4,
+  "available_source_receipts": 5,
+  "financial_candidates_by_basis": {
+    "RESEARCH_VALUES_EQUAL": 8,
+    "UNVERIFIED_OR_UNAVAILABLE": 32
+  },
+  "comparisons": [
+    {
+      "code": "015360",
+      "period": "2025_annual",
+      "original_receipt": "20260310002563",
+      "selected_asof_receipt": "20260605000111",
+      "selected_receipt_matches_filing_cache": true,
+      "receipt_sources": {
+        "original": {
+          "receipt": "20260310002563",
+          "source_state": "SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT",
+          "bases": {
+            "CFS": {
+              "profit": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 86715394000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 645396467000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1327599497000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1557662126000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 912265659000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            },
+            "OFS": {
+              "profit": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 172882389000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 828909041000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 275154347000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            }
+          },
+          "financial_basis_verified": false
+        },
+        "selected_asof": {
+          "receipt": "20260605000111",
+          "source_state": "SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT",
+          "bases": {
+            "CFS": {
+              "profit": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 86715394000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 645396467000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1327599497000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1557662126000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 912265659000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            },
+            "OFS": {
+              "profit": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 172882389000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 828909041000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 275154347000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            }
+          },
+          "financial_basis_verified": false
+        }
+      },
+      "basis_comparisons": {
+        "CFS": {
+          "field_states": {
+            "profit": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 86715394000,
+              "selected_value_krw": 86715394000
+            },
+            "equity": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 645396467000,
+              "selected_value_krw": 645396467000
+            },
+            "revenue": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 1327599497000,
+              "selected_value_krw": 1327599497000
+            },
+            "assets": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 1557662126000,
+              "selected_value_krw": 1557662126000
+            },
+            "liabilities": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 912265659000,
+              "selected_value_krw": 912265659000
+            }
+          },
+          "counts": {
+            "RESEARCH_VALUES_EQUAL": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        },
+        "OFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "NO_SINGLE_AXIS_FACT"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "NO_SINGLE_AXIS_FACT"
+            },
+            "revenue": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 172882389000,
+              "selected_value_krw": 172882389000
+            },
+            "assets": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 828909041000,
+              "selected_value_krw": 828909041000
+            },
+            "liabilities": {
+              "state": "RESEARCH_VALUES_EQUAL",
+              "original_value_krw": 275154347000,
+              "selected_value_krw": 275154347000
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 2,
+            "RESEARCH_VALUES_EQUAL": 3
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        }
+      },
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "033500",
+      "period": "2025_annual",
+      "original_receipt": "20260318001705",
+      "selected_asof_receipt": "20260319000704",
+      "selected_receipt_matches_filing_cache": true,
+      "receipt_sources": {
+        "original": {
+          "receipt": "20260318001705",
+          "source_state": "SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT",
+          "bases": {
+            "CFS": {
+              "profit": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 55883227093,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 258895742264,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 742186008411,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 501560927287,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 242665185023,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            },
+            "OFS": {
+              "profit": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 742186008411,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 499642286659,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 242665185023,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            }
+          },
+          "financial_basis_verified": false
+        },
+        "selected_asof": {
+          "receipt": "20260319000704",
+          "source_state": "SOURCE_NOT_HASH_VERIFIED",
+          "bases": {},
+          "financial_basis_verified": false
+        }
+      },
+      "basis_comparisons": {
+        "CFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        },
+        "OFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        }
+      },
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "054950",
+      "period": "2025_annual",
+      "original_receipt": "20260323001116",
+      "selected_asof_receipt": "20260325000430",
+      "selected_receipt_matches_filing_cache": true,
+      "receipt_sources": {
+        "original": {
+          "receipt": "20260323001116",
+          "source_state": "SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT",
+          "bases": {
+            "CFS": {
+              "profit": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 28350804537,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 233947355120,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 173129219712,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 319127680911,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 85180325791,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            },
+            "OFS": {
+              "profit": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 154468364064,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 291972142428,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 55387193748,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            }
+          },
+          "financial_basis_verified": false
+        },
+        "selected_asof": {
+          "receipt": "20260325000430",
+          "source_state": "SOURCE_NOT_HASH_VERIFIED",
+          "bases": {},
+          "financial_basis_verified": false
+        }
+      },
+      "basis_comparisons": {
+        "CFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        },
+        "OFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        }
+      },
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "097230",
+      "period": "2025_annual",
+      "original_receipt": "20260319000606",
+      "selected_asof_receipt": "20260319001333",
+      "selected_receipt_matches_filing_cache": true,
+      "receipt_sources": {
+        "original": {
+          "receipt": "20260319000606",
+          "source_state": "SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT",
+          "bases": {
+            "CFS": {
+              "profit": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 51434000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 669629000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1999705000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 2453082000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1783494000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            },
+            "OFS": {
+              "profit": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "equity": {
+                "status": "NO_SINGLE_AXIS_FACT",
+                "value_krw": null,
+                "matching_context_count": 0,
+                "distinct_value_count": 0,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "revenue": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1998906000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "assets": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 2451376000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              },
+              "liabilities": {
+                "status": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+                "value_krw": 1781340000000,
+                "matching_context_count": 1,
+                "distinct_value_count": 1,
+                "research_only": true,
+                "financial_basis_verified": false
+              }
+            }
+          },
+          "financial_basis_verified": false
+        },
+        "selected_asof": {
+          "receipt": "20260319001333",
+          "source_state": "SOURCE_NOT_HASH_VERIFIED",
+          "bases": {},
+          "financial_basis_verified": false
+        }
+      },
+      "basis_comparisons": {
+        "CFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        },
+        "OFS": {
+          "field_states": {
+            "profit": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "equity": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "NO_SINGLE_AXIS_FACT",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "revenue": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "assets": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            },
+            "liabilities": {
+              "state": "UNVERIFIED_OR_UNAVAILABLE",
+              "original_reason": "UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE",
+              "selected_reason": "MISSING_SOURCE"
+            }
+          },
+          "counts": {
+            "UNVERIFIED_OR_UNAVAILABLE": 5
+          },
+          "research_only": true,
+          "financial_basis_verified": false
+        }
+      },
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false
+    }
+  ],
+  "source": "STAGE28_CACHED_HASH_MATCHED_XBRL_DIMENSION_FACTS",
+  "made_new_api_requests": false,
+  "stage27_modified": false,
+  "financial_cache_modified": false,
+  "financial_basis_verified": false,
+  "historical_point_in_time_financials_verified": false,
+  "official_per_pbr_verified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "Exact IFRS statement-axis members isolate accounting candidates but do not independently authenticate the reporting basis",
+    "Segment and note-specific axes are excluded; truncated source inputs are not promoted",
+    "These files were retrieved during audit and do not independently prove availability at historical decision time"
+  ]
+}
