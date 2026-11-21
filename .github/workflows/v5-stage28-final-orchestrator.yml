@@ -2332,6 +2332,210 @@ jobs:
           python -m py_compile /tmp/r14_xbrl_dimension_recovery.py
           python /tmp/r14_xbrl_dimension_recovery.py --self-test
           python /tmp/r14_xbrl_dimension_recovery.py
+      - name: Isolate exact single-axis CFS and OFS financial candidates from existing XBRL cache (read only)
+        id: xbrl_basis_isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_xbrl_basis_isolation.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 research-only exact single-axis CFS/OFS candidate isolation.
+          
+          Read immutable past receipt financial fact cache; do not fetch, write Stage27,
+          modify financial caches, authorize trading, or claim historical point-in-time verification.
+          Only isolate a direct IFRS fact whose entire dimension set is exactly the
+          IFRS ConsolidatedAndSeparateFinancialStatementsAxis, with a specific member.
+          """
+          import collections
+          import datetime as dt
+          import json
+          from pathlib import Path
+          import re
+          from zoneinfo import ZoneInfo
+          
+          ROOT=Path('v5_reports/stage28')
+          DIMENSION=ROOT/'r14_xbrl_dimension_fact_cache.json'
+          DELTA=ROOT/'r14_xbrl_revision_delta_research.json'
+          FILING=ROOT/'r14_filing_receipt_cache.json'
+          OUTPUT=ROOT/'r14_xbrl_basis_isolation_research.json'
+          AXIS='ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis'
+          MEMBERS={'CFS':'ifrs-full:ConsolidatedMember','OFS':'ifrs-full:SeparateMember'}
+          FIELDS=('profit','equity','revenue','assets','liabilities')
+          VERSION='R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1'
+          
+          
+          def load(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def stamp():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def isolate(source):
+              """Return exact single-axis research facts, treating any source truncation as ambiguity."""
+              out={}
+              for basis, member in MEMBERS.items():
+                  fields={}
+                  for field in FIELDS:
+                      values=set(); matched=0; suspicious=0
+                      for file in source.get('files') or []:
+                          if file.get('state')!='ANNUAL_DIMENSIONED_FACT_CANDIDATES':
+                              continue
+                          if (file.get('counts') or {}).get('items_truncated',0):
+                              suspicious+=1
+                          info=(file.get('fields') or {}).get(field) or {}
+                          for item in info.get('candidate_contexts') or []:
+                              dims=item.get('dimensions') or []
+                              if len(dims)!=1 or dims[0].get('axis')!=AXIS or dims[0].get('member')!=member or dims[0].get('kind')!='explicit':
+                                  continue
+                              value=item.get('value_krw')
+                              if type(value) is not int:
+                                  suspicious+=1;continue
+                              matched+=1
+                              values.add(value)
+                      if suspicious:
+                          status='UNSAFE_OR_TRUNCATED_SOURCE'
+                      elif matched==0:
+                          status='NO_SINGLE_AXIS_FACT'
+                      elif len(values)==1:
+                          status='UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE'
+                      else:
+                          status='AMBIGUOUS_SAME_AXIS_VALUES'
+                      fields[field]={'status':status,'value_krw':next(iter(values)) if status=='UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE' else None,
+                                     'matching_context_count':matched,'distinct_value_count':len(values),
+                                     'research_only':True,'financial_basis_verified':False}
+                  out[basis]=fields
+              return out
+          
+          
+          def validate_receipt(receipt,record,year,filing_row):
+              if not re.fullmatch(r'20\d{12}',str(receipt)):
+                  return 'INVALID_RECEIPT'
+              if record.get('state')!='SOURCE_HASH_CONFIRMED_FACT_CANDIDATES' or record.get('source_hashes_verified') is not True:
+                  return 'SOURCE_NOT_HASH_VERIFIED'
+              if str(record.get('financial_year')) != str(year):
+                  return 'FINANCIAL_YEAR_MISMATCH'
+              if not re.fullmatch(r'[0-9a-f]{64}',str(record.get('zip_sha256') or '')):
+                  return 'MISSING_SOURCE_HASH'
+              cutoff=str(filing_row.get('evaluation_date') or '')
+              if not re.fullmatch(r'20\d{6}',cutoff) or receipt[:8] > cutoff:
+                  return 'POST_EVALUATION_OR_INVALID_CUTOFF'
+              return 'SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT'
+          
+          
+          def compare_pairs(dimension, deltas, filings):
+              byreceipt=dimension.get('rows') or {}
+              output=[]
+              for pair in deltas.get('comparisons') or []:
+                  code=str(pair.get('code') or '').zfill(6)
+                  period=str(pair.get('period') or '')
+                  pm=re.fullmatch(r'(20\d{2})_annual',period)
+                  if not pm:continue
+                  original=str(pair.get('original_receipt') or '')
+                  revised=str(pair.get('latest_pre_evaluation_receipt') or '')
+                  frow=(filings.get('rows') or {}).get(code) or {}
+                  selected=((frow.get('filing_periods') or {}).get(period) or {}).get('latest_available_asof_evaluation')
+                  permitted_revised=(str(selected or '')==revised)
+                  snapshots={}
+                  for name,receipt in (('original',original),('selected_asof',revised)):
+                      source=byreceipt.get(receipt) or {}
+                      status=validate_receipt(receipt,source,pm.group(1),frow)
+                      snapshots[name]={'receipt':receipt,'source_state':status,
+                                       'bases':isolate(source) if status=='SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT' else {},
+                                       'financial_basis_verified':False}
+                  per_basis={}
+                  for basis in MEMBERS:
+                      left=snapshots['original']['bases'].get(basis) or {}
+                      right=snapshots['selected_asof']['bases'].get(basis) or {}
+                      compared={}
+                      for field in FIELDS:
+                          lv,rv=left.get(field,{}),right.get(field,{})
+                          if lv.get('status')=='UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE' and rv.get('status')=='UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE' and permitted_revised:
+                              same=lv['value_krw']==rv['value_krw']
+                              compared[field]={'state':'RESEARCH_VALUES_EQUAL' if same else 'RESEARCH_VALUES_DIFFER',
+                                               'original_value_krw':lv['value_krw'],'selected_value_krw':rv['value_krw']}
+                          else:
+                              compared[field]={'state':'UNVERIFIED_OR_UNAVAILABLE',
+                                               'original_reason':lv.get('status','MISSING_SOURCE'),
+                                               'selected_reason':rv.get('status','MISSING_SOURCE')}
+                      counts=collections.Counter(x['state'] for x in compared.values())
+                      per_basis[basis]={'field_states':compared,'counts':dict(counts),'research_only':True,'financial_basis_verified':False}
+                  output.append({'code':code,'period':period,'original_receipt':original,'selected_asof_receipt':revised,
+                                 'selected_receipt_matches_filing_cache':permitted_revised,
+                                 'receipt_sources':snapshots,'basis_comparisons':per_basis,
+                                 'historical_point_in_time_financials_verified':False,
+                                 'official_per_pbr_verified':False,'investment_decisions_authorized':False})
+              return output
+          
+          
+          def run():
+              d=load(DIMENSION);p=load(DELTA);f=load(FILING)
+              if d.get('format')!='R14_DIMENSION_AWARE_XBRL_RESEARCH_V1' or p.get('result')!='R14_XBRL_REVISION_DELTA_RESEARCH_ONLY' or f.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1':
+                  raise SystemExit('MISSING_OR_UNSAFE_STAGE28_CACHES')
+              pairs=compare_pairs(d,p,f)
+              total=collections.Counter()
+              for pair in pairs:
+                  for basis in MEMBERS:
+                      total.update((x['state'] for x in pair['basis_comparisons'][basis]['field_states'].values()))
+              result={'result':VERSION,'generated_kst':stamp(),'research_market_date':f.get('market_date'),
+                      'comparison_periods':len(pairs),'available_source_receipts':len(d.get('rows') or {}),
+                      'financial_candidates_by_basis':dict(total),'comparisons':pairs,
+                      'source':'STAGE28_CACHED_HASH_MATCHED_XBRL_DIMENSION_FACTS',
+                      'made_new_api_requests':False,'stage27_modified':False,'financial_cache_modified':False,
+                      'financial_basis_verified':False,'historical_point_in_time_financials_verified':False,
+                      'official_per_pbr_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'limitations':['Exact IFRS statement-axis members isolate accounting candidates but do not independently authenticate the reporting basis',
+                                     'Segment and note-specific axes are excluded; truncated source inputs are not promoted',
+                                     'These files were retrieved during audit and do not independently prove availability at historical decision time']}
+              OUTPUT.parent.mkdir(parents=True,exist_ok=True)
+              OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print(json.dumps({k:v for k,v in result.items() if k not in ('comparisons','limitations')},ensure_ascii=False))
+          
+          
+          def selftest():
+              def fact(value, member, additional=False):
+                  dimensions=[{'axis':AXIS,'member':member,'kind':'explicit'}]
+                  if additional:dimensions.append({'axis':'ifrs-full:SegmentsAxis','member':'test:Part','kind':'explicit'})
+                  return {'value_krw':value,'dimensions':dimensions}
+              base={'state':'SOURCE_HASH_CONFIRMED_FACT_CANDIDATES','source_hashes_verified':True,
+                    'financial_year':'2025','zip_sha256':'f'*64,
+                    'files':[{'state':'ANNUAL_DIMENSIONED_FACT_CANDIDATES','counts':{},
+                              'fields':{'assets':{'candidate_contexts':[fact(100,MEMBERS['CFS']),fact(1,MEMBERS['CFS'],True),fact(55,MEMBERS['OFS'])]},
+                                        'revenue':{'candidate_contexts':[fact(200,MEMBERS['CFS'])]}}}]}
+              selection=isolate(base)
+              assert selection['CFS']['assets']['value_krw']==100
+              assert selection['OFS']['assets']['value_krw']==55
+              assert selection['CFS']['revenue']['value_krw']==200
+              assert selection['CFS']['equity']['status']=='NO_SINGLE_AXIS_FACT'
+              assert validate_receipt('20260318000001',base,'2025',{'evaluation_date':'20261120'})=='SOURCE_YEAR_AND_RECEIPT_DATE_CONSISTENT'
+              assert validate_receipt('20260318000001',base,'2024',{'evaluation_date':'20261120'})=='FINANCIAL_YEAR_MISMATCH'
+              assert validate_receipt('20260318000001',base,'2025',{'evaluation_date':'20260310'})=='POST_EVALUATION_OR_INVALID_CUTOFF'
+              ambiguous=json.loads(json.dumps(base));ambiguous['files'][0]['fields']['assets']['candidate_contexts'].append(fact(101,MEMBERS['CFS']))
+              assert isolate(ambiguous)['CFS']['assets']['status']=='AMBIGUOUS_SAME_AXIS_VALUES'
+              truncated=json.loads(json.dumps(base));truncated['files'][0]['counts']={'items_truncated':1}
+              assert isolate(truncated)['CFS']['assets']['status']=='UNSAFE_OR_TRUNCATED_SOURCE'
+              first,second='20260318000001','20260319000002'
+              d={'rows':{first:base,second:json.loads(json.dumps(base))}}
+              p={'comparisons':[{'code':'000001','period':'2025_annual','original_receipt':first,'latest_pre_evaluation_receipt':second}]}
+              f={'rows':{'000001':{'evaluation_date':'20261120','filing_periods':{'2025_annual':{'latest_available_asof_evaluation':second}}}}}
+              pairs=compare_pairs(d,p,f)
+              assert pairs[0]['basis_comparisons']['CFS']['field_states']['assets']['state']=='RESEARCH_VALUES_EQUAL'
+              d['rows'][second]['files'][0]['fields']['assets']['candidate_contexts'][0]['value_krw']=101
+              assert compare_pairs(d,p,f)[0]['basis_comparisons']['CFS']['field_states']['assets']['state']=='RESEARCH_VALUES_DIFFER'
+              d['rows'].pop(second)
+              assert compare_pairs(d,p,f)[0]['basis_comparisons']['CFS']['field_states']['assets']['state']=='UNVERIFIED_OR_UNAVAILABLE'
+              return 12
+          
+          if __name__=='__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'result':'SELF_TEST_PASS','tests':selftest()}))
+              else:run()
+          PYCODE
+          python -m py_compile /tmp/r14_xbrl_basis_isolation.py
+          python /tmp/r14_xbrl_basis_isolation.py --self-test
+          python /tmp/r14_xbrl_basis_isolation.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -2408,11 +2612,12 @@ jobs:
           XBRL_REVISION_DELTA_RESULT: ${{ steps.xbrl_revision_delta.outcome }}
           XBRL_STRUCTURE_DIAG_RESULT: ${{ steps.xbrl_structure_diag.outcome }}
           XBRL_DIMENSION_RECOVERY_RESULT: ${{ steps.xbrl_dimension_recovery.outcome }}
+          XBRL_BASIS_ISOLATION_RESULT: ${{ steps.xbrl_basis_isolation.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -2428,7 +2633,8 @@ jobs:
             'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json',
             'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json',
             'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json',
-            'r14_xbrl_dimension_recovery':'v5_reports/stage28/r14_xbrl_dimension_financial_research.json'
+            'r14_xbrl_dimension_recovery':'v5_reports/stage28/r14_xbrl_dimension_financial_research.json',
+            'r14_xbrl_basis_isolation':'v5_reports/stage28/r14_xbrl_basis_isolation_research.json'
           }
           details={}
           for name,p in status_files.items():
@@ -2465,6 +2671,7 @@ jobs:
             'filing_document_original_correction':'ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF',
             'xbrl_receipt_financial_comparison':'RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED',
             'xbrl_dimension_fact_recovery':'RESEARCH_CANDIDATES_WITH_EXPLICIT_CONTEXT_AND_SOURCE_HASH_ONLY; BASIS_AND_PIT_UNVERIFIED',
+            'xbrl_basis_axis_isolation':'RESEARCH_ONLY_EXACT_SINGLE_IFRS_STATEMENT_AXIS; CFS_OFS_AND_PIT_UNVERIFIED',
             'official_ratio_source_gate':'DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
