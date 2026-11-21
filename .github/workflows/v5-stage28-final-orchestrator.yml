@@ -4015,6 +4015,435 @@ jobs:
           python /tmp/r14_krx_official_route_monitor.py --self-test
           python /tmp/r14_krx_official_route_monitor.py
 
+      - name: Calculate owner-attributable research PER/PBR from cached market and financial sources
+        id: calculated_ratio
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_owner_ratio_calculated_research.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #34: strictly research-only owner-attributable PER/PBR calculation.
+
+          Read existing filtered research stock codes, dated KRX-shaped market snapshot and
+          OpenDART cached owner-attributable earnings/equity. No network requests, no
+          legacy cache modifications, and no promotion to provider-authenticated figures,
+          historical point-in-time validity, actionable valuation, or trading decisions.
+          """
+          from __future__ import annotations
+          import collections
+          import csv
+          import datetime as dt
+          from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+          import hashlib
+          import json
+          from pathlib import Path
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+
+          ROOT = Path('v5_reports/stage28')
+          DATA = Path('data')
+          FILTERED = ROOT / 'r14_eligible_research_candidates.json'
+          EXCLUSION = ROOT / 'r14_candidate_exclusion_gate.json'
+          OPERATING_MARKET = ROOT / 'official_market_check.json'
+          MARKET = DATA / 'latest.csv'
+          FINANCIAL = DATA / 'v5_financial_m/annual_financial_index_m.csv'
+          FIN_STATUS = DATA / 'v5_financial_m/status.json'
+          FIN_CACHE = DATA / 'v5_financial_m/dart_financial_cache.json'
+          DISCLOSURE = DATA / 'v5_financial_m/dart_disclosure_evidence.json'
+          GROWTH = DATA / 'v5_investment_r14_fundamental/dart_annual_comparatives.json'
+          PROVENANCE = ROOT / 'r14_krx_official_ratio_source_gate.json'
+          READINESS = ROOT / 'r14_valuation_readiness_gate.json'
+          STAGE27 = Path('v5_reports/stage27/status.json')
+          REPORT = ROOT / 'r14_calculated_per_pbr_research.json'
+          SUMMARY = ROOT / 'r14_calculated_ratio_quality_gate.json'
+          CSV_FILE = ROOT / 'r14_calculated_ratio_research.csv'
+          VERSION = 'R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1'
+          CODE = re.compile(r'^\d{6}$')
+          DATE = re.compile(r'^20\d{6}$')
+          PROFIT_SOURCE = 'OpenDART fnlttSinglAcntAll'
+
+
+          def load_json(p):
+              return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+
+
+          def load_csv(p):
+              with Path(p).open(encoding='utf-8-sig', newline='') as f:
+                  return list(csv.DictReader(f))
+
+
+          def sha256(p):
+              return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+          def dec(x):
+              try:
+                  if isinstance(x, bool) or x is None or str(x).strip() == '':
+                      return None
+                  d = Decimal(str(x).replace(',', '').strip())
+                  return d if d.is_finite() else None
+              except (InvalidOperation, ValueError, TypeError):
+                  return None
+
+
+          def money(x):
+              v = dec(x)
+              return v if v is not None and v == v.to_integral_value() else None
+
+
+          def date_value(s):
+              if not isinstance(s, str) or not DATE.fullmatch(s):
+                  raise ValueError('INVALID_DATE_'+str(s))
+              return dt.datetime.strptime(s, '%Y%m%d').date()
+
+
+          def period_kind(day):
+              # Mirrors R14 N report availability policy. For research only; not PIT proof.
+              m, d = day.month, day.day
+              if (m, d) >= (11, 15): return 'q3'
+              if (m, d) >= (8, 14): return 'half'
+              if (m, d) >= (5, 15): return 'q1'
+              return None
+
+
+          def index_unique(rows, key, label):
+              idx = {}
+              for item in rows:
+                  name = str(item.get(key, '')).strip()
+                  if not CODE.fullmatch(name):
+                      continue
+                  if name in idx:
+                      raise ValueError('DUPLICATE_'+label+'_'+name)
+                  idx[name] = item
+              return idx
+
+
+          def receipt_asof(disclosure, code, year, market_date):
+              v = disclosure.get(f'{code}:{year}:annual', {})
+              items = v.get('candidates') if isinstance(v, dict) else None
+              if not isinstance(items, list):
+                  return {'asof_receipt_listed': False, 'cached_values_matched_to_receipt': False}
+              receipts = [str(r.get('rcept_no', '')) for r in items
+                          if isinstance(r, dict) and DATE.fullmatch(str(r.get('rcept_dt', '')))
+                          and str(r.get('rcept_dt', '')) <= market_date
+                          and re.fullmatch(r'\d{14}', str(r.get('rcept_no', '')))]
+              return {'asof_receipt_listed': bool(receipts),
+                      'receipt_numbers_for_research': sorted(set(receipts)),
+                      'cached_values_matched_to_receipt': v.get('cached_values_matched_to_filing') is True and v.get('point_in_time_verified') is True}
+
+
+          def match_owner_cache(fin, cache, code, year, market_day):
+              """Checks cached IFRS owner fields and cumulative-quarter arithmetic only.
+
+              Does not authenticate the original filing's as-of revision/version or shares.
+              """
+              basis = fin.get('fs_div')
+              annual = cache.get(f'{code}:{year}:annual')
+              if not isinstance(annual, dict) or annual.get('status') != '000' or annual.get('fs_div') != basis:
+                  return {'annual_reconciled': False, 'ttm_reconciled': False, 'reason': 'ANNUAL_SOURCE_OR_BASIS_MISMATCH'}
+              fields = annual.get('accounts') if isinstance(annual.get('accounts'), dict) else {}
+              owner_profit = money(fields.get('profit'))
+              owner_equity = money(fields.get('equity'))
+              annual_match = (owner_profit is not None and owner_equity is not None
+                              and owner_profit == money(fin.get('annual_profit'))
+                              and owner_equity == money(fin.get('equity')))
+              if not annual_match:
+                  return {'annual_reconciled': False, 'ttm_reconciled': False, 'reason': 'ANNUAL_OWNER_ACCOUNTS_NOT_EQUAL_INDEX'}
+              kind = period_kind(market_day)
+              if not kind:
+                  return {'annual_reconciled': True, 'ttm_reconciled': False, 'reason': 'NO_REPORTED_CUMULATIVE_QUARTER'}
+              source_year = market_day.year
+              current = cache.get(f'{code}:{source_year}:{kind}')
+              previous = cache.get(f'{code}:{year}:{kind}')
+              values = []
+              for rec in (current, previous):
+                  if not isinstance(rec, dict) or rec.get('status') != '000' or rec.get('fs_div') != basis:
+                      return {'annual_reconciled': True, 'ttm_reconciled': False, 'reason': 'QUARTER_SOURCE_OR_BASIS_MISMATCH'}
+                  val = money((rec.get('accounts') or {}).get('profit'))
+                  if val is None:
+                      return {'annual_reconciled': True, 'ttm_reconciled': False, 'reason': 'QUARTER_OWNER_PROFIT_MISSING'}
+                  values.append(val)
+              ttmsum = owner_profit + values[0] - values[1]
+              expected = money(fin.get('ttm_profit'))
+              okay = expected is not None and expected == ttmsum and fin.get('ttm_status') == 'VERIFIED_CUMULATIVE'
+              return {'annual_reconciled': True, 'ttm_reconciled': okay,
+                      'ttm_formula': 'annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit',
+                      'reason': 'CUMULATIVE_OWNER_TTM_MATCH' if okay else 'TTM_NOT_RECONCILED'}
+
+
+          def calculate_one(c, market, finance, fin_cache, comparative, disclosure, financial_day):
+              code = c['code']; market_day = date_value(c['market_date'])
+              flags = []
+              res = {'code': code, 'name': c['name'], 'research_grade': c['grade'],
+                     'market_date': c['market_date'], 'source_data_type': 'EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH',
+                     'official_krx_per_pbr': False, 'share_class_independently_verified': False,
+                     'historical_point_in_time_verified': False, 'actionable_entry_price': False,
+                     'investment_decisions_authorized': False, 'buy_signal': False,
+                     'per_calculated_research': None, 'pbr_calculated_research': None,
+                     'per_status': 'BLOCKED', 'pbr_status': 'BLOCKED', 'calculated_ratio_status': 'BLOCKED'}
+              if not market or market.get('BAS_DD') != c['market_date']:
+                  res['block_reasons'] = ['EXACT_DATE_MARKET_ROW_UNAVAILABLE']; return res
+              close, cap = money(market.get('TDD_CLSPRC')), money(market.get('MKTCAP'))
+              if not close or not cap or close <= 0 or cap <= 0:
+                  res['block_reasons'] = ['MARKET_PRICE_OR_CAP_INVALID']; return res
+              if cap % close:
+                  res['block_reasons'] = ['KRX_MARKET_CAP_NOT_DIVISIBLE_BY_CLOSE']; return res
+              res.update(close_krw=int(close), listed_market_cap_krw=int(cap),
+                         implied_shares_from_marketcap=int(cap / close),
+                         market_cap_ordinary_share_class_not_authenticated=True,
+                         valuation_market_basis='KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION')
+              if not finance:
+                  res['block_reasons'] = ['FINANCIAL_ROW_UNAVAILABLE']; return res
+              if finance.get('source') != PROFIT_SOURCE or finance.get('fs_div') not in ('CFS','OFS'):
+                  res['block_reasons'] = ['OWNER_FINANCIAL_SOURCE_OR_BASIS_INVALID']; return res
+              annual_year = str(finance.get('year', '')).strip()
+              if not re.fullmatch(r'20\d{2}', annual_year) or int(annual_year) >= market_day.year:
+                  res['block_reasons'] = ['ANNUAL_FINANCIAL_YEAR_NOT_PRIOR_TO_EVALUATION']; return res
+              if financial_day > market_day:
+                  res['block_reasons'] = ['FINANCIAL_SNAPSHOT_FROM_FUTURE']; return res
+              if (market_day-financial_day).days > 45:
+                  res['block_reasons'] = ['FINANCIAL_SNAPSHOT_TOO_OLD']; return res
+              cache_checks = match_owner_cache(finance, fin_cache, code, annual_year, market_day)
+              res['cache_source_checks'] = cache_checks
+              res['financial_basis'] = finance['fs_div']
+              res['annual_financial_year'] = annual_year
+              res['financial_cache_snapshot_date'] = financial_day.strftime('%Y%m%d')
+              if not cache_checks['annual_reconciled']:
+                  res['block_reasons'] = [cache_checks['reason']]; return res
+              owner_equity = money(finance.get('equity'))
+              ttm = money(finance.get('ttm_profit'))
+              annual_profit = money(finance.get('annual_profit'))
+              res['owner_attributable_annual_profit_krw'] = int(annual_profit) if annual_profit is not None else None
+              res['owner_attributable_equity_krw'] = int(owner_equity) if owner_equity is not None else None
+              res['owner_attributable_ttm_profit_krw'] = int(ttm) if ttm is not None else None
+              res['filing_evidence'] = receipt_asof(disclosure, code, annual_year, c['market_date'])
+              cmp = comparative.get(f'{code}:{annual_year}', {})
+              cmp_ok = (isinstance(cmp, dict) and cmp.get('state') == 'OK'
+                        and cmp.get('fs_div') == finance['fs_div']
+                        and money(cmp.get('owner_profit_current')) == annual_profit)
+              res['independent_annual_comparative_cache_matches_owner_profit'] = bool(cmp_ok)
+              if not cmp_ok:
+                  flags.append('OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED')
+              if finance['fs_div'] == 'OFS':
+                  flags.append('OFS_NOT_CONSOLIDATED_GROUP_BASIS')
+              if owner_equity and owner_equity > 0:
+                  res['pbr_calculated_research'] = float((cap / owner_equity).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP))
+                  res['pbr_status'] = 'PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH'
+              else:
+                  flags.append('OWNER_EQUITY_NONPOSITIVE_OR_UNAVAILABLE')
+              if cache_checks['ttm_reconciled'] and ttm and ttm > 0:
+                  res['per_calculated_research'] = float((cap / ttm).quantize(Decimal('0.0001'), rounding=ROUND_HALF_UP))
+                  res['per_status'] = 'PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH'
+              else:
+                  flags.append('OWNER_TTM_PROFIT_UNVERIFIED_OR_NONPOSITIVE')
+              res['research_source_quality_flags'] = flags
+              res['research_calculation_only'] = True
+              res['calculated_ratio_status'] = ('RESEARCH_ESTIMATE_BOTH_METRICS' if res['per_calculated_research'] is not None and res['pbr_calculated_research'] is not None
+                                                else 'RESEARCH_ESTIMATE_PARTIAL' if res['per_calculated_research'] is not None or res['pbr_calculated_research'] is not None
+                                                else 'BLOCKED')
+              return res
+
+
+          def audit(shortlist, exclusions, market_check, market_rows, fin_rows, fin_status,
+                    cache, disclosure, comparative, ratio_gate, readiness):
+              if shortlist.get('result') != 'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1':
+                  raise ValueError('NOT_FILTERED_R14_SOURCE')
+              if exclusions.get('result') != 'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1':
+                  raise ValueError('MISSING_CORRECTED_FILING_GATE_UNVERIFIED')
+              codes = [x.get('code') for x in shortlist.get('candidates', [])]
+              banned = set(exclusions.get('excluded_codes') or [])
+              if (shortlist.get('candidate_count') != len(codes)
+                  or shortlist.get('candidate_count') != exclusions.get('eligible_research_candidate_count')
+                  or set(shortlist.get('excluded_codes') or []) != banned or len(set(codes)) != len(codes)
+                  or any(not isinstance(c,str) or not CODE.fullmatch(c) or c in banned for c in codes)):
+                  raise ValueError('FILTERED_UNIVERSE_COUNT_OR_EXCLUSION_FAILED')
+              date = shortlist.get('research_market_date')
+              market_day = date_value(date)
+              if (market_check.get('state') != 'VERIFIED_OPERATING_MARKET_DATA'
+                      or market_check.get('market_date') != date or market_check.get('history_sessions') != 70
+                      or market_check.get('market_rows') != len(market_rows)):
+                  raise ValueError('EXISTING_KRX_OPERATING_MARKET_UNVERIFIED')
+              if any(x.get('BAS_DD') != date for x in market_rows):
+                  raise ValueError('LATEST_MARKET_DATE_MIXED')
+              if fin_status.get('version') != 'R14_N_ANNUAL_QUARTER_TTM':
+                  raise ValueError('R14_OWNER_FINANCIAL_SCHEMA_UNVERIFIED')
+              financial_day = date_value(fin_status.get('market_date'))
+              if financial_day > market_day or (market_day - financial_day).days > 45:
+                  raise ValueError('FINANCIAL_SNAPSHOT_DATE_INVALID_OR_STALE')
+              if ratio_gate.get('market_date') != date or readiness.get('research_market_date') != date:
+                  raise ValueError('UPSTREAM_RATIO_DATE_MISMATCH')
+              if (readiness.get('filtered_input_candidate_count') != len(codes)
+                  or readiness.get('excluded_for_missing_corrected_filing') != sorted(banned)
+                  or not isinstance(ratio_gate.get('source_independently_authenticated'), bool)):
+                  raise ValueError('RESEARCH_RATIO_PROVENANCE_OR_UNIVERSE_UNVERIFIED')
+              market_by_code = index_unique(market_rows, 'ISU_CD', 'KRX_MARKET')
+              fin_by_code = index_unique(fin_rows, 'code', 'DART_FINANCIAL')
+              results = []
+              for c in shortlist['candidates']:
+                  if c.get('market_date') != date or c.get('grade') not in ('A', 'B', 'B+') or c.get('buy_signal') is not False:
+                      raise ValueError('INVALID_CANDIDATE_RESEARCH_STATE_'+str(c.get('code')))
+                  results.append(calculate_one(c, market_by_code.get(c['code']), fin_by_code.get(c['code']), cache, comparative, disclosure, financial_day))
+              per_count = sum(x.get('per_calculated_research') is not None for x in results)
+              pbr_count = sum(x.get('pbr_calculated_research') is not None for x in results)
+              both_count = sum(x.get('calculated_ratio_status') == 'RESEARCH_ESTIMATE_BOTH_METRICS' for x in results)
+              disabled = sum(x.get('calculated_ratio_status') == 'BLOCKED' for x in results)
+              now = dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+              counts = collections.Counter(x['calculated_ratio_status'] for x in results)
+              checked = collections.Counter()
+              for row in results:
+                  for flag in row.get('research_source_quality_flags', []):checked[flag] += 1
+              summary = {
+                  'result': 'R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1',
+                  'generated_kst': now, 'research_market_date': date,
+                  'filtered_input_candidate_count': len(codes),
+                  'excluded_missing_corrected_filing_codes': sorted(banned),
+                  'calculated_per_research_count': per_count, 'calculated_pbr_research_count': pbr_count,
+                  'calculated_both_research_count': both_count, 'calculation_blocked_count': disabled,
+                  'candidate_calculation_states': dict(counts),
+                  'source_quality_warning_counts': dict(checked),
+                  'annual_owner_source_reconciled_count': sum(x.get('cache_source_checks', {}).get('annual_reconciled') is True for x in results),
+                  'ttm_owner_source_reconciled_count': sum(x.get('cache_source_checks', {}).get('ttm_reconciled') is True for x in results),
+                  'annual_parent_owner_comparative_match_count': sum(x.get('independent_annual_comparative_cache_matches_owner_profit') is True for x in results),
+                  'annual_filing_receipt_listed_asof_count': sum(x.get('filing_evidence', {}).get('asof_receipt_listed') is True for x in results),
+                  'metric_formulas': {'calculated_per_research': 'listed_krx_market_cap_krw / 4q_parent_owner_profit_krw',
+                                      'calculated_pbr_research': 'listed_krx_market_cap_krw / parent_owner_equity_krw'},
+                  'krx_market_cap_scope_verified_against_ordinary_shares_and_preferred_shares': False,
+                  'parent_owner_earnings_source': 'OpenDART ifrs-full_ProfitLossAttributableToOwnersOfParent account family from existing cache',
+                  'parent_owner_equity_source': 'OpenDART ifrs-full_EquityAttributableToOwnersOfParent account family from existing cache',
+                  'official_per_pbr_independently_verified_count': 0,
+                  'historical_point_in_time_financials_verified': False,
+                  'actionable_valuation_ready_count': 0,
+                  'price_target_generation_executed': False,
+                  'research_only': True, 'investment_decisions_authorized': False, 'final_buy_signals': 0,
+                  'source_retrieval_requests_this_run': 0,
+                  'existing_stage27_modified': False, 'existing_financial_cache_modified': False,
+                  'input_file_paths': {'shortlist': str(FILTERED), 'exclusion': str(EXCLUSION),
+                                       'market': str(MARKET), 'financial_index': str(FINANCIAL), 'financial_cache': str(FIN_CACHE)},
+                  'limitations': [
+                      'Estimates are NOT KRX-published official PER/PBR and are not independent source authentication',
+                      'KRX market capitalization divided by price implies shares but does NOT validate ordinary/preferred share class or share denominator',
+                      'Year/period calculations do not prove cached figures were the latest corrected filing available at the historic evaluation time',
+                      'Some annual owner attributable profit checks may lack a separately cached comparative source',
+                      'No fair value, actual buy price, risk rating or investment decision is authorized'],
+              }
+              report = {
+                  'result': VERSION, 'generated_kst': now, 'research_market_date': date,
+                  'candidate_count': len(codes), 'excluded_codes': sorted(banned),
+                  'calculated_per_research_count': per_count, 'calculated_pbr_research_count': pbr_count,
+                  'calculated_both_research_count': both_count,
+                  'calculated_ratios': results,
+                  'source_type': 'SELF_CALCULATED_FROM_KRX_SHAPED_MARKET_SNAPSHOT_AND_OPENDART_OWNER_ATTRIBUTES_RESEARCH',
+                  'official_krx_ratios_verified': 0, 'shares_and_pit_verified': False,
+                  'actionable_price_target_count': 0, 'investment_decisions_authorized': False, 'final_buy_signals': 0,
+                  'research_only': True,
+              }
+              return report, summary
+
+
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test': 'PASS', 'tests': selftest()}, ensure_ascii=False));return
+              inputs = [FILTERED, EXCLUSION, OPERATING_MARKET, MARKET, FINANCIAL, FIN_STATUS, FIN_CACHE, DISCLOSURE, GROWTH, PROVENANCE, READINESS, STAGE27]
+              hashes = {str(p):sha256(p) for p in inputs}
+              report, summary = audit(load_json(FILTERED),load_json(EXCLUSION),load_json(OPERATING_MARKET),
+                                      load_csv(MARKET),load_csv(FINANCIAL),load_json(FIN_STATUS),
+                                      load_json(FIN_CACHE),load_json(DISCLOSURE),load_json(GROWTH),
+                                      load_json(PROVENANCE),load_json(READINESS))
+              if report['candidate_count'] != summary['filtered_input_candidate_count'] or summary['final_buy_signals'] != 0:
+                  raise ValueError('RESEARCH_GATE_COUNT_OR_SAFETY_FAILED')
+              if {str(p):sha256(p) for p in inputs} != hashes:
+                  raise ValueError('READONLY_INPUT_MUTATION_DETECTED')
+              ROOT.mkdir(parents=True,exist_ok=True)
+              summary['unchanged_input_sha256'] = hashes
+              REPORT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              SUMMARY.write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              headers=['code','name','research_grade','market_date','close_krw','listed_market_cap_krw',
+                       'financial_basis','annual_financial_year','owner_attributable_ttm_profit_krw',
+                       'owner_attributable_equity_krw','per_calculated_research','pbr_calculated_research',
+                       'calculated_ratio_status','share_class_independently_verified',
+                       'historical_point_in_time_verified','investment_decisions_authorized']
+              with CSV_FILE.open('w',encoding='utf-8-sig',newline='') as f:
+                  writer=csv.DictWriter(f,fieldnames=headers);writer.writeheader()
+                  writer.writerows([{h:x.get(h,'') for h in headers} for x in report['calculated_ratios']])
+              print(json.dumps({k:v for k,v in summary.items() if k not in ('unchanged_input_sha256','limitations','input_file_paths')},ensure_ascii=False))
+
+
+          def selftest():
+              tests=0
+              def ck(cond):
+                  nonlocal tests
+                  assert cond
+                  tests+=1
+              ck(dec('NaN') is None)
+              ck(dec('Infinity') is None)
+              ck(money('1.5') is None)
+              ck(money('1,000') == 1000)
+              ck(period_kind(dt.date(2026,11,19)) == 'q3')
+              ck(period_kind(dt.date(2026,4,1)) is None)
+              ck(date_value('20261119').year == 2026)
+              try:date_value('20261301');raise AssertionError('Invalid date accepted')
+              except ValueError:tests+=1
+              try:index_unique([{'code':'000001'},{'code':'000001'}],'code','TEST');raise AssertionError('duplicate')
+              except ValueError:tests+=1
+              finance={'year':'2025','fs_div':'CFS','annual_profit':100,'equity':1000,'ttm_profit':130,'ttm_status':'VERIFIED_CUMULATIVE','source':PROFIT_SOURCE}
+              cache={'000001:2025:annual':{'status':'000','fs_div':'CFS','accounts':{'profit':100,'equity':1000}},
+                     '000001:2026:q3':{'status':'000','fs_div':'CFS','accounts':{'profit':50}},
+                     '000001:2025:q3':{'status':'000','fs_div':'CFS','accounts':{'profit':20}}}
+              check=match_owner_cache(finance,cache,'000001','2025',dt.date(2026,11,19))
+              ck(check['annual_reconciled'] and check['ttm_reconciled'])
+              ck(not match_owner_cache({**finance,'equity':1001},cache,'000001','2025',dt.date(2026,11,19))['annual_reconciled'])
+              ck(not match_owner_cache({**finance,'ttm_profit':131},cache,'000001','2025',dt.date(2026,11,19))['ttm_reconciled'])
+              ck(not match_owner_cache(finance,{**cache,'000001:2026:q3':{'status':'000','fs_div':'OFS','accounts':{'profit':50}}},'000001','2025',dt.date(2026,11,19))['ttm_reconciled'])
+              candidate={'code':'000001','name':'A','grade':'A','market_date':'20261119','buy_signal':False}
+              m={'BAS_DD':'20261119','TDD_CLSPRC':'200','MKTCAP':'2000'}
+              c=calculate_one(candidate,m,finance,cache,{}, {},dt.date(2026,11,16))
+              ck(c['per_calculated_research']==round(2000/130,4) and c['pbr_calculated_research']==2)
+              ck(c['implied_shares_from_marketcap']==10 and not c['share_class_independently_verified'])
+              ck(c['historical_point_in_time_verified'] is False and c['buy_signal'] is False)
+              ck(calculate_one(candidate,{**m,'BAS_DD':'20261118'},finance,cache,{}, {},dt.date(2026,11,16))['per_calculated_research'] is None)
+              ck(calculate_one(candidate,{**m,'MKTCAP':'2001'},finance,cache,{}, {},dt.date(2026,11,16))['per_calculated_research'] is None)
+              neg=calculate_one(candidate,m,{**finance,'ttm_profit':-13},cache,{}, {},dt.date(2026,11,16))
+              ck(neg['per_calculated_research'] is None and neg['pbr_calculated_research']==2)
+              ck(receipt_asof({'000001:2025:annual':{'candidates':[{'rcept_no':'20260318000123','rcept_dt':'20260318'}]}},'000001','2025','20261119')['asof_receipt_listed'])
+              filt={'result':'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1','candidate_count':1,'research_market_date':'20261119','excluded_codes':['000002'],'candidates':[candidate]}
+              excl={'result':'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1','eligible_research_candidate_count':1,'excluded_codes':['000002']}
+              mk={'state':'VERIFIED_OPERATING_MARKET_DATA','market_date':'20261119','market_rows':1,'history_sessions':70}
+              fs={'version':'R14_N_ANNUAL_QUARTER_TTM','market_date':'20261116'}
+              ratio={'market_date':'20261119','source_independently_authenticated':False}
+              readiness={'research_market_date':'20261119','filtered_input_candidate_count':1,'excluded_for_missing_corrected_filing':['000002']}
+              rpt,stat=audit(filt,excl,mk,[{'ISU_CD':'000001',**m}],[{'code':'000001',**finance}],fs,cache,{}, {},ratio,readiness)
+              ck(rpt['candidate_count']==1 and stat['calculated_both_research_count']==1)
+              ck(stat['official_per_pbr_independently_verified_count']==0 and stat['final_buy_signals']==0)
+              ck(stat['actionable_valuation_ready_count']==0 and not stat['historical_point_in_time_financials_verified'])
+              try:audit({**filt,'candidates':[candidate,{**candidate,'code':'000002'}],'candidate_count':2},excl,mk,[{'ISU_CD':'000001',**m}],[{'code':'000001',**finance}],fs,cache,{}, {},ratio,readiness);raise AssertionError('excluded included')
+              except ValueError:tests+=1
+              try:audit({**filt,'research_market_date':'20261118'},excl,mk,[{'ISU_CD':'000001',**m}],[{'code':'000001',**finance}],fs,cache,{}, {},ratio,readiness);raise AssertionError('date mismatch')
+              except ValueError:tests+=1
+              return tests
+
+          if __name__=='__main__': main()
+          PYCODE
+          python -m py_compile /tmp/r14_owner_ratio_calculated_research.py
+          python /tmp/r14_owner_ratio_calculated_research.py --self-test
+          python /tmp/r14_owner_ratio_calculated_research.py
+          python - <<'PY'
+          import json,pathlib
+          base=pathlib.Path('v5_reports/stage28')
+          result=json.loads((base/'r14_calculated_ratio_quality_gate.json').read_text(encoding='utf-8'))
+          report=json.loads((base/'r14_calculated_per_pbr_research.json').read_text(encoding='utf-8'))
+          original=json.loads((base/'r14_eligible_research_candidates.json').read_text(encoding='utf-8'))
+          assert result['filtered_input_candidate_count']==original['candidate_count']==len(report['calculated_ratios'])
+          assert result['excluded_missing_corrected_filing_codes']==sorted(original['excluded_codes'])
+          assert result['official_per_pbr_independently_verified_count']==0
+          assert result['actionable_valuation_ready_count']==0
+          assert report['final_buy_signals']==0 and report['investment_decisions_authorized'] is False
+          assert not any(x['code'] in original['excluded_codes'] for x in report['calculated_ratios'])
+          assert all(x['official_krx_per_pbr'] is False and x['share_class_independently_verified'] is False
+                     and x['buy_signal'] is False for x in report['calculated_ratios'])
+          print('Stage34 owner-attributable ratios research only, official/provider/PIT/decision gates intact')
+          PY
+
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -4061,11 +4490,12 @@ jobs:
           OFFICIAL_RATIO_SOURCE_PROBE_RESULT: ${{ steps.official_ratio_source_probe.outcome }}
           R14_VALUATION_READINESS_RESULT: ${{ steps.r14_valuation_readiness.outcome }}
           OFFICIAL_RATIO_ROUTE_MONITOR_RESULT: ${{ steps.official_ratio_route_monitor.outcome }}
+          CALCULATED_RATIO_RESULT: ${{ steps.calculated_ratio.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -4090,6 +4520,8 @@ jobs:
           'r14_official_ratio_import_research_only':'v5_reports/stage28/r14_official_ratio_import_research_only.json',
             'r14_official_ratio_route_monitor':'v5_reports/stage28/r14_official_ratio_route_monitor.json',
             'r14_ratio_feed_acquisition_plan':'v5_reports/stage28/r14_official_ratio_acquisition_plan.json',
+            'r14_calculated_per_pbr_research':'v5_reports/stage28/r14_calculated_per_pbr_research.json',
+            'r14_calculated_ratio_quality_gate':'v5_reports/stage28/r14_calculated_ratio_quality_gate.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -4100,7 +4532,7 @@ jobs:
                   try:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
-                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue'):
+                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue','r14_calculated_per_pbr_research'):
                           data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates')}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
@@ -4140,10 +4572,16 @@ jobs:
             'valuation_ready_candidates':(details.get('r14_valuation_readiness_gate',{}).get('ready_for_research_valuation_count') if valuation_succeeded else 0),
             'valuation_deferred_candidates':(details.get('r14_valuation_readiness_gate',{}).get('deferred_for_evidence_count') if valuation_succeeded else None),
             'valuation_target_prices_verified':0,
+            'calculated_ratios_are_actionable':False,
             'krx_official_ratio_provider_capability':(details.get('r14_official_ratio_source_capability',{}).get('krx_open_api_per_pbr_capability') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
             'official_ratio_external_export_status':(details.get('r14_official_ratio_source_capability',{}).get('source_import',{}).get('status') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
               'official_ratio_route_feasibility':(details.get('r14_official_ratio_route_monitor',{}).get('source_policy_decision') if statuses.get('OFFICIAL_RATIO_ROUTE_MONITOR')=='success' else 'NOT_VERIFIED_ROUTE_MONITOR_UNAVAILABLE'),
             'official_ratio_route_monitor_reused':(details.get('r14_official_ratio_route_monitor',{}).get('source_check_reused') if statuses.get('OFFICIAL_RATIO_ROUTE_MONITOR')=='success' else None),
+            'r14_self_calculated_ratio_scope':'OWNER_ATTRIBUTABLE_MARKETCAP_RATIO_RESEARCH_ONLY; NOT_OFFICIAL; SHARES_AND_PIT_UNVERIFIED',
+            'r14_self_calculated_ratio_gate_state':('RESEARCH_CALCULATED_NO_VALUATION_AUTHORIZATION' if statuses.get('CALCULATED_RATIO')=='success' and details.get('r14_calculated_ratio_quality_gate',{}).get('result')=='R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1' else 'BLOCKED_CALCULATION_NOT_VERIFIED'),
+            'r14_self_calculated_per_count':(details.get('r14_calculated_ratio_quality_gate',{}).get('calculated_per_research_count') if statuses.get('CALCULATED_RATIO')=='success' else 0),
+            'r14_self_calculated_pbr_count':(details.get('r14_calculated_ratio_quality_gate',{}).get('calculated_pbr_research_count') if statuses.get('CALCULATED_RATIO')=='success' else 0),
+            'active_self_calculated_ratio_research':('v5_reports/stage28/r14_calculated_per_pbr_research.json' if statuses.get('CALCULATED_RATIO')=='success' and details.get('r14_calculated_ratio_quality_gate',{}).get('result')=='R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1' else None),
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
@@ -4161,7 +4599,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage27 untouched; no trading signals.'
+            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage27 untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
