@@ -765,7 +765,7 @@ jobs:
         shell: bash
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-          R14_DOCUMENT_BATCH_LIMIT: '64'
+          R14_DOCUMENT_BATCH_LIMIT: '0' # Freeze missing corrected-document retries; cached evidence reused
         run: |
           set -euo pipefail
           cat > /tmp/r14_document_version_probe.py <<'PYCODE'
@@ -1060,7 +1060,7 @@ jobs:
         shell: bash
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-          R14_XBRL_BATCH_LIMIT: '12'
+          R14_XBRL_BATCH_LIMIT: '0' # Freeze missing corrected-XBRL retries; cached evidence reused
         run: |
           set -euo pipefail
           cat > /tmp/r14_receipt_xbrl_reconciliation.py <<'PYCODE'
@@ -2808,6 +2808,224 @@ jobs:
           python -m py_compile /tmp/r14_xbrl_cache_bridge.py
           python /tmp/r14_xbrl_cache_bridge.py --self-test
           python /tmp/r14_xbrl_cache_bridge.py
+      - name: Exclude incomplete corrected-filing stocks from R14 research candidate feed (no API)
+        id: r14_candidate_gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_candidate_gate.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Fail-closed R14 research shortlist gate. Never authorize investment actions.
+
+          Unverified corrected receipts are removed from the *eligible research candidate*
+          feed without deleting original R14 screening history or modifying financial caches.
+          This gate applies to the financial receipt-mismatch cohort; other candidates
+          remain unverified research, not trade recommendations.
+          """
+          from __future__ import annotations
+          import collections
+          import datetime as dt
+          import json
+          import re
+          import sys
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          ROOT=Path('v5_reports/stage28')
+          R14=ROOT/'r14_full_market_grade_research.json'
+          FILING=ROOT/'r14_filing_receipt_cache.json'
+          FIN=ROOT/'r14_financial_value_reconciliation_cache.json'
+          BRIDGE=ROOT/'r14_xbrl_cache_bridge_research.json'
+          GATE=ROOT/'r14_candidate_exclusion_gate.json'
+          FILTERED=ROOT/'r14_eligible_research_candidates.json'
+          FIVE=('profit','equity','revenue','assets','liabilities')
+
+
+          def read(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+
+
+          def stamp():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+
+
+          def assess(code, financial, filing, receipt_info, value_info):
+              """Conservatively decide if a mismatch candidate has adequate correction evidence."""
+              fin_periods=(financial or {}).get('periods') or {}
+              mismatched=sorted(p for p,v in fin_periods.items() if (v or {}).get('status')=='DART_RECEIPT_MISMATCH')
+              if financial.get('status')=='CURRENT_ACCOUNT_VALUES_MATCHED' and not mismatched:
+                  return None
+              if financial.get('status') not in ('CURRENT_ACCOUNT_VALUES_MATCHED','RECEIPT_VERSION_MISMATCH'):
+                  return {'status':'EXCLUDE','reason':'FINANCIAL_RECONCILIATION_UNVERIFIED',
+                          'periods':[],'selected_receipts':[]}
+              if not mismatched:
+                  return {'status':'EXCLUDE','reason':'UNRESOLVED_RECEIPT_VERSION_MISMATCH',
+                          'periods':[],'selected_receipts':[]}
+              missing=[]; receipts=[]
+              for period in mismatched:
+                  p=(filing.get('filing_periods') or {}).get(period) or {}
+                  selected=str(p.get('latest_available_asof_evaluation') or '')
+                  receipts.append(selected)
+                  if not re.fullmatch(r'20\d{12}',selected):
+                      missing.append('MISSING_SELECTED_CORRECTION_RECEIPT')
+                      continue
+                  actual=(fin_periods.get(period) or {}).get('expected_receipt')
+                  if actual and str(actual)!=selected:
+                      missing.append('SELECTED_RECEIPT_CONFLICT')
+                      continue
+                  if not receipt_info or receipt_info.get('period')!=period or str(receipt_info.get('selected_asof_receipt'))!=selected:
+                      missing.append('MISSING_CORRECTION_AUDIT_EVIDENCE')
+                      continue
+                  if receipt_info.get('selected_document_cache_state')!='DOCUMENT_ZIP_HASH_CAPTURED':
+                      missing.append('CORRECTION_DOCUMENT_UNAVAILABLE')
+                  if receipt_info.get('selected_xbrl_cache_state')!='XBRL_RECEIPT_ZIP_RETRIEVED':
+                      missing.append('CORRECTION_XBRL_UNAVAILABLE')
+                  vpair=value_info if value_info and value_info.get('period')==period else {}
+                  chosen=((vpair.get('sources') or {}).get('selected_asof') or {})
+                  fields=chosen.get('fields') or {}
+                  if any((fields.get(k) or {}).get('state')!='RESEARCH_CACHE_VALUE_MATCH' for k in FIVE):
+                      missing.append('CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED')
+              if missing:
+                  return {'status':'EXCLUDE','reason':missing[0],
+                          'all_reasons':sorted(set(missing)),'periods':mismatched,'selected_receipts':receipts}
+              return {'status':'RESEARCH_EVIDENCE_GATE_PASSED',
+                      'reason':'SELECTED_RECEIPT_AND_CFS_RESEARCH_AMOUNTS_MATCH',
+                      'periods':mismatched,'selected_receipts':receipts}
+
+
+          def screen(r14, fin, filing, bridge):
+              if r14.get('result')!='PRELIMINARY_RESEARCH_ONLY' or r14.get('investment_decisions_authorized') is not False:
+                  raise ValueError('INVALID_R14_RAW_RESEARCH')
+              if fin.get('format')!='R14_FINANCIAL_COMPARISON_CACHE_V1' or filing.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1':
+                  raise ValueError('MISSING_RECEIPT_SOURCE_PROVENANCE')
+              if bridge.get('result')!='R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1':
+                  raise ValueError('MISSING_BRIDGE_RECONCILIATION')
+              if str(r14.get('market_date',''))!=str(bridge.get('research_market_date','')):
+                  raise ValueError('RESEARCH_MARKET_DATE_CONFLICT')
+              pairs=bridge.get('receipt_pair_diagnostics') or []
+              values=bridge.get('cache_value_comparisons') or []
+              receipt_map={(str(p.get('code')),str(p.get('period'))):p for p in pairs}
+              value_map={(str(p.get('code')),str(p.get('period'))):p for p in values}
+              original=r14.get('candidates')
+              if not isinstance(original,list) or r14.get('candidate_count')!=len(original):
+                  raise ValueError('R14_ORIGINAL_COUNT_INVALID')
+              seen=set(); eligible=[];excluded=[]; checked=[]
+              for candidate in original:
+                  code=str(candidate.get('code') or '')
+                  if not re.fullmatch(r'\d{6}',code) or code in seen:
+                      raise ValueError('UNSAFE_CANDIDATE_IDENTIFIERS')
+                  seen.add(code)
+                  financial=(fin.get('rows') or {}).get(code) or {}
+                  filing_row=(filing.get('rows') or {}).get(code) or {}
+                  mismatch_periods=[p for p,x in (financial.get('periods') or {}).items() if (x or {}).get('status')=='DART_RECEIPT_MISMATCH']
+                  period=mismatch_periods[0] if len(mismatch_periods)==1 else ''
+                  decision=assess(code,financial,filing_row,receipt_map.get((code,period)),value_map.get((code,period)))
+                  if decision:
+                      checked.append(code)
+                      if decision['status']=='EXCLUDE':
+                          excluded.append({'code':code,'name':candidate.get('name'),
+                              'previous_research_grade':candidate.get('grade'),**decision})
+                          continue
+                  eligible.append(candidate)
+              if len(eligible)+len(excluded)!=len(original):
+                  raise AssertionError('CANDIDATE_EXCLUSION_COUNT_MISMATCH')
+              if any(x['code'] in {y['code'] for y in eligible} for x in excluded):
+                  raise AssertionError('EXCLUDED_CODE_LEAKED_INTO_ELIGIBLE_FEED')
+              grades=collections.Counter(x.get('grade') for x in eligible)
+              report={'result':'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1',
+                  'generated_kst':stamp(),'research_market_date':r14['market_date'],
+                  'raw_research_candidate_count':len(original),
+                  'receipt_mismatch_candidates_checked':len(checked),
+                  'eligible_research_candidate_count':len(eligible),
+                  'excluded_candidate_count':len(excluded),
+                  'excluded_candidates':excluded,
+                  'excluded_codes':sorted(e['code'] for e in excluded),
+                  'eligible_research_grade_counts':dict(grades),
+                  'eligible_candidate_output':str(FILTERED),
+                  'raw_screening_history_untouched':True,
+                  'missing_correction_retrieval_disabled':True,
+                  'historical_point_in_time_financials_verified':False,
+                  'official_per_pbr_independently_verified':0,
+                  'investment_decisions_authorized':False,'final_buy_signals':0,
+                  'policy':'Exclude receipt-version-mismatch R14 candidates when latest pre-evaluation corrected document, XBRL, or five CFS research field comparisons are unavailable; do not fetch missing corrections.',
+                  'limitations':['Research evidence eligibility is NOT official accounting authentication or investment eligibility',
+                      'Raw full-market grades are preserved for audit, but must not be shown as filtered final research shortlist',
+                      'The separate legacy Stage25/26 module is not a replacement for this filtered R14 candidate feed']}
+              output={'result':'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1',
+                  'generated_kst':report['generated_kst'],'research_market_date':r14['market_date'],
+                  'source_raw_report':str(R14), 'candidate_count':len(eligible),
+                  'candidate_grades':dict(grades),'candidates':eligible,
+                  'excluded_codes':report['excluded_codes'], 'source_gate':str(GATE),
+                  'historical_point_in_time_financials_verified':False,
+                  'official_per_pbr_independently_verified':0,
+                  'investment_decisions_authorized':False,'final_buy_signals':0}
+              return report,output
+
+
+          def save(path, data):
+              path.parent.mkdir(parents=True,exist_ok=True)
+              tmp=path.with_name(path.name+'.tmp')
+              tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              tmp.replace(path)
+
+
+          def selftest():
+              def fin(status,selected):
+                  return {'status':status,'periods':{'2025_annual':{'status':'DART_RECEIPT_MISMATCH','expected_receipt':selected}}}
+              def filing(selected):
+                  return {'filing_periods':{'2025_annual':{'latest_available_asof_evaluation':selected}}}
+              def pair(code,selected,doc=True,xbrl=True):
+                  return {'code':code,'period':'2025_annual','selected_asof_receipt':selected,
+                          'selected_document_cache_state':'DOCUMENT_ZIP_HASH_CAPTURED' if doc else 'NOT_CACHED',
+                          'selected_xbrl_cache_state':'XBRL_RECEIPT_ZIP_RETRIEVED' if xbrl else 'NOT_CACHED'}
+              receipt='20260319000704'
+              m=fin('RECEIPT_VERSION_MISMATCH',receipt);f=filing(receipt);p=pair('033500',receipt)
+              vals={'code':'033500','period':'2025_annual','sources':{'selected_asof':{'fields':{k:{'state':'RESEARCH_CACHE_VALUE_MATCH'} for k in FIVE}}}}
+              assert assess('033500',m,f,p,vals)['status']=='RESEARCH_EVIDENCE_GATE_PASSED'
+              assert 'CORRECTION_XBRL_UNAVAILABLE' in assess('033500',m,f,pair('033500',receipt,xbrl=False),vals)['all_reasons']
+              assert 'CORRECTION_DOCUMENT_UNAVAILABLE' in assess('033500',m,f,pair('033500',receipt,doc=False),vals)['all_reasons']
+              assert 'MISSING_CORRECTION_AUDIT_EVIDENCE' in assess('033500',m,f,None,vals)['all_reasons']
+              assert 'CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED' in assess('033500',m,f,p,None)['all_reasons']
+              assert assess('033500',{'status':'CURRENT_ACCOUNT_VALUES_MATCHED','periods':{}},f,None,None) is None
+              assert assess('033500',{},f,None,None)['status']=='EXCLUDE'
+              rows=[{'code':code,'grade':grade,'name':code} for code,grade in
+                    [('015360','B'),('033500','B'),('054950','A'),('097230','B'),('000050','B')]]
+              pairs=[pair('015360',receipt),pair('033500',receipt,xbrl=False),pair('054950',receipt,xbrl=False),pair('097230',receipt,doc=False,xbrl=False)]
+              values=[dict(vals,code='015360'),dict(vals,code='033500'),dict(vals,code='054950'),dict(vals,code='097230')]
+              raw={'result':'PRELIMINARY_RESEARCH_ONLY','investment_decisions_authorized':False,'market_date':'20261119','candidate_count':len(rows),'candidates':rows}
+              fcache={'format':'R14_FINANCIAL_COMPARISON_CACHE_V1','rows':{**{code:m for code in ['015360','033500','054950','097230']},'000050':{'status':'CURRENT_ACCOUNT_VALUES_MATCHED','periods':{}}}}
+              filingcache={'format':'R14_RECEIPT_EVIDENCE_CACHE_V1','rows':{code:f for code in fcache['rows']}}
+              bridge={'result':'R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1','research_market_date':'20261119','receipt_pair_diagnostics':pairs,'cache_value_comparisons':values}
+              gate,out=screen(raw,fcache,filingcache,bridge)
+              assert out['candidate_count']==2 and gate['excluded_candidate_count']==3
+              assert gate['excluded_codes']==['033500','054950','097230']
+              assert [x['code'] for x in out['candidates']]==['015360','000050']
+              assert gate['final_buy_signals']==0 and out['investment_decisions_authorized'] is False
+              assert gate['eligible_research_grade_counts']=={'B':2}
+              bridge['receipt_pair_diagnostics'][0]['selected_xbrl_cache_state']='NOT_CACHED'
+              assert screen(raw,fcache,filingcache,bridge)[0]['excluded_candidate_count']==4
+              bridge['research_market_date']='20261120'
+              try:screen(raw,fcache,filingcache,bridge)
+              except ValueError: pass
+              else: raise AssertionError('MARKET_DATE_GATE_BROKEN')
+              return 13
+
+
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'status':'SELF_TEST_PASS','tests':selftest()}))
+                  return
+              raw,fin,filing,bridge=(read(p) for p in (R14,FIN,FILING,BRIDGE))
+              gate,output=screen(raw,fin,filing,bridge)
+              save(GATE,gate);save(FILTERED,output)
+              print(json.dumps({k:v for k,v in gate.items() if k not in ('excluded_candidates','limitations')},ensure_ascii=False))
+
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/r14_candidate_gate.py
+          python /tmp/r14_candidate_gate.py --self-test
+          python /tmp/r14_candidate_gate.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -2886,11 +3104,12 @@ jobs:
           XBRL_DIMENSION_RECOVERY_RESULT: ${{ steps.xbrl_dimension_recovery.outcome }}
           XBRL_BASIS_ISOLATION_RESULT: ${{ steps.xbrl_basis_isolation.outcome }}
           XBRL_CACHE_BRIDGE_RESULT: ${{ steps.xbrl_cache_bridge.outcome }}
+          R14_CANDIDATE_GATE_RESULT: ${{ steps.r14_candidate_gate.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -2908,7 +3127,9 @@ jobs:
             'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json',
             'r14_xbrl_dimension_recovery':'v5_reports/stage28/r14_xbrl_dimension_financial_research.json',
             'r14_xbrl_basis_isolation':'v5_reports/stage28/r14_xbrl_basis_isolation_research.json',
-            'r14_xbrl_cache_bridge':'v5_reports/stage28/r14_xbrl_cache_bridge_research.json'
+            'r14_xbrl_cache_bridge':'v5_reports/stage28/r14_xbrl_cache_bridge_research.json',
+            'r14_candidate_eligibility_gate':'v5_reports/stage28/r14_candidate_exclusion_gate.json',
+            'r14_filtered_research_shortlist':'v5_reports/stage28/r14_eligible_research_candidates.json'
           }
           details={}
           for name,p in status_files.items():
@@ -2917,7 +3138,7 @@ jobs:
                   try:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
-                      if name in ('r14_full_market_research','r14_filing_receipt_audit'):
+                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist'):
                           data={k:v for k,v in data.items() if k!='candidates'}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
@@ -2929,6 +3150,11 @@ jobs:
                   r=csv.DictReader(f)
                   return next((x.get('BAS_DD') for x in r if x.get('BAS_DD')),None)
           source_date=market_date('data/latest.csv')
+          gate_succeeded=(statuses.get('R14_CANDIDATE_GATE')=='success'
+                          and details.get('r14_candidate_eligibility_gate',{}).get('result')=='R14_MISSING_CORRECTION_EXCLUSION_GATE_V1')
+          if not gate_succeeded:
+              details['r14_candidate_eligibility_gate']={'status':'FAILED_OR_SKIPPED_DO_NOT_USE_UNFILTERED_RAW_CANDIDATES'}
+              details['r14_filtered_research_shortlist']={'status':'INVALID_GATE_SNAPSHOT_DO_NOT_USE'}
           now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
           report={
             'development_phase':'STAGE28_INTEGRATED',
@@ -2937,7 +3163,10 @@ jobs:
             'stage27_mode':'READ_ONLY_SEPARATE_WORKFLOW',
             'market_source_mode':'VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA',
             'legacy_stage25_scope':'ORIGINAL_LIMITED_FUNDAMENTALS_CSV; NOT_FULL_MARKET',
-            'r14_scope':'READ_ONLY_FULL_MARKET',
+            'r14_scope':'RAW_FULL_MARKET_AUDIT_AND_FILTERED_RESEARCH_SHORTLIST',
+            'active_research_candidate_feed':('v5_reports/stage28/r14_eligible_research_candidates.json' if gate_succeeded else None),
+            'active_research_feed_status':('RESEARCH_ONLY_FILTERED' if gate_succeeded else 'BLOCKED_GATE_NOT_VERIFIED'),
+            'raw_r14_candidate_feed_is_audit_only':True,
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
@@ -2951,9 +3180,11 @@ jobs:
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
+            'excluded_missing_corrected_filing_candidates':details.get('r14_candidate_eligibility_gate',{}).get('excluded_codes',[]),
+            'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Original correction ZIP hashes are audit-date evidence only, not historical financial PIT. Stage27 untouched; no trading signals.'
+            'notice':'Missing corrected-filing retrieval disabled and affected mismatch stocks excluded from active R14 research candidates. Raw R14 unfiltered list retained for audit only. KRX official PER/PBR and historical financial PIT remain unverified; Stage27 untouched, no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
