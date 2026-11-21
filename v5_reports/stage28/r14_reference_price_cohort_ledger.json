@@ -1,0 +1,1271 @@
+{
+  "version": "R14_RESEARCH_REFERENCE_COHORT_LEDGER_V1",
+  "cohorts": [
+    {
+      "research_market_date": "20261119",
+      "reference_method": "RESEARCH_DATE_MARKET_CLOSE_NOT_TRADE_ENTRY",
+      "candidates": [
+        {
+          "code": "000050",
+          "name": "경방",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "7740",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000270",
+          "name": "기아",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "91500",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000370",
+          "name": "한화손해보험",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "6060",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000430",
+          "name": "대원강업",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3920",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000660",
+          "name": "SK하이닉스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "1183000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000970",
+          "name": "한국주철관",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "6410",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "000990",
+          "name": "DB하이텍",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "75900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "001520",
+          "name": "동양",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "996",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002100",
+          "name": "경농",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8760",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002170",
+          "name": "SYTS",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "48700",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002310",
+          "name": "아세아제지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "6460",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002810",
+          "name": "삼영무역",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "19800",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002900",
+          "name": "TYM",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "7360",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "002990",
+          "name": "금호건설",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "10120",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003090",
+          "name": "대웅",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003100",
+          "name": "선광",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "19300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003200",
+          "name": "일신방직",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "10150",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003230",
+          "name": "삼양식품",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "1250000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003280",
+          "name": "흥아해운",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "1551",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "003480",
+          "name": "한진중공업홀딩스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "4390",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "005290",
+          "name": "동진쎄미켐",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "36050",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "005710",
+          "name": "대원산업",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "10540",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "005830",
+          "name": "DB손해보험",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "168500",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "005940",
+          "name": "NH투자증권",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "23400",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "007340",
+          "name": "DN오토모티브",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "38350",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "007700",
+          "name": "F&F홀딩스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "13430",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "009540",
+          "name": "HD한국조선해양",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "231000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "009780",
+          "name": "엠에스씨",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "5850",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "010120",
+          "name": "LS ELECTRIC",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "120800",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "011200",
+          "name": "HMM",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "22550",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "011560",
+          "name": "세보엠이씨",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "21200",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "012630",
+          "name": "HDC",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "20250",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "013030",
+          "name": "하이록코리아",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "29450",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "014940",
+          "name": "오리엔탈정공",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3325",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "015360",
+          "name": "INVENI",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "12900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "016380",
+          "name": "KG스틸",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "4405",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "017890",
+          "name": "한국알콜",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "14300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "018120",
+          "name": "진로발효",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "018290",
+          "name": "브이티",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "11270",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "018670",
+          "name": "SK가스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "212000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "023600",
+          "name": "삼보판지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8710",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "025770",
+          "name": "한국정보통신",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "7610",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "027410",
+          "name": "BGF",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3440",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "027710",
+          "name": "팜스토리",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "1103",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "030190",
+          "name": "NICE평가정보",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16670",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "030200",
+          "name": "KT",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "47300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "032190",
+          "name": "다우데이타",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16090",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "032620",
+          "name": "GC메디아이",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "2915",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "032640",
+          "name": "LG유플러스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "15180",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "034950",
+          "name": "한국기업평가",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "99000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "035000",
+          "name": "HS애드",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "6220",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "035900",
+          "name": "JYP Ent.",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "47950",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "036170",
+          "name": "에이치엠넥스",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "2155",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "036190",
+          "name": "금화피에스시",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "32750",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "036630",
+          "name": "세종텔레콤",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8280",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "037460",
+          "name": "삼지전자",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "25600",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "039830",
+          "name": "오로라",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "14370",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "041190",
+          "name": "우리기술투자",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "4565",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "041510",
+          "name": "에스엠",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "95100",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "041520",
+          "name": "이엘씨",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "10830",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "042000",
+          "name": "카페24",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "13530",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "043150",
+          "name": "바텍",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "17220",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "045100",
+          "name": "한양이엔지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "25800",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "045390",
+          "name": "대아티아이",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "2395",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "046440",
+          "name": "KG파이낸셜",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3895",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "049430",
+          "name": "코메론",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "19900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "049520",
+          "name": "유아이엘",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3490",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "051160",
+          "name": "지어소프트",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "14400",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "051360",
+          "name": "토비스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "10950",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "051500",
+          "name": "CJ프레시웨이",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "20700",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "052330",
+          "name": "코텍",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8490",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "052400",
+          "name": "코나아이",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "19060",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "053300",
+          "name": "한국정보인증",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "5590",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "053610",
+          "name": "프로텍",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "66000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "053800",
+          "name": "안랩",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "117900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "060250",
+          "name": "NHN KCP",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "11250",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "061090",
+          "name": "세나테크놀로지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "25000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "064400",
+          "name": "LG씨엔에스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "75000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "064850",
+          "name": "에프앤가이드",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "13780",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "065710",
+          "name": "서호전기",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "41650",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "067160",
+          "name": "SOOP",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "35750",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "067900",
+          "name": "와이엔텍",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "5600",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "068930",
+          "name": "디지털대성",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "9710",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "071280",
+          "name": "로체시스템즈",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8890",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "071970",
+          "name": "HD현대마린엔진",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "34550",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "072870",
+          "name": "메가스터디",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "12850",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "078150",
+          "name": "HB테크놀러지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "1749",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "078340",
+          "name": "컴투스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "29200",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "078930",
+          "name": "GS",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "81100",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "079960",
+          "name": "동양이엔피",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "13650",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "080220",
+          "name": "제주반도체",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "54000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "080580",
+          "name": "오킨스전자",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16260",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "083450",
+          "name": "GST",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "48600",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "083500",
+          "name": "에프엔에스테크",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "12360",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "084370",
+          "name": "유진테크",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "80700",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "086670",
+          "name": "비엠티",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "16420",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "089890",
+          "name": "코세스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "37250",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "092460",
+          "name": "한라IMS",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "12790",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "093050",
+          "name": "LF",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "21850",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "093190",
+          "name": "빅솔론",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "7300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "093320",
+          "name": "케이아이엔엑스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "174500",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "093520",
+          "name": "매커스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "30300",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "094820",
+          "name": "일진파워",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8790",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "095610",
+          "name": "테스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "90400",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "098120",
+          "name": "마이크로컨텍솔",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "37850",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "099430",
+          "name": "바이오플러스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "3240",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "101160",
+          "name": "월덱스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "26400",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "101490",
+          "name": "에스앤에스텍",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "35450",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "101930",
+          "name": "인화정공",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "6460",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "102710",
+          "name": "이엔에프테크놀로지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "41000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "104830",
+          "name": "원익머트리얼즈",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "35050",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "105560",
+          "name": "KB금융",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "152900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "108380",
+          "name": "대양전기공업",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "14860",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "110990",
+          "name": "디아이티",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "12590",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "114810",
+          "name": "한솔아이원스",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8960",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "114840",
+          "name": "아이패밀리에스씨",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "8710",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "123410",
+          "name": "코리아에프티",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "4980",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "131290",
+          "name": "티에스이",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "197900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "175330",
+          "name": "JB금융지주",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "25650",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "229640",
+          "name": "LS에코에너지",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "38750",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "267250",
+          "name": "HD현대",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "118100",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "294870",
+          "name": "IPARK현대산업개발",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "24900",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "383220",
+          "name": "F&F",
+          "grade_research_only": "A",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "61200",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "383800",
+          "name": "LX홀딩스",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "7130",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "487570",
+          "name": "HS효성",
+          "grade_research_only": "B",
+          "research_evidence_tier": "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+          "reference_close_krw": "46000",
+          "source_market_date": "20261119",
+          "price_is_trade_entry": false,
+          "investment_decisions_authorized": false
+        }
+      ],
+      "candidate_count": 125,
+      "excluded_correction_codes": [
+        "033500",
+        "054950",
+        "097230"
+      ]
+    }
+  ],
+  "research_only": true,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "last_evaluated_kst": "2026-11-21T15:45:03.819848+09:00"
+}

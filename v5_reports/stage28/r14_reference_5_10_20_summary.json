@@ -1,0 +1,89 @@
+{
+  "version": "R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1",
+  "generated_kst": "2026-11-21T15:45:03.819848+09:00",
+  "current_research_market_date": "20261119",
+  "latest_verified_market_snapshot": "20261119",
+  "source_archive_sessions": 70,
+  "current_filtered_candidate_count": 125,
+  "current_research_grade_counts": {
+    "B": 102,
+    "A": 23
+  },
+  "current_evidence_tier_counts": {
+    "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 95,
+    "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 27,
+    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 3,
+    "RESEARCH_CALCULATION_BLOCKED": 0
+  },
+  "historical_cohort_count": 1,
+  "tracked_research_reference_rows": 125,
+  "new_research_cohort_frozen": true,
+  "horizon_observation_status_counts": {
+    "PENDING_ARCHIVED_SESSIONS": 375
+  },
+  "matured_reference_direction_counts": {},
+  "matured_status_by_evidence_tier": {
+    "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": {
+      "5_PENDING_ARCHIVED_SESSIONS": 95,
+      "10_PENDING_ARCHIVED_SESSIONS": 95,
+      "20_PENDING_ARCHIVED_SESSIONS": 95
+    },
+    "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": {
+      "5_PENDING_ARCHIVED_SESSIONS": 27,
+      "10_PENDING_ARCHIVED_SESSIONS": 27,
+      "20_PENDING_ARCHIVED_SESSIONS": 27
+    },
+    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": {
+      "5_PENDING_ARCHIVED_SESSIONS": 3,
+      "10_PENDING_ARCHIVED_SESSIONS": 3,
+      "20_PENDING_ARCHIVED_SESSIONS": 3
+    }
+  },
+  "expected_horizon_observations": 375,
+  "excluded_correction_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "stage27_context": {
+    "stage27_overlap_research_codes": 111,
+    "stage27_rows_read_only": 114,
+    "stage27_trade_like_entry_price_frozen_count": 0,
+    "stage27_first_future_entry_still_pending_count": 111,
+    "stage27_research_groups_not_merged_with_reference_returns": true,
+    "research_cohort_codes_missing_from_stage27": 14
+  },
+  "source_price_type": "EXISTING_VERIFIED_70_SESSION_MARKET_ARCHIVE",
+  "future_return_is_not_a_trade_return": true,
+  "no_calendar_day_substitution": true,
+  "no_forward_filled_missing_prices": true,
+  "returns_not_adjusted_for_dividends_splits_fees": true,
+  "research_only": true,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "official_krx_per_pbr_authenticated": false,
+  "financial_point_in_time_verified": false,
+  "new_krx_api_requests": 0,
+  "new_dart_requests": 0,
+  "missing_corrected_filing_retrieval_disabled": true,
+  "existing_stage27_modified": false,
+  "limitations": [
+    "Reference close is dated research observation, not an executable entry or Stage27 frozen entry close",
+    "Only observed later market snapshots count as future sessions; missing future sessions remain pending",
+    "Date-count checks use the archived session series; not separate exchange calendar authentication",
+    "Unadjusted close comparisons are sensitive to stock splits, corporate actions, dividends and trading suspension",
+    "Research cohort performance is not a tested trade strategy or buy recommendation"
+  ],
+  "read_only_source_sha256": {
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "d53a34d61a9a45deb5e6bd88d44731c34cb2570cff675cc3d7a42710809b4d59",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "50583a167153d084f3d48c86a3ecf521bf30ba175dfd1b5f065b4f3d139abe8e",
+    "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json": "c9bdb357633b80688b82a13b636fb4187c7fac4487784ee1b32fc50fba489330",
+    "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
+    "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c",
+    "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+    "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+    "v5_reports/stage27/r14_research_snapshots.csv": "3f67946eeed3951458826f86b656b352b333a8a02c82d0c80044abc840fee7aa",
+    "v5_reports/stage27/performance_5_10_20.csv": "561126f3cdaa778d8b3469a067342139667b701e90241fd1e7da1c08bfd37e19",
+    "v5_reports/stage27/signal_ledger.csv": "b9946127800df10a526ee3bfa8658d62f197f29223ea513b9f6b7483e8de61c6"
+  }
+}
