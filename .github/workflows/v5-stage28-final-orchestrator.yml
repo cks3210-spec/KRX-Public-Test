@@ -3686,6 +3686,335 @@ jobs:
           python /tmp/r14_valuation_handoff.py --self-test
           python /tmp/r14_valuation_handoff.py
 
+      - name: Review official KRX PER/PBR acquisition routes without unauthorized data collection (weekly cached)
+        id: official_ratio_route_monitor
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_krx_official_route_monitor.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #33: bounded official-channel feasibility monitor. Research only.
+          
+          No undocumented API calls, no login automation, no CSV provenance promotion, no
+          financial-cache writes, and no changes to Stage27 or investing decisions.
+          """
+          from __future__ import annotations
+          
+          import datetime as dt
+          import hashlib
+          from html.parser import HTMLParser
+          import json
+          from pathlib import Path
+          import re
+          import sys
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          SHORTLIST = ROOT / 'r14_eligible_research_candidates.json'
+          EXCLUSION = ROOT / 'r14_candidate_exclusion_gate.json'
+          CAPABILITY = ROOT / 'r14_official_ratio_source_capability_audit.json'
+          READINESS = ROOT / 'r14_valuation_readiness_gate.json'
+          REPORT = ROOT / 'r14_official_ratio_route_monitor.json'
+          DECISION = ROOT / 'r14_official_ratio_acquisition_plan.json'
+          LIVE_URLS = {
+              'krx_openapi_documented_service_catalog': 'https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd',
+              'krx_data_marketplace_public_landing': 'https://data.krx.co.kr/'
+          }
+          SOURCE_DOMAINS = {'openapi.krx.co.kr', 'data.krx.co.kr'}
+          MAX_RESPONSE = 1_000_000
+          CACHE_SECONDS = 7 * 86400
+          
+          
+          def load(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def save(path, obj):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          
+          
+          def now_kst():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul'))
+          
+          
+          class OfficialPageParser(HTMLParser):
+              """Extract text and service-list table rows, not nav-menu keyword coincidences."""
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.rows = []
+                  self.row = []
+                  self.in_row = False
+                  self.in_discard = 0
+                  self.text = []
+          
+              def handle_starttag(self, tag, attrs):
+                  if tag in ('script', 'style', 'noscript'):
+                      self.in_discard += 1
+                  elif tag == 'tr' and self.in_discard == 0:
+                      self.in_row = True
+                      self.row = []
+          
+              def handle_endtag(self, tag):
+                  if tag in ('script', 'style', 'noscript'):
+                      self.in_discard = max(self.in_discard - 1, 0)
+                  elif tag == 'tr' and self.in_row and self.in_discard == 0:
+                      line = ' '.join(' '.join(self.row).split())
+                      if line:
+                          self.rows.append(line)
+                      self.row = []
+                      self.in_row = False
+          
+              def handle_data(self, data):
+                  if self.in_discard:
+                      return
+                  cleaned = ' '.join(data.split())
+                  if cleaned:
+                      self.text.append(cleaned)
+                      if self.in_row:
+                          self.row.append(cleaned)
+          
+          
+          def parse_public_html(page_bytes, label):
+              parser = OfficialPageParser()
+              page = page_bytes.decode('utf-8', 'replace')
+              parser.feed(page)
+              all_text = ' '.join(parser.text)
+              if label == 'krx_openapi_documented_service_catalog':
+                  candidate_rows = [r for r in parser.rows if ('PER' in r.upper() or 'PBR' in r.upper())]
+                  stock_per_pbr_service = [r for r in candidate_rows if
+                      re.search(r'PER\s*[/·,]?\s*PBR|주가수익비율|주가순자산비율', r, re.I)
+                      and re.search(r'종목|주식', r)]
+                  if stock_per_pbr_service:
+                      state = 'POTENTIAL_STOCK_RATIO_SERVICE_REVIEW_REQUIRED'
+                  elif parser.rows and ('서비스 목록' in all_text or 'API' in all_text):
+                      state = 'NO_MATCH_IN_CURRENTLY_VISIBLE_CATALOG_TABLE_ROWS'
+                  else:
+                      state = 'CATALOG_TABLE_NOT_VERIFIABLE'
+                  return {'interpretation': state, 'table_row_count': len(parser.rows),
+                          'candidate_api_rows': stock_per_pbr_service[:3],
+                          'api_service_documented_and_authorized': False}
+              if label == 'krx_data_marketplace_public_landing':
+                  found = 'PER/PBR' in all_text or ('PER' in all_text and 'PBR' in all_text)
+                  return {'interpretation': 'RATIO_PORTAL_MENU_VISIBLE_NO_API_CONTRACT' if found
+                          else 'RATIO_PORTAL_MENU_NOT_DETECTED',
+                          'is_authenticated_api': False}
+              raise ValueError('UNKNOWN_SOURCE_LABEL')
+          
+          
+          def safe_fetch(url, requester=None):
+              parsed = urllib.parse.urlparse(url)
+              if parsed.scheme != 'https' or parsed.hostname not in SOURCE_DOMAINS:
+                  raise ValueError('UNAPPROVED_SOURCE_HOST')
+              if requester is not None:
+                  raw, final_url = requester(url)
+              else:
+                  req = urllib.request.Request(url, headers={
+                      'User-Agent': 'KRX-v5-Stage28-source-contract-audit/1.0',
+                      'Accept': 'text/html,application/xhtml+xml',
+                  })
+                  with urllib.request.urlopen(req, timeout=6) as res:
+                      final_url = res.geturl()
+                      raw = res.read(MAX_RESPONSE + 1)
+              dest = urllib.parse.urlparse(final_url)
+              if dest.scheme != 'https' or dest.hostname != parsed.hostname:
+                  raise ValueError('SOURCE_REDIRECT_OUTSIDE_OFFICIAL_HOST')
+              if len(raw) > MAX_RESPONSE:
+                  raise ValueError('SOURCE_RESPONSE_TOO_LARGE')
+              if not isinstance(raw, bytes):
+                  raise ValueError('SOURCE_RESPONSE_NOT_BYTES')
+              return raw
+          
+          
+          def previous_evidence_valid(existing, now, date):
+              if not isinstance(existing, dict) or existing.get('version') != 'R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1':
+                  return False
+              # The documented official channel is independent of daily market dates.
+              # Cache page-route observations for seven days across adjacent trading dates.
+              if set(existing.get('sources', {})) != set(LIVE_URLS):
+                  return False
+              t = existing.get('last_live_check_kst')
+              try:
+                  old = dt.datetime.fromisoformat(t)
+              except (TypeError, ValueError):
+                  return False
+              if old.tzinfo is None or old > now:
+                  return False
+              return (now - old).total_seconds() < CACHE_SECONDS
+          
+          
+          def check_unchanged_candidates(filtered, exclusion, capability, readiness):
+              date = str(filtered.get('research_market_date', ''))
+              excluded = set(exclusion.get('excluded_codes', []))
+              arr = filtered.get('candidates', [])
+              codes = [x.get('code') for x in arr]
+              if not re.fullmatch(r'20\d{6}', date) or len(arr) != filtered.get('candidate_count'):
+                  raise ValueError('INVALID_FILTERED_CANDIDATE_FEED')
+              if any(x in excluded for x in codes) or len(codes) != len(set(codes)):
+                  raise ValueError('EXCLUDED_OR_DUPLICATED_STOCK_IN_FEED')
+              if date not in [exclusion.get('research_market_date'),capability.get('research_market_date'),readiness.get('research_market_date')]:
+                  raise ValueError('UPSTREAM_MARKET_DATE_MISMATCH')
+              if any(x != date for x in [exclusion.get('research_market_date'), capability.get('research_market_date'), readiness.get('research_market_date')]):
+                  raise ValueError('UPSTREAM_MARKET_DATE_MISMATCH')
+              if len(arr) != readiness.get('filtered_input_candidate_count'):
+                  raise ValueError('VAL_READINESS_COUNT_MISMATCH')
+              if filtered.get('investment_decisions_authorized') is not False or filtered.get('final_buy_signals') != 0:
+                  raise ValueError('TRADE_SIGNAL_PRECONDITION_VIOLATED')
+              if readiness.get('ready_for_research_valuation_count', -1) != 0:
+                  raise ValueError('UNEXPECTED_OFFICIAL_VALUATION_READY_CANDIDATES_REVIEW_REQUIRED')
+              return date, len(arr), sorted(excluded)
+          
+          
+          def audit(filtered, exclusion, capability, readiness, now, old=None, requester=None):
+              date, count, excluded = check_unchanged_candidates(filtered, exclusion, capability, readiness)
+              reuse = previous_evidence_valid(old, now, date)
+              source_results = {}
+              for label, url in LIVE_URLS.items():
+                  if reuse:
+                      source_results[label] = old['sources'][label]
+                      continue
+                  try:
+                      raw = safe_fetch(url, requester=requester)
+                      info = parse_public_html(raw, label)
+                      info.update({'network_status': 'HTTP_200_CONTENT_FETCHED',
+                                   'url': url, 'body_sha256': hashlib.sha256(raw).hexdigest(),
+                                   'body_size': len(raw), 'fetched_kst': now.isoformat()})
+                  except (ValueError, UnicodeError, TimeoutError, urllib.error.HTTPError, urllib.error.URLError, OSError) as exc:
+                      info = {'network_status': 'UNAVAILABLE_OR_UNVERIFIABLE', 'url': url,
+                              'error_type': type(exc).__name__, 'interpretation': 'UNKNOWN_NETWORK_OR_CONTENT',
+                              'fetched_kst': now.isoformat()}
+                  source_results[label] = info
+              source_status = source_results['krx_openapi_documented_service_catalog']['interpretation']
+              official_file_status = capability.get('source_import', {}).get('status', 'UNKNOWN')
+              # Never use a portal HTML response to fabricate a listed API or values.
+              if source_status == 'POTENTIAL_STOCK_RATIO_SERVICE_REVIEW_REQUIRED':
+                  pathway = 'DOCUMENTED_STOCK_RATIO_API_CANDIDATE_REQUIRES_HUMAN_REVIEW'
+              else:
+                  pathway = 'NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED'
+              report = {'result': 'R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY',
+                  'version': 'R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1',
+                  'generated_kst': now.isoformat(),
+                  'last_live_check_kst': old['last_live_check_kst'] if reuse else now.isoformat(),
+                  'research_market_date': date,
+                  'source_check_reused': reuse,
+                  'new_public_get_requests_this_run': 0 if reuse else len(LIVE_URLS),
+                  'source_probe_contains_only_public_get_requests': True,
+                  'sources': source_results,
+                  'public_catalog_service_state': source_status,
+                  'official_marketplace_page_state':source_results['krx_data_marketplace_public_landing']['interpretation'],
+                  'independently_usable_per_pbr_feed_found': False,
+                  'source_import_status': official_file_status,
+                  'source_policy_decision': pathway,
+                  'ratio_source_authenticated': False,
+                  'individual_stock_per_pbr_verified': 0,
+                  'candidate_count': count,
+                  'excluded_codes': excluded,
+                  'download_of_undocumented_or_limited_krx_endpoint_attempted': False,
+                  'new_dart_requests': 0,
+                  'missing_corrected_filing_queries': 0,
+                  'financial_cache_modified': False,
+                  'stage27_modified': False,
+                  'investment_decisions_authorized': False,
+                  'final_buy_signals': 0,
+                  'limitations': [
+                    'Public website navigability or a menu mentioning PER/PBR does not prove a documented external data API exists',
+                    'HTML fetch failure cannot prove the API does not exist',
+                    'A CSV hash, a locally supplied file, or GitHub commit is not independent KRX provider authentication',
+                    'An official PER/PBR provider feed must be separately authorized and authenticated before valuations can be enabled',
+                    'Existing R14 derived PER/PBR remain research estimates only; no actionable prices are generated'
+                  ]}
+              plan = {'result': 'R14_KRX_RATIO_ACQUISITION_POLICY_WITH_SAFE_FALLBACK_V1',
+                  'research_market_date': date, 'official_feed_ready': False,
+                  'research_candidates_preserved': count,
+                  'excluded_codes': excluded,
+                  'acquisition_decision': pathway,
+                  'primary_source': LIVE_URLS['krx_openapi_documented_service_catalog'],
+                  'per_pbr_public_view': LIVE_URLS['krx_data_marketplace_public_landing'],
+                  'documented_official_provider_contract_required': True,
+                  'next_if_authorized_feed_is_obtained': 'VERIFY_SOURCE_IDENTITY_AND_DATED_PER_CODE_VALUES_BEFORE_RESUMING_RATIO_GATE',
+                  'next_if_unavailable': 'CONTINUE_INDEPENDENT_5_10_20_SESSION_RESEARCH_EVALUATION_WITHOUT_VALUATION_OR_TRADING_SIGNALS',
+                  'do_not_retry_missing_corrected_filings': True,
+                  'do_not_generate_synthetic_official_per_pbr': True,
+                  'allow_provisional_derived_ratios_in_research_only': True,
+                  'historical_financial_pit_verified': False,
+                  'official_per_pbr_verified': 0,
+                  'final_buy_signals': 0, 'investment_decisions_authorized': False}
+              return report, plan
+          
+          
+          def selftest():
+              n = 0
+              def check(cond):
+                  nonlocal n
+                  assert cond
+                  n += 1
+              date = '20261119'
+              filtered = {'research_market_date':date,'candidate_count':2, 'candidates':[{'code':'000050'},{'code':'000270'}],
+                 'investment_decisions_authorized':False,'final_buy_signals':0}
+              excluded = {'research_market_date':date,'excluded_codes':['033500','054950','097230']}
+              cap = {'research_market_date':date,'source_import':{'status':'DATE_MATCHED_FILE_NOT_SUPPLIED'}}
+              readiness = {'research_market_date':date,'filtered_input_candidate_count':2,'ready_for_research_valuation_count':0}
+              now = dt.datetime(2026,11,21,14,0,tzinfo=dt.timezone(dt.timedelta(hours=9)))
+              catalog = b'<html><h1>API \\xec\\x84\\x9c\\xeb\\xb9\\x84\\xec\\x8a\\xa4 \\xeb\\xaa\\xa9\\xeb\\xa1\\x9d</h1><table><tr><td>stock</td><td>daily trade</td></tr></table></html>'.replace(b'\\x',b'\\x')
+              # Use real HTML bytes with neutral wording in the fixture.
+              catalog = '<h1>API 서비스 목록</h1><table><tr><td>주식</td><td>일별매매정보</td></tr></table>'.encode()
+              portal = '<nav>주식 PER/PBR/배당수익률(개별종목)</nav>'.encode()
+              route = {LIVE_URLS['krx_openapi_documented_service_catalog']: (catalog,LIVE_URLS['krx_openapi_documented_service_catalog']),LIVE_URLS['krx_data_marketplace_public_landing']:(portal,LIVE_URLS['krx_data_marketplace_public_landing'])}
+              getter = lambda url:route[url]
+              check(parse_public_html(catalog,'krx_openapi_documented_service_catalog')['interpretation']=='NO_MATCH_IN_CURRENTLY_VISIBLE_CATALOG_TABLE_ROWS')
+              check(parse_public_html(portal,'krx_data_marketplace_public_landing')['interpretation']=='RATIO_PORTAL_MENU_VISIBLE_NO_API_CONTRACT')
+              check(parse_public_html('<table><tr><td>주식</td><td>PER/PBR 개별종목</td></tr></table>'.encode(),'krx_openapi_documented_service_catalog')['interpretation']=='POTENTIAL_STOCK_RATIO_SERVICE_REVIEW_REQUIRED')
+              check(check_unchanged_candidates(filtered,excluded,cap,readiness)[1]==2)
+              result, plan=audit(filtered,excluded,cap,readiness,now,requester=getter)
+              check(result['new_public_get_requests_this_run']==2)
+              check(result['candidate_count']==2)
+              check(result['excluded_codes']==['033500','054950','097230'])
+              check(not result['ratio_source_authenticated'])
+              check(result['final_buy_signals']==0)
+              check(plan['next_if_unavailable'].startswith('CONTINUE_INDEPENDENT'))
+              newer,_=audit(filtered,excluded,cap,readiness,now+dt.timedelta(days=1),old=result,requester=lambda _: (_ for _ in ()).throw(ValueError('unexpected network request')))
+              check(newer['source_check_reused'])
+              check(newer['new_public_get_requests_this_run']==0)
+              check(not previous_evidence_valid(result,now+dt.timedelta(days=9),date))
+              copy=json.loads(json.dumps(filtered));copy['candidates'][0]['code']='033500'
+              try: check_unchanged_candidates(copy,excluded,cap,readiness)
+              except ValueError: check(True)
+              else: assert False
+              try: safe_fetch('http://unofficial.example.net/',requester=getter)
+              except ValueError: check(True)
+              else: assert False
+              try: safe_fetch(LIVE_URLS['krx_openapi_documented_service_catalog'],requester=lambda u:(catalog,'https://evil.example.com/'))
+              except ValueError: check(True)
+              else: assert False
+              old=json.loads(json.dumps(result));old['research_market_date']='20261118'
+              check(previous_evidence_valid(old,now,date))
+              bad_readiness={**readiness,'ready_for_research_valuation_count':1}
+              try: check_unchanged_candidates(filtered,excluded,cap,bad_readiness)
+              except ValueError: check(True)
+              else: assert False
+              return n
+          
+          
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test':'PASS','tests':selftest()}))
+                  return
+              filtered,exclusion,capability,readiness=(load(p) for p in (SHORTLIST,EXCLUSION,CAPABILITY,READINESS))
+              old=load(REPORT) if REPORT.is_file() else None
+              report,plan=audit(filtered,exclusion,capability,readiness,now_kst(),old)
+              save(REPORT,report);save(DECISION,plan)
+              print(json.dumps({k:v for k,v in report.items() if k not in ('sources','limitations')},ensure_ascii=False))
+          
+          
+          if __name__=='__main__':main()
+          PYCODE
+          python -m py_compile /tmp/r14_krx_official_route_monitor.py
+          python /tmp/r14_krx_official_route_monitor.py --self-test
+          python /tmp/r14_krx_official_route_monitor.py
+
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -3731,11 +4060,12 @@ jobs:
           R14_CANDIDATE_GATE_RESULT: ${{ steps.r14_candidate_gate.outcome }}
           OFFICIAL_RATIO_SOURCE_PROBE_RESULT: ${{ steps.official_ratio_source_probe.outcome }}
           R14_VALUATION_READINESS_RESULT: ${{ steps.r14_valuation_readiness.outcome }}
+          OFFICIAL_RATIO_ROUTE_MONITOR_RESULT: ${{ steps.official_ratio_route_monitor.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -3758,6 +4088,8 @@ jobs:
             'r14_filtered_research_shortlist':'v5_reports/stage28/r14_eligible_research_candidates.json',
             'r14_official_ratio_source_capability':'v5_reports/stage28/r14_official_ratio_source_capability_audit.json',
           'r14_official_ratio_import_research_only':'v5_reports/stage28/r14_official_ratio_import_research_only.json',
+            'r14_official_ratio_route_monitor':'v5_reports/stage28/r14_official_ratio_route_monitor.json',
+            'r14_ratio_feed_acquisition_plan':'v5_reports/stage28/r14_official_ratio_acquisition_plan.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -3810,7 +4142,9 @@ jobs:
             'valuation_target_prices_verified':0,
             'krx_official_ratio_provider_capability':(details.get('r14_official_ratio_source_capability',{}).get('krx_open_api_per_pbr_capability') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
             'official_ratio_external_export_status':(details.get('r14_official_ratio_source_capability',{}).get('source_import',{}).get('status') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
-              'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
+              'official_ratio_route_feasibility':(details.get('r14_official_ratio_route_monitor',{}).get('source_policy_decision') if statuses.get('OFFICIAL_RATIO_ROUTE_MONITOR')=='success' else 'NOT_VERIFIED_ROUTE_MONITOR_UNAVAILABLE'),
+            'official_ratio_route_monitor_reused':(details.get('r14_official_ratio_route_monitor',{}).get('source_check_reused') if statuses.get('OFFICIAL_RATIO_ROUTE_MONITOR')=='success' else None),
+            'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
             'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
