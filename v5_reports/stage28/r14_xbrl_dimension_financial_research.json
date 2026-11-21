@@ -1,0 +1,137 @@
+{
+  "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
+  "generated_kst": "2026-11-21T10:29:00.489921+09:00",
+  "research_market_date": "20261119",
+  "available_prior_xbrl_receipts": 6,
+  "considered_receipts": 5,
+  "verified_source_hashes_with_candidate_extraction": 5,
+  "requests_this_run": 5,
+  "run_states": {
+    "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES": 5
+  },
+  "receipts": {
+    "20260310002563": {
+      "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+      "accounts_with_candidates": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "dimensioned_contexts": 561
+    },
+    "20260318001705": {
+      "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+      "accounts_with_candidates": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "dimensioned_contexts": 780
+    },
+    "20260319000606": {
+      "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+      "accounts_with_candidates": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "dimensioned_contexts": 1192
+    },
+    "20260323001116": {
+      "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+      "accounts_with_candidates": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "dimensioned_contexts": 649
+    },
+    "20260605000111": {
+      "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+      "accounts_with_candidates": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "dimensioned_contexts": 561
+    }
+  },
+  "revision_comparisons": [
+    {
+      "code": "015360",
+      "original_receipt": "20260310002563",
+      "revised_receipt": "20260605000111",
+      "status": "CANDIDATE_VALUES_EQUAL_BASIS_UNVERIFIED",
+      "candidate_equal_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "candidate_differing_fields": [],
+      "both_xbrl_receipts_available": true,
+      "financial_basis_verified": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "033500",
+      "original_receipt": "20260318001705",
+      "revised_receipt": "20260319000704",
+      "status": "NO_SHARED_RESEARCH_FACTS",
+      "candidate_equal_fields": [],
+      "candidate_differing_fields": [],
+      "both_xbrl_receipts_available": false,
+      "financial_basis_verified": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "054950",
+      "original_receipt": "20260323001116",
+      "revised_receipt": "20260325000430",
+      "status": "NO_SHARED_RESEARCH_FACTS",
+      "candidate_equal_fields": [],
+      "candidate_differing_fields": [],
+      "both_xbrl_receipts_available": false,
+      "financial_basis_verified": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "097230",
+      "original_receipt": "20260319000606",
+      "revised_receipt": "20260319001333",
+      "status": "NO_SHARED_RESEARCH_FACTS",
+      "candidate_equal_fields": [],
+      "candidate_differing_fields": [],
+      "both_xbrl_receipts_available": false,
+      "financial_basis_verified": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    }
+  ],
+  "financial_basis_verified": false,
+  "historical_point_in_time_financials_verified": false,
+  "official_per_pbr_independently_verified": 0,
+  "financial_cache_modified": false,
+  "stage27_modified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "Dimensioned IFRS facts are research candidates, not CFS/OFS verified amounts",
+    "Values may include multiple members, contexts or financial bases and cannot be treated as financial revision proof",
+    "Document retrieval and hash comparisons today do not attest historical decision-time availability"
+  ]
+}

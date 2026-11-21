@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T10:23:13.989287+09:00",
+  "generated_kst": "2026-11-21T10:29:00.742194+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -14,7 +14,8 @@
     "DATED_RATIO_INPUT": "success",
     "ORIGINAL_XBRL_RECONCILIATION": "success",
     "XBRL_REVISION_DELTA": "success",
-    "XBRL_STRUCTURE_DIAG": "success"
+    "XBRL_STRUCTURE_DIAG": "success",
+    "XBRL_DIMENSION_RECOVERY": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -26,6 +27,7 @@
   "financial_value_reconciliation": "CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION",
   "filing_document_original_correction": "ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF",
   "xbrl_receipt_financial_comparison": "RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED",
+  "xbrl_dimension_fact_recovery": "RESEARCH_CANDIDATES_WITH_EXPLICIT_CONTEXT_AND_SOURCE_HASH_ONLY; BASIS_AND_PIT_UNVERIFIED",
   "official_ratio_source_gate": "DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED",
   "source_date_in_existing_data": "20261119",
   "existing_data_fresh_for_today": false,
@@ -43,7 +45,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:23:13.896971+00:00",
+      "generated_utc": "2026-11-21T01:29:00.597562+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -58,7 +60,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:23:13.935180+00:00",
+      "generated_utc": "2026-11-21T01:29:00.656822+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -167,7 +169,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T10:22:49.465660+09:00",
+      "generated_kst": "2026-11-21T10:28:41.543382+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -11456,7 +11458,7 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T10:22:50.125052+09:00",
+      "generated_kst": "2026-11-21T10:28:41.933906+09:00",
       "company_queries_this_run": 0,
       "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
@@ -11481,7 +11483,7 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-21T10:22:51.322847+09:00",
+      "generated_kst": "2026-11-21T10:28:43.120384+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "companies_with_original_or_correction_receipts": 28,
@@ -12375,7 +12377,7 @@
     },
     "r14_xbrl_receipt_financial_research": {
       "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:22:54.146551+09:00",
+      "generated_kst": "2026-11-21T10:28:45.980578+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "annual_receipts_expected": 9,
@@ -12564,7 +12566,7 @@
     },
     "r14_xbrl_revision_delta": {
       "result": "R14_XBRL_REVISION_DELTA_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:22:54.242676+09:00",
+      "generated_kst": "2026-11-21T10:28:46.119177+09:00",
       "research_market_date": "20261119",
       "mismatch_periods": 4,
       "status_counts": {
@@ -12668,13 +12670,13 @@
     "r14_xbrl_structure_diagnostic": {
       "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
       "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
-      "generated_kst": "2026-11-21T10:23:13.807146+09:00",
+      "generated_kst": "2026-11-21T10:28:46.303429+09:00",
       "market_date": "20261119",
       "cached_receipts_total": 6,
       "eligible_receipts_to_diagnose": 6,
       "diagnostics_available": 6,
       "run_states": {
-        "SOURCE_HASH_MATCHED": 6
+        "REUSED_STRUCTURE_DIAGNOSTIC": 6
       },
       "extraction_failure_reasons": {
         "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH": 6
@@ -12926,6 +12928,143 @@
         "ZIP/XML digests prove retrieved-byte equality/difference only; financial values may be unchanged",
         "Diagnostic facts are research-only, not verified CFS/OFS or historical decision-time availability",
         "No implicit promotion of research grades to buy recommendations"
+      ]
+    },
+    "r14_xbrl_dimension_recovery": {
+      "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
+      "generated_kst": "2026-11-21T10:29:00.489921+09:00",
+      "research_market_date": "20261119",
+      "available_prior_xbrl_receipts": 6,
+      "considered_receipts": 5,
+      "verified_source_hashes_with_candidate_extraction": 5,
+      "requests_this_run": 5,
+      "run_states": {
+        "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES": 5
+      },
+      "receipts": {
+        "20260310002563": {
+          "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+          "accounts_with_candidates": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "dimensioned_contexts": 561
+        },
+        "20260318001705": {
+          "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+          "accounts_with_candidates": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "dimensioned_contexts": 780
+        },
+        "20260319000606": {
+          "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+          "accounts_with_candidates": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "dimensioned_contexts": 1192
+        },
+        "20260323001116": {
+          "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+          "accounts_with_candidates": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "dimensioned_contexts": 649
+        },
+        "20260605000111": {
+          "state": "SOURCE_HASH_CONFIRMED_FACT_CANDIDATES",
+          "accounts_with_candidates": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "dimensioned_contexts": 561
+        }
+      },
+      "revision_comparisons": [
+        {
+          "code": "015360",
+          "original_receipt": "20260310002563",
+          "revised_receipt": "20260605000111",
+          "status": "CANDIDATE_VALUES_EQUAL_BASIS_UNVERIFIED",
+          "candidate_equal_fields": [
+            "assets",
+            "equity",
+            "liabilities",
+            "profit",
+            "revenue"
+          ],
+          "candidate_differing_fields": [],
+          "both_xbrl_receipts_available": true,
+          "financial_basis_verified": false,
+          "historical_point_in_time_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "033500",
+          "original_receipt": "20260318001705",
+          "revised_receipt": "20260319000704",
+          "status": "NO_SHARED_RESEARCH_FACTS",
+          "candidate_equal_fields": [],
+          "candidate_differing_fields": [],
+          "both_xbrl_receipts_available": false,
+          "financial_basis_verified": false,
+          "historical_point_in_time_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "054950",
+          "original_receipt": "20260323001116",
+          "revised_receipt": "20260325000430",
+          "status": "NO_SHARED_RESEARCH_FACTS",
+          "candidate_equal_fields": [],
+          "candidate_differing_fields": [],
+          "both_xbrl_receipts_available": false,
+          "financial_basis_verified": false,
+          "historical_point_in_time_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "097230",
+          "original_receipt": "20260319000606",
+          "revised_receipt": "20260319001333",
+          "status": "NO_SHARED_RESEARCH_FACTS",
+          "candidate_equal_fields": [],
+          "candidate_differing_fields": [],
+          "both_xbrl_receipts_available": false,
+          "financial_basis_verified": false,
+          "historical_point_in_time_verified": false,
+          "investment_decisions_authorized": false
+        }
+      ],
+      "financial_basis_verified": false,
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_independently_verified": 0,
+      "financial_cache_modified": false,
+      "stage27_modified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "limitations": [
+        "Dimensioned IFRS facts are research candidates, not CFS/OFS verified amounts",
+        "Values may include multiple members, contexts or financial bases and cannot be treated as financial revision proof",
+        "Document retrieval and hash comparisons today do not attest historical decision-time availability"
       ]
     }
   },
