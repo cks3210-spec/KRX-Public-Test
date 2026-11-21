@@ -1,11 +1,11 @@
 {
   "result": "R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY",
   "version": "R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1",
-  "generated_kst": "2026-11-21T14:14:12.458884+09:00",
+  "generated_kst": "2026-11-21T15:24:57.418485+09:00",
   "last_live_check_kst": "2026-11-21T14:14:12.458884+09:00",
   "research_market_date": "20261119",
-  "source_check_reused": false,
-  "new_public_get_requests_this_run": 2,
+  "source_check_reused": true,
+  "new_public_get_requests_this_run": 0,
   "source_probe_contains_only_public_get_requests": true,
   "sources": {
     "krx_openapi_documented_service_catalog": {

@@ -1,7 +1,7 @@
 {
   "result": "R14_KRX_OFFICIAL_RATIO_SOURCE_CAPABILITY_RESEARCH_ONLY",
   "version": "R14_KRX_OFFICIAL_RATIO_SOURCE_CONTRACT_V1",
-  "generated_kst": "2026-11-21T14:14:12.125184+09:00",
+  "generated_kst": "2026-11-21T15:24:57.070449+09:00",
   "research_market_date": "20261119",
   "upstream_filtered_candidate_count": 125,
   "upstream_excluded_codes": [
@@ -45,8 +45,8 @@
     "Historical filing point-in-time validation and official valuation still blocked"
   ],
   "read_only_source_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "cc0e8aecbea5ec060fcbf6f5c4d7fb92786ae4307b512cfbf4a79acc58c4d725",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "dc00bea463aa3622490ed223c6dbf62e5ee02bf3722e2076ab75d5e266d3d953",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "8c4d63ebbb3aa61a2383ddfcb10a1d69e16fe3676675c72c09b17d100a2d67d3",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2757e9489940c8a3625afdeb03ea9839c1557e16a6e19fae396eb66cc1243209",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
     "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
     "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"

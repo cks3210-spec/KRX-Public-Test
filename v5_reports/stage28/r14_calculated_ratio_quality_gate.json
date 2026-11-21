@@ -1,0 +1,70 @@
+{
+  "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
+  "generated_kst": "2026-11-21T15:24:57.644053+09:00",
+  "research_market_date": "20261119",
+  "filtered_input_candidate_count": 125,
+  "excluded_missing_corrected_filing_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "calculated_per_research_count": 125,
+  "calculated_pbr_research_count": 125,
+  "calculated_both_research_count": 125,
+  "calculation_blocked_count": 0,
+  "candidate_calculation_states": {
+    "RESEARCH_ESTIMATE_BOTH_METRICS": 125
+  },
+  "source_quality_warning_counts": {
+    "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 3
+  },
+  "annual_owner_source_reconciled_count": 125,
+  "ttm_owner_source_reconciled_count": 125,
+  "annual_parent_owner_comparative_match_count": 122,
+  "annual_filing_receipt_listed_asof_count": 95,
+  "metric_formulas": {
+    "calculated_per_research": "listed_krx_market_cap_krw / 4q_parent_owner_profit_krw",
+    "calculated_pbr_research": "listed_krx_market_cap_krw / parent_owner_equity_krw"
+  },
+  "krx_market_cap_scope_verified_against_ordinary_shares_and_preferred_shares": false,
+  "parent_owner_earnings_source": "OpenDART ifrs-full_ProfitLossAttributableToOwnersOfParent account family from existing cache",
+  "parent_owner_equity_source": "OpenDART ifrs-full_EquityAttributableToOwnersOfParent account family from existing cache",
+  "official_per_pbr_independently_verified_count": 0,
+  "historical_point_in_time_financials_verified": false,
+  "actionable_valuation_ready_count": 0,
+  "price_target_generation_executed": false,
+  "research_only": true,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "source_retrieval_requests_this_run": 0,
+  "existing_stage27_modified": false,
+  "existing_financial_cache_modified": false,
+  "input_file_paths": {
+    "shortlist": "v5_reports/stage28/r14_eligible_research_candidates.json",
+    "exclusion": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
+    "market": "data/latest.csv",
+    "financial_index": "data/v5_financial_m/annual_financial_index_m.csv",
+    "financial_cache": "data/v5_financial_m/dart_financial_cache.json"
+  },
+  "limitations": [
+    "Estimates are NOT KRX-published official PER/PBR and are not independent source authentication",
+    "KRX market capitalization divided by price implies shares but does NOT validate ordinary/preferred share class or share denominator",
+    "Year/period calculations do not prove cached figures were the latest corrected filing available at the historic evaluation time",
+    "Some annual owner attributable profit checks may lack a separately cached comparative source",
+    "No fair value, actual buy price, risk rating or investment decision is authorized"
+  ],
+  "unchanged_input_sha256": {
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "8c4d63ebbb3aa61a2383ddfcb10a1d69e16fe3676675c72c09b17d100a2d67d3",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2757e9489940c8a3625afdeb03ea9839c1557e16a6e19fae396eb66cc1243209",
+    "v5_reports/stage28/official_market_check.json": "24b9557cebf3cc40d2145e8db1d00479097d0c8f0c5567a44bbd29dffcc27964",
+    "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+    "data/v5_financial_m/annual_financial_index_m.csv": "eec837d79233e8bda7ad6c54ee273fd51b28ec904fb057ad599e544f097c4f38",
+    "data/v5_financial_m/status.json": "3fcb18aaa7c5e9e28a8ca8158379b5746f5d86c39a6c8472a338e446ae7c8538",
+    "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a",
+    "data/v5_financial_m/dart_disclosure_evidence.json": "87ac5464b052b7d79c4dba7b8b71ba90669120456b029342310620a719dce86e",
+    "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
+    "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "10779b68c965f32917cef994579625f92a42128fb2898da9fb77cd0ce7cf3ac4",
+    "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
+  }
+}
