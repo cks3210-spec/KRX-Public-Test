@@ -765,7 +765,7 @@ jobs:
         shell: bash
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-          R14_DOCUMENT_BATCH_LIMIT: '12'
+          R14_DOCUMENT_BATCH_LIMIT: '64'
         run: |
           set -euo pipefail
           cat > /tmp/r14_document_version_probe.py <<'PYCODE'
@@ -818,6 +818,11 @@ jobs:
           def safe_zip_bytes(data, receipt):
               """Inspect ZIP contents without extracting to disk, executing XML or logging keys."""
               if not data.startswith(b'PK'):
+                  # DART sometimes returns an XML API status instead of ZIP.
+                  # Classify it without retaining response text or credentials.
+                  found=re.search(rb'<status>\s*([0-9A-Za-z_-]{2,12})\s*</status>',data[:8192],re.I)
+                  if found:
+                      return {'state':'DART_API_STATUS_'+found.group(1).decode('ascii').upper()}
                   return {'state':'NOT_ZIP_RESPONSE'}
               if len(data) > MAX_DOWNLOAD_BYTES:
                   return {'state':'ARCHIVE_TOO_LARGE'}
@@ -967,6 +972,8 @@ jobs:
               assert good['state']=='DOCUMENT_ZIP_HASH_CAPTURED'
               assert good['zip_sha256']==hashlib.sha256(buf.getvalue()).hexdigest()
               assert safe_zip_bytes(b'<xml>failure</xml>','20260318000001')['state']=='NOT_ZIP_RESPONSE'
+              assert safe_zip_bytes(b'<result><status>014</status><message>missing</message></result>','20260318000001')['state']=='DART_API_STATUS_014'
+              assert safe_zip_bytes(b'<result><status>020</status></result>','20260318000001')['state']=='DART_API_STATUS_020'
               row={'evaluation_date':'20261120','filing_periods':{'2025_annual':{
                   'pre_evaluation_receipts':[{'rcept_no':'20260318000001','rcept_dt':'20260318'},
                                              {'rcept_no':'20260605000001','rcept_dt':'20260605'}],
@@ -980,7 +987,7 @@ jobs:
               assert periods_for_candidate(row,{'periods':{'2025_annual':{'status':'CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE'}}})
               assert not periods_for_candidate({'evaluation_date':'20260301','filing_periods':row['filing_periods']},mismatch)
               assert build_tasks({'rows':{'000001':row}}, {'rows':{'000001':{'status':'RECEIPT_VERSION_MISMATCH',**mismatch}}})[1]==['20260318000001','20260605000001']
-              return 10
+              return 12
 
 
           def run():
@@ -993,7 +1000,7 @@ jobs:
                   raise SystemExit('UNKNOWN_DOCUMENT_CACHE_FORMAT')
               archive=dict(old.get('rows',{}))
               companies, queue=build_tasks(filing,comparison)
-              limit=max(0,min(24,int(os.getenv('R14_DOCUMENT_BATCH_LIMIT','12'))))
+              limit=max(0,min(96,int(os.getenv('R14_DOCUMENT_BATCH_LIMIT','64'))))
               token=os.getenv('DART_API_KEY','').strip()
               checked=0
               states=collections.Counter()
@@ -1011,6 +1018,11 @@ jobs:
                       archive[receipt]=evidence
                   # On errors, never overwrite any previous valid digest.
                   time.sleep(.22)
+                  if evidence['state']=='DART_API_STATUS_020':
+                      # OpenDART request-rate exhaustion: preserve prior work
+                      # and stop rather than spending further failed requests.
+                      states['HALTED_DART_RATE_LIMIT']+=1
+                      break
               report={'result':'STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT',
                       'generated_kst':stamp(),'market_date':read(ROOT/'r14_full_market_grade_research.json',{}).get('market_date'),
                       'mismatch_company_count':sum(x['comparison_status']=='RECEIPT_VERSION_MISMATCH' for x in companies),
