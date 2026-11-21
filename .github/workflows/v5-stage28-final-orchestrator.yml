@@ -760,6 +760,325 @@ jobs:
           python -m py_compile /tmp/r14_financial_values.py
           python /tmp/r14_financial_values.py --self-test
           python /tmp/r14_financial_values.py
+      - name: Preserve OpenDART original and amended filing ZIP checksums (research-only)
+        id: original_versions
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          R14_DOCUMENT_BATCH_LIMIT: '12'
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_document_version_probe.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 R14 historical filing-version documentary evidence (research-only).
+
+          Original filing ZIP retrieval creates CURRENT retrieval evidence of a registered
+          DART receipt, not proof that the current API's financial rows represent values
+          accessible at the past decision timestamp. Never unfreeze buy authorization.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import io
+          import json
+          import os
+          import re
+          import time
+          import zipfile
+          from pathlib import Path
+          from urllib import parse, request, error
+          from zoneinfo import ZoneInfo
+
+          ROOT=Path('v5_reports/stage28')
+          FILING=ROOT/'r14_filing_receipt_cache.json'
+          FINANCIAL=ROOT/'r14_financial_value_reconciliation_cache.json'
+          PERSIST=ROOT/'r14_filing_document_version_cache.json'
+          OUT=ROOT/'r14_correction_original_document_audit.json'
+          ENDPOINT='https://opendart.fss.or.kr/api/document.xml'
+          MAX_DOWNLOAD_BYTES=16_000_000
+          MAX_UNCOMPRESSED=64_000_000
+          MAX_MEMBERS=80
+
+
+          def read(p, fallback):
+              try:
+                  return json.loads(p.read_text(encoding='utf-8-sig'))
+              except (OSError, ValueError):
+                  return fallback
+
+
+          def stamp():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+
+
+          def valid_receipt(r):
+              return bool(re.fullmatch(r'20\d{12}', str(r or '')))
+
+
+          def safe_zip_bytes(data, receipt):
+              """Inspect ZIP contents without extracting to disk, executing XML or logging keys."""
+              if not data.startswith(b'PK'):
+                  return {'state':'NOT_ZIP_RESPONSE'}
+              if len(data) > MAX_DOWNLOAD_BYTES:
+                  return {'state':'ARCHIVE_TOO_LARGE'}
+              try:
+                  with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                      entries=archive.infolist()
+                      if len(entries)>MAX_MEMBERS:
+                          return {'state':'TOO_MANY_ARCHIVE_MEMBERS'}
+                      total=sum(e.file_size for e in entries)
+                      if total>MAX_UNCOMPRESSED:
+                          return {'state':'EXCESSIVE_UNCOMPRESSED_SIZE'}
+                      documents=[]
+                      for ent in entries:
+                          if ent.is_dir():
+                              continue
+                          name=ent.filename.replace('\\','/')
+                          if name.startswith('/') or '..' in name.split('/'):
+                              return {'state':'UNSAFE_ARCHIVE_PATH'}
+                          if ent.file_size>MAX_UNCOMPRESSED:
+                              return {'state':'EXCESSIVE_SINGLE_FILE_SIZE'}
+                          if name.lower().endswith(('.xml','.xbrl','.html','.htm','.txt')):
+                              # Keep 1-to-1 digest for each document; never ingest code content.
+                              blob=archive.read(ent)
+                              documents.append({'filename':name[:200], 'size_bytes':len(blob),
+                                                'sha256':hashlib.sha256(blob).hexdigest()})
+                      if not documents:
+                          return {'state':'ARCHIVE_HAS_NO_INSPECTABLE_DOCUMENTS'}
+                      return {'state':'DOCUMENT_ZIP_HASH_CAPTURED','receipt_no':receipt,
+                              'zip_sha256':hashlib.sha256(data).hexdigest(),
+                              'zip_bytes':len(data),'zip_member_count':len(entries),
+                              'xml_and_text_files':documents[:MAX_MEMBERS],
+                              'downloaded_kst':stamp(),
+                              'source_endpoint':'OPENDART_DOCUMENT_XML',
+                              'full_original_document_retained':False,
+                              'historical_financial_values_verified':False}
+              except (zipfile.BadZipFile, RuntimeError, OSError, ValueError, NotImplementedError):
+                  return {'state':'INVALID_OR_UNREADABLE_ARCHIVE'}
+
+
+          def query_document(receipt, token):
+              if not valid_receipt(receipt):
+                  return {'state':'INVALID_RECEIPT'}
+              if not token:
+                  return {'state':'MISSING_DART_KEY'}
+              url=ENDPOINT+'?'+parse.urlencode({'crtfc_key':token,'rcept_no':receipt})
+              try:
+                  req=request.Request(url, headers={'User-Agent':'KRX-v5-Original-Receipt-Evidence/1.0'})
+                  with request.urlopen(req, timeout=25) as resp:
+                      content_length=int(resp.headers.get('Content-Length','0') or 0)
+                      if content_length>MAX_DOWNLOAD_BYTES:
+                          return {'state':'ARCHIVE_TOO_LARGE'}
+                      data=resp.read(MAX_DOWNLOAD_BYTES+1)
+                  if len(data)>MAX_DOWNLOAD_BYTES:
+                      return {'state':'ARCHIVE_TOO_LARGE'}
+                  return safe_zip_bytes(data,receipt)
+              except error.HTTPError as e:
+                  return {'state':'HTTP_ERROR','http_status':e.code}
+              except (error.URLError, TimeoutError, OSError, ValueError):
+                  return {'state':'NETWORK_OR_RESPONSE_ERROR'}
+
+
+          def periods_for_candidate(row, money):
+              """Only compare a receipt against its OWN dated list of filings."""
+              requested=[]
+              current=(money or {}).get('periods') or {}
+              for key, record in sorted((row.get('filing_periods') or {}).items()):
+                  filings=(record or {}).get('pre_evaluation_receipts') or []
+                  valid=sorted({str(x.get('rcept_no','')) for x in filings
+                                if isinstance(x,dict) and valid_receipt(x.get('rcept_no'))
+                                and str(x.get('rcept_dt',''))<=str(row.get('evaluation_date',''))})
+                  if not valid:
+                      continue
+                  latest=str(record.get('latest_available_asof_evaluation') or '')
+                  if latest not in valid:
+                      continue
+                  outcome=current.get(key) or {}
+                  if outcome.get('status')!='DART_RECEIPT_MISMATCH' and not record.get('multiple_or_corrected_receipts'):
+                      continue
+                  original=valid[0]
+                  returned=sorted({str(v) for v in outcome.get('returned_receipts',[]) if valid_receipt(v)})
+                  targets={original,latest}
+                  # A returned receipt is evidence of API content ONLY if also present
+                  # in the original filing list for the same report period.
+                  targets.update(r for r in returned if r in valid)
+                  requested.append({'period':key,'original_receipt':original,
+                                    'selected_asof_receipt':latest,
+                                    'returned_current_api_receipts':returned,
+                                    'returned_receipts_in_period':all(r in valid for r in returned),
+                                    'correction_or_multiple_receipts':bool(record.get('multiple_or_corrected_receipts')),
+                                    'reported_receipt_mismatch':outcome.get('status')=='DART_RECEIPT_MISMATCH',
+                                    'receipt_ids_to_archive':sorted(targets),
+                                    'all_pre_evaluation_receipt_ids':valid})
+              return requested
+
+
+          def build_tasks(filing, comparison):
+              candidates=[]
+              for code,row in (filing.get('rows') or {}).items():
+                  money=(comparison.get('rows') or {}).get(code,{})
+                  periods=periods_for_candidate(row,money)
+                  if periods:
+                      candidates.append({'code':code,'grade_research_only':row.get('grade_research_only'),
+                                         'evaluation_date':row.get('evaluation_date'),
+                                         'evaluation_date_source':row.get('evaluation_date_source'),
+                                         'comparison_status':money.get('status'),
+                                         'periods':periods})
+              candidates.sort(key=lambda x:(x['comparison_status']!='RECEIPT_VERSION_MISMATCH',x['code']))
+              queue=[]
+              for candidate in candidates:
+                  for period in sorted(candidate['periods'],key=lambda p:(not p['reported_receipt_mismatch'],p['period'])):
+                      for receipt in period['receipt_ids_to_archive']:
+                          if receipt not in queue: queue.append(receipt)
+              return candidates,queue
+
+
+          def summary(candidates, cache):
+              out=[]
+              for company in candidates:
+                  p=[]
+                  for item in company['periods']:
+                      documents={r:(cache.get(r) or {}).get('state','PENDING_DOCUMENT_QUERY')
+                                 for r in item['receipt_ids_to_archive']}
+                      available=all(x=='DOCUMENT_ZIP_HASH_CAPTURED' for x in documents.values())
+                      p.append({k:v for k,v in item.items() if k!='all_pre_evaluation_receipt_ids'}|
+                              {'document_states':documents,'document_source_evidence_ready':available,
+                               'reported_receipts_match_asof':
+                                    item['selected_asof_receipt'] in item['returned_current_api_receipts'],
+                               'historical_financial_values_verified':False})
+                  out.append({'code':company['code'],'evaluation_date':company['evaluation_date'],
+                              'evaluation_date_source':company.get('evaluation_date_source'),
+                              'comparison_status':company['comparison_status'],'periods':p})
+              return out
+
+
+          def save(path, obj):
+              path.parent.mkdir(parents=True,exist_ok=True)
+              tmp=path.with_name(path.name+'.tmp')
+              tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              tmp.replace(path)
+
+
+          def selftest():
+              buf=io.BytesIO()
+              with zipfile.ZipFile(buf,'w') as z:
+                  z.writestr('report.xml','<DOCUMENT><FINANCE /></DOCUMENT>')
+              good=safe_zip_bytes(buf.getvalue(),'20260318000001')
+              assert good['state']=='DOCUMENT_ZIP_HASH_CAPTURED'
+              assert good['zip_sha256']==hashlib.sha256(buf.getvalue()).hexdigest()
+              assert safe_zip_bytes(b'<xml>failure</xml>','20260318000001')['state']=='NOT_ZIP_RESPONSE'
+              row={'evaluation_date':'20261120','filing_periods':{'2025_annual':{
+                  'pre_evaluation_receipts':[{'rcept_no':'20260318000001','rcept_dt':'20260318'},
+                                             {'rcept_no':'20260605000001','rcept_dt':'20260605'}],
+                  'latest_available_asof_evaluation':'20260605000001','multiple_or_corrected_receipts':True}}}
+              mismatch={'periods':{'2025_annual':{'status':'DART_RECEIPT_MISMATCH','returned_receipts':['20260318000001']}}}
+              result=periods_for_candidate(row,mismatch)
+              assert len(result)==1 and result[0]['original_receipt']=='20260318000001'
+              assert result[0]['selected_asof_receipt']=='20260605000001'
+              assert result[0]['returned_receipts_in_period'] is True
+              assert result[0]['receipt_ids_to_archive']==['20260318000001','20260605000001']
+              assert periods_for_candidate(row,{'periods':{'2025_annual':{'status':'CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE'}}})
+              assert not periods_for_candidate({'evaluation_date':'20260301','filing_periods':row['filing_periods']},mismatch)
+              assert build_tasks({'rows':{'000001':row}}, {'rows':{'000001':{'status':'RECEIPT_VERSION_MISMATCH',**mismatch}}})[1]==['20260318000001','20260605000001']
+              return 10
+
+
+          def run():
+              filing=read(FILING,{})
+              comparison=read(FINANCIAL,{})
+              if filing.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1' or comparison.get('format')!='R14_FINANCIAL_COMPARISON_CACHE_V1':
+                  raise SystemExit('MISSING_OR_UNSAFE_FILING_COMPARISON_CACHE')
+              old=read(PERSIST,{})
+              if old and old.get('format')!='R14_DOCUMENT_VERSION_HASH_CACHE_V1':
+                  raise SystemExit('UNKNOWN_DOCUMENT_CACHE_FORMAT')
+              archive=dict(old.get('rows',{}))
+              companies, queue=build_tasks(filing,comparison)
+              limit=max(0,min(24,int(os.getenv('R14_DOCUMENT_BATCH_LIMIT','12'))))
+              token=os.getenv('DART_API_KEY','').strip()
+              checked=0
+              states=collections.Counter()
+              for receipt in queue:
+                  if (archive.get(receipt) or {}).get('state')=='DOCUMENT_ZIP_HASH_CAPTURED':
+                      states['REUSED_ARCHIVE_HASH']+=1
+                      continue
+                  if checked>=limit:
+                      states['PENDING_BATCH_LIMIT']+=1
+                      continue
+                  checked+=1
+                  evidence=query_document(receipt,token)
+                  states[evidence['state']]+=1
+                  if evidence['state']=='DOCUMENT_ZIP_HASH_CAPTURED':
+                      archive[receipt]=evidence
+                  # On errors, never overwrite any previous valid digest.
+                  time.sleep(.22)
+              report={'result':'STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT',
+                      'generated_kst':stamp(),'market_date':read(ROOT/'r14_full_market_grade_research.json',{}).get('market_date'),
+                      'mismatch_company_count':sum(x['comparison_status']=='RECEIPT_VERSION_MISMATCH' for x in companies),
+                      'companies_with_original_or_correction_receipts':len(companies),
+                      'document_receipts_required':len(queue),
+                      'archive_hashes_available':sum((archive.get(r) or {}).get('state')=='DOCUMENT_ZIP_HASH_CAPTURED' for r in queue),
+                      'document_queries_this_run':checked,'this_run_states':dict(states),
+                      'cached_original_document_hashes':len(archive),
+                      'companies':summary(companies,archive),
+                      'document_evidence_only':True,
+                      'historical_point_in_time_financials_verified':False,
+                      'official_per_pbr_verified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'limitations':['Captured ZIP hashes prove only the retrieved bytes on audit date, not past as-of availability or financial values',
+                                     'Original document financial account amounts are not yet parsed and matched line-by-line',
+                                     'Receipt metadata alone does not validate the historical valuation source']}
+              save(PERSIST,{'format':'R14_DOCUMENT_VERSION_HASH_CACHE_V1','updated_kst':stamp(),
+                            'rows':archive,'investment_decisions_authorized':False,'final_buy_signals':0})
+              save(OUT,report)
+              print(json.dumps({k:v for k,v in report.items() if k not in ('companies','limitations')},ensure_ascii=False))
+
+
+          if __name__=='__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test':'PASS','tests':selftest()}))
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_document_version_probe.py
+          python /tmp/r14_document_version_probe.py --self-test
+          python /tmp/r14_document_version_probe.py
+      - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
+        id: dated_ratio_input
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import importlib.util,json,pathlib,hashlib
+          root=pathlib.Path('v5_reports/stage28')
+          research=json.loads((root/'r14_full_market_grade_research.json').read_text(encoding='utf-8'))
+          date=str(research.get('market_date',''))
+          spec=importlib.util.spec_from_file_location('existing_ratio_audit','scripts/krx_v5_r14_ratio_audit.py')
+          mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+          assert mod.selftest()>=14, 'EXISTING_RATIO_PARSER_SELFTEST_FAILED'
+          expected=pathlib.Path('data/v5_official_ratio_exports')/(date+'.csv')
+          report={'result':'KRX_DATED_PER_PBR_UNAUTHENTICATED_SOURCE_GATE',
+                  'market_date':date,'expected_relative_file':str(expected),
+                  'official_per_independently_verified':0,'official_pbr_independently_verified':0,
+                  'source_independently_authenticated':False,'investment_decisions_authorized':False,
+                  'final_buy_signals':0,'original_ratio_audit_reused':True}
+          if expected.is_file():
+              if expected.stat().st_size>4_000_000:
+                  raise SystemExit('KRX_RATIO_EXPORT_EXCEEDS_4MB_SIZE_LIMIT')
+              rows,metadata=mod.normalize_krx_export(expected,date)
+              audited=mod.ratio_audit(research,rows)
+              outfile=root/'r14_krx_export_comparison_research_only.json'
+              outfile.write_text(json.dumps(audited,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              report.update({'status':'UNAUTHENTICATED_EXPORT_COMPARABLE_ONLY',
+                             'source_file_sha256':metadata['source_file_sha256'],
+                             'rows_supplied':len(rows),'compared_research_candidates':audited['crosschecked_count'],
+                             'no_promotion_to_official_verified':True})
+          else:
+              report.update({'status':'NO_DATE_MATCHED_KRX_EXPORT','rows_supplied':0,
+                             'compared_research_candidates':0,'no_promotion_to_official_verified':True})
+          (root/'r14_krx_official_ratio_source_gate.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(report,ensure_ascii=False))
+          PY
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -794,11 +1113,13 @@ jobs:
           RATIO_PROVENANCE_RESULT: ${{ steps.ratio_provenance.outcome }}
           DART_RECEIPTS_RESULT: ${{ steps.dart_receipts.outcome }}
           FINANCIAL_VALUES_RESULT: ${{ steps.financial_values.outcome }}
+          ORIGINAL_VERSIONS_RESULT: ${{ steps.original_versions.outcome }}
+          DATED_RATIO_INPUT_RESULT: ${{ steps.dated_ratio_input.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -808,7 +1129,9 @@ jobs:
             'r14_universe_coverage':'v5_reports/stage28/r14_universe_coverage.json',
             'r14_valuation_disclosure_gate':'v5_reports/stage28/r14_valuation_disclosure_gate.json',
             'r14_filing_receipt_audit':'v5_reports/stage28/r14_filing_receipt_audit.json',
-            'r14_financial_value_reconciliation':'v5_reports/stage28/r14_financial_value_reconciliation.json'
+            'r14_financial_value_reconciliation':'v5_reports/stage28/r14_financial_value_reconciliation.json',
+            'r14_document_versions':'v5_reports/stage28/r14_correction_original_document_audit.json',
+            'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json'
           }
           details={}
           for name,p in status_files.items():
@@ -842,12 +1165,14 @@ jobs:
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
             'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
+            'filing_document_original_correction':'ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF',
+            'official_ratio_source_gate':'DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
             'component_status':details,
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Stage27 untouched; no trading signals.'
+            'notice':'Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Original correction ZIP hashes are audit-date evidence only, not historical financial PIT. Stage27 untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
