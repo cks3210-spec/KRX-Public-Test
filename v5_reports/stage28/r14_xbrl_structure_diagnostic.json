@@ -1,59 +1,18 @@
 {
   "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
   "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
-  "generated_kst": "2026-11-21T15:59:46.334213+09:00",
-  "market_date": "20261119",
+  "generated_kst": "2026-11-21T17:12:01.851994+09:00",
+  "market_date": "20261120",
   "cached_receipts_total": 6,
   "eligible_receipts_to_diagnose": 6,
   "diagnostics_available": 6,
   "run_states": {
-    "REUSED_STRUCTURE_DIAGNOSTIC": 6
+    "SOURCE_HASH_MATCHED": 6
   },
   "extraction_failure_reasons": {
     "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH": 6
   },
-  "revision_xml_digest_comparison": [
-    {
-      "code": "015360",
-      "period": "2025_annual",
-      "original_receipt": "20260310002563",
-      "revised_receipt": "20260605000111",
-      "xml_digest_evidence": "XBRL_XML_BYTES_DIFFER",
-      "matching_xml_files_count": 1,
-      "financial_values_verified": false,
-      "historical_asof_attested": false
-    },
-    {
-      "code": "033500",
-      "period": "2025_annual",
-      "original_receipt": "20260318001705",
-      "revised_receipt": "20260319000704",
-      "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
-      "matching_xml_files_count": 0,
-      "financial_values_verified": false,
-      "historical_asof_attested": false
-    },
-    {
-      "code": "054950",
-      "period": "2025_annual",
-      "original_receipt": "20260323001116",
-      "revised_receipt": "20260325000430",
-      "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
-      "matching_xml_files_count": 0,
-      "financial_values_verified": false,
-      "historical_asof_attested": false
-    },
-    {
-      "code": "097230",
-      "period": "2025_annual",
-      "original_receipt": "20260319000606",
-      "revised_receipt": "20260319001333",
-      "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
-      "matching_xml_files_count": 0,
-      "financial_values_verified": false,
-      "historical_asof_attested": false
-    }
-  ],
+  "revision_xml_digest_comparison": [],
   "diagnostic_by_receipt": {
     "20260310002563": {
       "state": "SOURCE_HASH_MATCHED",

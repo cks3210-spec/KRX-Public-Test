@@ -1,17 +1,19 @@
 {
   "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-  "generated_kst": "2026-11-21T15:59:45.865642+09:00",
-  "company_queries_this_run": 0,
-  "dart_financial_api_requests_this_run": 0,
-  "candidate_count": 128,
-  "cached_company_count": 128,
-  "current_api_matched_company_count": 124,
+  "generated_kst": "2026-11-21T16:24:46.568812+09:00",
+  "company_queries_this_run": 112,
+  "dart_financial_api_requests_this_run": 336,
+  "candidate_count": 132,
+  "cached_company_count": 132,
+  "current_api_matched_company_count": 128,
   "historical_point_in_time_verified_company_count": 0,
   "official_per_pbr_verified_count": 0,
   "status_counts_this_run": {
-    "CACHED_FINISHED": 128
+    "CURRENT_ACCOUNT_VALUES_MATCHED": 108,
+    "CACHED_FINISHED": 20,
+    "RECEIPT_VERSION_MISMATCH": 4
   },
-  "data_fetched_by_this_audit": false,
+  "data_fetched_by_this_audit": true,
   "financial_cache_modified": false,
   "filing_receipt_cache_modified": false,
   "stage27_modified": false,

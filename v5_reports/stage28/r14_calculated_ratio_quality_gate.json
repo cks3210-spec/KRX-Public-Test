@@ -1,27 +1,28 @@
 {
   "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
-  "generated_kst": "2026-11-21T15:59:47.222296+09:00",
-  "research_market_date": "20261119",
-  "filtered_input_candidate_count": 125,
+  "generated_kst": "2026-11-21T17:12:02.822321+09:00",
+  "research_market_date": "20261120",
+  "filtered_input_candidate_count": 122,
   "excluded_missing_corrected_filing_codes": [
+    "015360",
     "033500",
     "054950",
     "097230"
   ],
-  "calculated_per_research_count": 125,
-  "calculated_pbr_research_count": 125,
-  "calculated_both_research_count": 125,
+  "calculated_per_research_count": 122,
+  "calculated_pbr_research_count": 122,
+  "calculated_both_research_count": 122,
   "calculation_blocked_count": 0,
   "candidate_calculation_states": {
-    "RESEARCH_ESTIMATE_BOTH_METRICS": 125
+    "RESEARCH_ESTIMATE_BOTH_METRICS": 122
   },
   "source_quality_warning_counts": {
-    "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 3
+    "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 2
   },
-  "annual_owner_source_reconciled_count": 125,
-  "ttm_owner_source_reconciled_count": 125,
-  "annual_parent_owner_comparative_match_count": 122,
-  "annual_filing_receipt_listed_asof_count": 95,
+  "annual_owner_source_reconciled_count": 122,
+  "ttm_owner_source_reconciled_count": 122,
+  "annual_parent_owner_comparative_match_count": 120,
+  "annual_filing_receipt_listed_asof_count": 92,
   "metric_formulas": {
     "calculated_per_research": "listed_krx_market_cap_krw / 4q_parent_owner_profit_krw",
     "calculated_pbr_research": "listed_krx_market_cap_krw / parent_owner_equity_krw"
@@ -54,17 +55,17 @@
     "No fair value, actual buy price, risk rating or investment decision is authorized"
   ],
   "unchanged_input_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "5f71eea0396b275c955adcf120434fb8e06400fbd6b6518533910bf12e3c66f6",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "9ceeb2b4fd86074be8c3944637273c084eb2f1c0c534d34f40cc68ccda23b99b",
-    "v5_reports/stage28/official_market_check.json": "24b9557cebf3cc40d2145e8db1d00479097d0c8f0c5567a44bbd29dffcc27964",
-    "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "a3dbd4aab36f3f3370848a761aceff119517aaf59f6dfcd87c24e9662dc98ede",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2b80577520ee841eeb30119a8f7aabdb5e72d7292792e90213a61b44bff20582",
+    "v5_reports/stage28/official_market_check.json": "d3698b0c2a674bbf8d0913bb51263ae2b9f47baf469564af1b922408897007c1",
+    "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
     "data/v5_financial_m/annual_financial_index_m.csv": "eec837d79233e8bda7ad6c54ee273fd51b28ec904fb057ad599e544f097c4f38",
     "data/v5_financial_m/status.json": "3fcb18aaa7c5e9e28a8ca8158379b5746f5d86c39a6c8472a338e446ae7c8538",
     "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a",
     "data/v5_financial_m/dart_disclosure_evidence.json": "87ac5464b052b7d79c4dba7b8b71ba90669120456b029342310620a719dce86e",
     "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
-    "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
-    "v5_reports/stage28/r14_valuation_readiness_gate.json": "64c9fe44289587fab1693bb551cbc1ee07b3b84b2d03870aed2a6111569bb223",
+    "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "8c28aae34c625f021e05dd40e20de4db4f2ec56ea300758003769aa04873a768",
     "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
   }
 }

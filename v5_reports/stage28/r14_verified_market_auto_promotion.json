@@ -1,20 +1,72 @@
 {
-  "api_calls": 0,
-  "attempted_sessions": [],
-  "checked_kst": "2026-11-21T16:14:49.810723+09:00",
+  "api_calls": 2,
+  "attempted_sessions": [
+    {
+      "date": "20261120",
+      "kosdaq_rows": 1836,
+      "kospi_rows": 935,
+      "market_rows": 2771,
+      "provider_evidence": {
+        "KOSDAQ": {
+          "endpoint": "ksq_bydd_trd",
+          "http_status": 200,
+          "invalid_reasons": {},
+          "invalid_rows": 0,
+          "provider": "KRX_OFFICIAL_OPEN_API",
+          "query_date": "20261120",
+          "raw_rows": 1836,
+          "source_response_sha256": "69f0ac5ff440ee4e6cf6ada34e7b31fabdee6345615646cc73ea757145433b2a",
+          "valid_rows": 1836
+        },
+        "KOSPI": {
+          "endpoint": "stk_bydd_trd",
+          "http_status": 200,
+          "invalid_reasons": {},
+          "invalid_rows": 0,
+          "provider": "KRX_OFFICIAL_OPEN_API",
+          "query_date": "20261120",
+          "raw_rows": 935,
+          "source_response_sha256": "5fd825ff4625bf7bad474a405cca60ef7678f8b3577def1f4ed82752bd2a2e70",
+          "valid_rows": 935
+        }
+      },
+      "state": "VALIDATED_KRX_SESSION"
+    }
+  ],
+  "backlog_trading_sessions": 1,
+  "baseline_latest": "20261119",
+  "baseline_rows": 193549,
+  "baseline_sessions": 70,
+  "checked_kst": "2026-11-21T16:24:28.181029+09:00",
+  "current_market_date": "20261120",
   "data_provider_base": "https://data-dbg.krx.co.kr/svc/apis/sto/",
   "final_buy_signals": 0,
+  "history_rows_published": 193557,
+  "history_sessions": 70,
   "investment_decisions_authorized": false,
   "last_completed_krx_session": "20261120",
-  "market_data_verified_and_promoted": false,
-  "market_data_was_promoted": false,
+  "market_data_verified_and_promoted": true,
+  "market_data_was_promoted": true,
+  "market_rows_published": 2771,
+  "new_data_sha256": {
+    "daily_70d.csv.gz": "b8de69950ee14830df71622d93af4dcc1a3a19620c21a8faa382b199f5a0dc23",
+    "latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3"
+  },
   "no_missing_corrected_filing_queries": true,
-  "reason": "ValueError:BASELINE_HISTORY_COLUMNS_UNEXPECTED",
+  "remaining_sessions": 0,
   "report_is_not_per_pbr": true,
   "research_only": true,
   "source": "KRX_OPEN_API_DAILY_KOSPI_KOSDAQ",
+  "source_sha256": {
+    "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
+    "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+    "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c"
+  },
   "stage27_modified": false,
-  "state": "WAITING_KRX_SOURCE_OR_VALIDATION_ERROR",
+  "state": "PUBLISHED_KRX_VERIFIED_MARKET",
   "technical_indicators_rebuilt_by_this_stage": false,
+  "trading_sessions_in_this_batch": [
+    "20261120"
+  ],
   "version": "STAGE28_R14_VERIFIED_OFFICIAL_MARKET_AUTO_PUBLISH_V1"
 }

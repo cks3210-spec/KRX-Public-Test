@@ -1,22 +1,22 @@
 {
   "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-  "generated_kst": "2026-11-21T15:59:45.990717+09:00",
-  "market_date": "20261119",
+  "generated_kst": "2026-11-21T17:06:57.140884+09:00",
+  "market_date": "20261120",
   "mismatch_company_count": 4,
-  "companies_with_original_or_correction_receipts": 28,
-  "document_receipts_required": 62,
+  "companies_with_original_or_correction_receipts": 29,
+  "document_receipts_required": 64,
   "archive_hashes_available": 61,
   "document_queries_this_run": 0,
   "this_run_states": {
     "REUSED_ARCHIVE_HASH": 61,
-    "PENDING_BATCH_LIMIT": 1
+    "PENDING_BATCH_LIMIT": 3
   },
   "cached_original_document_hashes": 61,
   "companies": [
     {
       "code": "015360",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
         {
@@ -47,8 +47,8 @@
     },
     {
       "code": "033500",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
         {
@@ -77,8 +77,8 @@
     },
     {
       "code": "054950",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
         {
@@ -107,8 +107,8 @@
     },
     {
       "code": "097230",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
         {
@@ -137,8 +137,8 @@
     },
     {
       "code": "000370",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -185,8 +185,8 @@
     },
     {
       "code": "000970",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -213,8 +213,8 @@
     },
     {
       "code": "000990",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -241,8 +241,8 @@
     },
     {
       "code": "002990",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -269,8 +269,8 @@
     },
     {
       "code": "003100",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -297,8 +297,8 @@
     },
     {
       "code": "005830",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -325,8 +325,8 @@
     },
     {
       "code": "011560",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -353,8 +353,8 @@
     },
     {
       "code": "018670",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -381,8 +381,8 @@
     },
     {
       "code": "030200",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -407,8 +407,8 @@
     },
     {
       "code": "034950",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -463,8 +463,8 @@
     },
     {
       "code": "036190",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -491,8 +491,8 @@
     },
     {
       "code": "049430",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -539,8 +539,8 @@
     },
     {
       "code": "049520",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -567,8 +567,8 @@
     },
     {
       "code": "052330",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -595,8 +595,8 @@
     },
     {
       "code": "093050",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -623,8 +623,8 @@
     },
     {
       "code": "093190",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -651,8 +651,8 @@
     },
     {
       "code": "094820",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -707,8 +707,8 @@
     },
     {
       "code": "105560",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
@@ -810,6 +810,34 @@
       ]
     },
     {
+      "code": "119610",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001340",
+          "selected_asof_receipt": "20260615000326",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318001340",
+            "20260615000326"
+          ],
+          "document_states": {
+            "20260318001340": "PENDING_DOCUMENT_QUERY",
+            "20260615000326": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
       "code": "123410",
       "evaluation_date": "20261121",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
@@ -839,8 +867,8 @@
     },
     {
       "code": "487570",
-      "evaluation_date": "20261120",
-      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {

@@ -1,21 +1,36 @@
 {
   "result": "R14_MISSING_CORRECTION_EXCLUSION_GATE_V1",
-  "generated_kst": "2026-11-21T15:59:46.741312+09:00",
-  "research_market_date": "20261119",
-  "raw_research_candidate_count": 128,
+  "generated_kst": "2026-11-21T17:12:02.306420+09:00",
+  "research_market_date": "20261120",
+  "raw_research_candidate_count": 126,
   "receipt_mismatch_candidates_checked": 4,
-  "eligible_research_candidate_count": 125,
-  "excluded_candidate_count": 3,
+  "eligible_research_candidate_count": 122,
+  "excluded_candidate_count": 4,
   "excluded_candidates": [
+    {
+      "code": "015360",
+      "name": "INVENI",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "MISSING_CORRECTION_AUDIT_EVIDENCE",
+      "all_reasons": [
+        "MISSING_CORRECTION_AUDIT_EVIDENCE"
+      ],
+      "periods": [
+        "2025_annual"
+      ],
+      "selected_receipts": [
+        "20260605000111"
+      ]
+    },
     {
       "code": "033500",
       "name": "동성화인텍",
       "previous_research_grade": "B",
       "status": "EXCLUDE",
-      "reason": "CORRECTION_XBRL_UNAVAILABLE",
+      "reason": "MISSING_CORRECTION_AUDIT_EVIDENCE",
       "all_reasons": [
-        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
-        "CORRECTION_XBRL_UNAVAILABLE"
+        "MISSING_CORRECTION_AUDIT_EVIDENCE"
       ],
       "periods": [
         "2025_annual"
@@ -29,11 +44,9 @@
       "name": "HJ중공업",
       "previous_research_grade": "B",
       "status": "EXCLUDE",
-      "reason": "CORRECTION_DOCUMENT_UNAVAILABLE",
+      "reason": "MISSING_CORRECTION_AUDIT_EVIDENCE",
       "all_reasons": [
-        "CORRECTION_DOCUMENT_UNAVAILABLE",
-        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
-        "CORRECTION_XBRL_UNAVAILABLE"
+        "MISSING_CORRECTION_AUDIT_EVIDENCE"
       ],
       "periods": [
         "2025_annual"
@@ -47,10 +60,9 @@
       "name": "제이브이엠",
       "previous_research_grade": "A",
       "status": "EXCLUDE",
-      "reason": "CORRECTION_XBRL_UNAVAILABLE",
+      "reason": "MISSING_CORRECTION_AUDIT_EVIDENCE",
       "all_reasons": [
-        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
-        "CORRECTION_XBRL_UNAVAILABLE"
+        "MISSING_CORRECTION_AUDIT_EVIDENCE"
       ],
       "periods": [
         "2025_annual"
@@ -61,13 +73,14 @@
     }
   ],
   "excluded_codes": [
+    "015360",
     "033500",
     "054950",
     "097230"
   ],
   "eligible_research_grade_counts": {
-    "B": 102,
-    "A": 23
+    "B": 100,
+    "A": 22
   },
   "eligible_candidate_output": "v5_reports/stage28/r14_eligible_research_candidates.json",
   "raw_screening_history_untouched": true,

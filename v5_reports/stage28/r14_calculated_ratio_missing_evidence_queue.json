@@ -1,11 +1,12 @@
 {
   "result": "R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1",
-  "generated_kst": "2026-11-21T15:59:47.348903+09:00",
-  "research_market_date": "20261119",
+  "generated_kst": "2026-11-21T17:12:02.963347+09:00",
+  "research_market_date": "20261120",
   "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
   "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
   "source_candidate_feed": "v5_reports/stage28/r14_eligible_research_candidates.json",
   "excluded_correction_codes": [
+    "015360",
     "033500",
     "054950",
     "097230"
@@ -19,7 +20,7 @@
   "research_only": true,
   "new_network_requests_this_stage": 0,
   "missing_corrected_filing_retrieval_disabled": true,
-  "research_candidates_kept": 125,
+  "research_candidates_kept": 122,
   "missing_evidence_candidate_count": 30,
   "missing_evidence_candidates": [
     {
@@ -55,21 +56,6 @@
     {
       "code": "078340",
       "name": "컴투스",
-      "grade_research_only": "B",
-      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
-      "missing_evidence_reasons": [
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
-      ],
-      "excluded_missing_correction_stock": false,
-      "source_retrieval_attempted": false,
-      "actionable_price_verified": false
-    },
-    {
-      "code": "079960",
-      "name": "동양이엔피",
       "grade_research_only": "B",
       "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
       "missing_evidence_reasons": [
@@ -128,12 +114,11 @@
       "actionable_price_verified": false
     },
     {
-      "code": "083500",
-      "name": "에프엔에스테크",
-      "grade_research_only": "A",
-      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "code": "084370",
+      "name": "유진테크",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
       "missing_evidence_reasons": [
-        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
         "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
         "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
         "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
@@ -144,8 +129,8 @@
       "actionable_price_verified": false
     },
     {
-      "code": "084370",
-      "name": "유진테크",
+      "code": "086450",
+      "name": "동국제약",
       "grade_research_only": "B",
       "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
       "missing_evidence_reasons": [
@@ -356,7 +341,7 @@
     {
       "code": "102710",
       "name": "이엔에프테크놀로지",
-      "grade_research_only": "B",
+      "grade_research_only": "A",
       "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
       "missing_evidence_reasons": [
         "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
@@ -444,6 +429,21 @@
       "actionable_price_verified": false
     },
     {
+      "code": "119610",
+      "name": "인터로조",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
       "code": "123410",
       "name": "코리아에프티",
       "grade_research_only": "B",
@@ -486,11 +486,11 @@
   ],
   "actionable_valuation_count": 0,
   "source_file_sha256_read_only": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "5f71eea0396b275c955adcf120434fb8e06400fbd6b6518533910bf12e3c66f6",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "9ceeb2b4fd86074be8c3944637273c084eb2f1c0c534d34f40cc68ccda23b99b",
-    "v5_reports/stage28/r14_calculated_per_pbr_research.json": "e8391d91a97aa4590029634014638d74e5c6d789e5aa515c1b3e165982ec2c50",
-    "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "2422e86ecccab97e682175fb2c02ac83b729e9546481a01de1dd32764ea53e1c",
-    "v5_reports/stage28/r14_valuation_readiness_gate.json": "64c9fe44289587fab1693bb551cbc1ee07b3b84b2d03870aed2a6111569bb223",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "a3dbd4aab36f3f3370848a761aceff119517aaf59f6dfcd87c24e9662dc98ede",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2b80577520ee841eeb30119a8f7aabdb5e72d7292792e90213a61b44bff20582",
+    "v5_reports/stage28/r14_calculated_per_pbr_research.json": "70d1acc3abcff77962e357c3867646d46b2a1274837a55a17cd4ea9c05dd1783",
+    "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "ec2baf1aa5c2d6459b647021e69b917e6eaa37ff31898770f8239c1074d141bf",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "8c28aae34c625f021e05dd40e20de4db4f2ec56ea300758003769aa04873a768",
     "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
     "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
   }

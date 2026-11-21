@@ -1,32 +1,26 @@
 {
-  "checked_kst": "2026-11-21T15:59:42.848170+09:00",
-  "completed_kst": "2026-11-21T15:59:48.303487+09:00",
+  "checked_kst": "2026-11-21T16:24:37.477247+09:00",
   "decision_reason": "FRESH_ARCHIVE_OR_EXPLICIT_MANUAL_RUN",
   "event": "push",
   "expected_completed_session": "20261120",
   "final_buy_signals": 0,
-  "horizon_status_counts": {
-    "PENDING_ARCHIVED_SESSIONS": 375
-  },
   "investment_decisions_authorized": false,
   "last_completed_outcome_market_date": "20261119",
-  "last_successful_outcome_market_date": "20261119",
   "market_data_promoted_by_this_stage": false,
   "market_session_today": false,
   "market_source_evidence": {
     "archive_sessions": 70,
-    "market_day": "20261119",
+    "market_day": "20261120",
     "market_rows": 2771,
     "source_sha256": {
-      "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
-      "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
-      "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c"
+      "data/daily_70d.csv.gz": "b8de69950ee14830df71622d93af4dcc1a3a19620c21a8faa382b199f5a0dc23",
+      "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
+      "data/summary.json": "0b72c5910c9d73d4c065ce3a7de43ac975c5c2260c51f88e5b931dea6768f02f"
     }
   },
-  "newly_matured_horizons": 0,
   "official_ratio_authentication": false,
-  "pipeline_state": "OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED",
-  "published_market_date": "20261119",
+  "pipeline_state": "RECHECK_APPROVED",
+  "published_market_date": "20261120",
   "requires_upstream_market_publication": true,
   "research_only": true,
   "run_pipeline": true,

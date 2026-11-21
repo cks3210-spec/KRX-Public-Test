@@ -1,9 +1,9 @@
 {
   "result": "R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY",
   "version": "R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1",
-  "generated_kst": "2026-11-21T15:59:47.091058+09:00",
+  "generated_kst": "2026-11-21T17:12:02.682320+09:00",
   "last_live_check_kst": "2026-11-21T14:14:12.458884+09:00",
-  "research_market_date": "20261119",
+  "research_market_date": "20261120",
   "source_check_reused": true,
   "new_public_get_requests_this_run": 0,
   "source_probe_contains_only_public_get_requests": true,
@@ -36,8 +36,9 @@
   "source_policy_decision": "NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED",
   "ratio_source_authenticated": false,
   "individual_stock_per_pbr_verified": 0,
-  "candidate_count": 125,
+  "candidate_count": 122,
   "excluded_codes": [
+    "015360",
     "033500",
     "054950",
     "097230"
