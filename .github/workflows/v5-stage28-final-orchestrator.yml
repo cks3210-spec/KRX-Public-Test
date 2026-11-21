@@ -7,8 +7,12 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/v5-stage28-final-orchestrator.yml'
+  workflow_run:
+    workflows: ['KRX v5 R14 OpenDART Auto Continue']
+    types: [completed]
+    branches: [main]
   schedule:
-    - cron: '40 11 * * 1-5' # 20:40 KST; research pipeline only
+    - cron: '30 14 * * 1-5' # 23:30 KST weekday fallback; after upstream publication; date-gated
 permissions:
   contents: write
 concurrency:
@@ -16,6 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   integrate:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -26,7 +31,390 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install KRX session calendar for verified daily follow-up
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Gate completed KRX session, upstream publication, and duplicate daily outcomes
+        id: stage37_preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/stage37_daily_controller.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #37: KRX-session-aware, duplicate-safe Stage36 follow-up.
+          
+          Read-only against production data and Stage27. Mutates only Stage28 controller
+          and continuity report. An upstream collector must *publish* verified prices;
+          this does NOT pretend a GitHub artifact alone refreshes data/latest.csv.
+          """
+          from __future__ import annotations
+          import collections
+          import csv
+          import datetime as dt
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+          
+          ROOT=Path('v5_reports/stage28')
+          CONTROL=ROOT/'r14_daily_refresh_controller.json'
+          AUDIT=ROOT/'r14_daily_continuity_audit.json'
+          SUMMARY=ROOT/'r14_reference_5_10_20_summary.json'
+          OBS=ROOT/'r14_reference_5_10_20_observations.json'
+          LEDGER=ROOT/'r14_reference_price_cohort_ledger.json'
+          EXCLUDED=ROOT/'r14_candidate_exclusion_gate.json'
+          DATA=Path('data')
+          MARKET=DATA/'latest.csv'
+          MARKET_SUMMARY=DATA/'summary.json'
+          ARCHIVE=DATA/'daily_70d.csv.gz'
+          STAGE27=Path('v5_reports/stage27/status.json')
+          STAGE27_LEDGER=Path('v5_reports/stage27/signal_ledger.csv')
+          PRIOR=Path('/tmp/stage37_prior_observations.json')
+          PRIOR_COHORT=Path('/tmp/stage37_prior_cohorts.json')
+          FINGERPRINTS=Path('/tmp/stage37_readonly_sha256.json')
+          BASIS='RESEARCH_REFERENCE_CLOSE_NOT_TRADING_RETURN'
+          VER='R14_DAILY_SOURCE_AWARE_CONTINUITY_V1'
+          DAY=re.compile(r'^20\d{6}$')
+          HORIZONS=('5','10','20')
+          
+          
+          def load(p):
+              return json.loads(p.read_text(encoding='utf-8-sig'))
+          
+          
+          def sha(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+          
+          
+          def save(p,obj):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              p.write_text(json.dumps(obj,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          
+          
+          def check_date(s):
+              if not isinstance(s,str) or not DAY.fullmatch(s):
+                  raise ValueError('BAD_MARKET_DATE')
+              dt.datetime.strptime(s,'%Y%m%d')
+              return s
+          
+          
+          def exchange_session_info(now):
+              import exchange_calendars as xcals
+              cal=xcals.get_calendar('XKRX')
+              day=now.date()
+              # Date is evaluated in Korea; 16:30 includes a margin after close.
+              is_session=bool(cal.is_session(day.isoformat()))
+              if is_session and (now.hour,now.minute)>=(16,30):
+                  expected=day
+              elif is_session:
+                  expected=cal.previous_session(day.isoformat()).date()
+              else:
+                  expected=cal.date_to_session(day.isoformat(),direction='previous').date()
+              return is_session,expected.strftime('%Y%m%d')
+          
+          
+          def verified_market_source():
+              """Fail closed on mixed market dates or a corrupt archive; no API calls."""
+              if not all(p.is_file() for p in (MARKET,MARKET_SUMMARY,ARCHIVE)):
+                  raise ValueError('REQUIRED_MARKET_SOURCE_MISSING')
+              summ=load(MARKET_SUMMARY)
+              date=check_date(summ.get('latest_trading_date'))
+              if summ.get('sessions_stored')!=70:
+                  raise ValueError('MARKET_SUMMARY_NOT_70_SESSIONS')
+              with MARKET.open(encoding='utf-8-sig',newline='') as f:
+                  rows=list(csv.DictReader(f))
+              if len(rows)<2000 or len({x.get('BAS_DD') for x in rows})!=1 or rows[0].get('BAS_DD')!=date:
+                  raise ValueError('LATEST_MARKET_NOT_DATE_CONSISTENT')
+              if len({(x.get('MARKET'),x.get('ISU_CD')) for x in rows})!=len(rows):
+                  raise ValueError('LATEST_MARKET_DUPLICATE_SECURITY')
+              if len(rows)!=summ.get('kospi_rows_latest',0)+summ.get('kosdaq_rows_latest',0):
+                  raise ValueError('LATEST_MARKET_COUNTS_DIFFER')
+              for r in rows:
+                  try:
+                      if int(str(r.get('TDD_CLSPRC','')).replace(',',''))<=0 or int(str(r.get('MKTCAP','')).replace(',',''))<=0:
+                          raise ValueError('NONPOSITIVE_LATEST_PRICE_OR_CAP')
+                  except (TypeError,ValueError) as e:
+                      raise ValueError('INVALID_LATEST_PRICE_OR_CAP') from e
+              archive_dates=collections.Counter()
+              latest_archive={}
+              with gzip.open(ARCHIVE,'rt',encoding='utf-8-sig',newline='') as f:
+                  for r in csv.DictReader(f):
+                      d=check_date(r.get('BAS_DD'))
+                      archive_dates[d]+=1
+                      if d==date:
+                          key=(r.get('MARKET'),r.get('ISU_CD'))
+                          if key in latest_archive:
+                              raise ValueError('ARCHIVE_LATEST_DUPLICATE_SECURITY')
+                          latest_archive[key]=r.get('TDD_CLSPRC')
+              if len(archive_dates)!=70 or max(archive_dates)!=date or sum(archive_dates.values())!=summ.get('total_rows_stored'):
+                  raise ValueError('ARCHIVE_DATES_NOT_CONSISTENT_WITH_SUMMARY')
+              # A verified 70-row count alone does NOT prove 70 consecutive KRX sessions.
+              # Missing one real trading session would shift every 5/10/20-session horizon.
+              # Check the whole rolling window against the exchange calendar, fail closed.
+              import exchange_calendars as xcals
+              cal=xcals.get_calendar('XKRX')
+              actual_dates=sorted(archive_dates)
+              expected_dates=[x.strftime('%Y%m%d') for x in cal.sessions_in_range(actual_dates[0],actual_dates[-1])]
+              if expected_dates!=actual_dates:
+                  missing=sorted(set(expected_dates)-set(actual_dates))
+                  extra=sorted(set(actual_dates)-set(expected_dates))
+                  raise ValueError('ARCHIVE_KRX_SESSION_GAPS_OR_NONTRADING_DATES:missing='+','.join(missing[:5])+':extra='+','.join(extra[:5]))
+              if len(latest_archive)!=len(rows) or any(latest_archive.get((r['MARKET'],r['ISU_CD']))!=r.get('TDD_CLSPRC') for r in rows):
+                  raise ValueError('ARCHIVE_LATEST_CLOSE_NOT_MATCHING_MARKET')
+              return date,{'market_day':date,'archive_sessions':len(archive_dates),'market_rows':len(rows),
+                           'source_sha256':{str(p):sha(p) for p in (MARKET,MARKET_SUMMARY,ARCHIVE)}}
+          
+          
+          def policy(event,session_today,latest,expected,previous,source_ok):
+              """Pure operation policy; manual/push may inspect an old verified session."""
+              if event in ('schedule','workflow_run') and not session_today:
+                  return 'SKIP_KRX_CLOSED','NO_HOLIDAY_REPORT',False
+              if not source_ok:
+                  return 'WAITING_VERIFIED_MARKET_SOURCE','SOURCE_NOT_VALID',False
+              if latest>expected:
+                  return 'WAITING_VERIFIED_MARKET_SOURCE','FUTURE_MARKET_DATE_REJECTED',False
+              if event in ('schedule','workflow_run'):
+                  if latest<expected:
+                      return 'WAITING_VERIFIED_MARKET_SOURCE','LATEST_SOURCE_NOT_PUBLISHED_FOR_EXPECTED_SESSION',False
+                  if previous==latest:
+                      return 'NO_NEW_MARKET_SOURCE','ALREADY_TRACKED_THIS_SESSION',False
+              return 'RECHECK_APPROVED','FRESH_ARCHIVE_OR_EXPLICIT_MANUAL_RUN',True
+          
+          
+          def frozen_items(doc):
+              if not doc:return {}
+              if doc.get('version')!='R14_RESEARCH_REFERENCE_PRICE_OUTCOMES_V1' or doc.get('investment_decisions_authorized') is not False:
+                  raise ValueError('PRIOR_OBSERVATIONS_NOT_SAFE')
+              out={}
+              for r in doc.get('cohort_research_rows',[]):
+                  key=(check_date(r.get('research_market_date')),r.get('code'))
+                  if key in out:raise ValueError('DUPLICATE_PRIOR_COHORT_ROW')
+                  out[key]=r
+              return out
+          
+          
+          def validate_continuity(old,now):
+              previous=frozen_items(old)
+              current=frozen_items(now)
+              if not set(previous).issubset(current):
+                  raise ValueError('FROZEN_RESEARCH_ROW_REMOVED')
+              newly_matured=0;preserved=0
+              for key,prior in previous.items():
+                  new=current[key]
+                  if str(prior.get('research_reference_close_krw'))!=str(new.get('research_reference_close_krw')):
+                      raise ValueError('FROZEN_REFERENCE_PRICE_CHANGED_'+str(key))
+                  if new.get('research_evidence_tier')!=prior.get('research_evidence_tier') or new.get('grade_research_only')!=prior.get('grade_research_only'):
+                      raise ValueError('FROZEN_GRADE_OR_EVIDENCE_CHANGED_'+str(key))
+                  for h in HORIZONS:
+                      a=prior.get('horizons',{}).get(h,{})
+                      b=new.get('horizons',{}).get(h,{})
+                      if a.get('status')=='MATURED_RESEARCH_REFERENCE_ONLY':
+                          if b!=a:raise ValueError('FROZEN_MATURED_HORIZON_CHANGED_'+str(key)+'_'+h)
+                          preserved+=1
+                      elif b.get('status')=='MATURED_RESEARCH_REFERENCE_ONLY':
+                          newly_matured+=1
+              return {'prior_observation_rows':len(previous),'new_observation_rows':len(current),
+                      'prior_matured_horizons_preserved':preserved,'newly_matured_horizons':newly_matured}
+          
+          
+          def prior_market_day():
+              if not SUMMARY.is_file():return None
+              try:
+                  old=load(SUMMARY)
+                  if old.get('version')!='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1':return None
+                  return check_date(old.get('latest_verified_market_snapshot'))
+              except (ValueError,KeyError,TypeError):return None
+          
+          
+          def fingerprint_sources():
+              return {str(p):sha(p) for p in (MARKET,MARKET_SUMMARY,ARCHIVE,STAGE27,STAGE27_LEDGER)}
+          
+          
+          def before():
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul'))
+              event=os.getenv('GITHUB_EVENT_NAME','workflow_dispatch')
+              session_today,expected=exchange_session_info(now)
+              if event in ('schedule','workflow_run') and not session_today:
+                  # Do not write reports for exchange closed days.
+                  output(False)
+                  print('KRX CLOSED: no daily report')
+                  return
+              date,source,problem=None,{},None
+              try:
+                  date,source=verified_market_source()
+              except (OSError,ValueError,EOFError,KeyError,TypeError) as e:
+                  problem=type(e).__name__+':'+str(e)[:180]
+              previous=prior_market_day()
+              state,reason,run=policy(event,session_today,date,expected,previous,problem is None)
+              control={'version':VER,'checked_kst':now.isoformat(),'event':event,
+                       'market_session_today':session_today,'expected_completed_session':expected,
+                       'published_market_date':date,'last_completed_outcome_market_date':previous,
+                       'pipeline_state':state,'decision_reason':reason,'run_pipeline':run,
+                       'source_validation_error':problem,'market_source_evidence':source,
+                       'market_data_promoted_by_this_stage':False,
+                       'requires_upstream_market_publication':True,
+                       'stage27_modified':False,'official_ratio_authentication':False,
+                       'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0,
+                       'unverified_filing_retry_attempted':False}
+              if run:
+                  if OBS.is_file():PRIOR.write_text(OBS.read_text(encoding='utf-8-sig'),encoding='utf-8')
+                  elif PRIOR.exists():PRIOR.unlink()
+                  if LEDGER.is_file():PRIOR_COHORT.write_text(LEDGER.read_text(encoding='utf-8-sig'),encoding='utf-8')
+                  elif PRIOR_COHORT.exists():PRIOR_COHORT.unlink()
+                  save(FINGERPRINTS,fingerprint_sources())
+              save(CONTROL,control)
+              output(run)
+              print(json.dumps({'stage':37,'state':state,'latest':date,'expected':expected,'pipeline_run':run,
+                                'reason':reason},ensure_ascii=False))
+          
+          
+          def output(run):
+              path=os.environ.get('GITHUB_OUTPUT','')
+              if path:
+                  with open(path,'a',encoding='utf-8') as f:f.write('run_pipeline='+str(run).lower()+'\n')
+          
+          
+          def after():
+              ctrl=load(CONTROL)
+              if ctrl.get('run_pipeline') is not True or ctrl.get('version')!=VER:
+                  raise ValueError('PREFLIGHT_DID_NOT_APPROVE_RUN')
+              prior=load(PRIOR) if PRIOR.is_file() else None
+              current=load(OBS)
+              s=load(SUMMARY)
+              led=load(LEDGER)
+              ex=load(EXCLUDED)
+              stamps=load(FINGERPRINTS)
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+              if fingerprint_sources()!=stamps:
+                  raise ValueError('READ_ONLY_MARKET_OR_STAGE27_SOURCE_CHANGED_DURING_PIPELINE')
+              if s.get('version')!='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' or s.get('latest_verified_market_snapshot')!=ctrl.get('published_market_date'):
+                  raise ValueError('STAGE36_OUTPUT_SOURCE_DATE_MISMATCH')
+              if s.get('investment_decisions_authorized') is not False or s.get('final_buy_signals')!=0:
+                  raise ValueError('UNAUTHORIZED_STAGE36_SIGNALS')
+              if current.get('research_only') is not True or current.get('final_buy_signals')!=0 or current.get('reference_method')!='FROZEN_RESEARCH_DATE_CLOSE_NOT_A_TRADE_ENTRY':
+                  raise ValueError('STAGE36_NOT_RESEARCH_ONLY')
+              if not isinstance(led.get('cohorts'),list) or not isinstance(ex.get('excluded_codes'),list):
+                  raise ValueError('COHORT_OR_EXCLUSION_MISSING')
+              rows=current.get('cohort_research_rows',[])
+              if len(rows)!=sum(len(c['candidates']) for c in led['cohorts']):
+                  raise ValueError('COHORT_COUNT_NOT_PRESERVED')
+              excluded=set(ex['excluded_codes'])
+              if any(row['code'] in excluded for row in rows):
+                  raise ValueError('EXCLUDED_STOCK_IN_OUTCOME_HISTORY')
+              counts=collections.Counter()
+              for row in rows:
+                  if row.get('reference_is_not_trade_entry') is not True or row.get('final_buy_signal') is not False:
+                      raise ValueError('UNAUTHORIZED_TRADE_REFERENCE')
+                  for h in HORIZONS:
+                      state=row.get('horizons',{}).get(h,{}).get('status')
+                      if not state:raise ValueError('HORIZON_STATUS_MISSING')
+                      counts[state]+=1
+              if dict(counts)!=s.get('horizon_observation_status_counts') or sum(counts.values())!=s.get('expected_horizon_observations'):
+                  raise ValueError('OBSERVATION_SUMMARY_COUNTS_DIVERGED')
+              continuity=validate_continuity(prior,current)
+              if PRIOR_COHORT.is_file():
+                  before_coh=load(PRIOR_COHORT)['cohorts']
+                  bydate={a['research_market_date']:a for a in led['cohorts']}
+                  for old in before_coh:
+                      if bydate.get(old['research_market_date'])!=old:
+                          raise ValueError('FROZEN_COHORT_BASELINE_CHANGED')
+              report={'version':VER,'generated_kst':now,'pipeline_state':'OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED',
+                      'research_market_date':s.get('current_research_market_date'),
+                      'latest_verified_market_date':s.get('latest_verified_market_snapshot'),
+                      'tracked_research_reference_rows':len(rows),
+                      'research_cohort_count':len(led['cohorts']),
+                      'horizon_status_counts':dict(counts),
+                      'horizon_observations':sum(counts.values()),
+                      'source_market_sha256':stamps[str(MARKET)],
+                      'source_archive_sha256':stamps[str(ARCHIVE)],
+                      'prior_evidence_continuity':continuity,
+                      'rejected_missing_correction_codes':sorted(excluded),
+                      'stage27_status_sha256':stamps[str(STAGE27)],
+                      'stage27_signal_ledger_sha256':stamps[str(STAGE27_LEDGER)],
+                      'stage27_modified':False,'market_data_promoted_by_this_stage':False,
+                      'research_only':True,'official_per_pbr_verified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'no_missing_future_price_imputation':True,
+                      'returns_not_adjusted_for_dividends_splits_fees':True,
+                      'upstream_publisher_required_for_next_market_date':True}
+              save(AUDIT,report)
+              ctrl['pipeline_state']='OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED'
+              ctrl['last_successful_outcome_market_date']=s.get('latest_verified_market_snapshot')
+              ctrl['horizon_status_counts']=dict(counts)
+              ctrl['newly_matured_horizons']=continuity['newly_matured_horizons']
+              ctrl['completed_kst']=now
+              save(CONTROL,ctrl)
+              print(json.dumps({'stage':37,'status':'PASS','tracked':len(rows),'horizons':dict(counts),
+                                'matured_new':continuity['newly_matured_horizons']},ensure_ascii=False))
+          
+          
+          def tests():
+              checks=0
+              def yes(cond):
+                  nonlocal checks
+                  assert cond,checks
+                  checks+=1
+              def fails(fn,msg):
+                  nonlocal checks
+                  try:fn()
+                  except ValueError as e:
+                      assert msg in str(e),(msg,e)
+                      checks+=1
+                      return
+                  raise AssertionError('Expected '+msg)
+              for event in ('schedule','workflow_run'):
+                  yes(policy(event,False,'20261120','20261120','20261119',True)[0]=='SKIP_KRX_CLOSED')
+                  yes(policy(event,True,'20261119','20261120','20261119',True)[0]=='WAITING_VERIFIED_MARKET_SOURCE')
+                  yes(policy(event,True,'20261120','20261120','20261120',True)[0]=='NO_NEW_MARKET_SOURCE')
+                  yes(policy(event,True,'20261120','20261120','20261119',True)[2] is True)
+                  yes(policy(event,True,'20261121','20261120','20261119',True)[2] is False)
+                  yes(policy(event,True,None,'20261120',None,False)[2] is False)
+              yes(policy('push',False,'20261119','20261120','20261119',True)[2] is True)
+              yes(policy('workflow_dispatch',False,'20261119','20261120','20261119',True)[2] is True)
+              yes(policy('push',False,'20261119','20261120','20261119',False)[2] is False)
+              yes(check_date('20261119')=='20261119')
+              fails(lambda:check_date('20261140'),'unconverted data remains')
+              old={'version':'R14_RESEARCH_REFERENCE_PRICE_OUTCOMES_V1','investment_decisions_authorized':False,
+                   'cohort_research_rows':[{'research_market_date':'20261119','code':'000050','research_reference_close_krw':'100',
+                   'research_evidence_tier':'T','grade_research_only':'A','horizons':{
+                   '5':{'status':'MATURED_RESEARCH_REFERENCE_ONLY','target_session':'20261120','target_close_krw':'110','research_reference_return_pct':10},
+                   '10':{'status':'PENDING_ARCHIVED_SESSIONS'},'20':{'status':'PENDING_ARCHIVED_SESSIONS'}}}]}
+              import copy
+              same=copy.deepcopy(old)
+              same['cohort_research_rows'][0]['horizons']['10']={'status':'MATURED_RESEARCH_REFERENCE_ONLY','target_session':'20261127','target_close_krw':'120','research_reference_return_pct':20}
+              c=validate_continuity(old,same)
+              yes(c['prior_matured_horizons_preserved']==1)
+              yes(c['newly_matured_horizons']==1)
+              yes(c['prior_observation_rows']==1)
+              yes(validate_continuity(None,same)['new_observation_rows']==1)
+              changed=copy.deepcopy(same);changed['cohort_research_rows'][0]['horizons']['5']['target_close_krw']='111'
+              fails(lambda:validate_continuity(old,changed),'FROZEN_MATURED_HORIZON_CHANGED')
+              changed=copy.deepcopy(same);changed['cohort_research_rows'][0]['research_reference_close_krw']='101'
+              fails(lambda:validate_continuity(old,changed),'FROZEN_REFERENCE_PRICE_CHANGED')
+              changed=copy.deepcopy(same);changed['cohort_research_rows'][0]['grade_research_only']='B'
+              fails(lambda:validate_continuity(old,changed),'FROZEN_GRADE_OR_EVIDENCE_CHANGED')
+              changed=copy.deepcopy(same);changed['cohort_research_rows']=[]
+              fails(lambda:validate_continuity(old,changed),'FROZEN_RESEARCH_ROW_REMOVED')
+              changed=copy.deepcopy(old);changed['version']='BAD'
+              fails(lambda:validate_continuity(changed,same),'PRIOR_OBSERVATIONS_NOT_SAFE')
+              yes(len(frozen_items(old))==1)
+              print(json.dumps({'stage':37,'self_tests_passed':checks,'status':'PASS'}))
+          
+          if __name__=='__main__':
+              mode=sys.argv[1] if len(sys.argv)>1 else '--self-test'
+              if mode=='--self-test':tests()
+              elif mode=='--preflight':before()
+              elif mode=='--postflight':after()
+              else:raise SystemExit('Unknown mode')
+          PYCODE
+          python -m py_compile /tmp/stage37_daily_controller.py
+          python /tmp/stage37_daily_controller.py --self-test
+          python /tmp/stage37_daily_controller.py --preflight
       - name: Restore original Stage25-26 development modules only
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         shell: bash
         run: |
           mkdir -p stage28 v5_reports/stage28
@@ -55,6 +443,7 @@ jobs:
           PY
           python stage28/restore.py
       - name: Verify official KRX operating market and 70-session archive (no collection)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: collect
         shell: bash
         run: |
@@ -91,6 +480,7 @@ jobs:
           print(json.dumps(result,ensure_ascii=False))
           PY
       - name: Evaluate R14 read-only FULL MARKET with existing grading engine
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: full_market_grade
         shell: bash
         run: |
@@ -131,6 +521,7 @@ jobs:
           print('R14_NUMERIC_UNIVERSE_RECONCILED',json.dumps(coverage,ensure_ascii=False))
           PY
       - name: Audit official PER PBR provenance and research filing-date safety (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: ratio_provenance
         shell: bash
         run: |
@@ -180,6 +571,7 @@ jobs:
           print(json.dumps(report,ensure_ascii=False))
           PY
       - name: Incremental OpenDART original filing and correction receipts (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: dart_receipts
         shell: bash
         env:
@@ -503,6 +895,7 @@ jobs:
           python /tmp/r14_filing_receipt_audit.py --self-test
           python /tmp/r14_filing_receipt_audit.py
       - name: Reconcile current DART financial account values against frozen receipt IDs (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: financial_values
         shell: bash
         env:
@@ -761,6 +1154,7 @@ jobs:
           python /tmp/r14_financial_values.py --self-test
           python /tmp/r14_financial_values.py
       - name: Preserve OpenDART original and amended filing ZIP checksums (research-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: original_versions
         shell: bash
         env:
@@ -1056,6 +1450,7 @@ jobs:
           python /tmp/r14_document_version_probe.py --self-test
           python /tmp/r14_document_version_probe.py
       - name: Reconcile version-bound original XBRL annual facts (read-only pilot)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: original_xbrl_reconciliation
         shell: bash
         env:
@@ -1455,6 +1850,7 @@ jobs:
           python /tmp/r14_receipt_xbrl_reconciliation.py --self-test
           python /tmp/r14_receipt_xbrl_reconciliation.py
       - name: Classify original versus corrected XBRL candidate facts (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: xbrl_revision_delta
         shell: bash
         run: |
@@ -1646,6 +2042,7 @@ jobs:
           python /tmp/r14_xbrl_revision_delta.py --self-test
           python /tmp/r14_xbrl_revision_delta.py
       - name: Diagnose prior XBRL receipt structures (no cache mutation)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: xbrl_structure_diag
         shell: bash
         env:
@@ -1962,6 +2359,7 @@ jobs:
           python /tmp/r14_xbrl_structure_probe.py --self-test
           python /tmp/r14_xbrl_structure_probe.py
       - name: Recover dimensioned original and corrected IFRS fact candidates (research only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: xbrl_dimension_recovery
         shell: bash
         env:
@@ -2333,6 +2731,7 @@ jobs:
           python /tmp/r14_xbrl_dimension_recovery.py --self-test
           python /tmp/r14_xbrl_dimension_recovery.py
       - name: Isolate exact single-axis CFS and OFS financial candidates from existing XBRL cache (read only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: xbrl_basis_isolation
         shell: bash
         run: |
@@ -2537,6 +2936,7 @@ jobs:
           python /tmp/r14_xbrl_basis_isolation.py --self-test
           python /tmp/r14_xbrl_basis_isolation.py
       - name: Compare receipt-specific XBRL basis candidates with frozen DART cache and classify missing corrections (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: xbrl_cache_bridge
         shell: bash
         run: |
@@ -2809,6 +3209,7 @@ jobs:
           python /tmp/r14_xbrl_cache_bridge.py --self-test
           python /tmp/r14_xbrl_cache_bridge.py
       - name: Exclude incomplete corrected-filing stocks from R14 research candidate feed (no API)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: r14_candidate_gate
         shell: bash
         run: |
@@ -3027,6 +3428,7 @@ jobs:
           python /tmp/r14_candidate_gate.py --self-test
           python /tmp/r14_candidate_gate.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: dated_ratio_input
         shell: bash
         run: |
@@ -3063,6 +3465,7 @@ jobs:
           print(json.dumps(report,ensure_ascii=False))
           PY
       - name: Audit KRX official PER/PBR source capability and dated CSV integrity (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: official_ratio_source_probe
         shell: bash
         run: |
@@ -3389,6 +3792,7 @@ jobs:
           python /tmp/r14_official_ratio_source_probe.py --self-test
           python /tmp/r14_official_ratio_source_probe.py
       - name: Enforce independent official PER/PBR and dated financial evidence on filtered R14 candidates (research only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: r14_valuation_readiness
         shell: bash
         run: |
@@ -3687,6 +4091,7 @@ jobs:
           python /tmp/r14_valuation_handoff.py
 
       - name: Review official KRX PER/PBR acquisition routes without unauthorized data collection (weekly cached)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: official_ratio_route_monitor
         shell: bash
         run: |
@@ -4016,6 +4421,7 @@ jobs:
           python /tmp/r14_krx_official_route_monitor.py
 
       - name: Calculate owner-attributable research PER/PBR from cached market and financial sources
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: calculated_ratio
         shell: bash
         run: |
@@ -4445,6 +4851,7 @@ jobs:
           PY
 
       - name: Triage calculated PER/PBR research evidence by supporting checks (read-only)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: calculated_ratio_triage
         shell: bash
         run: |
@@ -4817,6 +5224,7 @@ jobs:
           PY
 
       - name: Observe filtered R14 research-reference outcomes at 5 10 20 actual archived sessions (no trading)
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: research_outcomes
         shell: bash
         run: |
@@ -5282,15 +5690,25 @@ jobs:
           print('Stage36 research-only 5/10/20 horizon evidence complete; Stage27 unchanged')
           PY
 
+      - name: Preserve frozen 5 10 20 research outcomes after each new market snapshot
+        id: stage37_continuity
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' && steps.research_outcomes.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python /tmp/stage37_daily_controller.py --postflight
       - name: Run Stage25 fundamental research
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: fundamental
         continue-on-error: true
         run: python stage28/stage25.py
       - name: Run Stage26 investment decision research
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: decision
         continue-on-error: true
         run: python stage28/stage26.py
       - name: Read independent Stage27 status without executing or editing it
+        if: ${{ steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         id: performance
         shell: bash
         run: |
@@ -5306,7 +5724,7 @@ jobs:
           print('Stage27 is an independent workflow, snapshot-only:', s.get('generated_utc'),s.get('ledger_events'))
           PY
       - name: Write isolated Stage28 run summary
-        if: always()
+        if: ${{ always() && steps.stage37_preflight.outputs.run_pipeline == 'true' }}
         env:
           COLLECT_RESULT: ${{ steps.collect.outcome }}
           FUNDAMENTAL_RESULT: ${{ steps.fundamental.outcome }}
@@ -5331,11 +5749,12 @@ jobs:
           CALCULATED_RATIO_RESULT: ${{ steps.calculated_ratio.outcome }}
           CALCULATED_RATIO_TRIAGE_RESULT: ${{ steps.calculated_ratio_triage.outcome }}
           RESEARCH_OUTCOMES_RESULT: ${{ steps.research_outcomes.outcome }}
+          STAGE37_CONTINUITY_RESULT: ${{ steps.stage37_continuity.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO','CALCULATED_RATIO_TRIAGE','RESEARCH_OUTCOMES')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO','CALCULATED_RATIO_TRIAGE','RESEARCH_OUTCOMES','STAGE37_CONTINUITY')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -5367,6 +5786,8 @@ jobs:
             'r14_research_reference_cohorts':'v5_reports/stage28/r14_reference_price_cohort_ledger.json',
             'r14_research_reference_observations':'v5_reports/stage28/r14_reference_5_10_20_observations.json',
             'r14_research_reference_outcome_summary':'v5_reports/stage28/r14_reference_5_10_20_summary.json',
+            'r14_daily_source_gate':'v5_reports/stage28/r14_daily_refresh_controller.json',
+            'r14_daily_performance_continuity':'v5_reports/stage28/r14_daily_continuity_audit.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -5402,7 +5823,7 @@ jobs:
               details['r14_valuation_ready_research_queue']={'status':'INVALID_VALUATION_GATE_DO_NOT_USE'}
           now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
           report={
-            'development_phase':'STAGE28_INTEGRATED',
+            'development_phase':'STAGE28_INTEGRATED_STAGE37_DAILY_RESEARCH',
             'generated_kst':now.isoformat(),
             'component_results':statuses,
             'stage27_mode':'READ_ONLY_SEPARATE_WORKFLOW',
@@ -5431,10 +5852,13 @@ jobs:
             'calculated_ratio_evidence_triage_status':('RESEARCH_ONLY_NO_INVESTMENT_AUTHORIZATION' if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' and details.get('r14_calculated_ratio_evidence_triage',{}).get('result')=='R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1' else 'BLOCKED_TRIAGE_NOT_VERIFIED'),
             'calculated_ratio_research_evidence_tiers':(details.get('r14_calculated_ratio_evidence_triage',{}).get('tier_counts') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
             'calculated_ratio_research_missing_evidence_count':(details.get('r14_calculated_ratio_evidence_triage',{}).get('incomplete_research_evidence_count') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
-            'research_reference_5_10_20_tracking':('RESEARCH_REFERENCE_RETURNS_NOT_TRADE' if statuses.get('RESEARCH_OUTCOMES')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else 'BLOCKED_RESEARCH_OUTCOME_NOT_VERIFIED'),
-            'active_research_reference_performance_feed':('v5_reports/stage28/r14_reference_5_10_20_observations.json' if statuses.get('RESEARCH_OUTCOMES')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else None),
+            'research_reference_5_10_20_tracking':('RESEARCH_REFERENCE_RETURNS_NOT_TRADE' if statuses.get('RESEARCH_OUTCOMES')=='success' and statuses.get('STAGE37_CONTINUITY')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else 'BLOCKED_RESEARCH_OUTCOME_NOT_VERIFIED'),
+            'active_research_reference_performance_feed':('v5_reports/stage28/r14_reference_5_10_20_observations.json' if statuses.get('RESEARCH_OUTCOMES')=='success' and statuses.get('STAGE37_CONTINUITY')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else None),
             'reference_5_10_20_tracked_research_rows':(details.get('r14_research_reference_outcome_summary',{}).get('tracked_research_reference_rows') if statuses.get('RESEARCH_OUTCOMES')=='success' else None),
             'reference_5_10_20_horizon_status_counts':(details.get('r14_research_reference_outcome_summary',{}).get('horizon_observation_status_counts') if statuses.get('RESEARCH_OUTCOMES')=='success' else None),
+            'stage37_daily_market_recheck_state':(details.get('r14_daily_performance_continuity',{}).get('pipeline_state') if statuses.get('STAGE37_CONTINUITY')=='success' else 'BLOCKED_DAILY_CONTINUITY_NOT_VERIFIED'),
+            'stage37_research_observation_ready':bool(statuses.get('STAGE37_CONTINUITY')=='success' and details.get('r14_daily_performance_continuity',{}).get('pipeline_state')=='OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED'),
+            'stage37_upstream_market_publication_required':True,
             'research_reference_prices_are_trade_entries':False,
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
@@ -5453,7 +5877,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers and Stage36 research-reference 5/10/20 observation remain research-only; reference closes are NOT trade entries; Stage27 remains separate and untouched; no trading signals.'
+            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers and Stage36 research-reference 5/10/20 observation remains research-only; Stage37 follows published verified market sessions, skips holidays/stale/duplicate data, and checks frozen matured results. Upstream collector publication is separately required. Reference closes are NOT trade entries; Stage27 remains separate and untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
