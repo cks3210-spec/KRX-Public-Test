@@ -1,6 +1,6 @@
 {
   "result": "R14_FILTERED_VALUATION_EVIDENCE_GATE_V1",
-  "generated_kst": "2026-11-21T12:27:38.057931+09:00",
+  "generated_kst": "2026-11-21T12:35:10.687321+09:00",
   "research_market_date": "20261119",
   "input_candidates_path": "v5_reports/stage28/r14_eligible_research_candidates.json",
   "excluded_policy_source": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
@@ -1923,12 +1923,12 @@
     "Ready queue is NOT an investment signal even when future evidence completes"
   ],
   "source_file_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "23e2375981ca5426326cb70889b3374e2cd0ee331beba3a3825b8f783bd6e856",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "f4fb374330350cdc9f082b06fbb4de490bc68120b52b418a55d8d768021811e5",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "8e92c094c531b1ce1be0ff0deff7424630addcf7a4ee9ff0252e8f3c8569e670",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "108b2802bdecb7b715e59a76c9e19b98e0cc13af1c1b8dc99d671ebf7a2f2042",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
     "v5_reports/stage28/r14_official_ratio_provenance_audit.json": "ea6d2cd30ad4925b8b812f8104878204a91fe7dd3d0850c2e0c453c9054125ab",
     "v5_reports/stage28/r14_valuation_disclosure_gate.json": "54811e512525ce4d80e54b9a5e52154ca120c23111b4a82d5f45d5b1f74649ba",
-    "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "6c9a074f3a8bff4055735aa3385e38a3dcbee1f8f4550cd506050d8df158ec57"
+    "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "1f9e1162e764974f521cac938c652838893c783412451eecd7945f0169054fc0"
   },
   "stage27_status_sha256_read_only": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
   "legacy_financial_cache_sha256_read_only": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
