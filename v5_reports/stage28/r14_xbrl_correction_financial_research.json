@@ -1,14 +1,14 @@
 {
   "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-  "generated_kst": "2026-11-21T10:38:25.873125+09:00",
+  "generated_kst": "2026-11-21T12:18:07.406224+09:00",
   "market_date": "20261119",
   "mismatch_company_count": 4,
   "annual_receipts_expected": 9,
   "xbrl_receipts_available": 6,
-  "queries_this_run": 3,
+  "queries_this_run": 0,
   "query_states": {
     "REUSED_XBRL_RECEIPT_CACHE": 6,
-    "DART_API_STATUS_014": 3
+    "PENDING_XBRL_BATCH_CAP": 3
   },
   "selected_asof_receipts_extracted": 1,
   "receipt_comparison_research": [

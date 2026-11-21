@@ -1,0 +1,85 @@
+{
+  "result": "R14_MISSING_CORRECTION_EXCLUSION_GATE_V1",
+  "generated_kst": "2026-11-21T12:18:08.200233+09:00",
+  "research_market_date": "20261119",
+  "raw_research_candidate_count": 128,
+  "receipt_mismatch_candidates_checked": 4,
+  "eligible_research_candidate_count": 125,
+  "excluded_candidate_count": 3,
+  "excluded_candidates": [
+    {
+      "code": "033500",
+      "name": "동성화인텍",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "CORRECTION_XBRL_UNAVAILABLE",
+      "all_reasons": [
+        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
+        "CORRECTION_XBRL_UNAVAILABLE"
+      ],
+      "periods": [
+        "2025_annual"
+      ],
+      "selected_receipts": [
+        "20260319000704"
+      ]
+    },
+    {
+      "code": "097230",
+      "name": "HJ중공업",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "CORRECTION_DOCUMENT_UNAVAILABLE",
+      "all_reasons": [
+        "CORRECTION_DOCUMENT_UNAVAILABLE",
+        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
+        "CORRECTION_XBRL_UNAVAILABLE"
+      ],
+      "periods": [
+        "2025_annual"
+      ],
+      "selected_receipts": [
+        "20260319001333"
+      ]
+    },
+    {
+      "code": "054950",
+      "name": "제이브이엠",
+      "previous_research_grade": "A",
+      "status": "EXCLUDE",
+      "reason": "CORRECTION_XBRL_UNAVAILABLE",
+      "all_reasons": [
+        "CORRECTION_FINANCIAL_VALUES_NOT_RECONCILED",
+        "CORRECTION_XBRL_UNAVAILABLE"
+      ],
+      "periods": [
+        "2025_annual"
+      ],
+      "selected_receipts": [
+        "20260325000430"
+      ]
+    }
+  ],
+  "excluded_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "eligible_research_grade_counts": {
+    "B": 102,
+    "A": 23
+  },
+  "eligible_candidate_output": "v5_reports/stage28/r14_eligible_research_candidates.json",
+  "raw_screening_history_untouched": true,
+  "missing_correction_retrieval_disabled": true,
+  "historical_point_in_time_financials_verified": false,
+  "official_per_pbr_independently_verified": 0,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "policy": "Exclude receipt-version-mismatch R14 candidates when latest pre-evaluation corrected document, XBRL, or five CFS research field comparisons are unavailable; do not fetch missing corrections.",
+  "limitations": [
+    "Research evidence eligibility is NOT official accounting authentication or investment eligibility",
+    "Raw full-market grades are preserved for audit, but must not be shown as filtered final research shortlist",
+    "The separate legacy Stage25/26 module is not a replacement for this filtered R14 candidate feed"
+  ]
+}
