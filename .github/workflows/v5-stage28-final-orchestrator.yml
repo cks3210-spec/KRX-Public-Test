@@ -2478,7 +2478,7 @@ jobs:
               for pair in pairs:
                   for basis in MEMBERS:
                       total.update((x['state'] for x in pair['basis_comparisons'][basis]['field_states'].values()))
-              result={'result':VERSION,'generated_kst':stamp(),'research_market_date':f.get('market_date'),
+              result={'result':VERSION,'generated_kst':stamp(),'research_market_date':load(ROOT/'r14_full_market_grade_research.json').get('market_date'),
                       'comparison_periods':len(pairs),'available_source_receipts':len(d.get('rows') or {}),
                       'financial_candidates_by_basis':dict(total),'comparisons':pairs,
                       'source':'STAGE28_CACHED_HASH_MATCHED_XBRL_DIMENSION_FACTS',
@@ -2536,6 +2536,278 @@ jobs:
           python -m py_compile /tmp/r14_xbrl_basis_isolation.py
           python /tmp/r14_xbrl_basis_isolation.py --self-test
           python /tmp/r14_xbrl_basis_isolation.py
+      - name: Compare receipt-specific XBRL basis candidates with frozen DART cache and classify missing corrections (read-only)
+        id: xbrl_cache_bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_xbrl_cache_bridge.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 receipt-aware XBRL-to-legacy-cache comparison: research only.
+          
+          No network calls. Neither historical filing availability nor official KRX PER/PBR
+          is authenticated. This script is intentionally an append-only research report.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import json
+          from pathlib import Path
+          import re
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          R14 = ROOT/'r14_full_market_grade_research.json'
+          BASIS = ROOT/'r14_xbrl_basis_isolation_research.json'
+          FILING = ROOT/'r14_filing_receipt_cache.json'
+          RECEIPT_DOCUMENTS = ROOT/'r14_filing_document_version_cache.json'
+          FIN_RECONCILIATION = ROOT/'r14_financial_value_reconciliation_cache.json'
+          XBRL = ROOT/'r14_xbrl_receipt_financial_cache.json'
+          XBRL_SUMMARY = ROOT/'r14_xbrl_correction_financial_research.json'
+          CACHE = Path('data/v5_financial_m/dart_financial_cache.json')
+          STAGE27 = Path('v5_reports/stage27/status.json')
+          OUTPUT = ROOT/'r14_xbrl_cache_bridge_research.json'
+          FIELDS = ('profit','equity','revenue','assets','liabilities')
+          VERSION = 'R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1'
+          
+          
+          def load(path):
+              with path.open('r',encoding='utf-8-sig') as f:
+                  return json.load(f)
+          
+          
+          def digest(path):
+              h=hashlib.sha256()
+              with path.open('rb') as f:
+                  for block in iter(lambda:f.read(1024*1024),b''):
+                      h.update(block)
+              return h.hexdigest()
+          
+          
+          def kst():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def check_date(day):
+              return bool(re.fullmatch(r'20\d{6}',str(day or ''))) and _real_date(day)
+          
+          
+          def _real_date(day):
+              try:
+                  dt.datetime.strptime(str(day),'%Y%m%d')
+                  return True
+              except ValueError:
+                  return False
+          
+          
+          def receipt_gate(code,receipt,filings):
+              row=(filings.get('rows') or {}).get(code) or {}
+              periods=row.get('filing_periods') or {}
+              reports=periods.get('2025_annual') or {}
+              approved={str(x.get('rcept_no')):str(x.get('rcept_dt')) for x in reports.get('pre_evaluation_receipts') or [] if isinstance(x,dict)}
+              cutoff=str(row.get('evaluation_date') or '')
+              date=approved.get(str(receipt))
+              if not check_date(cutoff) or not date or receipt[:8]!=date or date>cutoff:
+                  return 'RECEIPT_NOT_PROVEN_PRE_EVALUATION'
+              return 'RECEIPT_LISTED_BEFORE_EVALUATION'
+          
+          
+          def numeric(x):
+              # Do not coerce strings/floats into purported exact KRW values.
+              return type(x) is int
+          
+          
+          def compare_cache(pair,cache,finance,filings):
+              code=str(pair.get('code') or '')
+              period=str(pair.get('period') or '')
+              source=(finance.get('rows') or {}).get(code) or {}
+              selected_expected=((source.get('receipt_selection') or {}).get('receipts') or {}).get(period)
+              expected_asof=str(pair.get('selected_asof_receipt') or '')
+              cached=cache.get(f'{code}:2025:annual') or {}
+              found_basis=cached.get('fs_div') if isinstance(cached,dict) else None
+              fields=cached.get('accounts') if isinstance(cached,dict) else None
+              report={'code':code,'period':period,'evaluation_date':((filings.get('rows') or {}).get(code) or {}).get('evaluation_date'),
+                      'cached_financial_entry_key':f'{code}:2025:annual',
+                      'cache_financial_basis':found_basis,'cache_account_status':cached.get('status') if isinstance(cached,dict) else None,
+                      'cached_receipt_audit_status':source.get('status'),
+                      'selected_receipt_matches_existing_receipt_audit':selected_expected==expected_asof,
+                      'sources':{},'financial_basis_independently_authenticated':False,
+                      'historical_point_in_time_financials_verified':False,
+                      'investment_decisions_authorized':False}
+              if period!='2025_annual':
+                  return {'code':code,'status':'UNSUPPORTED_PERIOD'}
+              for source_name, receipt in [('original',pair.get('original_receipt')),('selected_asof',expected_asof)]:
+                  status=receipt_gate(code,receipt,filings)
+                  basis_values=((pair.get('receipt_sources') or {}).get(source_name) or {}).get('bases') or {}
+                  candidates=(basis_values.get(found_basis) or {}) if found_basis in ('CFS','OFS') else {}
+                  comparison={}
+                  for field in FIELDS:
+                      fact=candidates.get(field) or {}
+                      cv=fields.get(field) if isinstance(fields,dict) else None
+                      fv=fact.get('value_krw')
+                      if status!='RECEIPT_LISTED_BEFORE_EVALUATION':
+                          state='UNATTESTED_RECEIPT_BEFORE_EVALUATION'
+                      elif not report['selected_receipt_matches_existing_receipt_audit']:
+                          state='ASOF_RECEIPT_SELECTION_INCONSISTENT'
+                      elif cached.get('status')!='000' or found_basis not in ('CFS','OFS'):
+                          state='LEGACY_CACHE_MISSING_OR_BASIS_UNKNOWN'
+                      elif not numeric(cv):
+                          state='LEGACY_CACHE_FIELD_UNAVAILABLE'
+                      elif fact.get('status')!='UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE' or not numeric(fv):
+                          state='XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE'
+                      else:
+                          state='RESEARCH_CACHE_VALUE_MATCH' if cv==fv else 'RESEARCH_CACHE_VALUE_DIFFER'
+                      entry={'state':state,'no_official_pit_promotion':True}
+                      if state in ('RESEARCH_CACHE_VALUE_MATCH','RESEARCH_CACHE_VALUE_DIFFER'):
+                          entry.update({'cached_amount_krw':cv,'xbrl_amount_krw':fv,
+                                        'difference_krw':fv-cv})
+                      else:
+                          entry.update({'cache_present':numeric(cv),'xbrl_candidate_state':fact.get('status','NOT_PRESENT')})
+                      comparison[field]=entry
+                  report['sources'][source_name]={'receipt_no':receipt,'receipt_gate':status,
+                                                  'candidate_basis_used':found_basis if found_basis in ('CFS','OFS') else None,
+                                                  'counts':dict(collections.Counter(v['state'] for v in comparison.values())),
+                                                  'fields':comparison,
+                                                  'historical_point_in_time_financials_verified':False}
+              return report
+          
+          
+          def missing_correction(pair,filings,docs,xbrl,xbrl_summary):
+              code=str(pair.get('code') or '')
+              original=str(pair.get('original_receipt') or '')
+              selected=str(pair.get('selected_asof_receipt') or '')
+              if not selected or not original or selected==original:
+                  return None
+              doc_rows=docs.get('rows') or {}
+              xb_rows=xbrl.get('rows') or {}
+              original_document=(doc_rows.get(original) or {}).get('state','NOT_CACHED')
+              selected_document=(doc_rows.get(selected) or {}).get('state','NOT_CACHED')
+              selected_xbrl=(xb_rows.get(selected) or {}).get('state','NOT_CACHED')
+              if selected_xbrl=='XBRL_RECEIPT_ZIP_RETRIEVED':
+                  classification='XBRL_PRESENT_FOR_SELECTED_RECEIPT'
+              elif selected_document=='DOCUMENT_ZIP_HASH_CAPTURED':
+                  classification='CORRECTION_DOCUMENT_PRESENT_XBRL_NOT_AVAILABLE_IN_CACHE'
+              else:
+                  classification='CORRECTION_DOCUMENT_AND_XBRL_NOT_AVAILABLE_IN_CACHE'
+              # The previous API's aggregate 014 count cannot by itself prove which receipt failed.
+              batch=(xbrl_summary.get('query_states') or {})
+              return {'code':code,'period':pair.get('period'),
+                      'original_receipt':original,'selected_asof_receipt':selected,
+                      'original_receipt_gate':receipt_gate(code,original,filings),
+                      'selected_receipt_gate':receipt_gate(code,selected,filings),
+                      'original_document_cache_state':original_document,
+                      'selected_document_cache_state':selected_document,
+                      'selected_xbrl_cache_state':selected_xbrl,
+                      'status':classification,
+                      'prior_batch_014_response_count':batch.get('DART_API_STATUS_014',0),
+                      'prior_batch_014_not_attributed_to_specific_receipt':True,
+                      'fss_014_means':'FILE_DOES_NOT_EXIST_FOR_REQUEST_AS_RETURNED_BY_API',
+                      'no_recurring_retry_requested_by_bridge':True,
+                      'financial_values_verified':False,'historical_pit_verified':False}
+          
+          
+          def audit(research,basis,filings,financial_cache,fin_recon,documents,xbrl,xbrl_sum):
+              date=research.get('market_date')
+              if research.get('result')!='PRELIMINARY_RESEARCH_ONLY' or not check_date(date):
+                  raise ValueError('INVALID_R14_RESEARCH_MARKET_DATE')
+              if basis.get('result')!='R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1':
+                  raise ValueError('MISSING_OR_INCOMPATIBLE_BASIS_ISOLATION')
+              if basis.get('research_market_date') not in (None,date):
+                  raise ValueError('BASIS_RESEARCH_MARKET_DATE_DISAGREES')
+              if filings.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1':
+                  raise ValueError('UNEXPECTED_RECEIPT_EVIDENCE_FORMAT')
+              if fin_recon.get('format')!='R14_FINANCIAL_COMPARISON_CACHE_V1':
+                  raise ValueError('UNEXPECTED_FINANCIAL_AUDIT_FORMAT')
+              if documents.get('format')!='R14_DOCUMENT_VERSION_HASH_CACHE_V1' or xbrl.get('format')!='R14_RECEIPT_XBRL_RESEARCH_CACHE_V1':
+                  raise ValueError('UNEXPECTED_DOCUMENT_OR_XBRL_CACHE_FORMAT')
+              if not isinstance(financial_cache,dict) or not financial_cache:
+                  raise ValueError('LEGACY_FINANCIAL_CACHE_UNAVAILABLE')
+              pairs=basis.get('comparisons') or []
+              if len(pairs)>128: raise ValueError('UNEXPECTED_PAIR_COUNT')
+              comparisons=[compare_cache(p,financial_cache,fin_recon,filings) for p in pairs]
+              missing=[missing_correction(p,filings,documents,xbrl,xbrl_sum) for p in pairs]
+              missing=[m for m in missing if m is not None]
+              counters=collections.Counter(v['state'] for comp in comparisons for source in comp.get('sources',{}).values() for v in source['fields'].values())
+              missing_status=collections.Counter(x['status'] for x in missing)
+              return {'result':VERSION,'generated_kst':kst(),
+                      'research_market_date':date,
+                      'research_date_source':'v5_reports/stage28/r14_full_market_grade_research.json.market_date',
+                      'reference_market_data_day_not_evaluation_day':True,
+                      'comparison_periods':len(comparisons),'fields_compared_by_basis':dict(counters),
+                      'missing_correction_xbrl_status_counts':dict(missing_status),
+                      'receipt_pair_diagnostics':missing,'cache_value_comparisons':comparisons,
+                      'official_per_independently_verified':0,'official_pbr_independently_verified':0,
+                      'financial_basis_independently_authenticated':False,
+                      'historical_point_in_time_financial_values_verified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'data_sources':['STAGE28_EXISTING_R14_SOURCE','STAGE28_EXISTING_RECEIPT_EVIDENCE','STAGE28_EXISTING_CFS_OFS_ISOLATION','DATA_V5_FINANCIAL_M_CACHE'],
+                      'new_api_requests':0,'stage27_modified':False,'financial_cache_modified':False,
+                      'limitations':['OpenDART fnlttSinglAcntAll reports current account values, not historical as-of versions',
+                                     'XBRL exact single-axis facts are candidates until independently validated against reporting basis',
+                                     'OpenDART 014 batch aggregate cannot prove the response of an individual receipt',
+                                     'Original-vs-correction XBRL values can remain unavailable even when a corrected document ZIP exists',
+                                     'Market reference date and historical evaluation date must remain distinct']}
+          
+          
+          def selftest():
+              assert check_date('20261119') and not check_date('20261131') and not check_date('2026-11-19')
+              f={'format':'R14_RECEIPT_EVIDENCE_CACHE_V1','rows':{'015360':{'evaluation_date':'20261120','filing_periods':{'2025_annual':{'pre_evaluation_receipts':[{'rcept_no':'20260310002563','rcept_dt':'20260310'},{'rcept_no':'20260605000111','rcept_dt':'20260605'}]}}}}}
+              orig='20260310002563';sel='20260605000111'
+              field=lambda v: {'status':'UNIQUE_SINGLE_AXIS_RESEARCH_CANDIDATE','value_krw':v}
+              b={'result':'R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1','research_market_date':None,'comparisons':[{'code':'015360','period':'2025_annual','original_receipt':orig,'selected_asof_receipt':sel,
+                'receipt_sources':{'original':{'bases':{'CFS':{'assets':field(100),'profit':field(20)}}},'selected_asof':{'bases':{'CFS':{'assets':field(99),'profit':field(20)}}}}}]}
+              market={'result':'PRELIMINARY_RESEARCH_ONLY','market_date':'20261119'}
+              finance={'015360:2025:annual':{'status':'000','fs_div':'CFS','accounts':{'assets':100,'profit':20}}}
+              compare={'format':'R14_FINANCIAL_COMPARISON_CACHE_V1','rows':{'015360':{'status':'RECEIPT_VERSION_MISMATCH','receipt_selection':{'receipts':{'2025_annual':sel}}}}}
+              docs={'format':'R14_DOCUMENT_VERSION_HASH_CACHE_V1','rows':{orig:{'state':'DOCUMENT_ZIP_HASH_CAPTURED'},sel:{'state':'DOCUMENT_ZIP_HASH_CAPTURED'}}}
+              xb={'format':'R14_RECEIPT_XBRL_RESEARCH_CACHE_V1','rows':{orig:{'state':'XBRL_RECEIPT_ZIP_RETRIEVED'}}}
+              summary={'query_states':{'DART_API_STATUS_014':3}}
+              out=audit(market,b,f,finance,compare,docs,xb,summary)
+              assert out['research_market_date']=='20261119'
+              assert out['comparison_periods']==1
+              assert out['fields_compared_by_basis']['RESEARCH_CACHE_VALUE_MATCH']==3 # original 2; selected profit 1
+              assert out['fields_compared_by_basis']['RESEARCH_CACHE_VALUE_DIFFER']==1
+              assert out['receipt_pair_diagnostics'][0]['status']=='CORRECTION_DOCUMENT_PRESENT_XBRL_NOT_AVAILABLE_IN_CACHE'
+              assert out['receipt_pair_diagnostics'][0]['prior_batch_014_not_attributed_to_specific_receipt'] is True
+              assert out['new_api_requests']==0 and not out['investment_decisions_authorized']
+              assert out['cache_value_comparisons'][0]['sources']['original']['receipt_gate']=='RECEIPT_LISTED_BEFORE_EVALUATION'
+              b['comparisons'][0]['receipt_sources']['selected_asof']['bases']['CFS']['assets']['value_krw']=100
+              assert audit(market,b,f,finance,compare,docs,xb,summary)['fields_compared_by_basis'].get('RESEARCH_CACHE_VALUE_DIFFER',0)==0
+              compare['rows']['015360']['receipt_selection']['receipts']['2025_annual']=orig
+              bad=audit(market,b,f,finance,compare,docs,xb,summary)
+              assert bad['fields_compared_by_basis'].get('RESEARCH_CACHE_VALUE_MATCH',0)==0
+              compare['rows']['015360']['receipt_selection']['receipts']['2025_annual']=sel
+              del finance['015360:2025:annual']
+              assert compare_cache(b['comparisons'][0],finance,compare,f)['sources']['original']['fields']['profit']['state']=='LEGACY_CACHE_MISSING_OR_BASIS_UNKNOWN'
+              assert receipt_gate('015360','20280110000001',f)=='RECEIPT_NOT_PROVEN_PRE_EVALUATION'
+              return 13
+          
+          
+          def run():
+              required=[R14,BASIS,FILING,RECEIPT_DOCUMENTS,FIN_RECONCILIATION,XBRL,XBRL_SUMMARY,CACHE,STAGE27]
+              absent=[str(p) for p in required if not p.is_file()]
+              if absent:raise SystemExit('MISSING_DEPENDENCY:'+','.join(absent))
+              finance_sha=digest(CACHE)
+              ledger_sha=digest(STAGE27)
+              report=audit(load(R14),load(BASIS),load(FILING),load(CACHE),load(FIN_RECONCILIATION),load(RECEIPT_DOCUMENTS),load(XBRL),load(XBRL_SUMMARY))
+              if digest(CACHE)!=finance_sha or digest(STAGE27)!=ledger_sha:
+                  raise SystemExit('READ_ONLY_SOURCE_HASH_CHANGED_DURING_AUDIT')
+              report['source_file_sha256']={'legacy_dart_financial_cache':finance_sha,'stage27_status':ledger_sha}
+              OUTPUT.parent.mkdir(parents=True,exist_ok=True)
+              OUTPUT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print(json.dumps({key:value for key,value in report.items() if key not in ('receipt_pair_diagnostics','cache_value_comparisons','limitations')},ensure_ascii=False))
+          
+          
+          if __name__=='__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test':'PASS','tests':selftest()}))
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_xbrl_cache_bridge.py
+          python /tmp/r14_xbrl_cache_bridge.py --self-test
+          python /tmp/r14_xbrl_cache_bridge.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -2613,11 +2885,12 @@ jobs:
           XBRL_STRUCTURE_DIAG_RESULT: ${{ steps.xbrl_structure_diag.outcome }}
           XBRL_DIMENSION_RECOVERY_RESULT: ${{ steps.xbrl_dimension_recovery.outcome }}
           XBRL_BASIS_ISOLATION_RESULT: ${{ steps.xbrl_basis_isolation.outcome }}
+          XBRL_CACHE_BRIDGE_RESULT: ${{ steps.xbrl_cache_bridge.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -2634,7 +2907,8 @@ jobs:
             'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json',
             'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json',
             'r14_xbrl_dimension_recovery':'v5_reports/stage28/r14_xbrl_dimension_financial_research.json',
-            'r14_xbrl_basis_isolation':'v5_reports/stage28/r14_xbrl_basis_isolation_research.json'
+            'r14_xbrl_basis_isolation':'v5_reports/stage28/r14_xbrl_basis_isolation_research.json',
+            'r14_xbrl_cache_bridge':'v5_reports/stage28/r14_xbrl_cache_bridge_research.json'
           }
           details={}
           for name,p in status_files.items():
@@ -2672,6 +2946,7 @@ jobs:
             'xbrl_receipt_financial_comparison':'RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED',
             'xbrl_dimension_fact_recovery':'RESEARCH_CANDIDATES_WITH_EXPLICIT_CONTEXT_AND_SOURCE_HASH_ONLY; BASIS_AND_PIT_UNVERIFIED',
             'xbrl_basis_axis_isolation':'RESEARCH_ONLY_EXACT_SINGLE_IFRS_STATEMENT_AXIS; CFS_OFS_AND_PIT_UNVERIFIED',
+            'xbrl_receipt_cache_reconciliation':'RESEARCH_ONLY_VALUE_MATCH_AND_MISSING_FILE_TRIAGE; BASIS_AND_PIT_UNVERIFIED',
             'official_ratio_source_gate':'DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
