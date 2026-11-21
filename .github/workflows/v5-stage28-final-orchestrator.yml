@@ -4444,6 +4444,378 @@ jobs:
           print('Stage34 owner-attributable ratios research only, official/provider/PIT/decision gates intact')
           PY
 
+      - name: Triage calculated PER/PBR research evidence by supporting checks (read-only)
+        id: calculated_ratio_triage
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_ratio_evidence_triage.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #35: conservative evidence tiering of existing calculated ratio research.
+          
+          This is a read-only post-processing audit. It does NOT authenticate official
+          KRX ratios, receipt-bound historical financial values, share class, or a trade.
+          No missing-correction recovery, DART calls, or KRX data collection.
+          """
+          from __future__ import annotations
+          
+          import collections
+          import csv
+          from datetime import datetime
+          from decimal import Decimal, InvalidOperation
+          import hashlib
+          import json
+          from pathlib import Path
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+          
+          ROOT=Path('v5_reports/stage28')
+          FILTERED=ROOT/'r14_eligible_research_candidates.json'
+          EXCLUSION=ROOT/'r14_candidate_exclusion_gate.json'
+          CALCULATED=ROOT/'r14_calculated_per_pbr_research.json'
+          QUALITY=ROOT/'r14_calculated_ratio_quality_gate.json'
+          VALUATION=ROOT/'r14_valuation_readiness_gate.json'
+          STAGE27=Path('v5_reports/stage27/status.json')
+          FIN_CACHE=Path('data/v5_financial_m/dart_financial_cache.json')
+          REPORT=ROOT/'r14_calculated_ratio_evidence_triage.json'
+          PRIORITIES=ROOT/'r14_calculated_ratio_missing_evidence_queue.json'
+          CSV_FILE=ROOT/'r14_calculated_ratio_evidence_tiers.csv'
+          TIER_DUAL='RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED'
+          TIER_SINGLE='RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED'
+          TIER_WEAK='RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED'
+          TIER_BLOCK='RESEARCH_CALCULATION_BLOCKED'
+          TIERS=(TIER_DUAL,TIER_SINGLE,TIER_WEAK,TIER_BLOCK)
+          DATE=re.compile(r'^20\d{6}$')
+          CODE=re.compile(r'^\d{6}$')
+          
+          
+          def load(p):
+              return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+          
+          
+          def checksum(p):
+              return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          
+          
+          def positive(v):
+              try:
+                  if v is None or isinstance(v,bool): return False
+                  d=Decimal(str(v).replace(',',''))
+                  return d.is_finite() and d>0
+              except (TypeError,ValueError,InvalidOperation):
+                  return False
+          
+          
+          def indexed(rows,label):
+              if not isinstance(rows,list):raise ValueError(label+'_NOT_ARRAY')
+              d={}
+              for item in rows:
+                  if not isinstance(item,dict): raise ValueError(label+'_ITEM_NOT_OBJECT')
+                  code=item.get('code')
+                  if not isinstance(code,str) or not CODE.fullmatch(code):raise ValueError(label+'_BAD_CODE')
+                  if code in d:raise ValueError(label+'_DUPLICATE_'+code)
+                  d[code]=item
+              return d
+          
+          
+          def validate_inputs(filtered,exclusion,ratios,quality,valuation):
+              if filtered.get('result')!='R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1':raise ValueError('WRONG_FILTERED_FEED')
+              if exclusion.get('result')!='R14_MISSING_CORRECTION_EXCLUSION_GATE_V1':raise ValueError('EXCLUSION_GATE_MISSING')
+              if ratios.get('result')!='R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1':raise ValueError('WRONG_CALCULATION_REPORT')
+              if quality.get('result')!='R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1':raise ValueError('WRONG_CALCULATION_QUALITY_GATE')
+              if valuation.get('result')!='R14_FILTERED_VALUATION_EVIDENCE_GATE_V1':raise ValueError('WRONG_VALUATION_GATE')
+              date=filtered.get('research_market_date')
+              if not isinstance(date,str) or not DATE.fullmatch(date):raise ValueError('BAD_MARKET_DATE')
+              datetime.strptime(date,'%Y%m%d')
+              for src in (exclusion,ratios,quality,valuation):
+                  if src.get('research_market_date')!=date:raise ValueError('SNAPSHOT_MARKET_DATE_MISMATCH')
+              excluded=exclusion.get('excluded_codes')
+              if not isinstance(excluded,list) or len(excluded)!=len(set(excluded)) or not all(isinstance(x,str) and CODE.fullmatch(x) for x in excluded):
+                  raise ValueError('BAD_EXCLUSION_SET')
+              if sorted(excluded)!=sorted(filtered.get('excluded_codes',[])) or sorted(excluded)!=sorted(ratios.get('excluded_codes',[])):
+                  raise ValueError('EXCLUSION_NOT_PROPAGATED')
+              if sorted(excluded)!=sorted(quality.get('excluded_missing_corrected_filing_codes',[])) or sorted(excluded)!=sorted(valuation.get('excluded_for_missing_corrected_filing',[])):
+                  raise ValueError('EXCLUSION_NOT_ENFORCED_AT_GATES')
+              f=indexed(filtered.get('candidates'),'FILTERED')
+              r=indexed(ratios.get('calculated_ratios'),'CALCULATED')
+              if set(f)!=set(r):raise ValueError('CALCULATED_RATIO_CODES_NOT_FILTERED')
+              if set(excluded)&set(f):raise ValueError('EXCLUDED_CORRECTION_REINTRODUCED')
+              n=len(f)
+              if n!=filtered.get('candidate_count') or n!=ratios.get('candidate_count') or n!=quality.get('filtered_input_candidate_count') or n!=exclusion.get('eligible_research_candidate_count') or n!=valuation.get('filtered_input_candidate_count'):
+                  raise ValueError('FILTERED_INPUT_COUNT_MISMATCH')
+              if ratios.get('official_krx_ratios_verified')!=0 or quality.get('official_per_pbr_independently_verified_count')!=0:
+                  raise ValueError('OFFICIAL_RATIO_MISREPRESENTED')
+              if ratios.get('shares_and_pit_verified') is not False or quality.get('historical_point_in_time_financials_verified') is not False:
+                  raise ValueError('SHARE_PIT_MISREPRESENTED')
+              if ratios.get('research_only') is not True or quality.get('research_only') is not True or ratios.get('investment_decisions_authorized') is not False or ratios.get('final_buy_signals')!=0 or valuation.get('ready_for_research_valuation_count')!=0:
+                  raise ValueError('VALUATION_OR_TRADE_GATE_UNSAFE')
+              if sorted({x['grade'] for x in f.values()})!=sorted(set(filtered.get('candidate_grades',{}))):
+                  raise ValueError('GRADE_MISMATCH')
+              for code,x in f.items():
+                  if x.get('grade') not in ('A','B','B+'):raise ValueError('NON_AB_RESEARCH_CANDIDATE_'+code)
+                  if x.get('market_date')!=date or x.get('buy_signal') is not False:raise ValueError('FILTERED_ROW_UNSAFE_'+code)
+                  y=r[code]
+                  if y.get('market_date')!=date or y.get('research_grade')!=x.get('grade') or y.get('buy_signal') is not False or y.get('official_krx_per_pbr') is not False:
+                      raise ValueError('CALCULATED_ROW_NOT_ALIGNED_'+code)
+                  if y.get('share_class_independently_verified') is not False or y.get('historical_point_in_time_verified') is not False or y.get('investment_decisions_authorized') is not False or y.get('actionable_entry_price') is not False:
+                      raise ValueError('CALCULATED_ROW_CLAIMS_PROOF_'+code)
+              return date,excluded,f,r
+          
+          
+          def tier_one(src):
+              comp=src.get('independent_annual_comparative_cache_matches_owner_profit') is True
+              receipt=(src.get('filing_evidence') or {}).get('asof_receipt_listed') is True
+              cash=src.get('cache_source_checks') or {}
+              complete=(src.get('calculated_ratio_status')=='RESEARCH_ESTIMATE_BOTH_METRICS'
+                        and positive(src.get('per_calculated_research')) and positive(src.get('pbr_calculated_research'))
+                        and cash.get('annual_reconciled') is True and cash.get('ttm_reconciled') is True)
+              reasons=[]
+              if not complete: reasons.append('PER_PBR_OR_CACHED_OWNER_VALUES_NOT_RECONCILED')
+              if not comp: reasons.append('ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED')
+              if not receipt: reasons.append('ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE')
+              if not ((src.get('filing_evidence') or {}).get('cached_values_matched_to_receipt') is True):
+                  reasons.append('CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT')
+              reasons += ['MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED','OFFICIAL_KRX_PER_PBR_NOT_VERIFIED']
+              if not complete: tier=TIER_BLOCK
+              elif comp and receipt: tier=TIER_DUAL
+              elif comp or receipt: tier=TIER_SINGLE
+              else: tier=TIER_WEAK
+              return tier,reasons,comp,receipt,complete
+          
+          
+          def audit(filtered,exclusion,ratios,quality,valuation):
+              date,excluded,filtered_idx,ratio_idx=validate_inputs(filtered,exclusion,ratios,quality,valuation)
+              counts=collections.Counter();flags=collections.Counter();rows=[];followups=[]
+              for code,stock in filtered_idx.items():
+                  src=ratio_idx[code]
+                  tier,reasons,comp,receipt,complete=tier_one(src)
+                  counts[tier]+=1
+                  for name in reasons:flags[name]+=1
+                  row={'code':code,'name':stock.get('name'),'grade_research_only':stock['grade'],
+                       'research_market_date':date,'evidence_tier':tier,
+                       'annual_owner_profit_comparative_matches_cache':comp,
+                       'annual_report_receipt_listed_by_market_date':receipt,
+                       'receipt_bound_financial_values_verified':False,
+                       'share_class_and_market_cap_scope_verified':False,
+                       'official_krx_per_pbr_verified':False,
+                       'per_calculated_research':src.get('per_calculated_research') if complete else None,
+                       'pbr_calculated_research':src.get('pbr_calculated_research') if complete else None,
+                       'calculated_ratio_is_research_only':True,
+                       'investment_decisions_authorized':False,'actionable_price_verified':False,
+                       'final_buy_signal':False,'missing_evidence_reasons':reasons}
+                  rows.append(row)
+                  if tier!=TIER_DUAL:
+                      followups.append({'code':code,'name':row['name'],'grade_research_only':row['grade_research_only'],
+                                        'evidence_tier':tier,'missing_evidence_reasons':reasons,
+                                        'excluded_missing_correction_stock':False,
+                                        'source_retrieval_attempted':False,
+                                        'actionable_price_verified':False})
+              assert sum(counts.values())==len(filtered_idx)
+              calc=sum(t!=TIER_BLOCK for t in (x['evidence_tier'] for x in rows))
+              if calc!=quality.get('calculated_both_research_count'):
+                  raise ValueError('STAGE34_CALCULATION_COUNT_CHANGED')
+              if counts[TIER_BLOCK]!=quality.get('calculation_blocked_count'):
+                  raise ValueError('STAGE34_CALCULATION_BLOCK_MISMATCH')
+              comp_matches=sum(x['annual_owner_profit_comparative_matches_cache'] for x in rows)
+              receipts=sum(x['annual_report_receipt_listed_by_market_date'] for x in rows)
+              if comp_matches!=quality.get('annual_parent_owner_comparative_match_count') or receipts!=quality.get('annual_filing_receipt_listed_asof_count'):
+                  raise ValueError('STAGE34_EVIDENCE_COUNTERS_MISMATCH')
+              assert not(set(excluded)&{x['code'] for x in rows})
+              shared={'research_market_date':date,'source_ratio_report':str(CALCULATED),
+                      'source_quality_gate':str(QUALITY),'source_candidate_feed':str(FILTERED),
+                      'excluded_correction_codes':sorted(excluded),
+                      'official_krx_ratios_independently_verified':0,
+                      'receipt_bound_financial_values_authenticated':False,
+                      'market_cap_share_class_authenticated':False,
+                      'historical_point_in_time_verified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'research_only':True,'new_network_requests_this_stage':0,
+                      'missing_corrected_filing_retrieval_disabled':True}
+              report={'result':'R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1',
+                      'generated_kst':datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                      **shared,'filtered_input_candidate_count':len(rows),
+                      'research_calculated_both_count':calc,
+                      'tier_counts':{tier:counts[tier] for tier in TIERS},
+                      'evidence_gap_counts':dict(flags),
+                      'strongest_research_evidence_count_not_verified':counts[TIER_DUAL],
+                      'incomplete_research_evidence_count':len(followups),
+                      'actionable_valuation_count':0,
+                      'candidate_evidence_rows':rows,
+                      'limitations':[
+                          'Two supporting checks are not provider authentication or point-in-time filing-value verification',
+                          'Receipt listing does not prove the cached financial value matches that exact filing version',
+                          'KRX market cap may contain share-class scope issues, not independently verified here',
+                          'Calculated PER/PBR have no official KRX provider authentication and no approved target prices',
+                          'The pre-existing 3 missing-correction exclusions remain permanent for this research snapshot'
+                      ]}
+              queue={'result':'R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1',
+                     'generated_kst':report['generated_kst'],**shared,
+                     'research_candidates_kept':len(rows),
+                     'missing_evidence_candidate_count':len(followups),
+                     'missing_evidence_candidates':followups,
+                     'all_candidates_still_need_share_class_and_pit_authentication':True,
+                     'no_automatic_missing_correction_retry':True,
+                     'next_development_priorities':[
+                        'Confirm ordinary/preferred share-class market cap scope without fabricating share counts',
+                        'Validate each cash-flow and balance-sheet value against the receipt version available at the research date',
+                        'Keep missing-correction excluded stocks out of all future research feeds',
+                        'Continue separate 5-10-20 session outcome research independently of trade authorization'
+                     ],'actionable_valuation_count':0}
+              return report,queue
+          
+          
+          def write(report,queue):
+              ROOT.mkdir(parents=True,exist_ok=True)
+              REPORT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              PRIORITIES.write_text(json.dumps(queue,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              cols=['code','name','grade_research_only','research_market_date','evidence_tier',
+                    'annual_owner_profit_comparative_matches_cache','annual_report_receipt_listed_by_market_date',
+                    'receipt_bound_financial_values_verified','share_class_and_market_cap_scope_verified',
+                    'per_calculated_research','pbr_calculated_research','calculated_ratio_is_research_only',
+                    'investment_decisions_authorized','actionable_price_verified','final_buy_signal']
+              with CSV_FILE.open('w',encoding='utf-8-sig',newline='') as stream:
+                  wr=csv.DictWriter(stream,fieldnames=cols);wr.writeheader()
+                  for row in report['candidate_evidence_rows']:
+                      wr.writerow({k:row.get(k,'') for k in cols})
+          
+          
+          def fixture(n=4):
+              codes=[f'{i+1:06d}' for i in range(n)]
+              filtered={'result':'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1','research_market_date':'20261119',
+                        'candidate_count':n,'candidate_grades':{'A':n},'excluded_codes':['999999'],
+                        'candidates':[{'code':code,'name':code,'grade':'A','market_date':'20261119','buy_signal':False} for code in codes]}
+              exclusion={'result':'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1','research_market_date':'20261119',
+                         'eligible_research_candidate_count':n,'excluded_codes':['999999']}
+              rr=[]
+              for i,code in enumerate(codes):
+                  complete=i!=n-1
+                  rr.append({'code':code,'name':code,'research_grade':'A','market_date':'20261119','buy_signal':False,
+                             'official_krx_per_pbr':False,'share_class_independently_verified':False,
+                             'historical_point_in_time_verified':False,'investment_decisions_authorized':False,
+                             'actionable_entry_price':False,
+                             'calculated_ratio_status':'RESEARCH_ESTIMATE_BOTH_METRICS' if complete else 'BLOCKED',
+                             'per_calculated_research':2.34 if complete else None,
+                             'pbr_calculated_research':0.79 if complete else None,
+                             'cache_source_checks':{'annual_reconciled':complete,'ttm_reconciled':complete},
+                             'independent_annual_comparative_cache_matches_owner_profit':i in (0,1),
+                             'filing_evidence':{'asof_receipt_listed':i==0,'cached_values_matched_to_receipt':False}})
+              ratios={'result':'R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1','research_market_date':'20261119',
+                      'candidate_count':n,'excluded_codes':['999999'],'calculated_ratios':rr,
+                      'official_krx_ratios_verified':0,'shares_and_pit_verified':False,
+                      'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0}
+              quality={'result':'R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1','research_market_date':'20261119',
+                       'filtered_input_candidate_count':n,'excluded_missing_corrected_filing_codes':['999999'],
+                       'calculated_both_research_count':n-1,'calculation_blocked_count':1,
+                       'annual_parent_owner_comparative_match_count':2,'annual_filing_receipt_listed_asof_count':1,
+                       'official_per_pbr_independently_verified_count':0,
+                       'historical_point_in_time_financials_verified':False,'research_only':True}
+              valuation={'result':'R14_FILTERED_VALUATION_EVIDENCE_GATE_V1','research_market_date':'20261119',
+                         'filtered_input_candidate_count':n,'excluded_for_missing_corrected_filing':['999999'],
+                         'ready_for_research_valuation_count':0}
+              return filtered,exclusion,ratios,quality,valuation
+          
+          
+          def selftest():
+              tests=0
+              def ok(condition):
+                  nonlocal tests
+                  if not condition:raise AssertionError('SELFTEST_FAIL_'+str(tests))
+                  tests+=1
+              tests_in=fixture()
+              out,queue=audit(*tests_in)
+              ok(out['tier_counts']=={TIER_DUAL:1,TIER_SINGLE:1,TIER_WEAK:1,TIER_BLOCK:1})
+              ok(out['incomplete_research_evidence_count']==3 and len(queue['missing_evidence_candidates'])==3)
+              ok(out['official_krx_ratios_independently_verified']==0 and out['final_buy_signals']==0)
+              ok(all(c['actionable_price_verified'] is False for c in out['candidate_evidence_rows']))
+              ok(out['candidate_evidence_rows'][-1]['per_calculated_research'] is None)
+              ok(positive('1.233') and not positive('NaN') and not positive(True) and not positive(-1))
+              def rejected(modifier):
+                  nonlocal tests
+                  inp=list(fixture())
+                  modifier(inp)
+                  try:audit(*inp)
+                  except (ValueError,AssertionError):tests+=1;return
+                  raise AssertionError('UNSAFE_INPUT_ACCEPTED_'+str(tests))
+              rejected(lambda v:v[0].update(research_market_date='20261120'))
+              rejected(lambda v:v[0]['candidates'].append(v[0]['candidates'][0]))
+              rejected(lambda v:v[0]['candidates'][0].update(code='999999'))
+              rejected(lambda v:v[2].update(official_krx_ratios_verified=1))
+              rejected(lambda v:v[2].update(shares_and_pit_verified=True))
+              rejected(lambda v:v[2].update(investment_decisions_authorized=True))
+              rejected(lambda v:v[2].update(final_buy_signals=1))
+              rejected(lambda v:v[2]['calculated_ratios'][0].update(buy_signal=True))
+              rejected(lambda v:v[2]['calculated_ratios'][0].update(share_class_independently_verified=True))
+              rejected(lambda v:v[2]['calculated_ratios'][0].update(research_grade='B'))
+              rejected(lambda v:v[3].update(annual_parent_owner_comparative_match_count=1))
+              rejected(lambda v:v[3].update(annual_filing_receipt_listed_asof_count=2))
+              rejected(lambda v:v[4].update(ready_for_research_valuation_count=1))
+              rejected(lambda v:v[0]['candidates'][1].update(market_date='20261120'))
+              rejected(lambda v:v[0].update(candidate_count=9))
+              rejected(lambda v:v[1].update(excluded_codes=[]))
+              rejected(lambda v:v[2]['calculated_ratios'][0].update(calculated_ratio_status='BLOCKED'))
+              # Full 125-row mock scale with trustworthy numerical inputs, no actual provider proof.
+              f,e,r,q,v=fixture(125)
+              for i,src in enumerate(r['calculated_ratios']):
+                  src['calculated_ratio_status']='RESEARCH_ESTIMATE_BOTH_METRICS';src['per_calculated_research']=3.0
+                  src['pbr_calculated_research']=0.5;src['cache_source_checks']={'annual_reconciled':True,'ttm_reconciled':True}
+                  src['independent_annual_comparative_cache_matches_owner_profit']=i<122
+                  src['filing_evidence']={'asof_receipt_listed':i<95,'cached_values_matched_to_receipt':False}
+              q.update(calculated_both_research_count=125,calculation_blocked_count=0,
+                       annual_parent_owner_comparative_match_count=122,annual_filing_receipt_listed_asof_count=95)
+              out,queue=audit(f,e,r,q,v)
+              ok(out['tier_counts'][TIER_DUAL]==95 and out['tier_counts'][TIER_SINGLE]==27)
+              ok(out['tier_counts'][TIER_WEAK]==3 and out['tier_counts'][TIER_BLOCK]==0)
+              ok(out['research_calculated_both_count']==125 and queue['missing_evidence_candidate_count']==30)
+              ok(out['actionable_valuation_count']==0 and out['new_network_requests_this_stage']==0)
+              return tests
+          
+          
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'status':'SELF_TEST_PASS','tests':selftest()},ensure_ascii=False));return
+              paths=(FILTERED,EXCLUSION,CALCULATED,QUALITY,VALUATION,STAGE27,FIN_CACHE)
+              for p in paths:
+                  if not p.is_file():raise SystemExit('MISSING_REQUIRED_INPUT_'+str(p))
+              stamp={str(p):checksum(p) for p in paths}
+              last=load(STAGE27)
+              if last.get('research_only') is not True or last.get('investment_decisions_authorized') is not False or last.get('final_buy_signals')!=0:
+                  raise SystemExit('STAGE27_READ_ONLY_POLICY_NOT_VERIFIED')
+              inp=[load(p) for p in paths[:5]]
+              report,queue=audit(*inp)
+              report['source_file_sha256_read_only']=stamp
+              report['stage27_prior_ledger_events_read_only']=last.get('ledger_events')
+              queue['source_file_sha256_read_only']=stamp
+              write(report,queue)
+              for p in paths:
+                  if checksum(p)!=stamp[str(p)]:raise SystemExit('UNAUTHORIZED_INPUT_MUTATION_'+str(p))
+              print(json.dumps({'research_market_date':report['research_market_date'],
+                                'candidate_count':report['filtered_input_candidate_count'],
+                                'research_tiers':report['tier_counts'],
+                                'missing_evidence_count':queue['missing_evidence_candidate_count'],
+                                'official_krx_ratios_verified':0,'final_buy_signals':0},ensure_ascii=False))
+          
+          
+          if __name__=='__main__':main()
+          PYCODE
+          python -m py_compile /tmp/r14_ratio_evidence_triage.py
+          python /tmp/r14_ratio_evidence_triage.py --self-test
+          python /tmp/r14_ratio_evidence_triage.py
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('v5_reports/stage28')
+          report=json.loads((root/'r14_calculated_ratio_evidence_triage.json').read_text(encoding='utf-8'))
+          queue=json.loads((root/'r14_calculated_ratio_missing_evidence_queue.json').read_text(encoding='utf-8'))
+          source=json.loads((root/'r14_eligible_research_candidates.json').read_text(encoding='utf-8'))
+          assert report['filtered_input_candidate_count']==source['candidate_count']
+          assert sum(report['tier_counts'].values())==source['candidate_count']
+          assert report['excluded_correction_codes']==sorted(source['excluded_codes'])
+          assert queue['missing_evidence_candidate_count']==len(queue['missing_evidence_candidates'])
+          assert report['investment_decisions_authorized'] is False and report['final_buy_signals']==0
+          assert all(x['actionable_price_verified'] is False and x['official_krx_per_pbr_verified'] is False for x in report['candidate_evidence_rows'])
+          print('Stage35 evidence triage results valid; no official/PIT/share-class promotion')
+          PY
+
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -4491,11 +4863,12 @@ jobs:
           R14_VALUATION_READINESS_RESULT: ${{ steps.r14_valuation_readiness.outcome }}
           OFFICIAL_RATIO_ROUTE_MONITOR_RESULT: ${{ steps.official_ratio_route_monitor.outcome }}
           CALCULATED_RATIO_RESULT: ${{ steps.calculated_ratio.outcome }}
+          CALCULATED_RATIO_TRIAGE_RESULT: ${{ steps.calculated_ratio_triage.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO','CALCULATED_RATIO_TRIAGE')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -4522,6 +4895,8 @@ jobs:
             'r14_ratio_feed_acquisition_plan':'v5_reports/stage28/r14_official_ratio_acquisition_plan.json',
             'r14_calculated_per_pbr_research':'v5_reports/stage28/r14_calculated_per_pbr_research.json',
             'r14_calculated_ratio_quality_gate':'v5_reports/stage28/r14_calculated_ratio_quality_gate.json',
+            'r14_calculated_ratio_evidence_triage':'v5_reports/stage28/r14_calculated_ratio_evidence_triage.json',
+            'r14_calculated_ratio_missing_evidence_queue':'v5_reports/stage28/r14_calculated_ratio_missing_evidence_queue.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -4532,8 +4907,8 @@ jobs:
                   try:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
-                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue','r14_calculated_per_pbr_research'):
-                          data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates')}
+                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue','r14_calculated_per_pbr_research','r14_calculated_ratio_evidence_triage','r14_calculated_ratio_missing_evidence_queue'):
+                          data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates','candidate_evidence_rows','missing_evidence_candidates')}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
               else:details[name]={'status_file':'not_present'}
@@ -4582,6 +4957,10 @@ jobs:
             'r14_self_calculated_per_count':(details.get('r14_calculated_ratio_quality_gate',{}).get('calculated_per_research_count') if statuses.get('CALCULATED_RATIO')=='success' else 0),
             'r14_self_calculated_pbr_count':(details.get('r14_calculated_ratio_quality_gate',{}).get('calculated_pbr_research_count') if statuses.get('CALCULATED_RATIO')=='success' else 0),
             'active_self_calculated_ratio_research':('v5_reports/stage28/r14_calculated_per_pbr_research.json' if statuses.get('CALCULATED_RATIO')=='success' and details.get('r14_calculated_ratio_quality_gate',{}).get('result')=='R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1' else None),
+            'calculated_ratio_research_evidence_triage':('v5_reports/stage28/r14_calculated_ratio_evidence_triage.json' if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' and details.get('r14_calculated_ratio_evidence_triage',{}).get('result')=='R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1' else None),
+            'calculated_ratio_evidence_triage_status':('RESEARCH_ONLY_NO_INVESTMENT_AUTHORIZATION' if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' and details.get('r14_calculated_ratio_evidence_triage',{}).get('result')=='R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1' else 'BLOCKED_TRIAGE_NOT_VERIFIED'),
+            'calculated_ratio_research_evidence_tiers':(details.get('r14_calculated_ratio_evidence_triage',{}).get('tier_counts') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
+            'calculated_ratio_research_missing_evidence_count':(details.get('r14_calculated_ratio_evidence_triage',{}).get('incomplete_research_evidence_count') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
@@ -4599,7 +4978,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage27 untouched; no trading signals.'
+            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers remain research-only; Stage27 untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
