@@ -1454,6 +1454,197 @@ jobs:
           python -m py_compile /tmp/r14_receipt_xbrl_reconciliation.py
           python /tmp/r14_receipt_xbrl_reconciliation.py --self-test
           python /tmp/r14_receipt_xbrl_reconciliation.py
+      - name: Classify original versus corrected XBRL candidate facts (read-only)
+        id: xbrl_revision_delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_xbrl_revision_delta.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Read-only revision-value comparison using Stage28's existing receipt XBRL cache.
+          
+          No additional OpenDART queries. Comparisons are research *candidates*: facts have not
+          been independently authenticated for CFS/OFS or availability at evaluation time.
+          Never authorize trading or modify any underlying R14, Stage27, v4, or GC cache.
+          """
+          import collections
+          import datetime as dt
+          import json
+          import re
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          
+          ROOT=Path('v5_reports/stage28')
+          FILING=ROOT/'r14_filing_receipt_cache.json'
+          COMPARE=ROOT/'r14_financial_value_reconciliation_cache.json'
+          XBRL=ROOT/'r14_xbrl_receipt_financial_cache.json'
+          DOCUMENTS=ROOT/'r14_filing_document_version_cache.json'
+          REPORT=ROOT/'r14_xbrl_revision_delta_research.json'
+          FIELDS=('profit','equity','revenue','assets','liabilities')
+          
+          
+          def load(path,default):
+              try: return json.loads(path.read_text(encoding='utf-8-sig'))
+              except (OSError,ValueError): return default
+          
+          
+          def save(path,value):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              tmp=path.with_name(path.name+'.tmp')
+              tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              tmp.replace(path)
+          
+          
+          def receipt_valid(r):
+              return bool(re.fullmatch(r'20\d{12}',str(r or '')))
+          
+          
+          def candidates_from_xbrl(entry):
+              if not isinstance(entry,dict) or entry.get('state')!='XBRL_RECEIPT_ZIP_RETRIEVED':
+                  return {},[], 'NOT_RETRIEVED'
+              seen=collections.defaultdict(set)
+              for f in entry.get('files',[]):
+                  if not isinstance(f,dict) or f.get('state')!='EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY':
+                      continue
+                  for k,v in (f.get('fields') or {}).items():
+                      if k in FIELDS and type(v) is int:
+                          seen[k].add(v)
+              unique={k:next(iter(vals)) for k,vals in seen.items() if len(vals)==1}
+              ambiguous=sorted(k for k,vals in seen.items() if len(vals)>1)
+              return unique,ambiguous,'FACT_CANDIDATES_PRESENT' if seen else 'NO_DIRECT_FACTS'
+          
+          
+          def period_delta(code,period,filing_row,period_row,financial_period,cache,docs):
+              cutoff=str(filing_row.get('evaluation_date') or '')
+              entries=(period_row.get('pre_evaluation_receipts') or [])
+              eligible=sorted(set(str(x.get('rcept_no')) for x in entries if isinstance(x,dict)
+                                  and receipt_valid(x.get('rcept_no'))
+                                  and re.fullmatch(r'20\d{6}',str(x.get('rcept_dt') or ''))
+                                  and str(x['rcept_no'])[:8]==str(x['rcept_dt'])
+                                  and str(x['rcept_dt'])<=cutoff))
+              selected=str(period_row.get('latest_available_asof_evaluation') or '')
+              r={'code':code,'period':period,'evaluation_date':cutoff,
+                 'financial_receipt_mismatch_reported':financial_period.get('status')=='DART_RECEIPT_MISMATCH',
+                 'original_receipt':eligible[0] if eligible else None,
+                 'latest_pre_evaluation_receipt':selected if selected in eligible else None,
+                 'original_document_hash_saved':False,'latest_document_hash_saved':False,
+                 'comparison_status':'WAITING_EVIDENCE','candidate_field_differences':{},
+                 'candidate_field_equal':[],'ambiguous_fields':[],
+                 'financial_basis_verified':False,'point_in_time_financial_values_verified':False,
+                 'official_ratios_verified':False,'investment_decisions_authorized':False}
+              if not eligible or selected not in eligible:
+                  r['comparison_status']='INVALID_OR_MISSING_ASOF_RECEIPTS';return r
+              old,new=eligible[0],selected
+              rows=cache.get('rows') or {}
+              docs_rows=docs.get('rows') or {}
+              r['original_document_hash_saved']=(docs_rows.get(old) or {}).get('state')=='DOCUMENT_ZIP_HASH_CAPTURED'
+              r['latest_document_hash_saved']=(docs_rows.get(new) or {}).get('state')=='DOCUMENT_ZIP_HASH_CAPTURED'
+              if old==new:
+                  r['comparison_status']='SINGLE_RECEIPT_NO_REVISION_PAIR';return r
+              orig,oa,os=candidates_from_xbrl(rows.get(old))
+              newer,na,ns=candidates_from_xbrl(rows.get(new))
+              r['original_xbrl_state']=os;r['latest_xbrl_state']=ns
+              if 'NOT_RETRIEVED' in (os,ns):
+                  r['comparison_status']='WAITING_XBRL_RECEIPT';return r
+              shared=sorted(set(orig)&set(newer))
+              r['ambiguous_fields']=sorted(set(oa)|set(na))
+              for k in shared:
+                  if orig[k]!=newer[k]:
+                      r['candidate_field_differences'][k]={'original_candidate':orig[k],
+                                                            'latest_candidate':newer[k]}
+                  else: r['candidate_field_equal'].append(k)
+              if r['candidate_field_differences']:
+                  r['comparison_status']='POTENTIAL_FINANCIAL_FACT_REVISION'
+              elif shared:
+                  r['comparison_status']='NO_CHANGE_IN_COMPARABLE_FACT_CANDIDATES'
+              elif r['ambiguous_fields']:
+                  r['comparison_status']='AMBIGUOUS_XBRL_FACT_BASIS'
+              else:
+                  r['comparison_status']='NO_SHARED_DIRECT_FACTS'
+              return r
+          
+          
+          def build(filing,fin,xbrl,documents):
+              if filing.get('format')!='R14_RECEIPT_EVIDENCE_CACHE_V1':
+                  raise ValueError('MISSING_OR_INVALID_FILING_CACHE')
+              if fin.get('format')!='R14_FINANCIAL_COMPARISON_CACHE_V1':
+                  raise ValueError('MISSING_OR_INVALID_FINANCIAL_RECONCILIATION_CACHE')
+              if xbrl and xbrl.get('format')!='R14_RECEIPT_XBRL_RESEARCH_CACHE_V1':
+                  raise ValueError('UNKNOWN_XBRL_CACHE_FORMAT')
+              items=[]
+              for code,row in sorted(filing.get('rows',{}).items()):
+                  finrow=(fin.get('rows') or {}).get(code,{})
+                  if finrow.get('status')!='RECEIPT_VERSION_MISMATCH': continue
+                  if row.get('evaluation_date_source')!='FROZEN_STAGE27_RESEARCH_SNAPSHOT':continue
+                  if not re.fullmatch(r'20\d{6}',str(row.get('evaluation_date') or '')):continue
+                  for period,p in sorted((row.get('filing_periods') or {}).items()):
+                      if not re.fullmatch(r'20\d{2}_annual',period):continue
+                      finperiod=(finrow.get('periods') or {}).get(period) or {}
+                      if finperiod.get('status')!='DART_RECEIPT_MISMATCH':continue
+                      items.append(period_delta(code,period,row,p,finperiod,xbrl,documents))
+              return items
+          
+          
+          def selftest():
+              empty={'rows':{}}
+              a={'state':'XBRL_RECEIPT_ZIP_RETRIEVED','files':[{'state':'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY','fields':{'assets':100,'profit':10}}]}
+              b={'state':'XBRL_RECEIPT_ZIP_RETRIEVED','files':[{'state':'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY','fields':{'assets':120,'profit':10}}]}
+              assert candidates_from_xbrl(a)[0]=={'assets':100,'profit':10}
+              assert candidates_from_xbrl({'state':'NOT_ZIP_RESPONSE'})[2]=='NOT_RETRIEVED'
+              fil={'rows':{'000001':{'evaluation_date':'20261120','evaluation_date_source':'FROZEN_STAGE27_RESEARCH_SNAPSHOT',
+                  'filing_periods':{'2025_annual':{'latest_available_asof_evaluation':'20260605000001',
+                    'pre_evaluation_receipts':[{'rcept_no':'20260318000001','rcept_dt':'20260318'},
+                                               {'rcept_no':'20260605000001','rcept_dt':'20260605'}]}}}},
+                  'format':'R14_RECEIPT_EVIDENCE_CACHE_V1'}
+              fin={'format':'R14_FINANCIAL_COMPARISON_CACHE_V1','rows':{'000001':{'status':'RECEIPT_VERSION_MISMATCH',
+                  'periods':{'2025_annual':{'status':'DART_RECEIPT_MISMATCH'}}}}}
+              cache={'format':'R14_RECEIPT_XBRL_RESEARCH_CACHE_V1','rows':{'20260318000001':a,'20260605000001':b}}
+              one=build(fil,fin,cache,empty)
+              assert len(one)==1
+              assert one[0]['comparison_status']=='POTENTIAL_FINANCIAL_FACT_REVISION'
+              assert one[0]['candidate_field_differences']['assets']=={'original_candidate':100,'latest_candidate':120}
+              assert one[0]['candidate_field_equal']==['profit']
+              assert one[0]['point_in_time_financial_values_verified'] is False
+              assert build(fil,fin,{},empty)[0]['comparison_status']=='WAITING_XBRL_RECEIPT'
+              cache['rows']['20260605000001']=a
+              assert build(fil,fin,cache,empty)[0]['comparison_status']=='NO_CHANGE_IN_COMPARABLE_FACT_CANDIDATES'
+              fil['rows']['000001']['evaluation_date_source']='AUDIT_TIME_NOT_HISTORICAL_SIGNAL'
+              assert not build(fil,fin,cache,empty)
+              cache['rows']['20260605000001']={'state':'XBRL_RECEIPT_ZIP_RETRIEVED','files':[
+                 {'state':'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY','fields':{'assets':100}},
+                 {'state':'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY','fields':{'assets':140}}]}
+              assert candidates_from_xbrl(cache['rows']['20260605000001'])[1]==['assets']
+              return 11
+          
+          
+          def main():
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test':'PASS','tests':selftest()}));return
+              f,c,x,d=(load(p,{}) for p in (FILING,COMPARE,XBRL,DOCUMENTS))
+              rows=build(f,c,x,d)
+              counts=collections.Counter(q['comparison_status'] for q in rows)
+              report={'result':'R14_XBRL_REVISION_DELTA_RESEARCH_ONLY',
+                      'generated_kst':dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat(),
+                      'research_market_date':load(ROOT/'r14_full_market_grade_research.json',{}).get('market_date'),
+                      'mismatch_periods':len(rows),'status_counts':dict(counts),
+                      'candidate_fact_revision_periods':counts['POTENTIAL_FINANCIAL_FACT_REVISION'],
+                      'comparisons':rows,
+                      'official_per_independently_verified':0,'official_pbr_independently_verified':0,
+                      'point_in_time_financials_verified':False,
+                      'investment_decisions_authorized':False,'final_buy_signals':0,
+                      'limitations':['Multiple XBRL files can differ in financial basis (CFS/OFS); values are only candidates',
+                                     'Source documents and XBRL retrieved today do not prove what was available historically',
+                                     'No promotion to final investment A/B grade, fair value, or buy signal']}
+              save(REPORT,report)
+              print(json.dumps({k:v for k,v in report.items() if k not in ('comparisons','limitations')},ensure_ascii=False))
+          
+          
+          if __name__=='__main__': main()
+          PYCODE
+          python -m py_compile /tmp/r14_xbrl_revision_delta.py
+          python /tmp/r14_xbrl_revision_delta.py --self-test
+          python /tmp/r14_xbrl_revision_delta.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -1527,11 +1718,12 @@ jobs:
           ORIGINAL_VERSIONS_RESULT: ${{ steps.original_versions.outcome }}
           DATED_RATIO_INPUT_RESULT: ${{ steps.dated_ratio_input.outcome }}
           ORIGINAL_XBRL_RECONCILIATION_RESULT: ${{ steps.original_xbrl_reconciliation.outcome }}
+          XBRL_REVISION_DELTA_RESULT: ${{ steps.xbrl_revision_delta.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -1544,7 +1736,8 @@ jobs:
             'r14_financial_value_reconciliation':'v5_reports/stage28/r14_financial_value_reconciliation.json',
             'r14_document_versions':'v5_reports/stage28/r14_correction_original_document_audit.json',
             'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json',
-            'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json'
+            'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json',
+            'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json'
           }
           details={}
           for name,p in status_files.items():
