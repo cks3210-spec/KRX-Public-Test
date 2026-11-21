@@ -1,0 +1,497 @@
+{
+  "result": "R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1",
+  "generated_kst": "2026-11-21T15:36:20.638628+09:00",
+  "research_market_date": "20261119",
+  "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
+  "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
+  "source_candidate_feed": "v5_reports/stage28/r14_eligible_research_candidates.json",
+  "excluded_correction_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "official_krx_ratios_independently_verified": 0,
+  "receipt_bound_financial_values_authenticated": false,
+  "market_cap_share_class_authenticated": false,
+  "historical_point_in_time_verified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "research_only": true,
+  "new_network_requests_this_stage": 0,
+  "missing_corrected_filing_retrieval_disabled": true,
+  "research_candidates_kept": 125,
+  "missing_evidence_candidate_count": 30,
+  "missing_evidence_candidates": [
+    {
+      "code": "005940",
+      "name": "NH투자증권",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "078150",
+      "name": "HB테크놀러지",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "078340",
+      "name": "컴투스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "079960",
+      "name": "동양이엔피",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "080220",
+      "name": "제주반도체",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "080580",
+      "name": "오킨스전자",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "083450",
+      "name": "GST",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "083500",
+      "name": "에프엔에스테크",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "084370",
+      "name": "유진테크",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "086670",
+      "name": "비엠티",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "089890",
+      "name": "코세스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "092460",
+      "name": "한라IMS",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "093190",
+      "name": "빅솔론",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "093320",
+      "name": "케이아이엔엑스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "093520",
+      "name": "매커스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "094820",
+      "name": "일진파워",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "095610",
+      "name": "테스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "098120",
+      "name": "마이크로컨텍솔",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "099430",
+      "name": "바이오플러스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "101160",
+      "name": "월덱스",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "101490",
+      "name": "에스앤에스텍",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "101930",
+      "name": "인화정공",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "102710",
+      "name": "이엔에프테크놀로지",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "104830",
+      "name": "원익머트리얼즈",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "108380",
+      "name": "대양전기공업",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "110990",
+      "name": "디아이티",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "114810",
+      "name": "한솔아이원스",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "114840",
+      "name": "아이패밀리에스씨",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "123410",
+      "name": "코리아에프티",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "131290",
+      "name": "티에스이",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    }
+  ],
+  "all_candidates_still_need_share_class_and_pit_authentication": true,
+  "no_automatic_missing_correction_retry": true,
+  "next_development_priorities": [
+    "Confirm ordinary/preferred share-class market cap scope without fabricating share counts",
+    "Validate each cash-flow and balance-sheet value against the receipt version available at the research date",
+    "Keep missing-correction excluded stocks out of all future research feeds",
+    "Continue separate 5-10-20 session outcome research independently of trade authorization"
+  ],
+  "actionable_valuation_count": 0,
+  "source_file_sha256_read_only": {
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
+    "v5_reports/stage28/r14_calculated_per_pbr_research.json": "b4917f82756af2bea94910de1e3cf5c8d71613f58182541984b2bd95eae775da",
+    "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "8936cdd58130219efbde47e8a1e883cfa0c4a94568c2cc2b823e7e4eea588626",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "720ab2c3b074766d0c778e43077ea43d43da3f792ee49c1b1fec698923a1a67f",
+    "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+    "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
+  }
+}

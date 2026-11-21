@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T15:24:57.892545+09:00",
+  "generated_kst": "2026-11-21T15:36:20.814024+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -22,7 +22,8 @@
     "OFFICIAL_RATIO_SOURCE_PROBE": "success",
     "R14_VALUATION_READINESS": "success",
     "OFFICIAL_RATIO_ROUTE_MONITOR": "success",
-    "CALCULATED_RATIO": "success"
+    "CALCULATED_RATIO": "success",
+    "CALCULATED_RATIO_TRIAGE": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -46,6 +47,15 @@
   "r14_self_calculated_per_count": 125,
   "r14_self_calculated_pbr_count": 125,
   "active_self_calculated_ratio_research": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
+  "calculated_ratio_research_evidence_triage": "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json",
+  "calculated_ratio_evidence_triage_status": "RESEARCH_ONLY_NO_INVESTMENT_AUTHORIZATION",
+  "calculated_ratio_research_evidence_tiers": {
+    "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 95,
+    "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 27,
+    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 3,
+    "RESEARCH_CALCULATION_BLOCKED": 0
+  },
+  "calculated_ratio_research_missing_evidence_count": 30,
   "r14_official_ratio_verification": "NOT_VERIFIED_NO_AUTHENTICATED_SOURCE",
   "financial_filing_point_in_time": "NOT_VERIFIED",
   "filing_receipt_version_audit": "EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION",
@@ -72,7 +82,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T06:24:57.732699+00:00",
+      "generated_utc": "2026-11-21T06:36:20.699680+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -87,7 +97,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T06:24:57.792763+00:00",
+      "generated_utc": "2026-11-21T06:36:20.742797+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -196,7 +206,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T15:24:55.103111+09:00",
+      "generated_kst": "2026-11-21T15:36:18.205379+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -11485,7 +11495,7 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T15:24:55.445559+09:00",
+      "generated_kst": "2026-11-21T15:36:18.755366+09:00",
       "company_queries_this_run": 0,
       "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
@@ -11510,7 +11520,7 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-21T15:24:55.650643+09:00",
+      "generated_kst": "2026-11-21T15:36:18.907071+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "companies_with_original_or_correction_receipts": 28,
@@ -12404,7 +12414,7 @@
     },
     "r14_xbrl_receipt_financial_research": {
       "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T15:24:55.885453+09:00",
+      "generated_kst": "2026-11-21T15:36:19.097216+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "annual_receipts_expected": 9,
@@ -12593,7 +12603,7 @@
     },
     "r14_xbrl_revision_delta": {
       "result": "R14_XBRL_REVISION_DELTA_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T15:24:56.017660+09:00",
+      "generated_kst": "2026-11-21T15:36:19.198698+09:00",
       "research_market_date": "20261119",
       "mismatch_periods": 4,
       "status_counts": {
@@ -12697,7 +12707,7 @@
     "r14_xbrl_structure_diagnostic": {
       "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
       "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
-      "generated_kst": "2026-11-21T15:24:56.208755+09:00",
+      "generated_kst": "2026-11-21T15:36:19.334522+09:00",
       "market_date": "20261119",
       "cached_receipts_total": 6,
       "eligible_receipts_to_diagnose": 6,
@@ -12959,7 +12969,7 @@
     },
     "r14_xbrl_dimension_recovery": {
       "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T15:24:56.413269+09:00",
+      "generated_kst": "2026-11-21T15:36:19.484103+09:00",
       "research_market_date": "20261119",
       "available_prior_xbrl_receipts": 6,
       "considered_receipts": 5,
@@ -13096,7 +13106,7 @@
     },
     "r14_xbrl_basis_isolation": {
       "result": "R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1",
-      "generated_kst": "2026-11-21T15:24:56.559208+09:00",
+      "generated_kst": "2026-11-21T15:36:19.582980+09:00",
       "research_market_date": "20261119",
       "comparison_periods": 4,
       "available_source_receipts": 5,
@@ -13925,7 +13935,7 @@
     },
     "r14_xbrl_cache_bridge": {
       "result": "R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1",
-      "generated_kst": "2026-11-21T15:24:56.730238+09:00",
+      "generated_kst": "2026-11-21T15:36:19.708989+09:00",
       "research_market_date": "20261119",
       "research_date_source": "v5_reports/stage28/r14_full_market_grade_research.json.market_date",
       "reference_market_data_day_not_evaluation_day": true,
@@ -14457,7 +14467,7 @@
     },
     "r14_candidate_eligibility_gate": {
       "result": "R14_MISSING_CORRECTION_EXCLUSION_GATE_V1",
-      "generated_kst": "2026-11-21T15:24:56.866569+09:00",
+      "generated_kst": "2026-11-21T15:36:19.808349+09:00",
       "research_market_date": "20261119",
       "raw_research_candidate_count": 128,
       "receipt_mismatch_candidates_checked": 4,
@@ -14542,7 +14552,7 @@
     },
     "r14_filtered_research_shortlist": {
       "result": "R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1",
-      "generated_kst": "2026-11-21T15:24:56.866569+09:00",
+      "generated_kst": "2026-11-21T15:36:19.808349+09:00",
       "research_market_date": "20261119",
       "source_raw_report": "v5_reports/stage28/r14_full_market_grade_research.json",
       "candidate_count": 125,
@@ -14564,7 +14574,7 @@
     "r14_official_ratio_source_capability": {
       "result": "R14_KRX_OFFICIAL_RATIO_SOURCE_CAPABILITY_RESEARCH_ONLY",
       "version": "R14_KRX_OFFICIAL_RATIO_SOURCE_CONTRACT_V1",
-      "generated_kst": "2026-11-21T15:24:57.070449+09:00",
+      "generated_kst": "2026-11-21T15:36:19.949935+09:00",
       "research_market_date": "20261119",
       "upstream_filtered_candidate_count": 125,
       "upstream_excluded_codes": [
@@ -14608,8 +14618,8 @@
         "Historical filing point-in-time validation and official valuation still blocked"
       ],
       "read_only_source_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8c4d63ebbb3aa61a2383ddfcb10a1d69e16fe3676675c72c09b17d100a2d67d3",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2757e9489940c8a3625afdeb03ea9839c1557e16a6e19fae396eb66cc1243209",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
         "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
         "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
@@ -14635,7 +14645,7 @@
     "r14_official_ratio_route_monitor": {
       "result": "R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY",
       "version": "R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1",
-      "generated_kst": "2026-11-21T15:24:57.418485+09:00",
+      "generated_kst": "2026-11-21T15:36:20.240614+09:00",
       "last_live_check_kst": "2026-11-21T14:14:12.458884+09:00",
       "research_market_date": "20261119",
       "source_check_reused": true,
@@ -14717,7 +14727,7 @@
     },
     "r14_calculated_per_pbr_research": {
       "result": "R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1",
-      "generated_kst": "2026-11-21T15:24:57.644053+09:00",
+      "generated_kst": "2026-11-21T15:36:20.486927+09:00",
       "research_market_date": "20261119",
       "candidate_count": 125,
       "excluded_codes": [
@@ -20303,7 +20313,7 @@
     },
     "r14_calculated_ratio_quality_gate": {
       "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
-      "generated_kst": "2026-11-21T15:24:57.644053+09:00",
+      "generated_kst": "2026-11-21T15:36:20.486927+09:00",
       "research_market_date": "20261119",
       "filtered_input_candidate_count": 125,
       "excluded_missing_corrected_filing_codes": [
@@ -20357,8 +20367,8 @@
         "No fair value, actual buy price, risk rating or investment decision is authorized"
       ],
       "unchanged_input_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8c4d63ebbb3aa61a2383ddfcb10a1d69e16fe3676675c72c09b17d100a2d67d3",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2757e9489940c8a3625afdeb03ea9839c1557e16a6e19fae396eb66cc1243209",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
         "v5_reports/stage28/official_market_check.json": "24b9557cebf3cc40d2145e8db1d00479097d0c8f0c5567a44bbd29dffcc27964",
         "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
         "data/v5_financial_m/annual_financial_index_m.csv": "eec837d79233e8bda7ad6c54ee273fd51b28ec904fb057ad599e544f097c4f38",
@@ -20367,13 +20377,112 @@
         "data/v5_financial_m/dart_disclosure_evidence.json": "87ac5464b052b7d79c4dba7b8b71ba90669120456b029342310620a719dce86e",
         "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
-        "v5_reports/stage28/r14_valuation_readiness_gate.json": "10779b68c965f32917cef994579625f92a42128fb2898da9fb77cd0ce7cf3ac4",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "720ab2c3b074766d0c778e43077ea43d43da3f792ee49c1b1fec698923a1a67f",
         "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
+      }
+    },
+    "r14_calculated_ratio_evidence_triage": {
+      "result": "R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1",
+      "generated_kst": "2026-11-21T15:36:20.638628+09:00",
+      "research_market_date": "20261119",
+      "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
+      "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
+      "source_candidate_feed": "v5_reports/stage28/r14_eligible_research_candidates.json",
+      "excluded_correction_codes": [
+        "033500",
+        "054950",
+        "097230"
+      ],
+      "official_krx_ratios_independently_verified": 0,
+      "receipt_bound_financial_values_authenticated": false,
+      "market_cap_share_class_authenticated": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "research_only": true,
+      "new_network_requests_this_stage": 0,
+      "missing_corrected_filing_retrieval_disabled": true,
+      "filtered_input_candidate_count": 125,
+      "research_calculated_both_count": 125,
+      "tier_counts": {
+        "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 95,
+        "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 27,
+        "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 3,
+        "RESEARCH_CALCULATION_BLOCKED": 0
+      },
+      "evidence_gap_counts": {
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT": 125,
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED": 125,
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED": 125,
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE": 30,
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED": 3
+      },
+      "strongest_research_evidence_count_not_verified": 95,
+      "incomplete_research_evidence_count": 30,
+      "actionable_valuation_count": 0,
+      "limitations": [
+        "Two supporting checks are not provider authentication or point-in-time filing-value verification",
+        "Receipt listing does not prove the cached financial value matches that exact filing version",
+        "KRX market cap may contain share-class scope issues, not independently verified here",
+        "Calculated PER/PBR have no official KRX provider authentication and no approved target prices",
+        "The pre-existing 3 missing-correction exclusions remain permanent for this research snapshot"
+      ],
+      "source_file_sha256_read_only": {
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
+        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "b4917f82756af2bea94910de1e3cf5c8d71613f58182541984b2bd95eae775da",
+        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "8936cdd58130219efbde47e8a1e883cfa0c4a94568c2cc2b823e7e4eea588626",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "720ab2c3b074766d0c778e43077ea43d43da3f792ee49c1b1fec698923a1a67f",
+        "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+        "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
+      },
+      "stage27_prior_ledger_events_read_only": 139
+    },
+    "r14_calculated_ratio_missing_evidence_queue": {
+      "result": "R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1",
+      "generated_kst": "2026-11-21T15:36:20.638628+09:00",
+      "research_market_date": "20261119",
+      "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
+      "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
+      "source_candidate_feed": "v5_reports/stage28/r14_eligible_research_candidates.json",
+      "excluded_correction_codes": [
+        "033500",
+        "054950",
+        "097230"
+      ],
+      "official_krx_ratios_independently_verified": 0,
+      "receipt_bound_financial_values_authenticated": false,
+      "market_cap_share_class_authenticated": false,
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "research_only": true,
+      "new_network_requests_this_stage": 0,
+      "missing_corrected_filing_retrieval_disabled": true,
+      "research_candidates_kept": 125,
+      "missing_evidence_candidate_count": 30,
+      "all_candidates_still_need_share_class_and_pit_authentication": true,
+      "no_automatic_missing_correction_retry": true,
+      "next_development_priorities": [
+        "Confirm ordinary/preferred share-class market cap scope without fabricating share counts",
+        "Validate each cash-flow and balance-sheet value against the receipt version available at the research date",
+        "Keep missing-correction excluded stocks out of all future research feeds",
+        "Continue separate 5-10-20 session outcome research independently of trade authorization"
+      ],
+      "actionable_valuation_count": 0,
+      "source_file_sha256_read_only": {
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
+        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "b4917f82756af2bea94910de1e3cf5c8d71613f58182541984b2bd95eae775da",
+        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "8936cdd58130219efbde47e8a1e883cfa0c4a94568c2cc2b823e7e4eea588626",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "720ab2c3b074766d0c778e43077ea43d43da3f792ee49c1b1fec698923a1a67f",
+        "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+        "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
       }
     },
     "r14_valuation_readiness_gate": {
       "result": "R14_FILTERED_VALUATION_EVIDENCE_GATE_V1",
-      "generated_kst": "2026-11-21T15:24:57.219850+09:00",
+      "generated_kst": "2026-11-21T15:36:20.054196+09:00",
       "research_market_date": "20261119",
       "input_candidates_path": "v5_reports/stage28/r14_eligible_research_candidates.json",
       "excluded_policy_source": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
@@ -20419,19 +20528,19 @@
         "Ready queue is NOT an investment signal even when future evidence completes"
       ],
       "source_file_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8c4d63ebbb3aa61a2383ddfcb10a1d69e16fe3676675c72c09b17d100a2d67d3",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2757e9489940c8a3625afdeb03ea9839c1557e16a6e19fae396eb66cc1243209",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "78b2d86dadfc67d8320dbad755f67e6826adce1abc5c25ceb035029ebc0b5097",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "6a753dd9a0f3c25d4e1c16a90eb651f372af8abe334a04692466153d1f6ada38",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
         "v5_reports/stage28/r14_official_ratio_provenance_audit.json": "ea6d2cd30ad4925b8b812f8104878204a91fe7dd3d0850c2e0c453c9054125ab",
         "v5_reports/stage28/r14_valuation_disclosure_gate.json": "54811e512525ce4d80e54b9a5e52154ca120c23111b4a82d5f45d5b1f74649ba",
-        "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "16693217df29f9c10541486d20b4cadf5036c0b39e1393a0dd76d4c9e03de2cd"
+        "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "fc6fbc9468c62142db500d897991cc19644ffb2048ced33b92f50fe95f91d273"
       },
       "stage27_status_sha256_read_only": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
       "legacy_financial_cache_sha256_read_only": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
     },
     "r14_valuation_ready_research_queue": {
       "result": "R14_OFFICIAL_EVIDENCE_READY_VALUATION_RESEARCH_QUEUE_V1",
-      "generated_kst": "2026-11-21T15:24:57.219850+09:00",
+      "generated_kst": "2026-11-21T15:36:20.054196+09:00",
       "research_market_date": "20261119",
       "source_gate": "v5_reports/stage28/r14_valuation_readiness_gate.json",
       "ready_count": 0,
@@ -20454,5 +20563,5 @@
   "eligible_research_candidate_count": 125,
   "verified_investment_recommendations": 0,
   "investment_decisions_authorized": false,
-  "notice": "R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage27 untouched; no trading signals."
+  "notice": "R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers remain research-only; Stage27 untouched; no trading signals."
 }
