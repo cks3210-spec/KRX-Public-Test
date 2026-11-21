@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T10:03:12.950212+09:00",
+  "generated_kst": "2026-11-21T10:23:13.989287+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -13,7 +13,8 @@
     "ORIGINAL_VERSIONS": "success",
     "DATED_RATIO_INPUT": "success",
     "ORIGINAL_XBRL_RECONCILIATION": "success",
-    "XBRL_REVISION_DELTA": "success"
+    "XBRL_REVISION_DELTA": "success",
+    "XBRL_STRUCTURE_DIAG": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -42,7 +43,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:03:12.807094+00:00",
+      "generated_utc": "2026-11-21T01:23:13.896971+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -57,7 +58,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:03:12.865934+00:00",
+      "generated_utc": "2026-11-21T01:23:13.935180+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -166,7 +167,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T10:03:07.303414+09:00",
+      "generated_kst": "2026-11-21T10:22:49.465660+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -11455,7 +11456,7 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T10:03:07.640677+09:00",
+      "generated_kst": "2026-11-21T10:22:50.125052+09:00",
       "company_queries_this_run": 0,
       "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
@@ -11480,7 +11481,7 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-21T10:03:08.966269+09:00",
+      "generated_kst": "2026-11-21T10:22:51.322847+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "companies_with_original_or_correction_receipts": 28,
@@ -12374,7 +12375,7 @@
     },
     "r14_xbrl_receipt_financial_research": {
       "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:03:12.582330+09:00",
+      "generated_kst": "2026-11-21T10:22:54.146551+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "annual_receipts_expected": 9,
@@ -12563,7 +12564,7 @@
     },
     "r14_xbrl_revision_delta": {
       "result": "R14_XBRL_REVISION_DELTA_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:03:12.712544+09:00",
+      "generated_kst": "2026-11-21T10:22:54.242676+09:00",
       "research_market_date": "20261119",
       "mismatch_periods": 4,
       "status_counts": {
@@ -12662,6 +12663,269 @@
         "Multiple XBRL files can differ in financial basis (CFS/OFS); values are only candidates",
         "Source documents and XBRL retrieved today do not prove what was available historically",
         "No promotion to final investment A/B grade, fair value, or buy signal"
+      ]
+    },
+    "r14_xbrl_structure_diagnostic": {
+      "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
+      "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
+      "generated_kst": "2026-11-21T10:23:13.807146+09:00",
+      "market_date": "20261119",
+      "cached_receipts_total": 6,
+      "eligible_receipts_to_diagnose": 6,
+      "diagnostics_available": 6,
+      "run_states": {
+        "SOURCE_HASH_MATCHED": 6
+      },
+      "extraction_failure_reasons": {
+        "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH": 6
+      },
+      "revision_xml_digest_comparison": [
+        {
+          "code": "015360",
+          "period": "2025_annual",
+          "original_receipt": "20260310002563",
+          "revised_receipt": "20260605000111",
+          "xml_digest_evidence": "XBRL_XML_BYTES_DIFFER",
+          "matching_xml_files_count": 1,
+          "financial_values_verified": false,
+          "historical_asof_attested": false
+        },
+        {
+          "code": "033500",
+          "period": "2025_annual",
+          "original_receipt": "20260318001705",
+          "revised_receipt": "20260319000704",
+          "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
+          "matching_xml_files_count": 0,
+          "financial_values_verified": false,
+          "historical_asof_attested": false
+        },
+        {
+          "code": "054950",
+          "period": "2025_annual",
+          "original_receipt": "20260323001116",
+          "revised_receipt": "20260325000430",
+          "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
+          "matching_xml_files_count": 0,
+          "financial_values_verified": false,
+          "historical_asof_attested": false
+        },
+        {
+          "code": "097230",
+          "period": "2025_annual",
+          "original_receipt": "20260319000606",
+          "revised_receipt": "20260319001333",
+          "xml_digest_evidence": "PENDING_OR_UNAVAILABLE_XBRL",
+          "matching_xml_files_count": 0,
+          "financial_values_verified": false,
+          "historical_asof_attested": false
+        }
+      ],
+      "diagnostic_by_receipt": {
+        "20260310002563": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "9de26e8b5e562f58d657dde0f34ae0bf028dece279e3bc4f673d3509aeaa1749",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00105101_2025-12-31.xbrl",
+              "sha256": "067eb11c53461dd0674cb08c5217ca23551000dc3c6c64cdff5f4ed0600c8ccd",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 1096,
+              "dimensioned_context_count": 1095,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 69,
+              "ifrs_concept_occurrences": 69,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 69
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 69
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "9de26e8b5e562f58d657dde0f34ae0bf028dece279e3bc4f673d3509aeaa1749"
+        },
+        "20260318000261": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "df487283be8e7a372c0e0018fc3a4dea72ac4e2ac472814c6db717ded79af16f",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00105101_2025-12-31.xbrl",
+              "sha256": "067eb11c53461dd0674cb08c5217ca23551000dc3c6c64cdff5f4ed0600c8ccd",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 1096,
+              "dimensioned_context_count": 1095,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 69,
+              "ifrs_concept_occurrences": 69,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 69
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 69
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "df487283be8e7a372c0e0018fc3a4dea72ac4e2ac472814c6db717ded79af16f"
+        },
+        "20260318001705": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "c675482ce1bcbe7e31921fd3e8102937e1a86607f68c968807fef97c2494574a",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00231105_2025-12-31.xbrl",
+              "sha256": "df29929791fdab5b589ad4307e4b9ff308db7005df828b1bc96430fbea499d08",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 1548,
+              "dimensioned_context_count": 1547,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 175,
+              "ifrs_concept_occurrences": 175,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 175
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 175
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "c675482ce1bcbe7e31921fd3e8102937e1a86607f68c968807fef97c2494574a"
+        },
+        "20260319000606": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "0f46304b13c038bbbe308b5c5b1a8510233178f5a6f08388f78f68d9052d4e8b",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00633835_2025-12-31.xbrl",
+              "sha256": "a38fefddf6f60fb29607bba632d8af71d158ff47330c1223cd68e21d91e44f58",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 2112,
+              "dimensioned_context_count": 2111,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 98,
+              "ifrs_concept_occurrences": 98,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 98
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 98
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "0f46304b13c038bbbe308b5c5b1a8510233178f5a6f08388f78f68d9052d4e8b"
+        },
+        "20260323001116": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "c8a8cbc733047cf455a97a3b7fa8e532fee58905943848dbbfb3d9591c793eaa",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00361381_2025-12-31.xbrl",
+              "sha256": "f3646debf061d4be7787706dca45edc98f7b8b45e9f105c2ffbb2f2285b95109",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 1372,
+              "dimensioned_context_count": 1371,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 54,
+              "ifrs_concept_occurrences": 54,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 54
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 54
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "c8a8cbc733047cf455a97a3b7fa8e532fee58905943848dbbfb3d9591c793eaa"
+        },
+        "20260605000111": {
+          "state": "SOURCE_HASH_MATCHED",
+          "zip_sha256": "02895837e61097b5ef3502905291a6bd7f645219389c7707a94f13bbe11989d7",
+          "file_count": 7,
+          "xbrl_files": [
+            {
+              "name": "entity00105101_2025-12-31.xbrl",
+              "sha256": "1d76866a0f6a9554df961d88c81c2267c7dc79e5ff96e87dbbd1bfafbb12dfba",
+              "state": "XBRL_STRUCTURE_INSPECTED",
+              "reason": "CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH",
+              "xbrl_context_count": 1096,
+              "dimensioned_context_count": 1095,
+              "context_counts": {
+                "annual_duration": 1
+              },
+              "krw_unit_count": 1,
+              "direct_concept_occurrences": 69,
+              "ifrs_concept_occurrences": 69,
+              "eligible_fact_occurrences": 0,
+              "concept_namespaces": {
+                "ifrs_namespace": 69
+              },
+              "fact_exclusion_counts": {
+                "context_ineligible": 69
+              },
+              "contains_no_financial_values": true,
+              "financial_basis_verified": false
+            }
+          ],
+          "full_xbrl_files_retained": false,
+          "source_zip_sha256": "02895837e61097b5ef3502905291a6bd7f645219389c7707a94f13bbe11989d7"
+        }
+      },
+      "xbrl_files_persisted": false,
+      "stage27_modified": false,
+      "financial_cache_modified": false,
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "limitations": [
+        "ZIP/XML digests prove retrieved-byte equality/difference only; financial values may be unchanged",
+        "Diagnostic facts are research-only, not verified CFS/OFS or historical decision-time availability",
+        "No implicit promotion of research grades to buy recommendations"
       ]
     }
   },
