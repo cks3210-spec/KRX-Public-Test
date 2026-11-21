@@ -3062,6 +3062,332 @@ jobs:
           (root/'r14_krx_official_ratio_source_gate.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(report,ensure_ascii=False))
           PY
+      - name: Audit KRX official PER/PBR source capability and dated CSV integrity (read-only)
+        id: official_ratio_source_probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_official_ratio_source_probe.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """R14 Stage32 source contract for KRX PER/PBR.
+          
+          KRX OPEN API covers stock daily/basic data but does not expose an individual
+          PER/PBR service in its published catalogue. An attributed Data Marketplace CSV
+          is optional; self-reported labels and hashes do NOT independently authenticate
+          its origin. This code writes only separate research audit reports and never
+          promotes any ratio into verified investment evidence.
+          """
+          import collections
+          import csv
+          import datetime as dt
+          import hashlib
+          import importlib.util
+          import json
+          import math
+          import os
+          from pathlib import Path
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          FILTERED = ROOT / 'r14_eligible_research_candidates.json'
+          EXCLUSION = ROOT / 'r14_candidate_exclusion_gate.json'
+          MARKET_GATE = ROOT / 'r14_krx_official_ratio_source_gate.json'
+          SOURCE_DIR = Path('data/v5_official_ratio_exports')
+          REPORT = ROOT / 'r14_official_ratio_source_capability_audit.json'
+          COMPARED = ROOT / 'r14_official_ratio_import_research_only.json'
+          LEDGER = Path('v5_reports/stage27/status.json')
+          MASTER_CACHE = Path('data/v5_financial_m/dart_financial_cache.json')
+          PARSER = Path('scripts/krx_v5_r14_ratio_audit.py')
+          VALID_FORMAT = 'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1'
+          VALID_EXCLUSION = 'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1'
+          VERSION = 'R14_KRX_OFFICIAL_RATIO_SOURCE_CONTRACT_V1'
+          KRX_OPEN_API_SERVICES = 'https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd'
+          KRX_MARKETPLACE = 'https://data.krx.co.kr/'
+          MAX_CSV_BYTES = 4_000_000
+          MAX_MANIFEST_BYTES = 20_000
+          
+          
+          def now_kst():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def read(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+          
+          
+          def digest_integrity(snapshot, expected, manifest):
+              if not manifest:
+                  return 'NO_EXTERNAL_SOURCE_MANIFEST'
+              if not isinstance(manifest, dict):
+                  return 'INVALID_SOURCE_MANIFEST_FORMAT'
+              if manifest.get('market_date') != expected:
+                  return 'SOURCE_MANIFEST_DATE_MISMATCH'
+              sourcehash = manifest.get('sha256')
+              if not isinstance(sourcehash, str) or not re.fullmatch('[a-fA-F0-9]{64}', sourcehash):
+                  return 'SOURCE_MANIFEST_HASH_MISSING'
+              if snapshot.lower() != sourcehash.lower():
+                  return 'SOURCE_MANIFEST_HASH_MISMATCH'
+              if manifest.get('source_provider') != 'KRX_DATA_MARKETPLACE':
+                  return 'SOURCE_MANIFEST_PROVIDER_NOT_KRX_MARKETPLACE'
+              # A self-asserted manifest can crosscheck file integrity but does not
+              # cryptographically sign the KRX origin or historical availability.
+              return 'SELF_DECLARED_SOURCE_FILE_HASH_MATCH_ONLY'
+          
+          
+          def check_candidates(filtered, exclusion, ratio):
+              if filtered.get('result') != VALID_FORMAT or exclusion.get('result') != VALID_EXCLUSION:
+                  raise ValueError('UNKNOWN_FILTERED_CANDIDATE_OR_EXCLUSION_FORMAT')
+              md = str(filtered.get('research_market_date') or '')
+              if not re.fullmatch(r'20\d{6}', md):
+                  raise ValueError('MISSING_RESEARCH_MARKET_DATE')
+              if md != exclusion.get('research_market_date') or md != ratio.get('market_date'):
+                  raise ValueError('CROSS_FILE_MARKET_DATE_MISMATCH')
+              candidates = filtered.get('candidates')
+              excluded = exclusion.get('excluded_codes')
+              if not isinstance(candidates, list) or not isinstance(excluded, list):
+                  raise ValueError('MISSING_FILTERED_CANDIDATES_OR_EXCLUSIONS')
+              codes = [r.get('code') for r in candidates]
+              if len(set(codes)) != len(codes) or any(not re.fullmatch(r'\d{6}', str(x)) for x in codes):
+                  raise ValueError('DUPLICATE_OR_INVALID_CODES')
+              if len(excluded) != len(set(excluded)) or set(codes) & set(excluded):
+                  raise ValueError('EXCLUDED_STOCK_REENTERED')
+              if not {'033500','054950','097230'}.issubset(set(excluded)):
+                  raise ValueError('KNOWN_EXCLUSIONS_MISSING')
+              if (len(candidates) != filtered.get('candidate_count')
+                 or len(candidates) != exclusion.get('eligible_research_candidate_count')
+                 or len(candidates) + len(excluded) != exclusion.get('raw_research_candidate_count')):
+                  raise ValueError('CANDIDATE_COUNTS_INCONSISTENT')
+              if any(r.get('grade') not in ('A','B','B+') or r.get('buy_signal') is not False for r in candidates):
+                  raise ValueError('UNSAFE_RESEARCH_FEED')
+              if (filtered.get('investment_decisions_authorized') is not False or
+                  ratio.get('investment_decisions_authorized') is not False):
+                  raise ValueError('RESEARCH_SIGNAL_NOT_BLOCKED')
+              return md, codes
+          
+          
+          def import_snapshot(csv_path, manifest_path, date, codes, normalizer):
+              if not csv_path.is_file():
+                  return ({'status':'DATE_MATCHED_FILE_NOT_SUPPLIED',
+                           'source_file_present':False,'row_count':0,'eligible_row_count':0,
+                           'distinct_ratio_pairs':0,'source_hash':None,'data_date_evidence':'NONE',
+                           'independent_source_authentication':False}, [])
+              if csv_path.stat().st_size > MAX_CSV_BYTES:
+                  return ({'status':'SOURCE_FILE_TOO_LARGE','source_file_present':True,
+                           'independent_source_authentication':False}, [])
+              d = sha(csv_path)
+              manifest = None
+              if manifest_path.is_file():
+                  if manifest_path.stat().st_size > MAX_MANIFEST_BYTES:
+                      return ({'status':'SOURCE_MANIFEST_TOO_LARGE','source_file_present':True,
+                               'source_hash':d,'independent_source_authentication':False}, [])
+                  try:
+                      manifest=read(manifest_path)
+                  except (OSError, ValueError, UnicodeDecodeError):
+                      return ({'status':'SOURCE_MANIFEST_INVALID_JSON','source_file_present':True,
+                               'source_hash':d,'independent_source_authentication':False}, [])
+              proof = digest_integrity(d, date, manifest)
+              if manifest and proof != 'SELF_DECLARED_SOURCE_FILE_HASH_MATCH_ONLY':
+                  return ({'status':'SOURCE_MANIFEST_INTEGRITY_REJECTED','source_file_present':True,
+                           'source_hash':d,'source_integrity':proof,
+                           'independent_source_authentication':False}, [])
+              try:
+                  entries, meta = normalizer(csv_path, date)
+              except (UnicodeError, ValueError, KeyError, OSError, csv.Error) as e:
+                  return ({'status':'SOURCE_CSV_FORMAT_INVALID','source_file_present':True,
+                           'source_hash':d,'parse_error_type':type(e).__name__,
+                           'independent_source_authentication':False}, [])
+              issues=collections.Counter(meta.get('import_issues') or {})
+              row_dates=collections.Counter(r.get('date_basis') for r in entries)
+              seen=set()
+              dup=set()
+              missing=0
+              accepted=[]
+              for r in entries:
+                  code=r.get('code')
+                  if code in seen:
+                      dup.add(code)
+                  seen.add(code)
+                  if r.get('market_date') != date:
+                      missing+=1
+                  if code not in codes:
+                      continue
+                  accepted.append(r)
+              date_issues = issues.get('row_date_disagrees_with_declared_date',0) + missing
+              strictly_dated = bool(entries) and row_dates.get('FILE_ROW',0)==len(entries) and date_issues==0
+              # Do not treat absent per-row dates as independently dated, even if filename matches.
+              import_status = ('SOURCE_ROWS_DATE_MISMATCH' if date_issues else
+                               'FILE_ROW_DATE_MISSING' if not strictly_dated else
+                               'SOURCE_COMPARABLE_ONLY_UNAUTHENTICATED')
+              number_pairs = 0
+              if not date_issues:
+                  for r in accepted:
+                      try:
+                          per=float(str(r.get('official_per') or '').replace(',',''))
+                          pbr=float(str(r.get('official_pbr') or '').replace(',',''))
+                          if math.isfinite(per) and math.isfinite(pbr) and per>0 and pbr>0:
+                              number_pairs+=1
+                      except (ValueError, TypeError):
+                          pass
+              info={'status':import_status,'source_file_present':True,'source_hash':d,
+                    'source_integrity':proof,'row_count':len(entries),'eligible_row_count':len(accepted),
+                    'distinct_ratio_pairs':number_pairs,'candidate_code_duplicates':len(dup & set(codes)),
+                    'source_row_date_basis_counts':dict(row_dates),'row_date_disagreements':date_issues,
+                    'parser_reported_import_issues':dict(issues),
+                    'source_retrieval_channel':'EXTERNALLY_SUPPLIED_EXPORT_NOT_AUTOMATIC',
+                    'independent_source_authentication':False,
+                    'user_supplied_metadata_not_trusted_as_authentication':True}
+              # Return detail for in-process count analysis ONLY, never persist per-share ratios.
+              return info,accepted
+          
+          
+          def build(filtered,exclusion,ratio, csv_path, manifest_path,normalizer):
+              date,codes=check_candidates(filtered,exclusion,ratio)
+              info,lines=import_snapshot(csv_path,manifest_path,date,set(codes),normalizer)
+              return {'result':'R14_KRX_OFFICIAL_RATIO_SOURCE_CAPABILITY_RESEARCH_ONLY',
+                      'version':VERSION,'generated_kst':now_kst(),'research_market_date':date,
+                      'upstream_filtered_candidate_count':len(codes),
+                      'upstream_excluded_codes':sorted(exclusion['excluded_codes']),
+                      'krx_open_api_service_catalog':KRX_OPEN_API_SERVICES,
+                      'krx_open_api_per_pbr_capability':'NOT_LISTED_AS_AVAILABLE_API_SERVICE',
+                      'krx_marketplace_ratios_available_via_website':True,
+                      'krx_marketplace_url':KRX_MARKETPLACE,
+                      'expected_dated_ratio_file':str(csv_path),
+                      'optional_source_metadata_file':str(manifest_path),
+                      'source_import':info,
+                      'ratio_values_are_not_authenticated_by_file_or_manifest':True,
+                      'independently_authenticated_official_per':0,
+                      'independently_authenticated_official_pbr':0,
+                      'frozen_valuation_queue_from_stage31':True,
+                      'safe_candidate_count':len(codes),
+                      'official_verified_candidate_count':0,
+                      'new_krx_api_requests':0,
+                      'new_dart_api_requests':0,
+                      'missing_correction_retrieval_disabled':True,
+                      'historical_point_in_time_financial_values_verified':False,
+                      'investment_decisions_authorized':False,
+                      'final_buy_signals':0,
+                      'next_required_input':'AUTHORIZED_KRX_MARKETPLACE_EXPORT_OR_DOCUMENTED_OFFICIAL_DISTRIBUTION_FEED',
+                      'limitations':['No authenticated individual-stock PER/PBR endpoint is present in the published KRX Open API catalogue',
+                        'KRX Data Marketplace website data may require user access or a separately licensed feed',
+                        'File hash / self-asserted source metadata proves file integrity only, not data provider authentication',
+                        'Historical filing point-in-time validation and official valuation still blocked']}, info, lines
+          
+          
+          def fake_normalizer(path,date):
+              import csv
+              with path.open(encoding='utf-8-sig',newline='') as f:
+                  rows=list(csv.DictReader(f))
+              return ([{'code':x['code'],'market_date':x['date'] or date,'official_per':x['per'],
+                        'official_pbr':x['pbr'],'date_basis': 'FILE_ROW' if x['date'] else 'OPERATOR_DECLARED'}
+                       for x in rows], {'import_issues':{'row_date_disagrees_with_declared_date':sum(x['date'] not in ('',date) for x in rows)}})
+          
+          
+          def selftest():
+              import tempfile
+              import csv
+              date='20261119'
+              f={'result':VALID_FORMAT,'research_market_date':date,'candidate_count':2,
+                 'candidates':[{'code':'000270','grade':'A','buy_signal':False},{'code':'015360','grade':'B','buy_signal':False}],
+                 'investment_decisions_authorized':False}
+              x={'result':VALID_EXCLUSION,'research_market_date':date,'excluded_codes':['033500','054950','097230'],
+                 'raw_research_candidate_count':5,'eligible_research_candidate_count':2}
+              g={'market_date':date,'investment_decisions_authorized':False}
+              assert check_candidates(f,x,g)==(date,['000270','015360'])
+              n=1
+              with tempfile.TemporaryDirectory() as tmp:
+                  root=Path(tmp);p=root/(date+'.csv');m=root/(date+'.source.json')
+                  a=build(f,x,g,p,m,fake_normalizer)[0]
+                  assert a['source_import']['status']=='DATE_MATCHED_FILE_NOT_SUPPLIED'
+                  assert a['official_verified_candidate_count']==0
+                  n+=2
+                  p.write_text('code,date,per,pbr\n000270,20261119,3.5,0.4\n015360,20261119,4.5,0.3\n',encoding='utf-8')
+                  a=build(f,x,g,p,m,fake_normalizer)[0]
+                  assert a['source_import']['status']=='SOURCE_COMPARABLE_ONLY_UNAUTHENTICATED'
+                  assert a['source_import']['distinct_ratio_pairs']==2
+                  assert a['independently_authenticated_official_per']==0
+                  n+=3
+                  m.write_text(json.dumps({'market_date':date,'source_provider':'KRX_DATA_MARKETPLACE','sha256':'f'*64}))
+                  assert build(f,x,g,p,m,fake_normalizer)[0]['source_import']['status']=='SOURCE_MANIFEST_INTEGRITY_REJECTED'
+                  n+=1
+                  m.write_text(json.dumps({'market_date':date,'source_provider':'KRX_DATA_MARKETPLACE','sha256':sha(p)}))
+                  a=build(f,x,g,p,m,fake_normalizer)[0]
+                  assert a['source_import']['source_integrity']=='SELF_DECLARED_SOURCE_FILE_HASH_MATCH_ONLY'
+                  assert a['source_import']['independent_source_authentication'] is False
+                  n+=2
+                  p.write_text('code,date,per,pbr\n000270,20261118,3.5,0.4\n',encoding='utf-8')
+                  m.unlink()
+                  a=build(f,x,g,p,m,fake_normalizer)[0]
+                  assert a['source_import']['status']=='SOURCE_ROWS_DATE_MISMATCH'
+                  n+=1
+                  p.write_text('code,date,per,pbr\n000270,,3.5,0.4\n',encoding='utf-8')
+                  assert build(f,x,g,p,m,fake_normalizer)[0]['source_import']['status']=='FILE_ROW_DATE_MISSING'
+                  n+=1
+                  f2=dict(f);f2['candidates']=f['candidates']+[{'code':'033500','grade':'B','buy_signal':False}];f2['candidate_count']=3
+                  try:build(f2,x,g,p,m,fake_normalizer)
+                  except ValueError as e:assert 'EXCLUDED_STOCK_REENTERED' in str(e)
+                  else:raise AssertionError('FAIL_OPEN_EXCLUDED_CANDIDATE')
+                  n+=1
+                  try:check_candidates(f,x,{'market_date':'20261118','investment_decisions_authorized':False})
+                  except ValueError as e:assert 'CROSS_FILE_MARKET_DATE_MISMATCH' in str(e)
+                  else:raise AssertionError('FAIL_OPEN_MARKET_DATE')
+                  n+=1
+                  f3=dict(f);f3['candidates']=[f['candidates'][0],f['candidates'][0]]
+                  try:check_candidates(f3,x,g)
+                  except ValueError as e:assert 'DUPLICATE_OR_INVALID_CODES' in str(e)
+                  else:raise AssertionError('FAIL_OPEN_DUPLICATE')
+                  n+=1
+                  assert digest_integrity('a'*64,date,None)=='NO_EXTERNAL_SOURCE_MANIFEST'
+                  assert digest_integrity('a'*64,date,{'market_date':date,'source_provider':'KRX_DATA_MARKETPLACE','sha256':'a'*64})=='SELF_DECLARED_SOURCE_FILE_HASH_MATCH_ONLY'
+                  n+=2
+              return n
+          
+          
+          def save(path,obj):
+              path.parent.mkdir(parents=True,exist_ok=True)
+              tmp=path.with_name(path.name+'.tmp')
+              tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              tmp.replace(path)
+          
+          
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'result':'PASS','tests':selftest()}))
+                  return
+              spec=importlib.util.spec_from_file_location('krx_existing_export_parser',str(PARSER))
+              mod=importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(mod)
+              if mod.selftest()<14:
+                  raise ValueError('EXISTING_KRX_RATIO_PARSER_TEST_FAILED')
+              filt=read(FILTERED); exclusion=read(EXCLUSION); ratio=read(MARKET_GATE)
+              date=str(filt.get('research_market_date') or '')
+              csv_path=SOURCE_DIR/(date+'.csv')
+              meta_path=SOURCE_DIR/(date+'.source.json')
+              report,info,rows=build(filt,exclusion,ratio,csv_path,meta_path,mod.normalize_krx_export)
+              report['read_only_source_sha256']={str(p):sha(p) for p in (FILTERED,EXCLUSION,MARKET_GATE,LEDGER,MASTER_CACHE)}
+              comparison={'result':'R14_KRX_EXPORTED_RATIO_UNAUTHENTICATED_RESEARCH_ONLY',
+                          'market_date':date,'source_audit':str(REPORT),'source_import_status':info['status'],
+                          'candidate_count':len(filt['candidates']),'input_ratio_rows':info.get('row_count',0),
+                          'matched_filtered_codes':len(set(r['code'] for r in rows)),
+                          'comparison_is_not_independent_authentication':True,
+                          'included_excluded_codes':False,
+                          'source_file_sha256':info.get('source_hash'),
+                          'official_per_verified':0,'official_pbr_verified':0,
+                          'derived_ratio_is_not_official':True,
+                          'investment_decisions_authorized':False,'final_buy_signals':0}
+              save(REPORT,report);save(COMPARED,comparison)
+              print(json.dumps({k:v for k,v in report.items() if k not in ('limitations','read_only_source_sha256')},ensure_ascii=False))
+          
+          if __name__=='__main__':main()
+          PYCODE
+          python -m py_compile /tmp/r14_official_ratio_source_probe.py
+          python /tmp/r14_official_ratio_source_probe.py --self-test
+          python /tmp/r14_official_ratio_source_probe.py
       - name: Enforce independent official PER/PBR and dated financial evidence on filtered R14 candidates (research only)
         id: r14_valuation_readiness
         shell: bash
@@ -3403,12 +3729,13 @@ jobs:
           XBRL_BASIS_ISOLATION_RESULT: ${{ steps.xbrl_basis_isolation.outcome }}
           XBRL_CACHE_BRIDGE_RESULT: ${{ steps.xbrl_cache_bridge.outcome }}
           R14_CANDIDATE_GATE_RESULT: ${{ steps.r14_candidate_gate.outcome }}
+          OFFICIAL_RATIO_SOURCE_PROBE_RESULT: ${{ steps.official_ratio_source_probe.outcome }}
           R14_VALUATION_READINESS_RESULT: ${{ steps.r14_valuation_readiness.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','R14_VALUATION_READINESS')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -3429,6 +3756,8 @@ jobs:
             'r14_xbrl_cache_bridge':'v5_reports/stage28/r14_xbrl_cache_bridge_research.json',
             'r14_candidate_eligibility_gate':'v5_reports/stage28/r14_candidate_exclusion_gate.json',
             'r14_filtered_research_shortlist':'v5_reports/stage28/r14_eligible_research_candidates.json',
+            'r14_official_ratio_source_capability':'v5_reports/stage28/r14_official_ratio_source_capability_audit.json',
+          'r14_official_ratio_import_research_only':'v5_reports/stage28/r14_official_ratio_import_research_only.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -3456,7 +3785,8 @@ jobs:
           if not gate_succeeded:
               details['r14_candidate_eligibility_gate']={'status':'FAILED_OR_SKIPPED_DO_NOT_USE_UNFILTERED_RAW_CANDIDATES'}
               details['r14_filtered_research_shortlist']={'status':'INVALID_GATE_SNAPSHOT_DO_NOT_USE'}
-          valuation_succeeded=(gate_succeeded and statuses.get('R14_VALUATION_READINESS')=='success'
+          valuation_succeeded=(gate_succeeded and statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success'
+              and statuses.get('R14_VALUATION_READINESS')=='success'
               and details.get('r14_valuation_readiness_gate',{}).get('result')=='R14_FILTERED_VALUATION_EVIDENCE_GATE_V1')
           if not valuation_succeeded:
               details['r14_valuation_readiness_gate']={'status':'FAILED_OR_SKIPPED_DO_NOT_USE_RAW_VALUATION'}
@@ -3478,7 +3808,9 @@ jobs:
             'valuation_ready_candidates':(details.get('r14_valuation_readiness_gate',{}).get('ready_for_research_valuation_count') if valuation_succeeded else 0),
             'valuation_deferred_candidates':(details.get('r14_valuation_readiness_gate',{}).get('deferred_for_evidence_count') if valuation_succeeded else None),
             'valuation_target_prices_verified':0,
-            'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
+            'krx_official_ratio_provider_capability':(details.get('r14_official_ratio_source_capability',{}).get('krx_open_api_per_pbr_capability') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
+            'official_ratio_external_export_status':(details.get('r14_official_ratio_source_capability',{}).get('source_import',{}).get('status') if statuses.get('OFFICIAL_RATIO_SOURCE_PROBE')=='success' else 'UNKNOWN_PROBE_FAILED'),
+              'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
             'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
