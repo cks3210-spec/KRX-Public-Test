@@ -1,0 +1,24 @@
+{
+  "result": "R14_KRX_RATIO_ACQUISITION_POLICY_WITH_SAFE_FALLBACK_V1",
+  "research_market_date": "20261119",
+  "official_feed_ready": false,
+  "research_candidates_preserved": 125,
+  "excluded_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "acquisition_decision": "NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED",
+  "primary_source": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
+  "per_pbr_public_view": "https://data.krx.co.kr/",
+  "documented_official_provider_contract_required": true,
+  "next_if_authorized_feed_is_obtained": "VERIFY_SOURCE_IDENTITY_AND_DATED_PER_CODE_VALUES_BEFORE_RESUMING_RATIO_GATE",
+  "next_if_unavailable": "CONTINUE_INDEPENDENT_5_10_20_SESSION_RESEARCH_EVALUATION_WITHOUT_VALUATION_OR_TRADING_SIGNALS",
+  "do_not_retry_missing_corrected_filings": true,
+  "do_not_generate_synthetic_official_per_pbr": true,
+  "allow_provisional_derived_ratios_in_research_only": true,
+  "historical_financial_pit_verified": false,
+  "official_per_pbr_verified": 0,
+  "final_buy_signals": 0,
+  "investment_decisions_authorized": false
+}

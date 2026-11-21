@@ -1,0 +1,59 @@
+{
+  "result": "R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY",
+  "version": "R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1",
+  "generated_kst": "2026-11-21T14:14:12.458884+09:00",
+  "last_live_check_kst": "2026-11-21T14:14:12.458884+09:00",
+  "research_market_date": "20261119",
+  "source_check_reused": false,
+  "new_public_get_requests_this_run": 2,
+  "source_probe_contains_only_public_get_requests": true,
+  "sources": {
+    "krx_openapi_documented_service_catalog": {
+      "interpretation": "NO_MATCH_IN_CURRENTLY_VISIBLE_CATALOG_TABLE_ROWS",
+      "table_row_count": 32,
+      "candidate_api_rows": [],
+      "api_service_documented_and_authorized": false,
+      "network_status": "HTTP_200_CONTENT_FETCHED",
+      "url": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
+      "body_sha256": "75862141539a47bb445a9041beb31d10106dcc960fd458bac26ea0eb90fc58b4",
+      "body_size": 28577,
+      "fetched_kst": "2026-11-21T14:14:12.458884+09:00"
+    },
+    "krx_data_marketplace_public_landing": {
+      "interpretation": "RATIO_PORTAL_MENU_NOT_DETECTED",
+      "is_authenticated_api": false,
+      "network_status": "HTTP_200_CONTENT_FETCHED",
+      "url": "https://data.krx.co.kr/",
+      "body_sha256": "1e79e41b80d4e7c728f909c462791b6fd8ae188f76c5262bd45d763484a70b07",
+      "body_size": 620,
+      "fetched_kst": "2026-11-21T14:14:12.458884+09:00"
+    }
+  },
+  "public_catalog_service_state": "NO_MATCH_IN_CURRENTLY_VISIBLE_CATALOG_TABLE_ROWS",
+  "official_marketplace_page_state": "RATIO_PORTAL_MENU_NOT_DETECTED",
+  "independently_usable_per_pbr_feed_found": false,
+  "source_import_status": "DATE_MATCHED_FILE_NOT_SUPPLIED",
+  "source_policy_decision": "NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED",
+  "ratio_source_authenticated": false,
+  "individual_stock_per_pbr_verified": 0,
+  "candidate_count": 125,
+  "excluded_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "download_of_undocumented_or_limited_krx_endpoint_attempted": false,
+  "new_dart_requests": 0,
+  "missing_corrected_filing_queries": 0,
+  "financial_cache_modified": false,
+  "stage27_modified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "Public website navigability or a menu mentioning PER/PBR does not prove a documented external data API exists",
+    "HTML fetch failure cannot prove the API does not exist",
+    "A CSV hash, a locally supplied file, or GitHub commit is not independent KRX provider authentication",
+    "An official PER/PBR provider feed must be separately authorized and authenticated before valuations can be enabled",
+    "Existing R14 derived PER/PBR remain research estimates only; no actionable prices are generated"
+  ]
+}
