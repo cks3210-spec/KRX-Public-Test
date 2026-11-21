@@ -3062,6 +3062,304 @@ jobs:
           (root/'r14_krx_official_ratio_source_gate.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(report,ensure_ascii=False))
           PY
+      - name: Enforce independent official PER/PBR and dated financial evidence on filtered R14 candidates (research only)
+        id: r14_valuation_readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_valuation_handoff.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """R14 Stage28 valuation evidence gate: filtered research feed only, no trade signals.
+          
+          Does NOT calculate official PER/PBR or fair values. A candidate may enter the
+          separate calculation queue only after both market-date-matched, independent
+          ratio evidence and independently proven as-of financial disclosures exist.
+          The raw 128-company research report is never used as valuation input.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import json
+          import pathlib
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+          
+          ROOT = pathlib.Path('v5_reports/stage28')
+          FILTERED = ROOT / 'r14_eligible_research_candidates.json'
+          EXCLUSION = ROOT / 'r14_candidate_exclusion_gate.json'
+          RATIO_GATE = ROOT / 'r14_krx_official_ratio_source_gate.json'
+          RATIO_PROVENANCE = ROOT / 'r14_official_ratio_provenance_audit.json'
+          DISCLOSURE = ROOT / 'r14_valuation_disclosure_gate.json'
+          FINANCIAL = ROOT / 'r14_financial_value_reconciliation_cache.json'
+          OUT = ROOT / 'r14_valuation_readiness_gate.json'
+          READY = ROOT / 'r14_valuation_ready_research_candidates.json'
+          LEDGER = pathlib.Path('v5_reports/stage27/status.json')
+          FUND_CACHE = pathlib.Path('data/v5_financial_m/dart_financial_cache.json')
+          EXPECTED_FILTERED_TYPE = 'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1'
+          EXPECTED_EXCLUSION_TYPE = 'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1'
+          
+          
+          def load(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def stamp():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def sha256_if_exists(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+          
+          
+          def valid_num(value):
+              # Explicitly reject booleans, NaN and string coercion for official ratios.
+              return type(value) in (int, float) and 0 < value < 1000000
+          
+          
+          def gate(filtered, exclusion, ratios, provenance, disclosure, finance):
+              if filtered.get('result') != EXPECTED_FILTERED_TYPE:
+                  raise ValueError('UNTRUSTED_R14_FILTERED_CANDIDATE_FORMAT')
+              if exclusion.get('result') != EXPECTED_EXCLUSION_TYPE:
+                  raise ValueError('UNTRUSTED_R14_EXCLUSION_GATE_FORMAT')
+              dates = [str(filtered.get('research_market_date') or ''),
+                       str(exclusion.get('research_market_date') or ''),
+                       str(ratios.get('market_date') or ''),
+                       str(provenance.get('market_date') or ''),
+                       str(disclosure.get('market_date') or '')]
+              if len(set(dates)) != 1 or not re.fullmatch(r'20\d{6}', dates[0]):
+                  raise ValueError('MISMATCHED_MARKET_DATES_FAIL_CLOSED')
+              raw = exclusion.get('raw_research_candidate_count')
+              originals = exclusion.get('excluded_codes')
+              candidates = filtered.get('candidates')
+              if not isinstance(candidates, list) or not isinstance(originals, list):
+                  raise ValueError('FILTERED_FEED_OR_EXCLUSION_LIST_UNAVAILABLE')
+              excluded = set(originals)
+              if len(excluded) != len(originals):
+                  raise ValueError('DUPLICATE_EXCLUDED_CODE')
+              if set(filtered.get('excluded_codes') or []) != excluded:
+                  raise ValueError('FILTER_AND_EXCLUSION_POLICY_INCONSISTENT')
+              if (filtered.get('candidate_count') != len(candidates)
+                      or exclusion.get('eligible_research_candidate_count') != len(candidates)
+                      or exclusion.get('excluded_candidate_count') != len(excluded)
+                      or raw != len(candidates) + len(excluded)):
+                  raise ValueError('FILTERED_CANDIDATE_COUNTS_INCONSISTENT')
+              if not {'033500', '054950', '097230'}.issubset(excluded):
+                  # Preserve all previously documented exclusions, but allow newly identified
+                  # missing-correction stocks to be excluded automatically in future runs.
+                  raise ValueError('KNOWN_MISSING_CORRECTION_STOCK_LOST_EXCLUSION')
+              keys = [str(r.get('code') or '') for r in candidates]
+              if len(keys) != len(set(keys)) or any(not re.fullmatch(r'\d{6}', code) for code in keys):
+                  raise ValueError('DUPLICATED_OR_INVALID_STOCK_CODE')
+              if set(keys) & excluded:
+                  raise ValueError('EXCLUDED_CORRECTION_STOCK_REENTERED_FILTERED_FEED')
+              if any(x.get('grade') not in ('A', 'B', 'B+') or x.get('buy_signal') is not False
+                     or str(x.get('market_date') or '') != dates[0] for x in candidates):
+                  raise ValueError('UNSAFE_GRADE_DATE_OR_SIGNAL_IN_FILTERED_FEED')
+              if (ratios.get('investment_decisions_authorized') is not False
+                      or filtered.get('investment_decisions_authorized') is not False
+                      or exclusion.get('investment_decisions_authorized') is not False):
+                  raise ValueError('RESEARCH_GATE_MUST_NEVER_AUTHORIZE_TRADES')
+              if finance.get('format') != 'R14_FINANCIAL_COMPARISON_CACHE_V1':
+                  raise ValueError('UNKNOWN_FINANCIAL_RECONCILIATION_FORMAT')
+              if len(provenance.get('candidates') or []) != raw:
+                  raise ValueError('RATIO_PROVENANCE_UNIVERSE_SIZE_MISMATCH')
+          
+              ratio_rows = {str(a.get('code') or ''): a for a in provenance.get('candidates') or []}
+              if len(ratio_rows) != len(provenance.get('candidates') or []):
+                  raise ValueError('DUPLICATE_RATIO_PROVENANCE_ROWS')
+              date_matched = ratios.get('market_date') == dates[0]
+              authenticated = (ratios.get('status') == 'AUTHENTICATED_DATE_MATCHED_KRX_RATIOS'
+                               and ratios.get('source_independently_authenticated') is True
+                               and provenance.get('official_source_independently_authenticated') is True
+                               and isinstance(ratios.get('rows_supplied'),int)
+                               and ratios['rows_supplied'] > 0
+                               and isinstance(ratios.get('official_per_independently_verified'),int)
+                               and ratios['official_per_independently_verified'] > 0
+                               and isinstance(ratios.get('official_pbr_independently_verified'),int)
+                               and ratios['official_pbr_independently_verified'] > 0
+                               and date_matched)
+              pit_attested = disclosure.get('point_in_time_filing_verified') is True
+              results = []
+              ready = []
+              reasons = collections.Counter()
+              for c in candidates:
+                  code = c['code']
+                  record = ratio_rows.get(code) or {}
+                  reason_list = []
+                  if not authenticated:
+                      reason_list.append('KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED')
+                  if (record.get('official_per_independently_verified') is not True
+                          or record.get('official_pbr_independently_verified') is not True
+                          or not valid_num(record.get('official_per'))
+                          or not valid_num(record.get('official_pbr'))):
+                      reason_list.append('PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED')
+                  if (not pit_attested or record.get('historical_point_in_time_financials_verified') is not True
+                          or (finance.get('rows') or {}).get(code, {}).get('historical_point_in_time_verified') is not True):
+                      reason_list.append('ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED')
+                  for why in reason_list:
+                      reasons[why] += 1
+                  if reason_list:
+                      state = 'DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE'
+                  else:
+                      # This queue is still for a future research-only calculator and not
+                      # an actionable target price or buy/sell instruction.
+                      state = 'READY_FOR_RESEARCH_PRICE_MODEL_ONLY'
+                      ready.append({'code': code, 'name': c.get('name'),
+                                    'research_grade': c.get('grade'),
+                                    'research_market_date': dates[0],
+                                    'source_verified_official_per': record['official_per'],
+                                    'source_verified_official_pbr': record['official_pbr'],
+                                    'investment_decisions_authorized': False,
+                                    'final_buy_signals': 0})
+                  results.append({'code':code, 'name':c.get('name'),
+                                  'grade_research_only':c.get('grade'),
+                                  'readiness':state, 'block_reasons':reason_list,
+                                  'market_date':dates[0],
+                                  'derived_ratios_are_not_official':True,
+                                  'actionable_price_verified':False,
+                                  'investment_decisions_authorized':False})
+              report = {
+                  'result':'R14_FILTERED_VALUATION_EVIDENCE_GATE_V1',
+                  'generated_kst':stamp(), 'research_market_date':dates[0],
+                  'input_candidates_path':str(FILTERED),
+                  'excluded_policy_source':str(EXCLUSION),
+                  'official_ratio_gate_source':str(RATIO_GATE),
+                  'official_ratio_provenance_source':str(RATIO_PROVENANCE),
+                  'historical_filing_gate_source':str(DISCLOSURE),
+                  'raw_candidate_count_for_audit_only':raw,
+                  'filtered_input_candidate_count':len(candidates),
+                  'excluded_for_missing_corrected_filing':sorted(excluded),
+                  'ready_for_research_valuation_count':len(ready),
+                  'deferred_for_evidence_count':len(candidates)-len(ready),
+                  'block_reason_counts':dict(reasons),
+                  'authentic_official_per_pbr_independently_confirmed':authenticated,
+                  'historical_financial_point_in_time_gate_passed':pit_attested,
+                  'official_ratio_source_status':ratios.get('status'),
+                  'expected_official_ratio_source_file':ratios.get('expected_relative_file'),
+                  'input_research_grade_counts':dict(collections.Counter(x.get('grade') for x in candidates)),
+                  'ready_queue_output':str(READY),
+                  'deferred_candidates':results,
+                  'valuation_price_calculation_executed':False,
+                  'research_only':True,
+                  'readiness_count_with_upstream_official_and_pit_flags':len(ready),
+                  'official_ratio_source_independently_rechecked_here':False,
+                  'investment_decisions_authorized':False,'final_buy_signals':0,
+                  'raw_candidate_feed_used_as_valuation_input':False,
+                  'source_retrieval_requests_this_run':0,
+                  'limitations':[
+                      'KRX export file alone is NOT independent source authentication',
+                      'Computed PER/PBR in R14 are not official KRX ratios',
+                      'No research reference value may be promoted to a verified target price',
+                      'Readiness requires per-stock official ratios and independently verified as-of financial filing',
+                      'Ready queue is NOT an investment signal even when future evidence completes'
+                  ]
+              }
+              queue={'result':'R14_OFFICIAL_EVIDENCE_READY_VALUATION_RESEARCH_QUEUE_V1',
+                     'generated_kst':report['generated_kst'],'research_market_date':dates[0],
+                     'source_gate':str(OUT),'ready_count':len(ready),'candidates':ready,
+                     'excluded_codes':sorted(excluded),
+                     'investment_decisions_authorized':False,'final_buy_signals':0,
+                     'actionable_buy_prices':0,'research_only':True}
+              return report,queue
+          
+          
+          def testdata(n=125):
+              exclude=['033500','054950','097230']
+              candidates=[{'code':f'{i:06d}','name':'Test','grade':'A' if i%5==0 else 'B',
+                           'market_date':'20261119','buy_signal':False} for i in range(1,n+1)]
+              filtered={'result':EXPECTED_FILTERED_TYPE,'research_market_date':'20261119',
+                        'candidates':candidates,'candidate_count':len(candidates),
+                        'excluded_codes':exclude,'investment_decisions_authorized':False}
+              exclusion={'result':EXPECTED_EXCLUSION_TYPE,'research_market_date':'20261119',
+                         'excluded_codes':exclude,'excluded_candidate_count':3,
+                         'raw_research_candidate_count':n+3,
+                         'eligible_research_candidate_count':n,'investment_decisions_authorized':False}
+              ratio={'market_date':'20261119','source_independently_authenticated':False,
+                     'investment_decisions_authorized':False,'status':'NO_DATE_MATCHED_KRX_EXPORT'}
+              provenance={'market_date':'20261119','official_source_independently_authenticated':False,
+                          'candidates':[{'code':c['code'],'official_per':None,'official_pbr':None} for c in candidates]
+                          + [{'code':code} for code in exclude]}
+              disclosure={'market_date':'20261119','point_in_time_filing_verified':False}
+              fin={'format':'R14_FINANCIAL_COMPARISON_CACHE_V1','rows':{}}
+              return [filtered,exclusion,ratio,provenance,disclosure,fin]
+          
+          
+          def selftest():
+              import copy
+              inputs=testdata()
+              out,queue=gate(*inputs)
+              assert out['filtered_input_candidate_count']==125
+              assert out['deferred_for_evidence_count']==125 and queue['ready_count']==0
+              assert out['excluded_for_missing_corrected_filing']==['033500','054950','097230']
+              assert out['block_reason_counts']['KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED']==125
+              assert out['block_reason_counts']['PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED']==125
+              assert out['block_reason_counts']['ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED']==125
+              assert not out['raw_candidate_feed_used_as_valuation_input']
+              assert all(x['readiness']=='DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE' for x in out['deferred_candidates'])
+              assert queue['final_buy_signals']==0 and out['investment_decisions_authorized'] is False
+              for change,why in [
+                  (lambda a:a[0].update({'candidate_count':124}),'COUNT'),
+                  (lambda a:a[0]['candidates'].append(dict(a[0]['candidates'][0])),'DUPLICATE'),
+                  (lambda a:a[0].update({'excluded_codes':[]}), 'EXCLUDED'),
+                  (lambda a:a[2].update({'market_date':'20261120'}), 'DATE'),
+                  (lambda a:a[1].update({'excluded_codes':['033500','054950','000050']}),'POLICY'),
+                  (lambda a:a[0]['candidates'][0].update({'buy_signal':True}),'BUY'),
+                  (lambda a:a[3].update({'candidates':[]}), 'RATIO_UNIVERSE')]:
+                  trial=copy.deepcopy(inputs);change(trial)
+                  try: gate(*trial)
+                  except ValueError:pass
+                  else:raise AssertionError('FAIL_OPEN_'+why)
+              # Explicit artificial complete provenance should still never generate buy signals.
+              trial=copy.deepcopy(inputs)
+              trial[2].update({'source_independently_authenticated':True,
+                               'status':'AUTHENTICATED_DATE_MATCHED_KRX_RATIOS',
+                               'rows_supplied':128,
+                               'official_per_independently_verified':1,
+                               'official_pbr_independently_verified':1})
+              trial[3]['official_source_independently_authenticated']=True
+              trial[4]['point_in_time_filing_verified']=True
+              for r in trial[3]['candidates']:
+                  if r.get('code')==trial[0]['candidates'][0]['code']:
+                      r.update({'official_per':10.5,'official_pbr':1.3,
+                                'official_per_independently_verified':True,
+                                'official_pbr_independently_verified':True,
+                                'historical_point_in_time_financials_verified':True})
+              trial[5]['rows'][trial[0]['candidates'][0]['code']]={'historical_point_in_time_verified':True}
+              out2,q2=gate(*trial)
+              assert q2['ready_count']==1 and out2['deferred_for_evidence_count']==124
+              assert q2['final_buy_signals']==0 and out2['investment_decisions_authorized'] is False
+              return 17
+          
+          
+          def save(path, val):
+              path.parent.mkdir(parents=True,exist_ok=True)
+              temp=path.with_name(path.name+'.tmp')
+              temp.write_text(json.dumps(val,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              temp.replace(path)
+          
+          
+          def main():
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test':'PASS','tests':selftest()}))
+                  return
+              files=[FILTERED,EXCLUSION,RATIO_GATE,RATIO_PROVENANCE,DISCLOSURE,FINANCIAL]
+              originals=[load(p) for p in files]
+              report,queue=gate(*originals)
+              report['source_file_sha256']={str(p):sha256_if_exists(p) for p in files}
+              report['stage27_status_sha256_read_only']=sha256_if_exists(LEDGER)
+              report['legacy_financial_cache_sha256_read_only']=sha256_if_exists(FUND_CACHE)
+              save(OUT,report);save(READY,queue)
+              print(json.dumps({key:value for key,value in report.items() if key not in ('deferred_candidates','limitations','source_file_sha256')},ensure_ascii=False))
+          
+          
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/r14_valuation_handoff.py
+          python /tmp/r14_valuation_handoff.py --self-test
+          python /tmp/r14_valuation_handoff.py
+
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -3105,11 +3403,12 @@ jobs:
           XBRL_BASIS_ISOLATION_RESULT: ${{ steps.xbrl_basis_isolation.outcome }}
           XBRL_CACHE_BRIDGE_RESULT: ${{ steps.xbrl_cache_bridge.outcome }}
           R14_CANDIDATE_GATE_RESULT: ${{ steps.r14_candidate_gate.outcome }}
+          R14_VALUATION_READINESS_RESULT: ${{ steps.r14_valuation_readiness.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','R14_VALUATION_READINESS')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -3129,7 +3428,9 @@ jobs:
             'r14_xbrl_basis_isolation':'v5_reports/stage28/r14_xbrl_basis_isolation_research.json',
             'r14_xbrl_cache_bridge':'v5_reports/stage28/r14_xbrl_cache_bridge_research.json',
             'r14_candidate_eligibility_gate':'v5_reports/stage28/r14_candidate_exclusion_gate.json',
-            'r14_filtered_research_shortlist':'v5_reports/stage28/r14_eligible_research_candidates.json'
+            'r14_filtered_research_shortlist':'v5_reports/stage28/r14_eligible_research_candidates.json',
+            'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
+            'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
           details={}
           for name,p in status_files.items():
@@ -3138,8 +3439,8 @@ jobs:
                   try:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
-                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist'):
-                          data={k:v for k,v in data.items() if k!='candidates'}
+                      if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue'):
+                          data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates')}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
               else:details[name]={'status_file':'not_present'}
@@ -3155,6 +3456,11 @@ jobs:
           if not gate_succeeded:
               details['r14_candidate_eligibility_gate']={'status':'FAILED_OR_SKIPPED_DO_NOT_USE_UNFILTERED_RAW_CANDIDATES'}
               details['r14_filtered_research_shortlist']={'status':'INVALID_GATE_SNAPSHOT_DO_NOT_USE'}
+          valuation_succeeded=(gate_succeeded and statuses.get('R14_VALUATION_READINESS')=='success'
+              and details.get('r14_valuation_readiness_gate',{}).get('result')=='R14_FILTERED_VALUATION_EVIDENCE_GATE_V1')
+          if not valuation_succeeded:
+              details['r14_valuation_readiness_gate']={'status':'FAILED_OR_SKIPPED_DO_NOT_USE_RAW_VALUATION'}
+              details['r14_valuation_ready_research_queue']={'status':'INVALID_VALUATION_GATE_DO_NOT_USE'}
           now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
           report={
             'development_phase':'STAGE28_INTEGRATED',
@@ -3167,6 +3473,11 @@ jobs:
             'active_research_candidate_feed':('v5_reports/stage28/r14_eligible_research_candidates.json' if gate_succeeded else None),
             'active_research_feed_status':('RESEARCH_ONLY_FILTERED' if gate_succeeded else 'BLOCKED_GATE_NOT_VERIFIED'),
             'raw_r14_candidate_feed_is_audit_only':True,
+            'active_research_valuation_input':('v5_reports/stage28/r14_valuation_ready_research_candidates.json' if valuation_succeeded else None),
+            'active_research_valuation_input_state':('OFFICIAL_EVIDENCE_GATED_RESEARCH_ONLY' if valuation_succeeded else 'BLOCKED_VALUATION_GATE_FAILED'),
+            'valuation_ready_candidates':(details.get('r14_valuation_readiness_gate',{}).get('ready_for_research_valuation_count') if valuation_succeeded else 0),
+            'valuation_deferred_candidates':(details.get('r14_valuation_readiness_gate',{}).get('deferred_for_evidence_count') if valuation_succeeded else None),
+            'valuation_target_prices_verified':0,
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
@@ -3184,7 +3495,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'Missing corrected-filing retrieval disabled and affected mismatch stocks excluded from active R14 research candidates. Raw R14 unfiltered list retained for audit only. KRX official PER/PBR and historical financial PIT remain unverified; Stage27 untouched, no trading signals.'
+            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage27 untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
