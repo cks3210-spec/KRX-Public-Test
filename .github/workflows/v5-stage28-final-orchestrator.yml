@@ -1645,6 +1645,322 @@ jobs:
           python -m py_compile /tmp/r14_xbrl_revision_delta.py
           python /tmp/r14_xbrl_revision_delta.py --self-test
           python /tmp/r14_xbrl_revision_delta.py
+      - name: Diagnose prior XBRL receipt structures (no cache mutation)
+        id: xbrl_structure_diag
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_xbrl_structure_probe.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 strictly research-only XBRL structure diagnostic, no cache mutation.
+          Retrieves at most six previously fingerprinted XBRL receipts to identify why no
+          IFRS annual facts were extracted. Never treats structural data as PIT evidence.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import time
+          from urllib import request, parse, error
+          from zoneinfo import ZoneInfo
+          import zipfile
+          import xml.etree.ElementTree as ET
+          
+          ROOT = Path('v5_reports/stage28')
+          XBRL_CACHE = ROOT / 'r14_xbrl_receipt_financial_cache.json'
+          DELTA = ROOT / 'r14_xbrl_revision_delta_research.json'
+          RESEARCH = ROOT / 'r14_full_market_grade_research.json'
+          OUTPUT = ROOT / 'r14_xbrl_structure_diagnostic.json'
+          ENDPOINT = 'https://opendart.fss.or.kr/api/fnlttXbrl.xml'
+          VERSION = 'STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1'
+          MAX_ZIP = 16_000_000
+          MAX_XML = 24_000_000
+          MAX_UNCOMP = 48_000_000
+          MAX_FILES = 60
+          IFRS = {'ProfitLossAttributableToOwnersOfParent', 'EquityAttributableToOwnersOfParent', 'Revenue', 'Assets', 'Liabilities'}
+          XBRLI = 'http://www.xbrl.org/2003/instance'
+          
+          
+          def load(path, default):
+              try:
+                  return json.loads(path.read_text(encoding='utf-8-sig'))
+              except (OSError, ValueError):
+                  return default
+          
+          
+          def kst():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+          
+          
+          def loc(tag):
+              return tag.rsplit('}', 1)[-1] if isinstance(tag, str) else ''
+          
+          
+          def analyze_xml(data, year):
+              if len(data) > MAX_XML or b'<!DOCTYPE' in data.upper() or b'<!ENTITY' in data.upper():
+                  return {'state': 'UNSAFE_OR_TOO_LARGE_XML'}
+              try:
+                  root = ET.fromstring(data)
+              except ET.ParseError:
+                  return {'state': 'INVALID_XML'}
+              if root.tag != '{' + XBRLI + '}xbrl':
+                  return {'state': 'NOT_XBRL_INSTANCE', 'root_local_name': loc(root.tag)[:60]}
+              valid_year = bool(re.fullmatch(r'20\d{2}', str(year)))
+              if not valid_year:
+                  return {'state': 'INVALID_YEAR'}
+              end, start = f'{year}-12-31', f'{year}-01-01'
+              contexts_total, dims = 0, 0
+              years = collections.Counter()
+              undimensioned = {}
+              unit_krw = set()
+              account_ns = collections.Counter()
+              concept_total, strict_count, usable_count = 0, 0, 0
+              ref_counts = collections.Counter()
+              for child in root:
+                  if child.tag == '{' + XBRLI + '}context':
+                      contexts_total += 1
+                      cid = str(child.attrib.get('id') or '')
+                      if any(loc(x.tag) in ('segment', 'scenario') for x in child.iter()):
+                          dims += 1
+                          continue
+                      periods = {loc(x.tag): (x.text or '').strip() for x in child.iter()
+                                 if loc(x.tag) in ('instant', 'startDate', 'endDate')}
+                      if periods.get('instant') == end:
+                          undimensioned[cid] = 'instant';years['annual_instant'] += 1
+                      elif periods.get('startDate') == start and periods.get('endDate') == end:
+                          undimensioned[cid] = 'duration';years['annual_duration'] += 1
+                      elif periods.get('instant') or periods.get('endDate'):
+                          years['other_period'] += 1
+                  elif child.tag == '{' + XBRLI + '}unit':
+                      measures = [(x.text or '').strip() for x in child.iter() if loc(x.tag) == 'measure']
+                      if not any(loc(x.tag) == 'divide' for x in child.iter()) and len(measures) == 1 and measures[0].split(':')[-1].upper() == 'KRW':
+                          if child.attrib.get('id'):unit_krw.add(str(child.attrib['id']))
+              for child in root:
+                  if not isinstance(child.tag, str) or loc(child.tag) not in IFRS:
+                      continue
+                  concept_total += 1
+                  uri = child.tag[1:].split('}', 1)[0] if child.tag.startswith('{') else ''
+                  is_ifrs = uri.endswith('/ifrs-full') or uri.endswith('/ifrs')
+                  account_ns['ifrs_namespace' if is_ifrs else 'non_ifrs_namespace'] += 1
+                  if not is_ifrs:
+                      continue
+                  strict_count += 1
+                  context = str(child.attrib.get('contextRef') or '')
+                  unit = str(child.attrib.get('unitRef') or '')
+                  if context not in undimensioned:
+                      ref_counts['context_ineligible'] += 1
+                  elif unit not in unit_krw:
+                      ref_counts['unit_ineligible'] += 1
+                  elif not re.fullmatch(r'[+-]?\d{1,25}', (child.text or '').strip()):
+                      ref_counts['numeric_ineligible'] += 1
+                  else:
+                      usable_count += 1
+              if not concept_total:
+                  reason = 'NO_DIRECT_STANDARD_CONCEPTS'
+              elif not strict_count:
+                  reason = 'DIRECT_CONCEPTS_NON_IFRS_NAMESPACE'
+              elif not contexts_total:
+                  reason = 'NO_XBRL_CONTEXTS'
+              elif not undimensioned:
+                  reason = 'NO_UNDIMENSIONED_ANNUAL_CONTEXT'
+              elif not unit_krw:
+                  reason = 'NO_KRW_UNITS'
+              elif not usable_count:
+                  reason = 'CONTEXT_UNIT_OR_NUMERIC_FACT_MISMATCH'
+              else:
+                  reason = 'ELIGIBLE_FACTS_EXIST_NEED_ACCOUNT_LEVEL_REVIEW'
+              return {'state': 'XBRL_STRUCTURE_INSPECTED', 'reason': reason,
+                      'xbrl_context_count': contexts_total, 'dimensioned_context_count': dims,
+                      'context_counts': dict(years), 'krw_unit_count': len(unit_krw),
+                      'direct_concept_occurrences': concept_total, 'ifrs_concept_occurrences': strict_count,
+                      'eligible_fact_occurrences': usable_count, 'concept_namespaces': dict(account_ns),
+                      'fact_exclusion_counts': dict(ref_counts),
+                      'contains_no_financial_values': True, 'financial_basis_verified': False}
+          
+          
+          def zip_inspect(blob, year):
+              if not blob.startswith(b'PK'):
+                  status = re.search(rb'<status>\s*([A-Za-z0-9_-]{2,12})\s*</status>', blob[:8192], re.I)
+                  return {'state': 'DART_API_STATUS_' + status.group(1).decode('ascii').upper() if status else 'NOT_ZIP_RESPONSE'}
+              if len(blob) > MAX_ZIP:
+                  return {'state': 'ZIP_TOO_LARGE'}
+              try:
+                  with zipfile.ZipFile(io.BytesIO(blob)) as z:
+                      allfiles = z.infolist()
+                      if len(allfiles) > MAX_FILES or sum(x.file_size for x in allfiles) > MAX_UNCOMP:
+                          return {'state': 'ZIP_UNSAFE_SIZE_OR_MEMBERS'}
+                      files = []
+                      for entry in allfiles:
+                          name = entry.filename.replace('\\', '/')
+                          if name.startswith('/') or '..' in name.split('/'):
+                              return {'state': 'ZIP_UNSAFE_PATH'}
+                          if entry.is_dir() or not name.lower().endswith(('.xml', '.xbrl')):
+                              continue
+                          if entry.file_size > MAX_XML:
+                              files.append({'name': name[:150], 'state': 'XML_MEMBER_TOO_LARGE'})
+                              continue
+                          contents = z.read(entry)
+                          report = analyze_xml(contents, year)
+                          if report['state'] != 'NOT_XBRL_INSTANCE':
+                              files.append({'name': name[:150], 'sha256': hashlib.sha256(contents).hexdigest(), **report})
+                      return {'state': 'ARCHIVE_DIAGNOSED', 'zip_sha256': hashlib.sha256(blob).hexdigest(),
+                              'file_count': len(allfiles), 'xbrl_files': files,
+                              'full_xbrl_files_retained': False}
+              except (zipfile.BadZipFile, RuntimeError, ValueError, OSError, NotImplementedError):
+                  return {'state': 'ZIP_UNREADABLE'}
+          
+          
+          def fetch_receipt(receipt, key):
+              url = ENDPOINT + '?' + parse.urlencode({'crtfc_key': key, 'rcept_no': receipt, 'reprt_code': '11011'})
+              try:
+                  req = request.Request(url, headers={'User-Agent': 'KRX-v5-XBRL-Structure/1.0'})
+                  with request.urlopen(req, timeout=35) as res:
+                      if int(res.headers.get('Content-Length', '0') or 0) > MAX_ZIP:
+                          return {'state': 'ZIP_TOO_LARGE'}
+                      blob = res.read(MAX_ZIP + 1)
+                  return zip_inspect(blob, '2025')
+              except error.HTTPError as ex:
+                  return {'state': 'HTTP_ERROR', 'http_status': ex.code}
+              except (error.URLError, TimeoutError, OSError, ValueError):
+                  return {'state': 'FETCH_UNAVAILABLE'}
+          
+          
+          def digest_pair_report(deltas, cached):
+              byreceipt = cached.get('rows') or {}
+              out = []
+              for v in deltas.get('comparisons') or []:
+                  original = str(v.get('original_receipt') or '')
+                  revised = str(v.get('latest_pre_evaluation_receipt') or '')
+                  a, b = byreceipt.get(original) or {}, byreceipt.get(revised) or {}
+                  af = {f.get('name'): f.get('xml_sha256') for f in a.get('files', []) if f.get('name') and f.get('xml_sha256')}
+                  bf = {f.get('name'): f.get('xml_sha256') for f in b.get('files', []) if f.get('name') and f.get('xml_sha256')}
+                  shared = sorted(set(af) & set(bf))
+                  if not af or not bf:
+                      evidence = 'PENDING_OR_UNAVAILABLE_XBRL'
+                  elif not shared:
+                      evidence = 'NO_SHARED_XBRL_FILENAMES'
+                  elif any(af[n] != bf[n] for n in shared):
+                      evidence = 'XBRL_XML_BYTES_DIFFER'
+                  else:
+                      evidence = 'SHARED_XBRL_XML_BYTES_IDENTICAL'
+                  out.append({'code': v.get('code'), 'period': v.get('period'),
+                              'original_receipt': original, 'revised_receipt': revised,
+                              'xml_digest_evidence': evidence,
+                              'matching_xml_files_count': len(shared),
+                              'financial_values_verified': False,
+                              'historical_asof_attested': False})
+              return out
+          
+          
+          def run():
+              cache = load(XBRL_CACHE, {})
+              deltas = load(DELTA, {})
+              if cache.get('format') != 'R14_RECEIPT_XBRL_RESEARCH_CACHE_V1':
+                  raise SystemExit('INVALID_XBRL_CACHE_FORMAT')
+              if deltas.get('result') != 'R14_XBRL_REVISION_DELTA_RESEARCH_ONLY':
+                  raise SystemExit('INVALID_XBRL_DELTA_INPUT')
+              market_date = str(load(RESEARCH, {}).get('market_date', ''))
+              prev = load(OUTPUT, {})
+              old_details = prev.get('diagnostic_by_receipt') if (prev.get('version') == VERSION and prev.get('market_date') == market_date) else {}
+              if not isinstance(old_details, dict):
+                  old_details = {}
+              diagnostics = {}
+              token = (os.getenv('DART_API_KEY') or '').strip()
+              candidates = [(receipt, rec) for receipt, rec in sorted((cache.get('rows') or {}).items())
+                            if rec.get('state') == 'XBRL_RECEIPT_ZIP_RETRIEVED']
+              # Bound one-time re-fetch: cache contains fingerprints, not full XML.
+              candidates = candidates[:6]
+              stats = collections.Counter()
+              for receipt, prior in candidates:
+                  stored = old_details.get(receipt) or {}
+                  if stored.get('source_zip_sha256') == prior.get('zip_sha256') and stored.get('state') == 'SOURCE_HASH_MATCHED':
+                      diagnostics[receipt] = stored
+                      stats['REUSED_STRUCTURE_DIAGNOSTIC'] += 1
+                      continue
+                  if not token:
+                      diagnostics[receipt] = {'state': 'MISSING_API_KEY'}
+                      stats['MISSING_API_KEY'] += 1
+                      continue
+                  current = fetch_receipt(receipt, token)
+                  if current.get('state') == 'ARCHIVE_DIAGNOSED':
+                      same = current.get('zip_sha256') == prior.get('zip_sha256')
+                      current['state'] = 'SOURCE_HASH_MATCHED' if same else 'SOURCE_HASH_CHANGED_NO_PROMOTION'
+                      current['source_zip_sha256'] = prior.get('zip_sha256')
+                  diagnostics[receipt] = current
+                  stats[current['state']] += 1
+                  time.sleep(.2)
+                  if current['state'] == 'DART_API_STATUS_020':
+                      stats['HALTED_ON_RATE_LIMIT'] += 1
+                      break
+              counts = collections.Counter(f.get('reason') for x in diagnostics.values() for f in x.get('xbrl_files', [])
+                                           if f.get('state') == 'XBRL_STRUCTURE_INSPECTED')
+              report = {'result': 'R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY',
+                        'version': VERSION, 'generated_kst': kst(), 'market_date': market_date,
+                        'cached_receipts_total': len(cache.get('rows') or {}),
+                        'eligible_receipts_to_diagnose': len(candidates),
+                        'diagnostics_available': len(diagnostics), 'run_states': dict(stats),
+                        'extraction_failure_reasons': dict(counts),
+                        'revision_xml_digest_comparison': digest_pair_report(deltas, cache),
+                        'diagnostic_by_receipt': diagnostics,
+                        'xbrl_files_persisted': False, 'stage27_modified': False,
+                        'financial_cache_modified': False,
+                        'historical_point_in_time_financials_verified': False,
+                        'official_per_pbr_verified': False,
+                        'investment_decisions_authorized': False, 'final_buy_signals': 0,
+                        'limitations': ['ZIP/XML digests prove retrieved-byte equality/difference only; financial values may be unchanged',
+                                       'Diagnostic facts are research-only, not verified CFS/OFS or historical decision-time availability',
+                                       'No implicit promotion of research grades to buy recommendations']}
+              OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+              temp = OUTPUT.with_suffix('.tmp')
+              temp.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+              temp.replace(OUTPUT)
+              print(json.dumps({k: v for k, v in report.items() if k not in ('diagnostic_by_receipt', 'revision_xml_digest_comparison', 'limitations')}, ensure_ascii=False))
+          
+          
+          def selftest():
+              ns = 'http://www.xbrl.org/2003/instance'
+              head = f'''<xbrli:xbrl xmlns:xbrli="{ns}" xmlns:ifrs="http://xbrl.ifrs.org/taxonomy/2025-03-27/ifrs-full" xmlns:iso4217="http://www.xbrl.org/2003/iso4217">'''
+              ctx = '''<xbrli:context id="bs"><xbrli:entity><xbrli:identifier scheme="test">one</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>'''
+              unit = '''<xbrli:unit id="krw"><xbrli:measure>iso4217:KRW</xbrli:measure></xbrli:unit>'''
+              fact = '<ifrs:Assets contextRef="bs" unitRef="krw">150</ifrs:Assets>'
+              good = (head + ctx + unit + fact + '</xbrli:xbrl>').encode()
+              v = analyze_xml(good, '2025')
+              assert v['state'] == 'XBRL_STRUCTURE_INSPECTED' and v['eligible_fact_occurrences'] == 1
+              assert v['reason'] == 'ELIGIBLE_FACTS_EXIST_NEED_ACCOUNT_LEVEL_REVIEW'
+              assert analyze_xml(good, '2024')['reason'] == 'NO_UNDIMENSIONED_ANNUAL_CONTEXT'
+              assert analyze_xml((head + ctx + unit + '</xbrli:xbrl>').encode(), '2025')['reason'] == 'NO_DIRECT_STANDARD_CONCEPTS'
+              assert analyze_xml((head + ctx + fact + '</xbrli:xbrl>').encode(), '2025')['reason'] == 'NO_KRW_UNITS'
+              assert analyze_xml(b'<!DOCTYPE x><xbrl/>', '2025')['state'] == 'UNSAFE_OR_TOO_LARGE_XML'
+              assert analyze_xml(b'<broken', '2025')['state'] == 'INVALID_XML'
+              buf = io.BytesIO()
+              with zipfile.ZipFile(buf, 'w') as z:
+                  z.writestr('some.xbrl', good)
+              assert zip_inspect(buf.getvalue(), '2025')['xbrl_files'][0]['eligible_fact_occurrences'] == 1
+              assert zip_inspect(b'<result><status>014</status></result>', '2025')['state'] == 'DART_API_STATUS_014'
+              c = {'rows': {'original': {'files': [{'name': 'a.xbrl', 'xml_sha256': '1'}]},
+                            'revision': {'files': [{'name': 'a.xbrl', 'xml_sha256': '2'}]}}}
+              comparison = digest_pair_report({'comparisons': [{'code': '000001', 'original_receipt': 'original',
+                                                                 'latest_pre_evaluation_receipt': 'revision'}]}, c)
+              assert comparison[0]['xml_digest_evidence'] == 'XBRL_XML_BYTES_DIFFER'
+              return 10
+          
+          
+          if __name__ == '__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test': 'PASS', 'tests': selftest()}))
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_xbrl_structure_probe.py
+          python /tmp/r14_xbrl_structure_probe.py --self-test
+          python /tmp/r14_xbrl_structure_probe.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -1719,11 +2035,12 @@ jobs:
           DATED_RATIO_INPUT_RESULT: ${{ steps.dated_ratio_input.outcome }}
           ORIGINAL_XBRL_RECONCILIATION_RESULT: ${{ steps.original_xbrl_reconciliation.outcome }}
           XBRL_REVISION_DELTA_RESULT: ${{ steps.xbrl_revision_delta.outcome }}
+          XBRL_STRUCTURE_DIAG_RESULT: ${{ steps.xbrl_structure_diag.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -1737,7 +2054,8 @@ jobs:
             'r14_document_versions':'v5_reports/stage28/r14_correction_original_document_audit.json',
             'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json',
             'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json',
-            'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json'
+            'r14_xbrl_revision_delta':'v5_reports/stage28/r14_xbrl_revision_delta_research.json',
+            'r14_xbrl_structure_diagnostic':'v5_reports/stage28/r14_xbrl_structure_diagnostic.json'
           }
           details={}
           for name,p in status_files.items():
