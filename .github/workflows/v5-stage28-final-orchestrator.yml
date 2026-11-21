@@ -205,6 +205,13 @@ jobs:
               return gzip.compress(csv_blob(rows),compresslevel=6,mtime=0)
 
 
+          def same_market_schema_in_any_order(fieldnames):
+              # Existing production archive order predates Stage38. DictReader maps by
+              # column name; rejecting a valid permutation blocked the 2026-11-21 run.
+              fields=tuple(fieldnames or ())
+              return len(fields)==len(CANON) and set(fields)==set(CANON)
+
+
           def archive_baseline(root,calendar):
               market=root/'data/latest.csv';summary=root/'data/summary.json';history=root/'data/daily_70d.csv.gz'
               if not all(x.is_file() for x in (market,summary,history)):
@@ -227,7 +234,8 @@ jobs:
               daily=collections.defaultdict(list); keys=set();allrows=0
               with gzip.open(history,'rt',encoding='utf-8-sig',newline='') as f:
                   rdr=csv.DictReader(f)
-                  if tuple(rdr.fieldnames or ())!=CANON:raise ValueError('BASELINE_HISTORY_COLUMNS_UNEXPECTED')
+                  if not same_market_schema_in_any_order(rdr.fieldnames):
+                      raise ValueError('BASELINE_HISTORY_COLUMNS_UNEXPECTED:'+','.join(rdr.fieldnames or ()))
                   for row in rdr:
                       day=date8(row.get('BAS_DD'))
                       key=(day,row.get('MARKET'),row.get('ISU_CD'))
@@ -372,6 +380,10 @@ jobs:
                   if not cond:raise AssertionError('STAGE38_SELF_TEST_FAILED_'+str(checks))
                   checks+=1
               cal=krx_calendar()
+              chk(same_market_schema_in_any_order(CANON))
+              chk(same_market_schema_in_any_order(('BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP','MARKET')))
+              chk(not same_market_schema_in_any_order(CANON+('UNEXPECTED_EXTRA',)))
+              chk(not same_market_schema_in_any_order(('BAS_DD',)*len(CANON)))
               chk(completed_session(dt.datetime(2026,11,21,15,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
               chk(completed_session(dt.datetime(2026,11,23,18,29,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
               chk(completed_session(dt.datetime(2026,11,23,18,30,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261123')
