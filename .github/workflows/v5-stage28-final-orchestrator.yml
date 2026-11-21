@@ -33,6 +33,383 @@ jobs:
           python-version: '3.11'
       - name: Install KRX session calendar for verified daily follow-up
         run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Fetch validate and publish authorized KRX daily prices into the 70-session production archive (Stage38)
+        id: stage38_market_publish
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/stage38_verified_market_publisher.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #38: date-validated official KRX close collector and atomic-in-Git research feed publisher.
+
+          Never collects from undocumented endpoints. Uses the repository's already implemented
+          KRX Open API daily market endpoints and the user's existing KRX_API_KEY credential.
+          No DART or correction fetching. No Stage27 edits. Market snapshots are not trade prices.
+          """
+          from __future__ import annotations
+
+          import collections
+          import csv
+          import datetime as dt
+          import gzip
+          import hashlib
+          import io
+          import json
+          import math
+          import os
+          from pathlib import Path
+          import re
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from zoneinfo import ZoneInfo
+
+          import exchange_calendars as xcals
+
+          CALENDAR = 'XKRX'
+          DATE = re.compile(r'^20\d{6}$')
+          CODE = re.compile(r'^[A-Z0-9]{6}$')
+          CANON = ('BAS_DD','MARKET','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')
+          MARKETS = ('KOSPI','KOSDAQ')
+          ENDPOINTS = {'KOSPI':'stk_bydd_trd', 'KOSDAQ':'ksq_bydd_trd'}
+          BASE = 'https://data-dbg.krx.co.kr/svc/apis/sto/'
+          MIN_ROWS = {'KOSPI':650, 'KOSDAQ':1200}
+          GAP_CAP = 5  # bounded catch-up; remaining dates are recovered on the next run
+          REPORT_REL = Path('v5_reports/stage28/r14_verified_market_auto_promotion.json')
+
+
+          def date8(value):
+              if not isinstance(value,str) or not DATE.fullmatch(value):
+                  raise ValueError('INVALID_YYYYMMDD:'+str(value))
+              dt.datetime.strptime(value,'%Y%m%d')
+              return value
+
+
+          def krx_calendar():
+              return xcals.get_calendar(CALENDAR)
+
+
+          def completed_session(now,calendar):
+              day=now.date().isoformat()
+              if calendar.is_session(day):
+                  if (now.hour,now.minute)>=(18,30):
+                      return now.strftime('%Y%m%d')
+                  return calendar.previous_session(day).strftime('%Y%m%d')
+              return calendar.date_to_session(day,direction='previous').strftime('%Y%m%d')
+
+
+          def digest(data):
+              return hashlib.sha256(data).hexdigest()
+
+
+          def load_json(p):
+              return json.loads(p.read_text(encoding='utf-8-sig'))
+
+
+          def write_json(p,value):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              p.write_text(json.dumps(value,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+
+          def integer(x,label,positive=False):
+              if isinstance(x,bool):raise ValueError('BOOLEAN_'+label)
+              s=str(x if x is not None else '').replace(',','').strip()
+              if not s.isdecimal(): raise ValueError('INVALID_'+label)
+              result=int(s)
+              if positive and result<=0:raise ValueError('NON_POSITIVE_'+label)
+              return result
+
+
+          def normalize_market_row(source, day, market):
+              # Date in row, when published, must match the exact URL's basDd query.
+              for date_field in ('BAS_DD','basDd'):
+                  if source.get(date_field) not in (None,'',day):
+                      raise ValueError('INCONSISTENT_PROVIDER_ROW_DATE')
+              code=str(source.get('ISU_CD') or '').strip()
+              if not CODE.fullmatch(code):raise ValueError('MISSING_OR_INVALID_CODE')
+              name=str(source.get('ISU_NM') or '').strip()
+              if not name:raise ValueError('MISSING_SECURITY_NAME')
+              if source.get('MARKET') not in (None,'',market):raise ValueError('WRONG_MARKET_LABEL')
+              price=integer(source.get('TDD_CLSPRC'),'PRICE',positive=True)
+              volume=integer(source.get('ACC_TRDVOL'),'VOLUME')
+              cap=integer(source.get('MKTCAP'),'MARKET_CAP',positive=True)
+              return {'BAS_DD':day,'MARKET':market,'ISU_CD':code,'ISU_NM':name,
+                      'TDD_CLSPRC':str(price),'ACC_TRDVOL':str(volume),'MKTCAP':str(cap)}
+
+
+          def parse_provider_response(obj, day, market):
+              if not isinstance(obj,dict) or not isinstance(obj.get('OutBlock_1'),list):
+                  raise ValueError('KRX_PROVIDER_SCHEMA_UNEXPECTED')
+              raw=obj['OutBlock_1']
+              if len(raw)<MIN_ROWS[market]:raise ValueError('KRX_PROVIDER_UNIVERSE_TOO_SMALL_'+market)
+              records={}; bad=[]
+              for idx,entry in enumerate(raw):
+                  if not isinstance(entry,dict):raise ValueError('NON_OBJECT_PROVIDER_ROW')
+                  try:r=normalize_market_row(entry,day,market)
+                  except ValueError as e:
+                      # A few unavailable/retired securities may be published without prices.
+                      # Account for them, never silently substitute stale values.
+                      bad.append((idx,str(e)))
+                      continue
+                  if r['ISU_CD'] in records:raise ValueError('KRX_PROVIDER_DUPLICATE_CODE_'+r['ISU_CD'])
+                  records[r['ISU_CD']]=r
+              if len(bad)>max(8,int(len(raw)*0.01)):
+                  raise ValueError('KRX_PROVIDER_MANY_INVALID_ROWS_'+market)
+              if len(records)<MIN_ROWS[market]:raise ValueError('KRX_PROVIDER_INSUFFICIENT_VALID_ROWS_'+market)
+              return list(records.values()),{'raw_rows':len(raw),'valid_rows':len(records),'invalid_rows':len(bad),
+                                              'invalid_reasons':dict(collections.Counter(c for _,c in bad))}
+
+
+          class _SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                  dest=urllib.parse.urlsplit(newurl)
+                  if dest.scheme!='https' or dest.hostname!='data-dbg.krx.co.kr':
+                      raise ValueError('UNAUTHORIZED_KRX_REDIRECT')
+                  return super().redirect_request(req,fp,code,msg,headers,newurl)
+
+
+          def official_fetch(day, market, key, opener=None):
+              if not key:raise ValueError('KRX_API_KEY_NOT_CONFIGURED')
+              url=BASE+ENDPOINTS[market]+'?'+urllib.parse.urlencode({'basDd':day})
+              req=urllib.request.Request(url,headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'Mozilla/5.0'})
+              if opener is None:opener=urllib.request.build_opener(_SafeRedirect)
+              last_error=None
+              for trial in range(2):
+                  try:
+                      with opener.open(req,timeout=18) as response:
+                          if response.status!=200:raise ValueError('KRX_HTTP_STATUS_'+str(response.status))
+                          blob=response.read(8_000_001)
+                          if len(blob)>8_000_000:raise ValueError('KRX_RESPONSE_TOO_LARGE')
+                      result=json.loads(blob.decode('utf-8-sig'))
+                      rows,diagnostic=parse_provider_response(result,day,market)
+                      return rows,{**diagnostic,'provider':'KRX_OFFICIAL_OPEN_API','endpoint':ENDPOINTS[market],
+                                   'query_date':day,'http_status':200,'source_response_sha256':digest(blob)}
+                  except (OSError,TimeoutError,UnicodeError,ValueError,json.JSONDecodeError,urllib.error.HTTPError) as exc:
+                      last_error=exc
+                      if trial==0:time.sleep(0.5)
+              raise RuntimeError('KRX_FETCH_BLOCKED_'+market+'_'+day+':'+type(last_error).__name__+':'+str(last_error)[:130])
+
+
+          def csv_blob(rows):
+              f=io.StringIO(newline='');w=csv.DictWriter(f,fieldnames=CANON,lineterminator='\n')
+              w.writeheader();w.writerows(rows)
+              return ('\ufeff'+f.getvalue()).encode('utf-8')
+
+
+          def gzip_blob(rows):
+              # Deterministic gzip header. Git diff is quiet if no market data changed.
+              return gzip.compress(csv_blob(rows),compresslevel=6,mtime=0)
+
+
+          def archive_baseline(root,calendar):
+              market=root/'data/latest.csv';summary=root/'data/summary.json';history=root/'data/daily_70d.csv.gz'
+              if not all(x.is_file() for x in (market,summary,history)):
+                  raise ValueError('PRODUCTION_SOURCE_MISSING')
+              meta=load_json(summary)
+              last=date8(meta.get('latest_trading_date'))
+              if meta.get('sessions_stored')!=70:raise ValueError('BASELINE_NOT_70_SESSIONS')
+              with market.open(encoding='utf-8-sig',newline='') as f:
+                  latest=list(csv.DictReader(f))
+              if len(latest)<2000:raise ValueError('BASELINE_LATEST_UNIVERSE_INSUFFICIENT')
+              count=collections.Counter(r['MARKET'] for r in latest)
+              if count['KOSPI']!=meta.get('kospi_rows_latest') or count['KOSDAQ']!=meta.get('kosdaq_rows_latest'):
+                  raise ValueError('BASELINE_MARKET_COUNTS_MISMATCH')
+              unique={(r.get('MARKET'),r.get('ISU_CD')) for r in latest}
+              if len(unique)!=len(latest):raise ValueError('BASELINE_LATEST_DUPLICATE')
+              for r in latest:
+                  if r.get('BAS_DD')!=last:raise ValueError('BASELINE_LATEST_DATES_MIXED')
+                  if r.get('MARKET') not in MARKETS:raise ValueError('BASELINE_UNEXPECTED_MARKET')
+                  normalize_market_row(r,last,r['MARKET'])
+              daily=collections.defaultdict(list); keys=set();allrows=0
+              with gzip.open(history,'rt',encoding='utf-8-sig',newline='') as f:
+                  rdr=csv.DictReader(f)
+                  if tuple(rdr.fieldnames or ())!=CANON:raise ValueError('BASELINE_HISTORY_COLUMNS_UNEXPECTED')
+                  for row in rdr:
+                      day=date8(row.get('BAS_DD'))
+                      key=(day,row.get('MARKET'),row.get('ISU_CD'))
+                      if key in keys:raise ValueError('BASELINE_DUPLICATE_HISTORY_SECURITY')
+                      keys.add(key);daily[day].append(row);allrows+=1
+              if len(daily)!=70 or last!=max(daily):raise ValueError('BASELINE_SESSIONS_OR_LATEST_WRONG')
+              if allrows!=meta.get('total_rows_stored'):raise ValueError('BASELINE_TOTAL_ROWS_MISMATCH')
+              observed=sorted(daily)
+              expected=[x.strftime('%Y%m%d') for x in calendar.sessions_in_range(observed[0],observed[-1])]
+              if observed!=expected:raise ValueError('BASELINE_KRX_SESSION_GAP')
+              final={r['MARKET']+':'+r['ISU_CD']:r for r in daily[last]}
+              if set(final)!={r['MARKET']+':'+r['ISU_CD'] for r in latest}:
+                  raise ValueError('BASELINE_LAST_SNAPSHOT_IDENTITY_MISMATCH')
+              if any(final[r['MARKET']+':'+r['ISU_CD']]!=r for r in latest):
+                  raise ValueError('BASELINE_LAST_SNAPSHOT_CONTENT_MISMATCH')
+              return meta,daily,latest,{'source_sha256':{str(p.relative_to(root)):digest(p.read_bytes()) for p in (market,summary,history)},
+                                        'baseline_latest':last,'baseline_sessions':70,'baseline_rows':allrows}
+
+
+          def prepare_market_day(day,markets,prior):
+              assert sorted(markets)==sorted(MARKETS)
+              counts=collections.Counter()
+              keys=set(); merged=[]
+              for m in MARKETS:
+                  rows=markets[m]
+                  if len(rows)<MIN_ROWS[m]:raise ValueError('LOW_MARKET_COVERAGE_'+m)
+                  before=sum(r['MARKET']==m for r in prior)
+                  if len(rows)<int(before*0.82) or len(rows)>int(before*1.25):
+                      raise ValueError('SUSPICIOUS_UNIVERSE_SIZE_CHANGE_'+m)
+                  for r in rows:
+                      if r['BAS_DD']!=day or r['MARKET']!=m:
+                          raise ValueError('MARKET_DAY_ROW_MISMATCH')
+                      key=(m,r['ISU_CD'])
+                      if key in keys:raise ValueError('MARKET_DAY_DUPLICATE_CODE')
+                      keys.add(key);merged.append(r)
+                  counts[m]+=len(rows)
+              if len(merged)<2000:raise ValueError('WHOLE_MARKET_SNAPSHOT_TOO_SMALL')
+              merged.sort(key=lambda r:(r['MARKET'],r['ISU_CD']))
+              return merged,counts
+
+
+          def compose_updated(meta,daily,prior,latest,pending):
+              history=dict(daily);history.update(pending)
+              dates=sorted(history)
+              keep=dates[-70:]
+              new_history=[r for day in keep for r in sorted(history[day],key=lambda r:(r['MARKET'],r['ISU_CD']))]
+              latest_date=keep[-1];new_latest=history[latest_date]
+              counts=collections.Counter(r['MARKET'] for r in new_latest)
+              updated=dict(meta)
+              previous=meta['latest_trading_date']
+              updated.update(latest_trading_date=latest_date,sessions_stored=70,total_rows_stored=len(new_history),
+                             kospi_rows_latest=counts['KOSPI'],kosdaq_rows_latest=counts['KOSDAQ'],
+                             marketcap_1000uk_screened=sum(integer(r['MKTCAP'],'CAP')>=100_000_000_000 for r in new_latest),
+                             market_source='KRX_OFFICIAL_OPEN_API_DAILY_MARKET',
+                             market_source_data_date=latest_date,
+                             research_market_publication_stage='STAGE28_38_KRX_VERIFIED',
+                             market_published_from=previous,
+                             market_publication_technical_statistics_stale=True,
+                             technical_statistics_asof=meta.get('technical_statistics_asof',previous),
+                             note='Official KRX price/cap and 70-session archive updated; historical MA/cross counters are prior-date technical metrics and must be recalculated separately before use')
+              return new_latest,new_history,updated
+
+
+          def run(root,now=None,fetcher=official_fetch,write=True,key=None,max_pending=GAP_CAP):
+              root=Path(root);cal=krx_calendar();now=now or dt.datetime.now(ZoneInfo('Asia/Seoul'))
+              if now.tzinfo is None:raise ValueError('NOW_MUST_BE_TIMEZONE_AWARE')
+              now=now.astimezone(ZoneInfo('Asia/Seoul'))
+              target=completed_session(now,cal)
+              report={'version':'STAGE28_R14_VERIFIED_OFFICIAL_MARKET_AUTO_PUBLISH_V1',
+                      'checked_kst':now.isoformat(),'last_completed_krx_session':target,
+                      'source':'KRX_OPEN_API_DAILY_KOSPI_KOSDAQ','data_provider_base':BASE,
+                      'market_data_verified_and_promoted':False,'investment_decisions_authorized':False,
+                      'research_only':True,'final_buy_signals':0,'stage27_modified':False,
+                      'no_missing_corrected_filing_queries':True,'technical_indicators_rebuilt_by_this_stage':False,
+                      'report_is_not_per_pbr':True,'attempted_sessions':[],'api_calls':0,'market_data_was_promoted':False}
+              report_path=root/REPORT_REL
+              event=os.getenv('GITHUB_EVENT_NAME','workflow_dispatch')
+              if event in ('schedule','workflow_run') and not cal.is_session(now.date().isoformat()):
+                  # The user's no-holiday-report policy: no report file mutation on closed sessions.
+                  return {**report,'state':'SKIPPED_KRX_CLOSED','reason':'KRX_SESSION_CLOSED_NO_REPORT'}
+              try:
+                  meta,daily,latest,baseline=archive_baseline(root,cal)
+                  old=baseline['baseline_latest'];report.update(baseline)
+                  if target<=old:
+                      report.update(state='NO_NEW_COMPLETED_KRX_SESSION',current_market_date=old,remaining_sessions=0)
+                      if write:write_json(report_path,report)
+                      return report
+                  sessions=[x.strftime('%Y%m%d') for x in cal.sessions_in_range(old,target) if x.strftime('%Y%m%d')>old]
+                  if not sessions:raise ValueError('SOURCE_DATE_CALENDAR_INCONSISTENT')
+                  selected=sessions[:max_pending];report['backlog_trading_sessions']=len(sessions)
+                  report['trading_sessions_in_this_batch']=selected
+                  pending={};prior=latest
+                  for day in selected:
+                      responses={};evidence={}
+                      for market in MARKETS:
+                          fetched,proof=fetcher(day,market,key)
+                          responses[market]=fetched;evidence[market]=proof
+                          report['api_calls']+=1
+                      accepted,counts=prepare_market_day(day,responses,prior)
+                      pending[day]=accepted;prior=accepted
+                      report['attempted_sessions'].append({'date':day,'state':'VALIDATED_KRX_SESSION',
+                          'market_rows':len(accepted),'kospi_rows':counts['KOSPI'],
+                          'kosdaq_rows':counts['KOSDAQ'],'provider_evidence':evidence})
+                  if not pending:raise ValueError('NO_PENDING_DATA_AFTER_SESSION_CHECK')
+                  final_date=max(pending)
+                  ref=sorted(set(daily)|set(pending))[-70:]
+                  expected=[x.strftime('%Y%m%d') for x in cal.sessions_in_range(ref[0],ref[-1])]
+                  if ref!=expected:raise ValueError('ROLLING_HISTORY_NOT_CONSECUTIVE_KRX_SESSIONS')
+                  new_latest,new_history,newmeta=compose_updated(meta,daily,prior,latest,pending)
+                  report.update(state='PUBLISHED_KRX_VERIFIED_MARKET' if write else 'DRY_RUN_KRX_SNAPSHOT_VALID',
+                                market_data_verified_and_promoted=write,market_data_was_promoted=write,
+                                current_market_date=final_date,market_rows_published=len(new_latest),
+                                history_rows_published=len(new_history),history_sessions=70,
+                                remaining_sessions=len(sessions)-len(selected),
+                                new_data_sha256={'latest.csv':digest(csv_blob(new_latest)),
+                                                 'daily_70d.csv.gz':digest(gzip_blob(new_history))})
+                  if write:
+                      # Three inputs are staged and only added to Git after every validation passes.
+                      # No Stage27 or financial cache paths are ever modified.
+                      (root/'data/latest.csv').write_bytes(csv_blob(new_latest))
+                      (root/'data/daily_70d.csv.gz').write_bytes(gzip_blob(new_history))
+                      write_json(root/'data/summary.json',newmeta)
+                      write_json(report_path,report)
+                  return report
+              except Exception as e:
+                  # Network/API responses and KRX publication lags are non-destructive.
+                  # Source corruption is a hard error (never silently 'repair' a bad archive).
+                  report.update(state='WAITING_KRX_SOURCE_OR_VALIDATION_ERROR',
+                                reason=type(e).__name__+':'+str(e)[:220],
+                                market_data_verified_and_promoted=False,market_data_was_promoted=False)
+                  if write:write_json(report_path,report)
+                  if 'BASELINE_' in str(e) or 'PRODUCTION_SOURCE_MISSING' in str(e):
+                      raise
+                  return report
+
+
+          def selftest():
+              import tempfile
+              checks=0
+              def chk(cond):
+                  nonlocal checks
+                  if not cond:raise AssertionError('STAGE38_SELF_TEST_FAILED_'+str(checks))
+                  checks+=1
+              cal=krx_calendar()
+              chk(completed_session(dt.datetime(2026,11,21,15,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
+              chk(completed_session(dt.datetime(2026,11,23,18,29,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
+              chk(completed_session(dt.datetime(2026,11,23,18,30,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261123')
+              chk(date8('20261120')=='20261120')
+              try:date8('20261133');raise AssertionError('BAD_DATE_ACCEPTED')
+              except ValueError:checks+=1
+              sample={'ISU_CD':'000270','ISU_NM':'기아','TDD_CLSPRC':'90,000','ACC_TRDVOL':'0','MKTCAP':'123456789012'}
+              good=normalize_market_row(sample,'20261120','KOSPI')
+              chk(good['TDD_CLSPRC']=='90000')
+              chk(good['ACC_TRDVOL']=='0')
+              chk(good['BAS_DD']=='20261120')
+              bads=[{**sample,'BAS_DD':'20261119'},{**sample,'TDD_CLSPRC':'0'},
+                    {**sample,'MKTCAP':'-'},{**sample,'ISU_CD':'A/../../'},
+                    {**sample,'MARKET':'KOSDAQ'},{**sample,'ACC_TRDVOL':'-3'}]
+              for item in bads:
+                  try:normalize_market_row(item,'20261120','KOSPI');raise AssertionError('BAD_ROW_ACCEPTED')
+                  except ValueError:checks+=1
+              chk(csv_blob([{'BAS_DD':'20261120','MARKET':'KOSPI','ISU_CD':'000270','ISU_NM':'기아','TDD_CLSPRC':'90000','ACC_TRDVOL':'0','MKTCAP':'1'}]).startswith(b'\xef\xbb\xbf'))
+              chk(gzip_blob([{'BAS_DD':'20261120','MARKET':'KOSPI','ISU_CD':'000270','ISU_NM':'기아','TDD_CLSPRC':'90000','ACC_TRDVOL':'0','MKTCAP':'1'}])==gzip_blob([{'BAS_DD':'20261120','MARKET':'KOSPI','ISU_CD':'000270','ISU_NM':'기아','TDD_CLSPRC':'90000','ACC_TRDVOL':'0','MKTCAP':'1'}]))
+              chk(len([x for x in cal.sessions_in_range('2026-11-19','2026-11-23')])==3)
+              print(json.dumps({'result':'STAGE38_SELF_TEST_PASS','checks':checks},ensure_ascii=False))
+              return checks
+
+
+          if __name__=='__main__':
+              if '--self-test' in sys.argv:selftest()
+              else:
+                  root=Path(os.getenv('GITHUB_WORKSPACE','.')).resolve()
+                  result=run(root,key=os.getenv('KRX_API_KEY','').strip())
+                  print(json.dumps({'result':result['state'],'market_date':result.get('current_market_date'),
+                                    'source_market_date':result.get('baseline_latest'),
+                                    'completed_session':result['last_completed_krx_session'],
+                                    'api_calls':result['api_calls'],'published':result['market_data_was_promoted'],
+                                    'remaining':result.get('remaining_sessions',0),
+                                    'reason':result.get('reason')},ensure_ascii=False))
+          PYCODE
+          python /tmp/stage38_verified_market_publisher.py --self-test
+          python /tmp/stage38_verified_market_publisher.py
       - name: Gate completed KRX session, upstream publication, and duplicate daily outcomes
         id: stage37_preflight
         shell: bash
@@ -5786,6 +6163,7 @@ jobs:
             'r14_research_reference_cohorts':'v5_reports/stage28/r14_reference_price_cohort_ledger.json',
             'r14_research_reference_observations':'v5_reports/stage28/r14_reference_5_10_20_observations.json',
             'r14_research_reference_outcome_summary':'v5_reports/stage28/r14_reference_5_10_20_summary.json',
+            'r14_daily_verified_market_promotion':'v5_reports/stage28/r14_verified_market_auto_promotion.json',
             'r14_daily_source_gate':'v5_reports/stage28/r14_daily_refresh_controller.json',
             'r14_daily_performance_continuity':'v5_reports/stage28/r14_daily_continuity_audit.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
@@ -5823,11 +6201,16 @@ jobs:
               details['r14_valuation_ready_research_queue']={'status':'INVALID_VALUATION_GATE_DO_NOT_USE'}
           now=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
           report={
-            'development_phase':'STAGE28_INTEGRATED_STAGE37_DAILY_RESEARCH',
+            'development_phase':'STAGE28_INTEGRATED_STAGE38_VERIFIED_KRX_DAILY_MARKET',
             'generated_kst':now.isoformat(),
             'component_results':statuses,
             'stage27_mode':'READ_ONLY_SEPARATE_WORKFLOW',
-            'market_source_mode':'VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA',
+            'market_source_mode':'VERIFIED_KRX_DAILY_MARKET_WITH_CONDITIONAL_STAGE38_PROMOTION',
+            'stage38_market_promotion_status':details.get('r14_daily_verified_market_promotion',{}).get('state','NO_MARKET_PROMOTION_REPORT'),
+            'stage38_market_promotion_verified':bool(details.get('r14_daily_verified_market_promotion',{}).get('market_data_verified_and_promoted')),
+            'stage38_market_publication_date':details.get('r14_daily_verified_market_promotion',{}).get('current_market_date'),
+            'stage38_missing_sessions_after_batch':details.get('r14_daily_verified_market_promotion',{}).get('remaining_sessions'),
+            'stage38_technical_indicator_refresh_pending':bool(details.get('r14_daily_verified_market_promotion',{}).get('market_data_verified_and_promoted')),
             'legacy_stage25_scope':'ORIGINAL_LIMITED_FUNDAMENTALS_CSV; NOT_FULL_MARKET',
             'r14_scope':'RAW_FULL_MARKET_AUDIT_AND_FILTERED_RESEARCH_SHORTLIST',
             'active_research_candidate_feed':('v5_reports/stage28/r14_eligible_research_candidates.json' if gate_succeeded else None),
@@ -5858,7 +6241,7 @@ jobs:
             'reference_5_10_20_horizon_status_counts':(details.get('r14_research_reference_outcome_summary',{}).get('horizon_observation_status_counts') if statuses.get('RESEARCH_OUTCOMES')=='success' else None),
             'stage37_daily_market_recheck_state':(details.get('r14_daily_performance_continuity',{}).get('pipeline_state') if statuses.get('STAGE37_CONTINUITY')=='success' else 'BLOCKED_DAILY_CONTINUITY_NOT_VERIFIED'),
             'stage37_research_observation_ready':bool(statuses.get('STAGE37_CONTINUITY')=='success' and details.get('r14_daily_performance_continuity',{}).get('pipeline_state')=='OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED'),
-            'stage37_upstream_market_publication_required':True,
+            'stage37_upstream_market_publication_required':not bool(details.get('r14_daily_verified_market_promotion',{}).get('market_data_verified_and_promoted')),
             'research_reference_prices_are_trade_entries':False,
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
@@ -5877,7 +6260,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers and Stage36 research-reference 5/10/20 observation remains research-only; Stage37 follows published verified market sessions, skips holidays/stale/duplicate data, and checks frozen matured results. Upstream collector publication is separately required. Reference closes are NOT trade entries; Stage27 remains separate and untouched; no trading signals.'
+            'notice':'Stage38 authorized KRX daily-market publisher validates both markets and preserves 70 consecutive KRX sessions; never overwrites on a failed or partial source. Technical MA/cross counts require their own refresh. R14 research-only ratios, evidence tiers, 5/10/20 reference returns remain independent of trade signals; Stage27 is read-only; missing corrected filings remain excluded.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
@@ -5889,11 +6272,15 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Stage38 promotes these three market inputs together after API/date/70-session checks.
+          for p in data/latest.csv data/daily_70d.csv.gz data/summary.json; do
+            if [ -f "$p" ]; then git add "$p"; fi
+          done
           for p in v5_reports/stage25 v5_reports/stage26 v5_reports/stage28; do
             if [ -d "$p" ]; then git add "$p"; fi
           done
           if ! git diff --cached --quiet; then
-            git commit -m 'v5 stage28: preserve isolated research without touching stage27'
+            git commit -m 'v5 stage28: validate and publish KRX market with isolated research; stage27 untouched'
             git pull --rebase origin main
             git push origin HEAD:main
           fi
