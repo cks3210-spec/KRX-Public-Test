@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T10:32:40.286336+09:00",
+  "generated_kst": "2026-11-21T10:38:26.795929+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -16,7 +16,8 @@
     "XBRL_REVISION_DELTA": "success",
     "XBRL_STRUCTURE_DIAG": "success",
     "XBRL_DIMENSION_RECOVERY": "success",
-    "XBRL_BASIS_ISOLATION": "success"
+    "XBRL_BASIS_ISOLATION": "success",
+    "XBRL_CACHE_BRIDGE": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -30,6 +31,7 @@
   "xbrl_receipt_financial_comparison": "RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED",
   "xbrl_dimension_fact_recovery": "RESEARCH_CANDIDATES_WITH_EXPLICIT_CONTEXT_AND_SOURCE_HASH_ONLY; BASIS_AND_PIT_UNVERIFIED",
   "xbrl_basis_axis_isolation": "RESEARCH_ONLY_EXACT_SINGLE_IFRS_STATEMENT_AXIS; CFS_OFS_AND_PIT_UNVERIFIED",
+  "xbrl_receipt_cache_reconciliation": "RESEARCH_ONLY_VALUE_MATCH_AND_MISSING_FILE_TRIAGE; BASIS_AND_PIT_UNVERIFIED",
   "official_ratio_source_gate": "DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED",
   "source_date_in_existing_data": "20261119",
   "existing_data_fresh_for_today": false,
@@ -47,7 +49,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:32:40.193012+00:00",
+      "generated_utc": "2026-11-21T01:38:26.671155+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -62,7 +64,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T01:32:40.230963+00:00",
+      "generated_utc": "2026-11-21T01:38:26.722425+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -171,7 +173,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T10:32:34.337734+09:00",
+      "generated_kst": "2026-11-21T10:38:21.624837+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -11460,7 +11462,7 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T10:32:34.743261+09:00",
+      "generated_kst": "2026-11-21T10:38:21.956860+09:00",
       "company_queries_this_run": 0,
       "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
@@ -11485,7 +11487,7 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-21T10:32:35.993238+09:00",
+      "generated_kst": "2026-11-21T10:38:23.112028+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "companies_with_original_or_correction_receipts": 28,
@@ -12379,7 +12381,7 @@
     },
     "r14_xbrl_receipt_financial_research": {
       "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:32:39.639177+09:00",
+      "generated_kst": "2026-11-21T10:38:25.873125+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "annual_receipts_expected": 9,
@@ -12568,7 +12570,7 @@
     },
     "r14_xbrl_revision_delta": {
       "result": "R14_XBRL_REVISION_DELTA_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:32:39.728613+09:00",
+      "generated_kst": "2026-11-21T10:38:25.987366+09:00",
       "research_market_date": "20261119",
       "mismatch_periods": 4,
       "status_counts": {
@@ -12672,7 +12674,7 @@
     "r14_xbrl_structure_diagnostic": {
       "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
       "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
-      "generated_kst": "2026-11-21T10:32:39.847349+09:00",
+      "generated_kst": "2026-11-21T10:38:26.145740+09:00",
       "market_date": "20261119",
       "cached_receipts_total": 6,
       "eligible_receipts_to_diagnose": 6,
@@ -12934,7 +12936,7 @@
     },
     "r14_xbrl_dimension_recovery": {
       "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
-      "generated_kst": "2026-11-21T10:32:39.981414+09:00",
+      "generated_kst": "2026-11-21T10:38:26.316317+09:00",
       "research_market_date": "20261119",
       "available_prior_xbrl_receipts": 6,
       "considered_receipts": 5,
@@ -13071,8 +13073,8 @@
     },
     "r14_xbrl_basis_isolation": {
       "result": "R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1",
-      "generated_kst": "2026-11-21T10:32:40.070725+09:00",
-      "research_market_date": null,
+      "generated_kst": "2026-11-21T10:38:26.438967+09:00",
+      "research_market_date": "20261119",
       "comparison_periods": 4,
       "available_source_receipts": 5,
       "financial_candidates_by_basis": {
@@ -13897,6 +13899,538 @@
         "Segment and note-specific axes are excluded; truncated source inputs are not promoted",
         "These files were retrieved during audit and do not independently prove availability at historical decision time"
       ]
+    },
+    "r14_xbrl_cache_bridge": {
+      "result": "R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1",
+      "generated_kst": "2026-11-21T10:38:26.581686+09:00",
+      "research_market_date": "20261119",
+      "research_date_source": "v5_reports/stage28/r14_full_market_grade_research.json.market_date",
+      "reference_market_data_day_not_evaluation_day": true,
+      "comparison_periods": 4,
+      "fields_compared_by_basis": {
+        "RESEARCH_CACHE_VALUE_MATCH": 25,
+        "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE": 15
+      },
+      "missing_correction_xbrl_status_counts": {
+        "XBRL_PRESENT_FOR_SELECTED_RECEIPT": 1,
+        "CORRECTION_DOCUMENT_PRESENT_XBRL_NOT_AVAILABLE_IN_CACHE": 2,
+        "CORRECTION_DOCUMENT_AND_XBRL_NOT_AVAILABLE_IN_CACHE": 1
+      },
+      "receipt_pair_diagnostics": [
+        {
+          "code": "015360",
+          "period": "2025_annual",
+          "original_receipt": "20260310002563",
+          "selected_asof_receipt": "20260605000111",
+          "original_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "selected_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "original_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_xbrl_cache_state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+          "status": "XBRL_PRESENT_FOR_SELECTED_RECEIPT",
+          "prior_batch_014_response_count": 3,
+          "prior_batch_014_not_attributed_to_specific_receipt": true,
+          "fss_014_means": "FILE_DOES_NOT_EXIST_FOR_REQUEST_AS_RETURNED_BY_API",
+          "no_recurring_retry_requested_by_bridge": true,
+          "financial_values_verified": false,
+          "historical_pit_verified": false
+        },
+        {
+          "code": "033500",
+          "period": "2025_annual",
+          "original_receipt": "20260318001705",
+          "selected_asof_receipt": "20260319000704",
+          "original_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "selected_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "original_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_xbrl_cache_state": "NOT_CACHED",
+          "status": "CORRECTION_DOCUMENT_PRESENT_XBRL_NOT_AVAILABLE_IN_CACHE",
+          "prior_batch_014_response_count": 3,
+          "prior_batch_014_not_attributed_to_specific_receipt": true,
+          "fss_014_means": "FILE_DOES_NOT_EXIST_FOR_REQUEST_AS_RETURNED_BY_API",
+          "no_recurring_retry_requested_by_bridge": true,
+          "financial_values_verified": false,
+          "historical_pit_verified": false
+        },
+        {
+          "code": "054950",
+          "period": "2025_annual",
+          "original_receipt": "20260323001116",
+          "selected_asof_receipt": "20260325000430",
+          "original_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "selected_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "original_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_xbrl_cache_state": "NOT_CACHED",
+          "status": "CORRECTION_DOCUMENT_PRESENT_XBRL_NOT_AVAILABLE_IN_CACHE",
+          "prior_batch_014_response_count": 3,
+          "prior_batch_014_not_attributed_to_specific_receipt": true,
+          "fss_014_means": "FILE_DOES_NOT_EXIST_FOR_REQUEST_AS_RETURNED_BY_API",
+          "no_recurring_retry_requested_by_bridge": true,
+          "financial_values_verified": false,
+          "historical_pit_verified": false
+        },
+        {
+          "code": "097230",
+          "period": "2025_annual",
+          "original_receipt": "20260319000606",
+          "selected_asof_receipt": "20260319001333",
+          "original_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "selected_receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+          "original_document_cache_state": "DOCUMENT_ZIP_HASH_CAPTURED",
+          "selected_document_cache_state": "NOT_CACHED",
+          "selected_xbrl_cache_state": "NOT_CACHED",
+          "status": "CORRECTION_DOCUMENT_AND_XBRL_NOT_AVAILABLE_IN_CACHE",
+          "prior_batch_014_response_count": 3,
+          "prior_batch_014_not_attributed_to_specific_receipt": true,
+          "fss_014_means": "FILE_DOES_NOT_EXIST_FOR_REQUEST_AS_RETURNED_BY_API",
+          "no_recurring_retry_requested_by_bridge": true,
+          "financial_values_verified": false,
+          "historical_pit_verified": false
+        }
+      ],
+      "cache_value_comparisons": [
+        {
+          "code": "015360",
+          "period": "2025_annual",
+          "evaluation_date": "20261120",
+          "cached_financial_entry_key": "015360:2025:annual",
+          "cache_financial_basis": "CFS",
+          "cache_account_status": "000",
+          "cached_receipt_audit_status": "RECEIPT_VERSION_MISMATCH",
+          "selected_receipt_matches_existing_receipt_audit": true,
+          "sources": {
+            "original": {
+              "receipt_no": "20260310002563",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "RESEARCH_CACHE_VALUE_MATCH": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 86715394000,
+                  "xbrl_amount_krw": 86715394000,
+                  "difference_krw": 0
+                },
+                "equity": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 645396467000,
+                  "xbrl_amount_krw": 645396467000,
+                  "difference_krw": 0
+                },
+                "revenue": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1327599497000,
+                  "xbrl_amount_krw": 1327599497000,
+                  "difference_krw": 0
+                },
+                "assets": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1557662126000,
+                  "xbrl_amount_krw": 1557662126000,
+                  "difference_krw": 0
+                },
+                "liabilities": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 912265659000,
+                  "xbrl_amount_krw": 912265659000,
+                  "difference_krw": 0
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            },
+            "selected_asof": {
+              "receipt_no": "20260605000111",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "RESEARCH_CACHE_VALUE_MATCH": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 86715394000,
+                  "xbrl_amount_krw": 86715394000,
+                  "difference_krw": 0
+                },
+                "equity": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 645396467000,
+                  "xbrl_amount_krw": 645396467000,
+                  "difference_krw": 0
+                },
+                "revenue": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1327599497000,
+                  "xbrl_amount_krw": 1327599497000,
+                  "difference_krw": 0
+                },
+                "assets": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1557662126000,
+                  "xbrl_amount_krw": 1557662126000,
+                  "difference_krw": 0
+                },
+                "liabilities": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 912265659000,
+                  "xbrl_amount_krw": 912265659000,
+                  "difference_krw": 0
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            }
+          },
+          "financial_basis_independently_authenticated": false,
+          "historical_point_in_time_financials_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "033500",
+          "period": "2025_annual",
+          "evaluation_date": "20261120",
+          "cached_financial_entry_key": "033500:2025:annual",
+          "cache_financial_basis": "CFS",
+          "cache_account_status": "000",
+          "cached_receipt_audit_status": "RECEIPT_VERSION_MISMATCH",
+          "selected_receipt_matches_existing_receipt_audit": true,
+          "sources": {
+            "original": {
+              "receipt_no": "20260318001705",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "RESEARCH_CACHE_VALUE_MATCH": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 55883227093,
+                  "xbrl_amount_krw": 55883227093,
+                  "difference_krw": 0
+                },
+                "equity": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 258895742264,
+                  "xbrl_amount_krw": 258895742264,
+                  "difference_krw": 0
+                },
+                "revenue": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 742186008411,
+                  "xbrl_amount_krw": 742186008411,
+                  "difference_krw": 0
+                },
+                "assets": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 501560927287,
+                  "xbrl_amount_krw": 501560927287,
+                  "difference_krw": 0
+                },
+                "liabilities": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 242665185023,
+                  "xbrl_amount_krw": 242665185023,
+                  "difference_krw": 0
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            },
+            "selected_asof": {
+              "receipt_no": "20260319000704",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "equity": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "revenue": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "assets": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "liabilities": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            }
+          },
+          "financial_basis_independently_authenticated": false,
+          "historical_point_in_time_financials_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "054950",
+          "period": "2025_annual",
+          "evaluation_date": "20261120",
+          "cached_financial_entry_key": "054950:2025:annual",
+          "cache_financial_basis": "CFS",
+          "cache_account_status": "000",
+          "cached_receipt_audit_status": "RECEIPT_VERSION_MISMATCH",
+          "selected_receipt_matches_existing_receipt_audit": true,
+          "sources": {
+            "original": {
+              "receipt_no": "20260323001116",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "RESEARCH_CACHE_VALUE_MATCH": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 28350804537,
+                  "xbrl_amount_krw": 28350804537,
+                  "difference_krw": 0
+                },
+                "equity": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 233947355120,
+                  "xbrl_amount_krw": 233947355120,
+                  "difference_krw": 0
+                },
+                "revenue": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 173129219712,
+                  "xbrl_amount_krw": 173129219712,
+                  "difference_krw": 0
+                },
+                "assets": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 319127680911,
+                  "xbrl_amount_krw": 319127680911,
+                  "difference_krw": 0
+                },
+                "liabilities": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 85180325791,
+                  "xbrl_amount_krw": 85180325791,
+                  "difference_krw": 0
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            },
+            "selected_asof": {
+              "receipt_no": "20260325000430",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "equity": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "revenue": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "assets": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "liabilities": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            }
+          },
+          "financial_basis_independently_authenticated": false,
+          "historical_point_in_time_financials_verified": false,
+          "investment_decisions_authorized": false
+        },
+        {
+          "code": "097230",
+          "period": "2025_annual",
+          "evaluation_date": "20261120",
+          "cached_financial_entry_key": "097230:2025:annual",
+          "cache_financial_basis": "CFS",
+          "cache_account_status": "000",
+          "cached_receipt_audit_status": "RECEIPT_VERSION_MISMATCH",
+          "selected_receipt_matches_existing_receipt_audit": true,
+          "sources": {
+            "original": {
+              "receipt_no": "20260319000606",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "RESEARCH_CACHE_VALUE_MATCH": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 51434000000,
+                  "xbrl_amount_krw": 51434000000,
+                  "difference_krw": 0
+                },
+                "equity": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 669629000000,
+                  "xbrl_amount_krw": 669629000000,
+                  "difference_krw": 0
+                },
+                "revenue": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1999705000000,
+                  "xbrl_amount_krw": 1999705000000,
+                  "difference_krw": 0
+                },
+                "assets": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 2453082000000,
+                  "xbrl_amount_krw": 2453082000000,
+                  "difference_krw": 0
+                },
+                "liabilities": {
+                  "state": "RESEARCH_CACHE_VALUE_MATCH",
+                  "no_official_pit_promotion": true,
+                  "cached_amount_krw": 1783494000000,
+                  "xbrl_amount_krw": 1783494000000,
+                  "difference_krw": 0
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            },
+            "selected_asof": {
+              "receipt_no": "20260319001333",
+              "receipt_gate": "RECEIPT_LISTED_BEFORE_EVALUATION",
+              "candidate_basis_used": "CFS",
+              "counts": {
+                "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE": 5
+              },
+              "fields": {
+                "profit": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "equity": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "revenue": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "assets": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                },
+                "liabilities": {
+                  "state": "XBRL_SINGLE_AXIS_FIELD_UNAVAILABLE",
+                  "no_official_pit_promotion": true,
+                  "cache_present": true,
+                  "xbrl_candidate_state": "NOT_PRESENT"
+                }
+              },
+              "historical_point_in_time_financials_verified": false
+            }
+          },
+          "financial_basis_independently_authenticated": false,
+          "historical_point_in_time_financials_verified": false,
+          "investment_decisions_authorized": false
+        }
+      ],
+      "official_per_independently_verified": 0,
+      "official_pbr_independently_verified": 0,
+      "financial_basis_independently_authenticated": false,
+      "historical_point_in_time_financial_values_verified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "data_sources": [
+        "STAGE28_EXISTING_R14_SOURCE",
+        "STAGE28_EXISTING_RECEIPT_EVIDENCE",
+        "STAGE28_EXISTING_CFS_OFS_ISOLATION",
+        "DATA_V5_FINANCIAL_M_CACHE"
+      ],
+      "new_api_requests": 0,
+      "stage27_modified": false,
+      "financial_cache_modified": false,
+      "limitations": [
+        "OpenDART fnlttSinglAcntAll reports current account values, not historical as-of versions",
+        "XBRL exact single-axis facts are candidates until independently validated against reporting basis",
+        "OpenDART 014 batch aggregate cannot prove the response of an individual receipt",
+        "Original-vs-correction XBRL values can remain unavailable even when a corrected document ZIP exists",
+        "Market reference date and historical evaluation date must remain distinct"
+      ],
+      "source_file_sha256": {
+        "legacy_dart_financial_cache": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a",
+        "stage27_status": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
+      }
     }
   },
   "verified_investment_recommendations": 0,
