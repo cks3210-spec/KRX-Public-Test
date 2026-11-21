@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T08:57:08.324643+09:00",
+  "generated_kst": "2026-11-21T09:32:42.240948+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -9,7 +9,9 @@
     "FULL_MARKET_GRADE": "success",
     "RATIO_PROVENANCE": "success",
     "DART_RECEIPTS": "success",
-    "FINANCIAL_VALUES": "success"
+    "FINANCIAL_VALUES": "success",
+    "ORIGINAL_VERSIONS": "success",
+    "DATED_RATIO_INPUT": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_EXISTING_OFFICIAL_OPERATING_DATA",
@@ -19,6 +21,8 @@
   "financial_filing_point_in_time": "NOT_VERIFIED",
   "filing_receipt_version_audit": "EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION",
   "financial_value_reconciliation": "CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION",
+  "filing_document_original_correction": "ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF",
+  "official_ratio_source_gate": "DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED",
   "source_date_in_existing_data": "20261119",
   "existing_data_fresh_for_today": false,
   "component_status": {
@@ -35,7 +39,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-20T23:57:08.179221+00:00",
+      "generated_utc": "2026-11-21T00:32:42.096231+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -50,7 +54,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-20T23:57:08.239312+00:00",
+      "generated_utc": "2026-11-21T00:32:42.156255+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -159,7 +163,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T08:16:40.326859+09:00",
+      "generated_kst": "2026-11-21T09:26:08.837144+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -167,7 +171,7 @@
         "2025_q3",
         "2026_q3"
       ],
-      "live_company_queries_this_run": 80,
+      "live_company_queries_this_run": 0,
       "remaining_not_live_verified": 0,
       "live_dart_filing_metadata_complete_count": 128,
       "all_required_periods_pre_evaluation_count": 128,
@@ -4424,7 +4428,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00803425",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4522,7 +4526,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00164779",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4606,7 +4610,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00138729",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4690,7 +4694,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00146269",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4774,7 +4778,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00111874",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4858,7 +4862,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00159102",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -4956,7 +4960,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00164645",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5040,7 +5044,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00115676",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5124,7 +5128,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00125938",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5208,7 +5212,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00128315",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5292,7 +5296,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00141556",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5376,7 +5380,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00216762",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5460,7 +5464,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00405278",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5544,7 +5548,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00476498",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5628,7 +5632,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00447487",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5712,7 +5716,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00365934",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5796,7 +5800,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00593032",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5894,7 +5898,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00568188",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -5978,7 +5982,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00692254",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6076,7 +6080,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00980122",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6160,7 +6164,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01854763",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6258,7 +6262,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00118804",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6342,7 +6346,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00190321",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6426,7 +6430,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00357740",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6510,7 +6514,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00636656",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6594,7 +6598,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00101628",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6678,7 +6682,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00135917",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6804,7 +6808,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00111847",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6888,7 +6892,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00159573",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -6986,7 +6990,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00160843",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7084,7 +7088,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00117337",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7168,7 +7172,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00101433",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7252,7 +7256,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00127042",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7336,7 +7340,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00106313",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7434,7 +7438,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00126955",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7518,7 +7522,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00163673",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7602,7 +7606,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00120182",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7686,7 +7690,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00126487",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7770,7 +7774,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00164830",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7854,7 +7858,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00105855",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -7938,7 +7942,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00164636",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8022,7 +8026,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00105101",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8134,7 +8138,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00158565",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8218,7 +8222,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00144164",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8330,7 +8334,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00219097",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8414,7 +8418,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00192499",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8498,7 +8502,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00238782",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8582,7 +8586,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00231363",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8666,7 +8670,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00156956",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8764,7 +8768,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00268002",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8848,7 +8852,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00137289",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -8932,7 +8936,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00264255",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9016,7 +9020,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00318316",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9100,7 +9104,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00152783",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9212,7 +9216,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00390365",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9296,7 +9300,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00127954",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9380,7 +9384,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00305297",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9478,7 +9482,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00349732",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9562,7 +9566,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00298270",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9646,7 +9650,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01010615",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9730,7 +9734,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00220622",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9814,7 +9818,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00399694",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9898,7 +9902,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00190756",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -9982,7 +9986,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00255275",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10066,7 +10070,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00500254",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10150,7 +10154,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00178790",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10234,7 +10238,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00543107",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10318,7 +10322,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00531014",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10402,7 +10406,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00524786",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10486,7 +10490,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00603348",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10570,7 +10574,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00524421",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10654,7 +10658,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00633835",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10752,7 +10756,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00580065",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10836,7 +10840,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "00688996",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -10948,7 +10952,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00111193",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11032,7 +11036,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00372226",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11116,7 +11120,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01093007",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11200,7 +11204,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01205709",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11284,7 +11288,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01310269",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11368,7 +11372,7 @@
           "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
           "corp_code": "01562589",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261121",
           "filings": [
@@ -11448,20 +11452,18 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T08:18:14.049936+09:00",
-      "company_queries_this_run": 122,
-      "dart_financial_api_requests_this_run": 366,
+      "generated_kst": "2026-11-21T09:26:09.119157+09:00",
+      "company_queries_this_run": 0,
+      "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
       "cached_company_count": 128,
       "current_api_matched_company_count": 124,
       "historical_point_in_time_verified_company_count": 0,
       "official_per_pbr_verified_count": 0,
       "status_counts_this_run": {
-        "CACHED_FINISHED": 6,
-        "CURRENT_ACCOUNT_VALUES_MATCHED": 118,
-        "RECEIPT_VERSION_MISMATCH": 4
+        "CACHED_FINISHED": 128
       },
-      "data_fetched_by_this_audit": true,
+      "data_fetched_by_this_audit": false,
       "financial_cache_modified": false,
       "filing_receipt_cache_modified": false,
       "stage27_modified": false,
@@ -11472,9 +11474,904 @@
         "Receipt IDs and account values must both match; mismatches block verification",
         "Even matched present-day API data cannot certify old investment decision-time availability"
       ]
+    },
+    "r14_document_versions": {
+      "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
+      "generated_kst": "2026-11-21T09:32:41.988296+09:00",
+      "market_date": "20261119",
+      "mismatch_company_count": 4,
+      "companies_with_original_or_correction_receipts": 28,
+      "document_receipts_required": 62,
+      "archive_hashes_available": 11,
+      "document_queries_this_run": 12,
+      "this_run_states": {
+        "DOCUMENT_ZIP_HASH_CAPTURED": 11,
+        "NOT_ZIP_RESPONSE": 1,
+        "PENDING_BATCH_LIMIT": 50
+      },
+      "cached_original_document_hashes": 11,
+      "companies": [
+        {
+          "code": "015360",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "RECEIPT_VERSION_MISMATCH",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260310002563",
+              "selected_asof_receipt": "20260605000111",
+              "returned_current_api_receipts": [
+                "20260318000261"
+              ],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": true,
+              "receipt_ids_to_archive": [
+                "20260310002563",
+                "20260318000261",
+                "20260605000111"
+              ],
+              "document_states": {
+                "20260310002563": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260318000261": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260605000111": "DOCUMENT_ZIP_HASH_CAPTURED"
+              },
+              "document_source_evidence_ready": true,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "033500",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "RECEIPT_VERSION_MISMATCH",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318001705",
+              "selected_asof_receipt": "20260319000704",
+              "returned_current_api_receipts": [
+                "20260318001705"
+              ],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": true,
+              "receipt_ids_to_archive": [
+                "20260318001705",
+                "20260319000704"
+              ],
+              "document_states": {
+                "20260318001705": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260319000704": "DOCUMENT_ZIP_HASH_CAPTURED"
+              },
+              "document_source_evidence_ready": true,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "054950",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "RECEIPT_VERSION_MISMATCH",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260323001116",
+              "selected_asof_receipt": "20260325000430",
+              "returned_current_api_receipts": [
+                "20260323001116"
+              ],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": true,
+              "receipt_ids_to_archive": [
+                "20260323001116",
+                "20260325000430"
+              ],
+              "document_states": {
+                "20260323001116": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260325000430": "DOCUMENT_ZIP_HASH_CAPTURED"
+              },
+              "document_source_evidence_ready": true,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "097230",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "RECEIPT_VERSION_MISMATCH",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260319000606",
+              "selected_asof_receipt": "20260319001333",
+              "returned_current_api_receipts": [
+                "20260319000606"
+              ],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": true,
+              "receipt_ids_to_archive": [
+                "20260319000606",
+                "20260319001333"
+              ],
+              "document_states": {
+                "20260319000606": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260319001333": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "000370",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260310003000",
+              "selected_asof_receipt": "20260331000594",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260310003000",
+                "20260331000594"
+              ],
+              "document_states": {
+                "20260310003000": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260331000594": "DOCUMENT_ZIP_HASH_CAPTURED"
+              },
+              "document_source_evidence_ready": true,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            },
+            {
+              "period": "2025_q3",
+              "original_receipt": "20251113000523",
+              "selected_asof_receipt": "20251126000171",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20251113000523",
+                "20251126000171"
+              ],
+              "document_states": {
+                "20251113000523": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20251126000171": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "000970",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260319000512",
+              "selected_asof_receipt": "20260814000666",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260319000512",
+                "20260814000666"
+              ],
+              "document_states": {
+                "20260319000512": "PENDING_DOCUMENT_QUERY",
+                "20260814000666": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "000990",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260316001250",
+              "selected_asof_receipt": "20260601001661",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260316001250",
+                "20260601001661"
+              ],
+              "document_states": {
+                "20260316001250": "PENDING_DOCUMENT_QUERY",
+                "20260601001661": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "002990",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318000268",
+              "selected_asof_receipt": "20260318001135",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260318000268",
+                "20260318001135"
+              ],
+              "document_states": {
+                "20260318000268": "PENDING_DOCUMENT_QUERY",
+                "20260318001135": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "003100",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318001613",
+              "selected_asof_receipt": "20260529000793",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260318001613",
+                "20260529000793"
+              ],
+              "document_states": {
+                "20260318001613": "PENDING_DOCUMENT_QUERY",
+                "20260529000793": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "005830",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260312001222",
+              "selected_asof_receipt": "20260331003904",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260312001222",
+                "20260331003904"
+              ],
+              "document_states": {
+                "20260312001222": "PENDING_DOCUMENT_QUERY",
+                "20260331003904": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "011560",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318001704",
+              "selected_asof_receipt": "20260814000768",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260318001704",
+                "20260814000768"
+              ],
+              "document_states": {
+                "20260318001704": "PENDING_DOCUMENT_QUERY",
+                "20260814000768": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "018670",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260316001594",
+              "selected_asof_receipt": "20260813001480",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260316001594",
+                "20260813001480"
+              ],
+              "document_states": {
+                "20260316001594": "PENDING_DOCUMENT_QUERY",
+                "20260813001480": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "030200",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2026_q3",
+              "original_receipt": "20261116001593",
+              "selected_asof_receipt": "20261116001593",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20261116001593"
+              ],
+              "document_states": {
+                "20261116001593": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "034950",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318000302",
+              "selected_asof_receipt": "20260326001257",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260318000302",
+                "20260326001257"
+              ],
+              "document_states": {
+                "20260318000302": "PENDING_DOCUMENT_QUERY",
+                "20260326001257": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "035000",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260312000821",
+              "selected_asof_receipt": "20260413002635",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260312000821",
+                "20260413002635"
+              ],
+              "document_states": {
+                "20260312000821": "PENDING_DOCUMENT_QUERY",
+                "20260413002635": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "036190",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260312001323",
+              "selected_asof_receipt": "20260630000672",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260312001323",
+                "20260630000672"
+              ],
+              "document_states": {
+                "20260312001323": "PENDING_DOCUMENT_QUERY",
+                "20260630000672": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "049430",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260320001217",
+              "selected_asof_receipt": "20260320001359",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260320001217",
+                "20260320001359"
+              ],
+              "document_states": {
+                "20260320001217": "PENDING_DOCUMENT_QUERY",
+                "20260320001359": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            },
+            {
+              "period": "2025_q3",
+              "original_receipt": "20251114001331",
+              "selected_asof_receipt": "20260908000203",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20251114001331",
+                "20260908000203"
+              ],
+              "document_states": {
+                "20251114001331": "PENDING_DOCUMENT_QUERY",
+                "20260908000203": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "049520",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_q3",
+              "original_receipt": "20251114001648",
+              "selected_asof_receipt": "20251114003069",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20251114001648",
+                "20251114003069"
+              ],
+              "document_states": {
+                "20251114001648": "PENDING_DOCUMENT_QUERY",
+                "20251114003069": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "052330",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260323000271",
+              "selected_asof_receipt": "20260331004794",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260323000271",
+                "20260331004794"
+              ],
+              "document_states": {
+                "20260323000271": "PENDING_DOCUMENT_QUERY",
+                "20260331004794": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "093050",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260318001194",
+              "selected_asof_receipt": "20260601001924",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260318001194",
+                "20260601001924"
+              ],
+              "document_states": {
+                "20260318001194": "PENDING_DOCUMENT_QUERY",
+                "20260601001924": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "093190",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260312000427",
+              "selected_asof_receipt": "20260703000506",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260312000427",
+                "20260703000506"
+              ],
+              "document_states": {
+                "20260312000427": "PENDING_DOCUMENT_QUERY",
+                "20260703000506": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "094820",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260324001034",
+              "selected_asof_receipt": "20260630000845",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260324001034",
+                "20260630000845"
+              ],
+              "document_states": {
+                "20260324001034": "PENDING_DOCUMENT_QUERY",
+                "20260630000845": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "101930",
+          "evaluation_date": "20261121",
+          "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260317000428",
+              "selected_asof_receipt": "20260407001497",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260317000428",
+                "20260407001497"
+              ],
+              "document_states": {
+                "20260317000428": "PENDING_DOCUMENT_QUERY",
+                "20260407001497": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "105560",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260313001191",
+              "selected_asof_receipt": "20260619000667",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260313001191",
+                "20260619000667"
+              ],
+              "document_states": {
+                "20260313001191": "PENDING_DOCUMENT_QUERY",
+                "20260619000667": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "114810",
+          "evaluation_date": "20261121",
+          "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260310002866",
+              "selected_asof_receipt": "20260313000415",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260310002866",
+                "20260313000415"
+              ],
+              "document_states": {
+                "20260310002866": "PENDING_DOCUMENT_QUERY",
+                "20260313000415": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            },
+            {
+              "period": "2026_q3",
+              "original_receipt": "20261113000565",
+              "selected_asof_receipt": "20261116000581",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20261113000565",
+                "20261116000581"
+              ],
+              "document_states": {
+                "20261113000565": "PENDING_DOCUMENT_QUERY",
+                "20261116000581": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "114840",
+          "evaluation_date": "20261121",
+          "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260319000741",
+              "selected_asof_receipt": "20260320000432",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260319000741",
+                "20260320000432"
+              ],
+              "document_states": {
+                "20260319000741": "PENDING_DOCUMENT_QUERY",
+                "20260320000432": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "123410",
+          "evaluation_date": "20261121",
+          "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260319000839",
+              "selected_asof_receipt": "20260731000261",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260319000839",
+                "20260731000261"
+              ],
+              "document_states": {
+                "20260319000839": "PENDING_DOCUMENT_QUERY",
+                "20260731000261": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        },
+        {
+          "code": "487570",
+          "evaluation_date": "20261120",
+          "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+          "periods": [
+            {
+              "period": "2025_annual",
+              "original_receipt": "20260312000964",
+              "selected_asof_receipt": "20260312001348",
+              "returned_current_api_receipts": [],
+              "returned_receipts_in_period": true,
+              "correction_or_multiple_receipts": true,
+              "reported_receipt_mismatch": false,
+              "receipt_ids_to_archive": [
+                "20260312000964",
+                "20260312001348"
+              ],
+              "document_states": {
+                "20260312000964": "PENDING_DOCUMENT_QUERY",
+                "20260312001348": "PENDING_DOCUMENT_QUERY"
+              },
+              "document_source_evidence_ready": false,
+              "reported_receipts_match_asof": false,
+              "historical_financial_values_verified": false
+            }
+          ]
+        }
+      ],
+      "document_evidence_only": true,
+      "historical_point_in_time_financials_verified": false,
+      "official_per_pbr_verified": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "limitations": [
+        "Captured ZIP hashes prove only the retrieved bytes on audit date, not past as-of availability or financial values",
+        "Original document financial account amounts are not yet parsed and matched line-by-line",
+        "Receipt metadata alone does not validate the historical valuation source"
+      ]
+    },
+    "r14_krx_ratio_input_gate": {
+      "result": "KRX_DATED_PER_PBR_UNAUTHENTICATED_SOURCE_GATE",
+      "market_date": "20261119",
+      "expected_relative_file": "data/v5_official_ratio_exports/20261119.csv",
+      "official_per_independently_verified": 0,
+      "official_pbr_independently_verified": 0,
+      "source_independently_authenticated": false,
+      "investment_decisions_authorized": false,
+      "final_buy_signals": 0,
+      "original_ratio_audit_reused": true,
+      "status": "NO_DATE_MATCHED_KRX_EXPORT",
+      "rows_supplied": 0,
+      "compared_research_candidates": 0,
+      "no_promotion_to_official_verified": true
     }
   },
   "verified_investment_recommendations": 0,
   "investment_decisions_authorized": false,
-  "notice": "Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Stage27 untouched; no trading signals."
+  "notice": "Uses official KRX 70-session data; DART receipt/correction evidence is collected incrementally and NEVER promoted to financial-value PIT proof. KRX official PER/PBR still unverified. Original correction ZIP hashes are audit-date evidence only, not historical financial PIT. Stage27 untouched; no trading signals."
 }

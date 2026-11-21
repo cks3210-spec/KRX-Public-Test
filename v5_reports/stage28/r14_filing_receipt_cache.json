@@ -1,6 +1,6 @@
 {
   "format": "R14_RECEIPT_EVIDENCE_CACHE_V1",
-  "updated_kst": "2026-11-21T08:16:40.326859+09:00",
+  "updated_kst": "2026-11-21T09:26:08.837144+09:00",
   "rows": {
     "003280": {
       "code": "003280",
@@ -4238,7 +4238,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00803425",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4336,7 +4336,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00164779",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4420,7 +4420,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00138729",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4504,7 +4504,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00146269",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4588,7 +4588,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00111874",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4672,7 +4672,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00159102",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4770,7 +4770,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00164645",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4854,7 +4854,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00115676",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -4938,7 +4938,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00125938",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5022,7 +5022,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00128315",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5106,7 +5106,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00141556",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5190,7 +5190,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00216762",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5274,7 +5274,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00405278",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5358,7 +5358,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00476498",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5442,7 +5442,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00447487",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5526,7 +5526,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00365934",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5610,7 +5610,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00593032",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5708,7 +5708,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00568188",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5792,7 +5792,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00692254",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5890,7 +5890,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00980122",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -5974,7 +5974,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01854763",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6072,7 +6072,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00118804",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6156,7 +6156,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00190321",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6240,7 +6240,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00357740",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6324,7 +6324,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00636656",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6408,7 +6408,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00101628",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6492,7 +6492,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00135917",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6618,7 +6618,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00111847",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6702,7 +6702,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00159573",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6800,7 +6800,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00160843",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6898,7 +6898,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00117337",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -6982,7 +6982,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00101433",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7066,7 +7066,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00127042",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7150,7 +7150,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00106313",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7248,7 +7248,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00126955",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7332,7 +7332,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00163673",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7416,7 +7416,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00120182",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7500,7 +7500,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00126487",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7584,7 +7584,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00164830",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7668,7 +7668,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00105855",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7752,7 +7752,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00164636",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7836,7 +7836,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00105101",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -7948,7 +7948,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00158565",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8032,7 +8032,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00144164",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8144,7 +8144,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00219097",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8228,7 +8228,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00192499",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8312,7 +8312,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00238782",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8396,7 +8396,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00231363",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8480,7 +8480,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00156956",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8578,7 +8578,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00268002",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8662,7 +8662,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00137289",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8746,7 +8746,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00264255",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8830,7 +8830,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00318316",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -8914,7 +8914,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00152783",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9026,7 +9026,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00390365",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9110,7 +9110,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00127954",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9194,7 +9194,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00305297",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9292,7 +9292,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00349732",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9376,7 +9376,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00298270",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9460,7 +9460,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01010615",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9544,7 +9544,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00220622",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9628,7 +9628,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00399694",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9712,7 +9712,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00190756",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9796,7 +9796,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00255275",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9880,7 +9880,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00500254",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -9964,7 +9964,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00178790",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10048,7 +10048,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00543107",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10132,7 +10132,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00531014",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10216,7 +10216,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00524786",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10300,7 +10300,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00603348",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10384,7 +10384,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00524421",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10468,7 +10468,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00633835",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10566,7 +10566,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00580065",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10650,7 +10650,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "00688996",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10762,7 +10762,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00111193",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10846,7 +10846,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00372226",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10930,7 +10930,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01093007",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -11014,7 +11014,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01205709",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -11098,7 +11098,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01310269",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -11182,7 +11182,7 @@
       "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
       "corp_code": "01562589",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [

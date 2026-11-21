@@ -1,0 +1,266 @@
+{
+  "format": "R14_DOCUMENT_VERSION_HASH_CACHE_V1",
+  "updated_kst": "2026-11-21T09:32:41.989976+09:00",
+  "rows": {
+    "20260310002563": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260310002563",
+      "zip_sha256": "3690b1d4f3e2c4447658dbf190b48460a528ac1ccf986dd111fef6aa384d7067",
+      "zip_bytes": 447619,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260310002563.xml",
+          "size_bytes": 4485560,
+          "sha256": "966cddeeaef842ac5cba0ad7a1422027ba94afadf8928d45853ff6eb3e7632c7"
+        },
+        {
+          "filename": "20260310002563_00760.xml",
+          "size_bytes": 443240,
+          "sha256": "010218bf6b366a5024c058f82d30b78d33f460b56a6f8bf2d95161458819835f"
+        },
+        {
+          "filename": "20260310002563_00761.xml",
+          "size_bytes": 576460,
+          "sha256": "f4da347e5c97a7f3f24879cf369986eaff66b99459973ee7563746665fa97c36"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:26:38.409865+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318000261": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318000261",
+      "zip_sha256": "eef301bd6f1173ca95fdde14ca905cc3835b73ce318637a43f69d8b2d4de0edf",
+      "zip_bytes": 328418,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318000261.xml",
+          "size_bytes": 4558698,
+          "sha256": "f87d8f2e54d60548a328849d24473ea0a3ce2c39daa6c372d851d2ce2a2849c7"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:27:00.011014+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260605000111": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260605000111",
+      "zip_sha256": "28ff22081c2dda7ad8a7b7db6aa33af80469908074103c95f92062cf1de35648",
+      "zip_bytes": 323188,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260605000111.xml",
+          "size_bytes": 4502491,
+          "sha256": "e816a234d3ef562ad452b06c7f8963d1428f1b975421ac6fe8c4eb3388a82eba"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:27:21.313950+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318001705": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318001705",
+      "zip_sha256": "87b5ed832528ddaae764633d8ae3656f4048b12908039798e982f41a39d6dd5c",
+      "zip_bytes": 539370,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318001705_00761.xml",
+          "size_bytes": 598150,
+          "sha256": "cdaeb6e2839afdedd582062faa3ce996a57edf57767e9cb9c410f906f13a5def"
+        },
+        {
+          "filename": "20260318001705.xml",
+          "size_bytes": 5327832,
+          "sha256": "462c8cf6426a42db7fb33148676069a211162f65c03c0cd5d7593273077162fa"
+        },
+        {
+          "filename": "20260318001705_00760.xml",
+          "size_bytes": 597929,
+          "sha256": "84bb7bca2f1983c31583f6036b76268bce801fa54e6079bd49fc0d6aae68dcee"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:27:57.253594+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260319000704": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260319000704",
+      "zip_sha256": "57cfbc7b40d66e097fd52b4c7e914babf35c88497c42939e76804a8b0f96d6ee",
+      "zip_bytes": 156903,
+      "zip_member_count": 2,
+      "xml_and_text_files": [
+        {
+          "filename": "20260319000704_00760.xml",
+          "size_bytes": 594441,
+          "sha256": "ffaee2a6cb7a0ab8c63699a66f4139a65a2bece90c2fbc6c202f5413066cecd2"
+        },
+        {
+          "filename": "20260319000704_00761.xml",
+          "size_bytes": 595220,
+          "sha256": "d59b8594fb82bd19a884714d4e597b96cff71227f226941a96572427ed3bdbf7"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:28:08.036784+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260323001116": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260323001116",
+      "zip_sha256": "7ca5f2b305de117d9e2fc69f7d7c781e31eece8fd826c75ab8fe43412503548a",
+      "zip_bytes": 440173,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260323001116_00760.xml",
+          "size_bytes": 503600,
+          "sha256": "408dee8fba8075b05aeb63ca6272155c74b9df64706754432061b475cabdc2a9"
+        },
+        {
+          "filename": "20260323001116.xml",
+          "size_bytes": 4580840,
+          "sha256": "720d2c54378ac22facad0450e4de31fab3836c73d71de769093ff37eb447a64e"
+        },
+        {
+          "filename": "20260323001116_00761.xml",
+          "size_bytes": 522073,
+          "sha256": "19850388aa87efd7db2cc6a523895833edf5ab7be42fd0379109218241727fa3"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:28:37.598658+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260325000430": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260325000430",
+      "zip_sha256": "1fa5b1d7f2019654e5d0aff87d470044a15fb922ec30d30e4f8dd152d22c5769",
+      "zip_bytes": 128510,
+      "zip_member_count": 2,
+      "xml_and_text_files": [
+        {
+          "filename": "20260325000430_00760.xml",
+          "size_bytes": 516586,
+          "sha256": "51a4793e9589ba988eb066f4ea74e9e5036a734849c4d66cad4b4090b29fa3a0"
+        },
+        {
+          "filename": "20260325000430_00761.xml",
+          "size_bytes": 542182,
+          "sha256": "747017cd364668c19d4bedb888583e03ad1b36e208804b84cf12772373fa6381"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:28:46.762256+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260319000606": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260319000606",
+      "zip_sha256": "5e5715107d74e0c0df0af5e0cebfd5bdf91da8e972191c0ed4b7e86c35c5136d",
+      "zip_bytes": 605257,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260319000606_00760.xml",
+          "size_bytes": 641226,
+          "sha256": "0ecb6903146ddcd13acc6495b784ee70736fa9db3075ff38abc8a21d6fb3b28a"
+        },
+        {
+          "filename": "20260319000606_00761.xml",
+          "size_bytes": 641583,
+          "sha256": "c386ffd3f151f8bf5403a1f87bb2a5b810f657bbb222716fa96cc183b5523540"
+        },
+        {
+          "filename": "20260319000606.xml",
+          "size_bytes": 7837083,
+          "sha256": "bbea911de503fca728efced99b9647cb76c1173a1d0c049e383b3e4ae7cc3657"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:29:26.920317+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260310003000": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260310003000",
+      "zip_sha256": "e1710eded490146b2f9b21b53e584fb36f33d0c18b3edd1b271beaaae32a75cc",
+      "zip_bytes": 1374382,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260310003000_00761.xml",
+          "size_bytes": 2075746,
+          "sha256": "b3a1e0259d68aa3fb3c01cd521a7c2563da9f008887ed0e107f97f65d7c872cb"
+        },
+        {
+          "filename": "20260310003000.xml",
+          "size_bytes": 26488428,
+          "sha256": "8f6ab7622cdd27e685f7ae91a50ef354ebfa3eb25925c64ac5371042e95f6427"
+        },
+        {
+          "filename": "20260310003000_00760.xml",
+          "size_bytes": 2008449,
+          "sha256": "0174e56792125a042d9273fa9736d140a65a4c05ca6533d02fd504f9ab244c5a"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:30:54.824483+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260331000594": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260331000594",
+      "zip_sha256": "01ad598b0e8ba429d50d7ecb8a8a8660b57abea2d7aa3411641dd84cca28f1f2",
+      "zip_bytes": 1038158,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260331000594.xml",
+          "size_bytes": 26602967,
+          "sha256": "ea6a240720d10be195f2007ee9c05b765aba22e3f3c20fbeb45ef82357573030"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:32:01.524272+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20251113000523": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20251113000523",
+      "zip_sha256": "f2d5cd4ce04fe61a953d23779f07b463180bdaad23d8b0a7c70f1b6ca1750345",
+      "zip_bytes": 622935,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20251113000523.xml",
+          "size_bytes": 14283571,
+          "sha256": "1808904780d1e6f8e4280eb54124f62b8444efd3397a8a3ca696546b07d358b3"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:32:41.768099+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    }
+  },
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0
+}

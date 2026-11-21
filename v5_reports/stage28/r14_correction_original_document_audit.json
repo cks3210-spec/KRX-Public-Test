@@ -1,0 +1,880 @@
+{
+  "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
+  "generated_kst": "2026-11-21T09:32:41.988296+09:00",
+  "market_date": "20261119",
+  "mismatch_company_count": 4,
+  "companies_with_original_or_correction_receipts": 28,
+  "document_receipts_required": 62,
+  "archive_hashes_available": 11,
+  "document_queries_this_run": 12,
+  "this_run_states": {
+    "DOCUMENT_ZIP_HASH_CAPTURED": 11,
+    "NOT_ZIP_RESPONSE": 1,
+    "PENDING_BATCH_LIMIT": 50
+  },
+  "cached_original_document_hashes": 11,
+  "companies": [
+    {
+      "code": "015360",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "RECEIPT_VERSION_MISMATCH",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260310002563",
+          "selected_asof_receipt": "20260605000111",
+          "returned_current_api_receipts": [
+            "20260318000261"
+          ],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": true,
+          "receipt_ids_to_archive": [
+            "20260310002563",
+            "20260318000261",
+            "20260605000111"
+          ],
+          "document_states": {
+            "20260310002563": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260318000261": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260605000111": "DOCUMENT_ZIP_HASH_CAPTURED"
+          },
+          "document_source_evidence_ready": true,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "033500",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "RECEIPT_VERSION_MISMATCH",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001705",
+          "selected_asof_receipt": "20260319000704",
+          "returned_current_api_receipts": [
+            "20260318001705"
+          ],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": true,
+          "receipt_ids_to_archive": [
+            "20260318001705",
+            "20260319000704"
+          ],
+          "document_states": {
+            "20260318001705": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260319000704": "DOCUMENT_ZIP_HASH_CAPTURED"
+          },
+          "document_source_evidence_ready": true,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "054950",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "RECEIPT_VERSION_MISMATCH",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260323001116",
+          "selected_asof_receipt": "20260325000430",
+          "returned_current_api_receipts": [
+            "20260323001116"
+          ],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": true,
+          "receipt_ids_to_archive": [
+            "20260323001116",
+            "20260325000430"
+          ],
+          "document_states": {
+            "20260323001116": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260325000430": "DOCUMENT_ZIP_HASH_CAPTURED"
+          },
+          "document_source_evidence_ready": true,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "097230",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "RECEIPT_VERSION_MISMATCH",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260319000606",
+          "selected_asof_receipt": "20260319001333",
+          "returned_current_api_receipts": [
+            "20260319000606"
+          ],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": true,
+          "receipt_ids_to_archive": [
+            "20260319000606",
+            "20260319001333"
+          ],
+          "document_states": {
+            "20260319000606": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260319001333": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "000370",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260310003000",
+          "selected_asof_receipt": "20260331000594",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260310003000",
+            "20260331000594"
+          ],
+          "document_states": {
+            "20260310003000": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20260331000594": "DOCUMENT_ZIP_HASH_CAPTURED"
+          },
+          "document_source_evidence_ready": true,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        },
+        {
+          "period": "2025_q3",
+          "original_receipt": "20251113000523",
+          "selected_asof_receipt": "20251126000171",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20251113000523",
+            "20251126000171"
+          ],
+          "document_states": {
+            "20251113000523": "DOCUMENT_ZIP_HASH_CAPTURED",
+            "20251126000171": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "000970",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260319000512",
+          "selected_asof_receipt": "20260814000666",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260319000512",
+            "20260814000666"
+          ],
+          "document_states": {
+            "20260319000512": "PENDING_DOCUMENT_QUERY",
+            "20260814000666": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "000990",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260316001250",
+          "selected_asof_receipt": "20260601001661",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260316001250",
+            "20260601001661"
+          ],
+          "document_states": {
+            "20260316001250": "PENDING_DOCUMENT_QUERY",
+            "20260601001661": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "002990",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318000268",
+          "selected_asof_receipt": "20260318001135",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318000268",
+            "20260318001135"
+          ],
+          "document_states": {
+            "20260318000268": "PENDING_DOCUMENT_QUERY",
+            "20260318001135": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "003100",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001613",
+          "selected_asof_receipt": "20260529000793",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318001613",
+            "20260529000793"
+          ],
+          "document_states": {
+            "20260318001613": "PENDING_DOCUMENT_QUERY",
+            "20260529000793": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "005830",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260312001222",
+          "selected_asof_receipt": "20260331003904",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260312001222",
+            "20260331003904"
+          ],
+          "document_states": {
+            "20260312001222": "PENDING_DOCUMENT_QUERY",
+            "20260331003904": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "011560",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001704",
+          "selected_asof_receipt": "20260814000768",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318001704",
+            "20260814000768"
+          ],
+          "document_states": {
+            "20260318001704": "PENDING_DOCUMENT_QUERY",
+            "20260814000768": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "018670",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260316001594",
+          "selected_asof_receipt": "20260813001480",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260316001594",
+            "20260813001480"
+          ],
+          "document_states": {
+            "20260316001594": "PENDING_DOCUMENT_QUERY",
+            "20260813001480": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "030200",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2026_q3",
+          "original_receipt": "20261116001593",
+          "selected_asof_receipt": "20261116001593",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20261116001593"
+          ],
+          "document_states": {
+            "20261116001593": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "034950",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318000302",
+          "selected_asof_receipt": "20260326001257",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318000302",
+            "20260326001257"
+          ],
+          "document_states": {
+            "20260318000302": "PENDING_DOCUMENT_QUERY",
+            "20260326001257": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "035000",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260312000821",
+          "selected_asof_receipt": "20260413002635",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260312000821",
+            "20260413002635"
+          ],
+          "document_states": {
+            "20260312000821": "PENDING_DOCUMENT_QUERY",
+            "20260413002635": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "036190",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260312001323",
+          "selected_asof_receipt": "20260630000672",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260312001323",
+            "20260630000672"
+          ],
+          "document_states": {
+            "20260312001323": "PENDING_DOCUMENT_QUERY",
+            "20260630000672": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "049430",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260320001217",
+          "selected_asof_receipt": "20260320001359",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260320001217",
+            "20260320001359"
+          ],
+          "document_states": {
+            "20260320001217": "PENDING_DOCUMENT_QUERY",
+            "20260320001359": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        },
+        {
+          "period": "2025_q3",
+          "original_receipt": "20251114001331",
+          "selected_asof_receipt": "20260908000203",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20251114001331",
+            "20260908000203"
+          ],
+          "document_states": {
+            "20251114001331": "PENDING_DOCUMENT_QUERY",
+            "20260908000203": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "049520",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_q3",
+          "original_receipt": "20251114001648",
+          "selected_asof_receipt": "20251114003069",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20251114001648",
+            "20251114003069"
+          ],
+          "document_states": {
+            "20251114001648": "PENDING_DOCUMENT_QUERY",
+            "20251114003069": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "052330",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260323000271",
+          "selected_asof_receipt": "20260331004794",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260323000271",
+            "20260331004794"
+          ],
+          "document_states": {
+            "20260323000271": "PENDING_DOCUMENT_QUERY",
+            "20260331004794": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "093050",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001194",
+          "selected_asof_receipt": "20260601001924",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318001194",
+            "20260601001924"
+          ],
+          "document_states": {
+            "20260318001194": "PENDING_DOCUMENT_QUERY",
+            "20260601001924": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "093190",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260312000427",
+          "selected_asof_receipt": "20260703000506",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260312000427",
+            "20260703000506"
+          ],
+          "document_states": {
+            "20260312000427": "PENDING_DOCUMENT_QUERY",
+            "20260703000506": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "094820",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260324001034",
+          "selected_asof_receipt": "20260630000845",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260324001034",
+            "20260630000845"
+          ],
+          "document_states": {
+            "20260324001034": "PENDING_DOCUMENT_QUERY",
+            "20260630000845": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "101930",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260317000428",
+          "selected_asof_receipt": "20260407001497",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260317000428",
+            "20260407001497"
+          ],
+          "document_states": {
+            "20260317000428": "PENDING_DOCUMENT_QUERY",
+            "20260407001497": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "105560",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260313001191",
+          "selected_asof_receipt": "20260619000667",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260313001191",
+            "20260619000667"
+          ],
+          "document_states": {
+            "20260313001191": "PENDING_DOCUMENT_QUERY",
+            "20260619000667": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "114810",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260310002866",
+          "selected_asof_receipt": "20260313000415",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260310002866",
+            "20260313000415"
+          ],
+          "document_states": {
+            "20260310002866": "PENDING_DOCUMENT_QUERY",
+            "20260313000415": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        },
+        {
+          "period": "2026_q3",
+          "original_receipt": "20261113000565",
+          "selected_asof_receipt": "20261116000581",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20261113000565",
+            "20261116000581"
+          ],
+          "document_states": {
+            "20261113000565": "PENDING_DOCUMENT_QUERY",
+            "20261116000581": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "114840",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260319000741",
+          "selected_asof_receipt": "20260320000432",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260319000741",
+            "20260320000432"
+          ],
+          "document_states": {
+            "20260319000741": "PENDING_DOCUMENT_QUERY",
+            "20260320000432": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "123410",
+      "evaluation_date": "20261121",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260319000839",
+          "selected_asof_receipt": "20260731000261",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260319000839",
+            "20260731000261"
+          ],
+          "document_states": {
+            "20260319000839": "PENDING_DOCUMENT_QUERY",
+            "20260731000261": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
+      "code": "487570",
+      "evaluation_date": "20261120",
+      "evaluation_date_source": "FROZEN_STAGE27_RESEARCH_SNAPSHOT",
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260312000964",
+          "selected_asof_receipt": "20260312001348",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260312000964",
+            "20260312001348"
+          ],
+          "document_states": {
+            "20260312000964": "PENDING_DOCUMENT_QUERY",
+            "20260312001348": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    }
+  ],
+  "document_evidence_only": true,
+  "historical_point_in_time_financials_verified": false,
+  "official_per_pbr_verified": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "limitations": [
+    "Captured ZIP hashes prove only the retrieved bytes on audit date, not past as-of availability or financial values",
+    "Original document financial account amounts are not yet parsed and matched line-by-line",
+    "Receipt metadata alone does not validate the historical valuation source"
+  ]
+}
