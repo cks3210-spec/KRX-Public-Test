@@ -1055,6 +1055,405 @@ jobs:
           python -m py_compile /tmp/r14_document_version_probe.py
           python /tmp/r14_document_version_probe.py --self-test
           python /tmp/r14_document_version_probe.py
+      - name: Reconcile version-bound original XBRL annual facts (read-only pilot)
+        id: original_xbrl_reconciliation
+        shell: bash
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          R14_XBRL_BATCH_LIMIT: '12'
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_receipt_xbrl_reconciliation.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 read-only, receipt-specific XBRL evidence research.
+
+          Important: original XBRL facts are evidence of the contents fetched today, NOT
+          an independently attested as-of financial revision, and NOT an authenticated
+          KRX PER/PBR. Never change research grade or authorize an order.
+          """
+          import collections
+          import datetime as dt
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import time
+          from urllib import parse, request, error
+          from zoneinfo import ZoneInfo
+          import zipfile
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path('v5_reports/stage28')
+          FILING = ROOT / 'r14_filing_receipt_cache.json'
+          COMPARE = ROOT / 'r14_financial_value_reconciliation_cache.json'
+          DOCUMENTS = ROOT / 'r14_filing_document_version_cache.json'
+          LEGACY_FINANCIAL = Path('data/v5_financial_m/dart_financial_cache.json')
+          PERSIST = ROOT / 'r14_xbrl_receipt_financial_cache.json'
+          OUT = ROOT / 'r14_xbrl_correction_financial_research.json'
+          ENDPOINT = 'https://opendart.fss.or.kr/api/fnlttXbrl.xml'
+          MAX_ZIP_BYTES = 16_000_000
+          MAX_XML_BYTES = 24_000_000
+          MAX_UNCOMPRESSED = 48_000_000
+          MAX_MEMBERS = 60
+          XBRLI = 'http://www.xbrl.org/2003/instance'
+          YEAR_KIND_CODE = {'annual': '11011', 'q1': '11013', 'half': '11012', 'q3': '11014'}
+          # The direct one-to-one IFRS concepts below exclude fallback aliases that
+          # could silently change the economic definition of cache fields.
+          DIRECT_ACCOUNTS = {
+              'profit': 'ProfitLossAttributableToOwnersOfParent',
+              'equity': 'EquityAttributableToOwnersOfParent',
+              'revenue': 'Revenue',
+              'assets': 'Assets',
+              'liabilities': 'Liabilities',
+          }
+
+
+          def load(path, default):
+              try:
+                  return json.loads(path.read_text(encoding='utf-8-sig'))
+              except (OSError, ValueError):
+                  return default
+
+
+          def save(path, value):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              tmp = path.with_name(path.name + '.tmp')
+              tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              tmp.replace(path)
+
+
+          def stamp():
+              return dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+
+
+          def receipt_ok(value):
+              return bool(re.fullmatch(r'20\d{12}', str(value or '')))
+
+
+          def tag_local(element):
+              return element.tag.rsplit('}', 1)[-1] if isinstance(element.tag, str) else ''
+
+
+          def parse_money(raw):
+              s = str(raw or '').strip()
+              if not re.fullmatch(r'[+-]?\d{1,25}', s):
+                  return None
+              return int(s)
+
+
+          def asof_targets(filings, comparisons):
+              """Only priority receipt mismatches with an existing frozen evaluation date.
+
+              Query original, corrected and API-returned receipts *from the same report
+              period*; do not transfer another company's receipt or later disclosures.
+              """
+              tasks = []
+              for code, row in sorted((filings.get('rows') or {}).items()):
+                  m = (comparisons.get('rows') or {}).get(code) or {}
+                  if m.get('status') != 'RECEIPT_VERSION_MISMATCH':
+                      continue
+                  cutoff = str(row.get('evaluation_date', ''))
+                  if (row.get('evaluation_date_source') != 'FROZEN_STAGE27_RESEARCH_SNAPSHOT'
+                          or not re.fullmatch(r'20\d{6}', cutoff)):
+                      # Never turn an audit-time date into a historical decision timestamp.
+                      continue
+                  for key, facts in sorted((row.get('filing_periods') or {}).items()):
+                      match = re.fullmatch(r'(20\d{2})_(annual|q1|half|q3)', key)
+                      if not match or match.group(2) != 'annual':
+                          # Pilot is strictly annual: quarter cumulative basis differs.
+                          continue
+                      report_year, kind = match.groups()
+                      value_check = (m.get('periods') or {}).get(key, {})
+                      if value_check.get('status') != 'DART_RECEIPT_MISMATCH':
+                          continue
+                      before = facts.get('pre_evaluation_receipts') or []
+                      receipts = {str(x.get('rcept_no', '')) for x in before
+                                  if isinstance(x, dict) and receipt_ok(x.get('rcept_no'))
+                                  and re.fullmatch(r'20\d{6}', str(x.get('rcept_dt', '')))
+                                  and str(x.get('rcept_dt')) <= cutoff
+                                  and str(x.get('rcept_no'))[:8] == str(x.get('rcept_dt'))}
+                      selected = str(facts.get('latest_available_asof_evaluation') or '')
+                      if selected not in receipts:
+                          continue
+                      returned = [str(x) for x in value_check.get('returned_receipts', [])]
+                      for receipt in sorted(receipts):
+                          tasks.append({'code': code, 'period': key, 'year': report_year,
+                                        'report_code': YEAR_KIND_CODE[kind], 'receipt': receipt,
+                                        'selected_asof_receipt': selected,
+                                        'is_current_api_receipt': receipt in returned,
+                                        'is_asof_selected': receipt == selected,
+                                        'evaluation_date': cutoff})
+              return tasks
+
+
+          def safe_facts_for_one_xbrl(xmlbytes, year):
+              """Select only direct IFRS taxonomy concepts with undimensioned KRW contexts.
+
+              CFS/OFS is intentionally not inferred from names or context; amounts may be
+              compared as candidates but cannot be classified as verified matches.
+              """
+              if len(xmlbytes) > MAX_XML_BYTES or b'<!DOCTYPE' in xmlbytes.upper() or b'<!ENTITY' in xmlbytes.upper():
+                  return {'state': 'XBRL_XML_UNSAFE_OR_TOO_LARGE'}
+              try:
+                  root = ET.fromstring(xmlbytes)
+              except ET.ParseError:
+                  return {'state': 'XBRL_XML_PARSE_ERROR'}
+              if root.tag != '{' + XBRLI + '}xbrl':
+                  return {'state': 'NOT_XBRL_INSTANCE'}
+              report_year = str(year)
+              if not re.fullmatch(r'20\d{2}', report_year):
+                  return {'state': 'INVALID_FINANCIAL_YEAR'}
+              annual_end = report_year + '-12-31'
+              annual_start = report_year + '-01-01'
+              contexts = {}
+              units = set()
+              for x in root:
+                  k = tag_local(x)
+                  if k == 'unit':
+                      if any(tag_local(y) == 'divide' for y in x.iter()):
+                          continue
+                      measures = [str(y.text or '').strip() for y in x.iter() if tag_local(y) == 'measure']
+                      if len(measures) == 1 and measures[0].split(':')[-1].upper() == 'KRW':
+                          uid = str(x.attrib.get('id') or '')
+                          if uid: units.add(uid)
+                  if k == 'context':
+                      cid = str(x.attrib.get('id') or '')
+                      if not cid or any(tag_local(e) in ('segment', 'scenario') for e in x.iter()):
+                          continue
+                      times = {tag_local(e): str(e.text or '').strip() for e in x.iter()
+                               if tag_local(e) in ('instant', 'startDate', 'endDate')}
+                      if times.get('instant') == annual_end:
+                          contexts[cid] = 'instant'
+                      elif times.get('startDate') == annual_start and times.get('endDate') == annual_end:
+                          contexts[cid] = 'duration'
+              if not contexts or not units:
+                  return {'state': 'NO_UNDIMENSIONED_KRW_ANNUAL_CONTEXT'}
+              matched = {}
+              for field, account in DIRECT_ACCOUNTS.items():
+                  needed_kind = 'instant' if field in ('equity', 'assets', 'liabilities') else 'duration'
+                  vals = set()
+                  for element in root:
+                      if not isinstance(element.tag, str):
+                          continue
+                      namespace, sep, local = element.tag[1:].partition('}') if element.tag.startswith('{') else ('', '', '')
+                      if (not sep or local != account
+                              or not (namespace.endswith('/ifrs-full') or namespace.endswith('/ifrs'))):
+                          continue
+                      cref = element.attrib.get('contextRef', '')
+                      uref = element.attrib.get('unitRef', '')
+                      if contexts.get(cref) != needed_kind or uref not in units:
+                          continue
+                      if any(tag_local(x) == 'nil' for x in element):
+                          continue
+                      amount = parse_money(element.text)
+                      if amount is not None:
+                          vals.add(amount)
+                  if len(vals) == 1:
+                      matched[field] = vals.pop()
+              return {'state': 'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY' if matched else 'NO_DIRECT_STANDARD_FACTS',
+                      'fields': matched, 'financial_basis_confirmed': False,
+                      'historical_financial_values_verified': False}
+
+
+          def safe_xbrl_zip(data, year, receipt):
+              if not data.startswith(b'PK'):
+                  x = re.search(rb'<status>\s*([A-Za-z0-9_-]{2,12})\s*</status>', data[:8192], re.I)
+                  return {'state': 'DART_API_STATUS_' + x.group(1).decode('ascii').upper() if x else 'NOT_ZIP_RESPONSE'}
+              if len(data) > MAX_ZIP_BYTES:
+                  return {'state': 'XBRL_ARCHIVE_TOO_LARGE'}
+              try:
+                  with zipfile.ZipFile(io.BytesIO(data)) as z:
+                      entries = z.infolist()
+                      if len(entries) > MAX_MEMBERS or sum(x.file_size for x in entries) > MAX_UNCOMPRESSED:
+                          return {'state': 'XBRL_ARCHIVE_UNSAFE_LIMITS'}
+                      candidate_files = []
+                      for x in entries:
+                          name = x.filename.replace('\\', '/')
+                          if name.startswith('/') or '..' in name.split('/'):
+                              return {'state': 'XBRL_ARCHIVE_UNSAFE_PATH'}
+                          if x.is_dir() or not name.lower().endswith(('.xml', '.xbrl')):
+                              continue
+                          if x.file_size > MAX_XML_BYTES:
+                              continue
+                          content = z.read(x)
+                          found = safe_facts_for_one_xbrl(content, year)
+                          if found['state'] != 'NOT_XBRL_INSTANCE':
+                              candidate_files.append({'name': name[:200], 'xml_sha256': hashlib.sha256(content).hexdigest(), **found})
+                      if not candidate_files:
+                          return {'state': 'NO_XBRL_INSTANCES_IN_ARCHIVE'}
+                      return {'state': 'XBRL_RECEIPT_ZIP_RETRIEVED', 'receipt_no': receipt,
+                              'zip_sha256': hashlib.sha256(data).hexdigest(),
+                              'downloaded_kst': stamp(), 'source_endpoint': 'OPENDART_FNLTT_XBRL',
+                              'files': candidate_files[:MAX_MEMBERS],
+                              'historical_financial_values_verified': False,
+                              'official_per_pbr_verified': False}
+              except (zipfile.BadZipFile, RuntimeError, OSError, ValueError, NotImplementedError):
+                  return {'state': 'XBRL_INVALID_ZIP'}
+
+
+          def fetch_one(receipt, reprt_code, year, token):
+              if not token:
+                  return {'state': 'MISSING_DART_KEY'}
+              url = ENDPOINT + '?' + parse.urlencode({'crtfc_key': token, 'rcept_no': receipt,
+                                                        'reprt_code': reprt_code})
+              try:
+                  req = request.Request(url, headers={'User-Agent': 'KRX-v5-XBRL-Audit/1.0'})
+                  with request.urlopen(req, timeout=35) as response:
+                      if int(response.headers.get('Content-Length', '0') or '0') > MAX_ZIP_BYTES:
+                          return {'state': 'XBRL_ARCHIVE_TOO_LARGE'}
+                      b = response.read(MAX_ZIP_BYTES + 1)
+                  if len(b) > MAX_ZIP_BYTES:
+                      return {'state': 'XBRL_ARCHIVE_TOO_LARGE'}
+                  return safe_xbrl_zip(b, year, receipt)
+              except error.HTTPError as ex:
+                  return {'state': 'HTTP_ERROR', 'http_status': ex.code}
+              except (error.URLError, TimeoutError, ValueError, OSError):
+                  return {'state': 'XBRL_API_NETWORK_OR_JSON_ERROR'}
+
+
+          def comparison_for_task(task, xbrl, original_financial, docs):
+              original = original_financial.get(task['code'] + ':' + task['period'].replace('_', ':')) or {}
+              original_accounts = original.get('accounts') if original.get('status') == '000' else {}
+              if not isinstance(original_accounts, dict):
+                  original_accounts = {}
+              raw = {}
+              for f in xbrl.get('files', []):
+                  if f.get('state') != 'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY':
+                      continue
+                  for k, value in f.get('fields', {}).items():
+                      raw.setdefault(k, set()).add(value)
+              unique = {k: next(iter(values)) for k, values in raw.items() if len(values) == 1}
+              ambiguous = sorted(k for k, values in raw.items() if len(values) != 1)
+              shared = sorted(k for k in unique if type(original_accounts.get(k)) is int)
+              matched = [k for k in shared if unique[k] == original_accounts[k]]
+              different = [k for k in shared if unique[k] != original_accounts[k]]
+              documentary = (docs.get('rows') or {}).get(task['receipt'], {})
+              return {'code': task['code'], 'period': task['period'],
+                      'receipt_no': task['receipt'], 'selected_asof_receipt': task['selected_asof_receipt'],
+                      'is_asof_selected': task['is_asof_selected'], 'is_current_api_receipt': task['is_current_api_receipt'],
+                      'source_date_cutoff': task['evaluation_date'],
+                      'original_document_zip_hash_preserved': documentary.get('state') == 'DOCUMENT_ZIP_HASH_CAPTURED',
+                      'xbrl_state': xbrl.get('state'), 'annual_account_comparable_fields': shared,
+                      'potentially_matching_fields': matched, 'potentially_differing_fields': different,
+                      'ambiguous_across_xbrl_files': ambiguous,
+                      'financial_basis_verified': False,
+                      'historical_point_in_time_financials_verified': False,
+                      'verified_as_investment_evidence': False}
+
+
+          def selftest():
+              ns = 'http://www.xbrl.org/2003/instance'
+              xml = f'''<xbrli:xbrl xmlns:xbrli="{ns}" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:ifrs="http://xbrl.ifrs.org/taxonomy/2025-03-27/ifrs-full">
+          <xbrli:context id="cBS"><xbrli:entity><xbrli:identifier scheme="example">CO</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>
+          <xbrli:context id="cIS"><xbrli:entity><xbrli:identifier scheme="example">CO</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>
+          <xbrli:context id="cWRONG"><xbrli:entity><xbrli:identifier scheme="example">CO</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>2024-12-31</xbrli:instant></xbrli:period></xbrli:context>
+          <xbrli:unit id="KRW"><xbrli:measure>iso4217:KRW</xbrli:measure></xbrli:unit>
+          <ifrs:Assets unitRef="KRW" contextRef="cBS">130</ifrs:Assets><ifrs:EquityAttributableToOwnersOfParent unitRef="KRW" contextRef="cBS">80</ifrs:EquityAttributableToOwnersOfParent>
+          <ifrs:ProfitLossAttributableToOwnersOfParent unitRef="KRW" contextRef="cIS">20</ifrs:ProfitLossAttributableToOwnersOfParent><ifrs:Revenue unitRef="KRW" contextRef="cIS">200</ifrs:Revenue>
+          <ifrs:Assets unitRef="KRW" contextRef="cWRONG">999</ifrs:Assets>
+          </xbrli:xbrl>'''.encode()
+              a = safe_facts_for_one_xbrl(xml, '2025')
+              assert a['state'] == 'EXTRACTED_PERIOD_FACTS_RESEARCH_ONLY'
+              assert a['fields'] == {'profit': 20, 'equity': 80, 'revenue': 200, 'assets': 130}
+              assert a['financial_basis_confirmed'] is False
+              assert safe_facts_for_one_xbrl(xml, '2024')['fields'] == {'assets': 999}
+              assert safe_facts_for_one_xbrl(b'<!DOCTYPE x><xbrl/>', '2025')['state'] == 'XBRL_XML_UNSAFE_OR_TOO_LARGE'
+              b = io.BytesIO()
+              with zipfile.ZipFile(b, 'w') as z:
+                  z.writestr('financial.xbrl', xml)
+              zres = safe_xbrl_zip(b.getvalue(), '2025', '20260318000001')
+              assert zres['state'] == 'XBRL_RECEIPT_ZIP_RETRIEVED'
+              assert zres['files'][0]['fields']['assets'] == 130
+              assert safe_xbrl_zip(b'<result><status>020</status></result>', '2025', '20260318000001')['state'] == 'DART_API_STATUS_020'
+              assert receipt_ok('20260318000001') and not receipt_ok('202603180001')
+              row = {'evaluation_date': '20261120', 'evaluation_date_source': 'FROZEN_STAGE27_RESEARCH_SNAPSHOT',
+                     'filing_periods': {'2025_annual': {'pre_evaluation_receipts': [
+                         {'rcept_no': '20260318000001', 'rcept_dt': '20260318'},
+                         {'rcept_no': '20260605000001', 'rcept_dt': '20260605'}],
+                         'latest_available_asof_evaluation': '20260605000001'}}}
+              v = {'rows': {'000001': row}}
+              m = {'rows': {'000001': {'status': 'RECEIPT_VERSION_MISMATCH', 'periods': {'2025_annual': {
+                  'status': 'DART_RECEIPT_MISMATCH', 'returned_receipts': ['20260318000001']}}}}}
+              assert len(asof_targets(v,m)) == 2
+              assert asof_targets(v,m)[1]['is_asof_selected'] is True
+              row['evaluation_date_source'] = 'AUDIT_TIME_NOT_HISTORICAL_SIGNAL'
+              assert not asof_targets(v,m)
+              return 12
+
+
+          def run():
+              filing, comparisons, docs = load(FILING, {}), load(COMPARE, {}), load(DOCUMENTS, {})
+              original = load(LEGACY_FINANCIAL, {})
+              if (filing.get('format') != 'R14_RECEIPT_EVIDENCE_CACHE_V1'
+                      or comparisons.get('format') != 'R14_FINANCIAL_COMPARISON_CACHE_V1'
+                      or not isinstance(original, dict)):
+                  raise SystemExit('UNSAFE_OR_MISSING_STAGE28_RECONCILIATION_INPUTS')
+              previous = load(PERSIST, {})
+              if previous and previous.get('format') != 'R14_RECEIPT_XBRL_RESEARCH_CACHE_V1':
+                  raise SystemExit('UNKNOWN_XBRL_RESEARCH_CACHE_FORMAT')
+              result_cache = dict(previous.get('rows', {}))
+              tasks = asof_targets(filing, comparisons)
+              limit = max(0, min(24, int(os.getenv('R14_XBRL_BATCH_LIMIT', '12'))))
+              token = os.getenv('DART_API_KEY', '').strip()
+              queried = 0
+              stats = collections.Counter()
+              for task in tasks:
+                  receipt = task['receipt']
+                  if (result_cache.get(receipt) or {}).get('state') == 'XBRL_RECEIPT_ZIP_RETRIEVED':
+                      stats['REUSED_XBRL_RECEIPT_CACHE'] += 1
+                      continue
+                  if queried >= limit:
+                      stats['PENDING_XBRL_BATCH_CAP'] += 1
+                      continue
+                  if not token:
+                      stats['MISSING_DART_KEY'] += 1
+                      break
+                  xbrl = fetch_one(receipt, task['report_code'], task['year'], token)
+                  queried += 1
+                  stats[xbrl['state']] += 1
+                  if xbrl['state'] == 'XBRL_RECEIPT_ZIP_RETRIEVED':
+                      result_cache[receipt] = xbrl
+                  time.sleep(.3)
+                  if xbrl['state'] == 'DART_API_STATUS_020':
+                      stats['HALTED_DART_RATE_LIMIT'] += 1
+                      break
+              comparisons_by_receipt = [comparison_for_task(t, result_cache.get(t['receipt'], {}), original, docs)
+                                        for t in tasks]
+              selected = [t for t in comparisons_by_receipt if t['is_asof_selected']]
+              summary = {'result': 'STAGE28_RECEIPT_XBRL_RESEARCH_ONLY',
+                         'generated_kst': stamp(),
+                         'market_date': load(ROOT / 'r14_full_market_grade_research.json', {}).get('market_date'),
+                         'mismatch_company_count': len(set(t['code'] for t in tasks)),
+                         'annual_receipts_expected': len(tasks),
+                         'xbrl_receipts_available': sum(result_cache.get(t['receipt'], {}).get('state') == 'XBRL_RECEIPT_ZIP_RETRIEVED' for t in tasks),
+                         'queries_this_run': queried, 'query_states': dict(stats),
+                         'selected_asof_receipts_extracted': sum(t['xbrl_state'] == 'XBRL_RECEIPT_ZIP_RETRIEVED' for t in selected),
+                         'receipt_comparison_research': comparisons_by_receipt,
+                         'point_in_time_financial_values_verified': 0,
+                         'official_per_verified': 0, 'official_pbr_verified': 0,
+                         'financial_basis_verified': False,
+                         'investment_decisions_authorized': False, 'final_buy_signals': 0,
+                         'limitations': ['XBRL facts may use multiple contexts/financial bases; same account value does not identify CFS/OFS',
+                                         'Document ZIP hashes and XBRL facts are fetched at audit-time, not a signed historical availability snapshot',
+                                         'Historical XBRL financial reconciliation and official KRX PER/PBR authentication are not yet complete']}
+              save(PERSIST, {'format': 'R14_RECEIPT_XBRL_RESEARCH_CACHE_V1', 'updated_kst': stamp(),
+                             'rows': result_cache, 'investment_decisions_authorized': False, 'final_buy_signals': 0})
+              save(OUT, summary)
+              print(json.dumps({k:v for k,v in summary.items() if k not in ('receipt_comparison_research','limitations')}, ensure_ascii=False))
+
+
+          if __name__ == '__main__':
+              import sys
+              if '--self-test' in sys.argv:
+                  print(json.dumps({'self_test': 'PASS', 'tests': selftest()}))
+              else:
+                  run()
+          PYCODE
+          python -m py_compile /tmp/r14_receipt_xbrl_reconciliation.py
+          python /tmp/r14_receipt_xbrl_reconciliation.py --self-test
+          python /tmp/r14_receipt_xbrl_reconciliation.py
       - name: Gate dated KRX PER PBR export using existing parser (NO independent authentication)
         id: dated_ratio_input
         shell: bash
@@ -1127,11 +1526,12 @@ jobs:
           FINANCIAL_VALUES_RESULT: ${{ steps.financial_values.outcome }}
           ORIGINAL_VERSIONS_RESULT: ${{ steps.original_versions.outcome }}
           DATED_RATIO_INPUT_RESULT: ${{ steps.dated_ratio_input.outcome }}
+          ORIGINAL_XBRL_RECONCILIATION_RESULT: ${{ steps.original_xbrl_reconciliation.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -1143,7 +1543,8 @@ jobs:
             'r14_filing_receipt_audit':'v5_reports/stage28/r14_filing_receipt_audit.json',
             'r14_financial_value_reconciliation':'v5_reports/stage28/r14_financial_value_reconciliation.json',
             'r14_document_versions':'v5_reports/stage28/r14_correction_original_document_audit.json',
-            'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json'
+            'r14_krx_ratio_input_gate':'v5_reports/stage28/r14_krx_official_ratio_source_gate.json',
+            'r14_xbrl_receipt_financial_research':'v5_reports/stage28/r14_xbrl_correction_financial_research.json'
           }
           details={}
           for name,p in status_files.items():
@@ -1178,6 +1579,7 @@ jobs:
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
             'financial_value_reconciliation':'CURRENT_DART_RECEIPT_AND_ACCOUNT_MATCH_ONLY_NO_HISTORICAL_POINT_IN_TIME_AUTHORIZATION',
             'filing_document_original_correction':'ARCHIVE_HASH_ONLY_NO_HISTORICAL_FINANCIAL_PROOF',
+            'xbrl_receipt_financial_comparison':'RESEARCH_FACT_CANDIDATES_ONLY; BASIS_AND_PIT_UNVERIFIED',
             'official_ratio_source_gate':'DATE_MATCHED_EXPORT_CAN_BE_COMPARED_BUT_NOT_AUTHENTICATED',
             'source_date_in_existing_data':source_date,
             'existing_data_fresh_for_today':source_date==now.strftime('%Y%m%d'),
