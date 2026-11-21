@@ -1,0 +1,1935 @@
+{
+  "result": "R14_FILTERED_VALUATION_EVIDENCE_GATE_V1",
+  "generated_kst": "2026-11-21T12:27:38.057931+09:00",
+  "research_market_date": "20261119",
+  "input_candidates_path": "v5_reports/stage28/r14_eligible_research_candidates.json",
+  "excluded_policy_source": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
+  "official_ratio_gate_source": "v5_reports/stage28/r14_krx_official_ratio_source_gate.json",
+  "official_ratio_provenance_source": "v5_reports/stage28/r14_official_ratio_provenance_audit.json",
+  "historical_filing_gate_source": "v5_reports/stage28/r14_valuation_disclosure_gate.json",
+  "raw_candidate_count_for_audit_only": 128,
+  "filtered_input_candidate_count": 125,
+  "excluded_for_missing_corrected_filing": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "ready_for_research_valuation_count": 0,
+  "deferred_for_evidence_count": 125,
+  "block_reason_counts": {
+    "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED": 125,
+    "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED": 125,
+    "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED": 125
+  },
+  "authentic_official_per_pbr_independently_confirmed": false,
+  "historical_financial_point_in_time_gate_passed": false,
+  "official_ratio_source_status": "NO_DATE_MATCHED_KRX_EXPORT",
+  "expected_official_ratio_source_file": "data/v5_official_ratio_exports/20261119.csv",
+  "input_research_grade_counts": {
+    "B": 102,
+    "A": 23
+  },
+  "ready_queue_output": "v5_reports/stage28/r14_valuation_ready_research_candidates.json",
+  "deferred_candidates": [
+    {
+      "code": "000050",
+      "name": "경방",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000270",
+      "name": "기아",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000370",
+      "name": "한화손해보험",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000430",
+      "name": "대원강업",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000660",
+      "name": "SK하이닉스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000970",
+      "name": "한국주철관",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "000990",
+      "name": "DB하이텍",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "001520",
+      "name": "동양",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002100",
+      "name": "경농",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002170",
+      "name": "SYTS",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002310",
+      "name": "아세아제지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002810",
+      "name": "삼영무역",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002900",
+      "name": "TYM",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "002990",
+      "name": "금호건설",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003090",
+      "name": "대웅",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003100",
+      "name": "선광",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003200",
+      "name": "일신방직",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003230",
+      "name": "삼양식품",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003280",
+      "name": "흥아해운",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "003480",
+      "name": "한진중공업홀딩스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "005290",
+      "name": "동진쎄미켐",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "005710",
+      "name": "대원산업",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "005830",
+      "name": "DB손해보험",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "005940",
+      "name": "NH투자증권",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "007340",
+      "name": "DN오토모티브",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "007700",
+      "name": "F&F홀딩스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "009540",
+      "name": "HD한국조선해양",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "009780",
+      "name": "엠에스씨",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "010120",
+      "name": "LS ELECTRIC",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "011200",
+      "name": "HMM",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "011560",
+      "name": "세보엠이씨",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "012630",
+      "name": "HDC",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "013030",
+      "name": "하이록코리아",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "014940",
+      "name": "오리엔탈정공",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "015360",
+      "name": "INVENI",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "016380",
+      "name": "KG스틸",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "017890",
+      "name": "한국알콜",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "018120",
+      "name": "진로발효",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "018290",
+      "name": "브이티",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "018670",
+      "name": "SK가스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "023600",
+      "name": "삼보판지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "025770",
+      "name": "한국정보통신",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "027410",
+      "name": "BGF",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "027710",
+      "name": "팜스토리",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "030190",
+      "name": "NICE평가정보",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "030200",
+      "name": "KT",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "032190",
+      "name": "다우데이타",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "032620",
+      "name": "GC메디아이",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "032640",
+      "name": "LG유플러스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "034950",
+      "name": "한국기업평가",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "035000",
+      "name": "HS애드",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "035900",
+      "name": "JYP Ent.",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "036170",
+      "name": "에이치엠넥스",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "036190",
+      "name": "금화피에스시",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "036630",
+      "name": "세종텔레콤",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "037460",
+      "name": "삼지전자",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "039830",
+      "name": "오로라",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "041190",
+      "name": "우리기술투자",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "041510",
+      "name": "에스엠",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "041520",
+      "name": "이엘씨",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "042000",
+      "name": "카페24",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "064400",
+      "name": "LG씨엔에스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "071970",
+      "name": "HD현대마린엔진",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "078930",
+      "name": "GS",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "093050",
+      "name": "LF",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "105560",
+      "name": "KB금융",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "175330",
+      "name": "JB금융지주",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "229640",
+      "name": "LS에코에너지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "267250",
+      "name": "HD현대",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "294870",
+      "name": "IPARK현대산업개발",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "383220",
+      "name": "F&F",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "383800",
+      "name": "LX홀딩스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "487570",
+      "name": "HS효성",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "043150",
+      "name": "바텍",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "045100",
+      "name": "한양이엔지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "045390",
+      "name": "대아티아이",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "046440",
+      "name": "KG파이낸셜",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "049430",
+      "name": "코메론",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "049520",
+      "name": "유아이엘",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "051160",
+      "name": "지어소프트",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "051360",
+      "name": "토비스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "051500",
+      "name": "CJ프레시웨이",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "052330",
+      "name": "코텍",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "052400",
+      "name": "코나아이",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "053300",
+      "name": "한국정보인증",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "053610",
+      "name": "프로텍",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "053800",
+      "name": "안랩",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "060250",
+      "name": "NHN KCP",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "061090",
+      "name": "세나테크놀로지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "064850",
+      "name": "에프앤가이드",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "065710",
+      "name": "서호전기",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "067160",
+      "name": "SOOP",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "067900",
+      "name": "와이엔텍",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "068930",
+      "name": "디지털대성",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "071280",
+      "name": "로체시스템즈",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "072870",
+      "name": "메가스터디",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "078150",
+      "name": "HB테크놀러지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "078340",
+      "name": "컴투스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "079960",
+      "name": "동양이엔피",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "080220",
+      "name": "제주반도체",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "080580",
+      "name": "오킨스전자",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "083450",
+      "name": "GST",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "083500",
+      "name": "에프엔에스테크",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "084370",
+      "name": "유진테크",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "086670",
+      "name": "비엠티",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "089890",
+      "name": "코세스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "092460",
+      "name": "한라IMS",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "093190",
+      "name": "빅솔론",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "093320",
+      "name": "케이아이엔엑스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "093520",
+      "name": "매커스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "094820",
+      "name": "일진파워",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "095610",
+      "name": "테스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "098120",
+      "name": "마이크로컨텍솔",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "099430",
+      "name": "바이오플러스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "101160",
+      "name": "월덱스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "101490",
+      "name": "에스앤에스텍",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "101930",
+      "name": "인화정공",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "102710",
+      "name": "이엔에프테크놀로지",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "104830",
+      "name": "원익머트리얼즈",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "108380",
+      "name": "대양전기공업",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "110990",
+      "name": "디아이티",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "114810",
+      "name": "한솔아이원스",
+      "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "114840",
+      "name": "아이패밀리에스씨",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "123410",
+      "name": "코리아에프티",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "131290",
+      "name": "티에스이",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261119",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    }
+  ],
+  "valuation_price_calculation_executed": false,
+  "research_only": true,
+  "readiness_count_with_upstream_official_and_pit_flags": 0,
+  "official_ratio_source_independently_rechecked_here": false,
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0,
+  "raw_candidate_feed_used_as_valuation_input": false,
+  "source_retrieval_requests_this_run": 0,
+  "limitations": [
+    "KRX export file alone is NOT independent source authentication",
+    "Computed PER/PBR in R14 are not official KRX ratios",
+    "No research reference value may be promoted to a verified target price",
+    "Readiness requires per-stock official ratios and independently verified as-of financial filing",
+    "Ready queue is NOT an investment signal even when future evidence completes"
+  ],
+  "source_file_sha256": {
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "23e2375981ca5426326cb70889b3374e2cd0ee331beba3a3825b8f783bd6e856",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "f4fb374330350cdc9f082b06fbb4de490bc68120b52b418a55d8d768021811e5",
+    "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
+    "v5_reports/stage28/r14_official_ratio_provenance_audit.json": "ea6d2cd30ad4925b8b812f8104878204a91fe7dd3d0850c2e0c453c9054125ab",
+    "v5_reports/stage28/r14_valuation_disclosure_gate.json": "54811e512525ce4d80e54b9a5e52154ca120c23111b4a82d5f45d5b1f74649ba",
+    "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "6c9a074f3a8bff4055735aa3385e38a3dcbee1f8f4550cd506050d8df158ec57"
+  },
+  "stage27_status_sha256_read_only": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+  "legacy_financial_cache_sha256_read_only": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
+}
