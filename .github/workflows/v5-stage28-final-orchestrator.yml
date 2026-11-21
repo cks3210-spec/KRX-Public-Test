@@ -4816,6 +4816,472 @@ jobs:
           print('Stage35 evidence triage results valid; no official/PIT/share-class promotion')
           PY
 
+      - name: Observe filtered R14 research-reference outcomes at 5 10 20 actual archived sessions (no trading)
+        id: research_outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_research_outcome_tracking.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Stage28 #36: historical R14 research reference-price 5/10/20-session observations.
+          
+          This engine explicitly does not track actual trades or claim strategy returns. It
+          references the R14 research-date closing price, while independent Stage27 holds
+          its own trade-entry / first-future-session methodology and is never modified.
+          
+          Only known observed sessions in the existing 70-session archival source count.
+          No calendar day arithmetic, no forward filling, no fabricated future closes.
+          """
+          from __future__ import annotations
+          
+          import collections
+          import csv
+          import datetime as dt
+          from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+          import gzip
+          import hashlib
+          import json
+          from pathlib import Path
+          import re
+          import sys
+          from zoneinfo import ZoneInfo
+          
+          ROOT = Path('v5_reports/stage28')
+          SHORTLIST = ROOT / 'r14_eligible_research_candidates.json'
+          EXCLUSION = ROOT / 'r14_candidate_exclusion_gate.json'
+          TRIAGE = ROOT / 'r14_calculated_ratio_evidence_triage.json'
+          HISTORY = Path('data/daily_70d.csv.gz')
+          MARKET_SUMMARY = Path('data/summary.json')
+          LATEST = Path('data/latest.csv')
+          STAGE27_STATUS = Path('v5_reports/stage27/status.json')
+          STAGE27_R14 = Path('v5_reports/stage27/r14_research_snapshots.csv')
+          STAGE27_PERF = Path('v5_reports/stage27/performance_5_10_20.csv')
+          STAGE27_LEDGER = Path('v5_reports/stage27/signal_ledger.csv')
+          COHORTS = ROOT / 'r14_reference_price_cohort_ledger.json'
+          RESULTS = ROOT / 'r14_reference_5_10_20_observations.json'
+          CSV_OUT = ROOT / 'r14_reference_5_10_20_observations.csv'
+          SUMMARY = ROOT / 'r14_reference_5_10_20_summary.json'
+          DATE = re.compile(r'^20\d{6}$')
+          CODE = re.compile(r'^\d{6}$')
+          HORIZONS=(5,10,20)
+          COHORT_VERSION='R14_RESEARCH_REFERENCE_COHORT_LEDGER_V1'
+          RESULT_VERSION='R14_RESEARCH_REFERENCE_PRICE_OUTCOMES_V1'
+          SUMMARY_VERSION='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1'
+          
+          
+          def load(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          
+          
+          def value(x):
+              try:
+                  if x is None or isinstance(x,bool):return None
+                  d=Decimal(str(x).replace(',','').strip())
+                  return d if d.is_finite() and d>0 else None
+              except (TypeError,InvalidOperation,ValueError):return None
+          
+          
+          def valid_date(x):
+              if not isinstance(x,str) or not DATE.fullmatch(x):raise ValueError('INVALID_SESSION_DATE_'+str(x))
+              dt.datetime.strptime(x,'%Y%m%d')
+              return x
+          
+          
+          def index(rows,label):
+              if not isinstance(rows,list):raise ValueError(label+'_NOT_LIST')
+              result={}
+              for x in rows:
+                  if not isinstance(x,dict) or not isinstance(x.get('code'),str) or not CODE.fullmatch(x['code']):
+                      raise ValueError(label+'_BAD_CODE')
+                  if x['code'] in result:raise ValueError(label+'_DUPLICATE_CODE_'+x['code'])
+                  result[x['code']]=x
+              return result
+          
+          
+          def validate_inputs(shortlist,exclusion,triage):
+              if shortlist.get('result')!='R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1':raise ValueError('UNFILTERED_SHORTLIST')
+              if exclusion.get('result')!='R14_MISSING_CORRECTION_EXCLUSION_GATE_V1':raise ValueError('EXCLUSION_POLICY_MISSING')
+              if triage.get('result')!='R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1':raise ValueError('TRIAGE_MISSING')
+              date=valid_date(shortlist.get('research_market_date'))
+              if exclusion.get('research_market_date')!=date or triage.get('research_market_date')!=date:
+                  raise ValueError('MIXED_COHORT_DATE')
+              excluded=exclusion.get('excluded_codes')
+              if not isinstance(excluded,list) or not all(isinstance(x,str) and CODE.fullmatch(x) for x in excluded):
+                  raise ValueError('INVALID_EXCLUDED_CODES')
+              if len(excluded)!=len(set(excluded)):raise ValueError('DUPLICATE_EXCLUSIONS')
+              if sorted(excluded)!=sorted(shortlist.get('excluded_codes',[])) or sorted(excluded)!=sorted(triage.get('excluded_correction_codes',[])):
+                  raise ValueError('EXCLUSIONS_NOT_PROPAGATED')
+              a=index(shortlist.get('candidates'),'RESEARCH')
+              b=index(triage.get('candidate_evidence_rows'),'TRIAGE')
+              if set(a)&set(excluded):raise ValueError('CORRECTION_EXCLUDED_CODE_PRESENT')
+              if set(a)!=set(b):raise ValueError('EVIDENCE_TRIAGE_CODE_MISMATCH')
+              n=len(a)
+              if n!=shortlist.get('candidate_count') or n!=exclusion.get('eligible_research_candidate_count') or n!=triage.get('filtered_input_candidate_count'):
+                  raise ValueError('CANDIDATE_COUNT_MISMATCH')
+              if n==0:raise ValueError('EMPTY_RESEARCH_FEED')
+              for code,row in a.items():
+                  if row.get('market_date')!=date or row.get('grade') not in ('A','B','B+'):
+                      raise ValueError('GRADE_OR_DATE_INVALID_'+code)
+                  if row.get('buy_signal') is not False or row.get('actionable_entry_price') is not False:
+                      raise ValueError('UNAUTHORIZED_ENTRY_PRICE_'+code)
+                  if b[code].get('research_market_date')!=date or b[code].get('grade_research_only')!=row['grade']:
+                      raise ValueError('TRIAGE_UNMATCHED_DATE_GRADE_'+code)
+                  if b[code].get('actionable_price_verified') is not False:
+                      raise ValueError('TRIAGE_PRICE_PROMOTION_'+code)
+              for o in (shortlist,exclusion,triage):
+                  if o.get('investment_decisions_authorized') is not False or o.get('final_buy_signals')!=0:
+                      raise ValueError('INPUT_UNAUTHORIZED_INVESTMENT_FLAGS')
+              return date,a,b,sorted(excluded)
+          
+          
+          def read_archived_history(path,latest,summary,tracked_codes):
+              latest_day=valid_date(summary.get('latest_trading_date'))
+              if summary.get('sessions_stored')!=70:raise ValueError('HISTORY_SESSION_COUNT_NOT_VERIFIED')
+              dates=collections.Counter()
+              prices={}
+              markets={}
+              with gzip.open(path,'rt',encoding='utf-8-sig',newline='') as f:
+                  for row in csv.DictReader(f):
+                      day=valid_date(row.get('BAS_DD'))
+                      market=row.get('MARKET')
+                      code=row.get('ISU_CD')
+                      if market not in ('KOSPI','KOSDAQ') or not isinstance(code,str):raise ValueError('INVALID_MARKET_HISTORY_ROW')
+                      dates[day]+=1
+                      if code in tracked_codes:
+                          k=(day,code)
+                          if k in prices:raise ValueError('DUPLICATE_TRACKED_SECURITY_DATE_'+str(k))
+                          close=value(row.get('TDD_CLSPRC'))
+                          if close is not None:prices[k]=close
+                          markets[k]=market
+              if len(dates)!=70 or max(dates)!=latest_day or sum(dates.values())!=summary.get('total_rows_stored'):
+                  raise ValueError('ARCHIVE_NOT_MATCHING_VERIFIED_MARKET_SUMMARY')
+              if min(dates.values())<1500:raise ValueError('ARCHIVE_SESSION_MARKET_COVERAGE_TOO_LOW')
+              if latest is not None:
+                  with latest.open(encoding='utf-8-sig',newline='') as f:
+                      rows=list(csv.DictReader(f))
+                  if len(rows)!=dates[latest_day]:raise ValueError('ARCHIVE_LATEST_COUNT_MISMATCH')
+                  sample={r['ISU_CD']:r for r in rows if r.get('ISU_CD') in tracked_codes}
+                  for code,r in sample.items():
+                      if r.get('BAS_DD')!=latest_day or prices.get((latest_day,code))!=value(r.get('TDD_CLSPRC')):
+                          raise ValueError('ARCHIVE_LATEST_TRACKED_PRICE_MISMATCH_'+code)
+              return sorted(dates),prices,markets,latest_day
+          
+          
+          def frozen_cohorts(old,market_date,filtered,triage,excluded,sessions,prices):
+              if old is None:
+                  ledger={'version':COHORT_VERSION,'cohorts':[],'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0}
+              else:
+                  if old.get('version')!=COHORT_VERSION or old.get('research_only') is not True or old.get('investment_decisions_authorized') is not False or old.get('final_buy_signals')!=0:
+                      raise ValueError('OLD_COHORT_LEDGER_NOT_VALID')
+                  ledger=json.loads(json.dumps(old))
+              cohorts=ledger.get('cohorts')
+              if not isinstance(cohorts,list) or len({c.get('research_market_date') for c in cohorts})!=len(cohorts):
+                  raise ValueError('OLD_COHORT_DUPLICATE_DATE')
+              for c in cohorts:
+                  valid_date(c.get('research_market_date'))
+                  codes=index(c.get('candidates'),'FROZEN_COHORT')
+                  if any(x in excluded for x in codes):raise ValueError('EXCLUDED_CODE_IN_FROZEN_COHORT')
+                  for row in codes.values():
+                      if value(row.get('reference_close_krw')) is None:raise ValueError('INVALID_FROZEN_PRICE')
+              previous=next((c for c in cohorts if c['research_market_date']==market_date),None)
+              if market_date not in sessions and previous is None:
+                  raise ValueError('NEW_COHORT_MARKET_DATE_NOT_IN_VERIFIED_ARCHIVE')
+              new_candidates=[]
+              for code,c in sorted(filtered.items()):
+                  p=value(c.get('close_krw'))
+                  if p is None:raise ValueError('INVALID_REFERENCE_CLOSE_'+code)
+                  if market_date in sessions and prices.get((market_date,code))!=p:
+                      raise ValueError('RESEARCH_CLOSE_NOT_MATCHING_ARCHIVED_MARKET_'+code)
+                  tier=triage[code]['evidence_tier']
+                  new_candidates.append({'code':code,'name':c.get('name'),'grade_research_only':c['grade'],
+                       'research_evidence_tier':tier,'reference_close_krw':str(p),'source_market_date':market_date,
+                       'price_is_trade_entry':False,'investment_decisions_authorized':False})
+              if previous is None:
+                  cohorts.append({'research_market_date':market_date,'reference_method':'RESEARCH_DATE_MARKET_CLOSE_NOT_TRADE_ENTRY',
+                                  'candidates':new_candidates,'candidate_count':len(new_candidates),
+                                  'excluded_correction_codes':excluded})
+                  cohorts.sort(key=lambda c:c['research_market_date'])
+                  added=True
+              else:
+                  if previous['candidates']!=new_candidates or previous.get('candidate_count')!=len(new_candidates):
+                      raise ValueError('PREVIOUS_RESEARCH_COHORT_BASELINE_FROZEN_MISMATCH')
+                  added=False
+              return ledger,added
+          
+          
+          def load_previous_results(doc):
+              if doc is None:return {}
+              if doc.get('version')!=RESULT_VERSION or doc.get('research_only') is not True or doc.get('final_buy_signals')!=0:
+                  raise ValueError('PREVIOUS_PERFORMANCE_REPORT_NOT_VALID')
+              out={}
+              for row in doc.get('cohort_research_rows',[]):
+                  date=valid_date(row.get('research_market_date'))
+                  code=row.get('code')
+                  if not isinstance(code,str) or not CODE.fullmatch(code):raise ValueError('BAD_PREVIOUS_OUTCOME_CODE')
+                  key=(date,code)
+                  if key in out:raise ValueError('DUPLICATE_PREVIOUS_OUTCOME')
+                  out[key]=row
+              return out
+          
+          
+          def observed_return(reference,target):
+              return float(((target/reference-1)*Decimal(100)).quantize(Decimal('0.0001'),rounding=ROUND_HALF_UP))
+          
+          
+          def evaluate(ledger,sessions,prices,old_results,excluded):
+              prev=load_previous_results(old_results)
+              index_by_day={d:i for i,d in enumerate(sessions)}
+              rows=[]; counts=collections.Counter(); outcomes=collections.Counter(); per_tier=collections.defaultdict(collections.Counter)
+              for cohort in ledger['cohorts']:
+                  date=cohort['research_market_date']
+                  i=index_by_day.get(date)
+                  for c in cohort['candidates']:
+                      code=c['code'];key=(date,code)
+                      if code in excluded:raise ValueError('CORRECTION_EXCLUDED_REINTRODUCED')
+                      previous=prev.get(key)
+                      if previous and str(value(previous.get('research_reference_close_krw')))!=str(value(c['reference_close_krw'])):
+                          raise ValueError('PREVIOUS_REFERENCE_CLOSE_CHANGED_'+code)
+                      ref=value(c['reference_close_krw'])
+                      row={'research_market_date':date,'code':code,'name':c['name'],
+                           'grade_research_only':c['grade_research_only'],'research_evidence_tier':c['research_evidence_tier'],
+                           'research_reference_close_krw':str(ref),
+                           'reference_is_not_trade_entry':True,'investment_decisions_authorized':False,'final_buy_signal':False,
+                           'research_reference_returns_not_adjusted_for_dividends_splits_fees':True,'horizons':{}}
+                      for h in HORIZONS:
+                          label=str(h)
+                          old=previous.get('horizons',{}).get(label) if previous else None
+                          if i is None or i+h>=len(sessions):
+                              fresh={'status':'PENDING_ARCHIVED_SESSIONS' if i is not None else 'BASELINE_SESSION_NOT_IN_ROLLING_ARCHIVE',
+                                     'target_session':None,'target_close_krw':None,'research_reference_return_pct':None,'direction':None}
+                          else:
+                              target_day=sessions[i+h]
+                              target_close=prices.get((target_day,code))
+                              if target_close is None:
+                                  fresh={'status':'TARGET_SESSION_PRICE_MISSING','target_session':target_day,'target_close_krw':None,
+                                         'research_reference_return_pct':None,'direction':None}
+                              else:
+                                  change=observed_return(ref,target_close)
+                                  fresh={'status':'MATURED_RESEARCH_REFERENCE_ONLY','target_session':target_day,
+                                         'target_close_krw':str(target_close),'research_reference_return_pct':change,
+                                         'direction':'UP' if change>0 else 'DOWN' if change<0 else 'FLAT'}
+                          if old and old.get('status')=='MATURED_RESEARCH_REFERENCE_ONLY':
+                              if fresh['status']=='MATURED_RESEARCH_REFERENCE_ONLY' and any(old.get(k)!=fresh.get(k) for k in ('target_session','target_close_krw','research_reference_return_pct','direction')):
+                                  raise ValueError('HISTORICAL_MATURED_OUTCOME_CHANGED_'+date+'_'+code+'_'+label)
+                              # Matured horizons are frozen even after the 70-session rolling window expires.
+                              final=old
+                          else:final=fresh
+                          row['horizons'][label]=final
+                          counts[final['status']]+=1
+                          per_tier[c['research_evidence_tier']][str(h)+'_'+final['status']]+=1
+                          if final['status']=='MATURED_RESEARCH_REFERENCE_ONLY':outcomes[(label,final['direction'])]+=1
+                      rows.append(row)
+              if len(rows)!=sum(len(c['candidates']) for c in ledger['cohorts']):raise ValueError('OUTCOME_ROW_COUNT_MISMATCH')
+              return rows,dict(counts),{f'{k[0]}_SESSION_{k[1]}':v for k,v in outcomes.items()}, {k:dict(v) for k,v in per_tier.items()}
+          
+          
+          def stage27_crosswalk(path,st,curr_date,curr_codes):
+              if st.get('research_only') is not True or st.get('investment_decisions_authorized') is not False or st.get('final_buy_signals')!=0:
+                  raise ValueError('STAGE27_UNSAFE_STATUS')
+              with path.open(encoding='utf-8-sig',newline='') as f:
+                  rows=list(csv.DictReader(f))
+              stage_rows=[];seen=set()
+              for r in rows:
+                  if r.get('source_market_date')!=curr_date or r.get('ISU_CD') not in curr_codes:continue
+                  if r.get('signal_date') and r.get('source_market_date')>r['signal_date']:
+                      raise ValueError('STAGE27_FUTURE_REFERENCE_DATE')
+                  code=r['ISU_CD']
+                  if code in seen:raise ValueError('STAGE27_DUPLICATE_COHORT_CODE_'+code)
+                  seen.add(code)
+                  stage_rows.append(r)
+              frozen=[r for r in stage_rows if value(r.get('entry_close_krw')) is not None]
+              return {'stage27_overlap_research_codes':len(seen),'stage27_rows_read_only':len(rows),
+                      'stage27_trade_like_entry_price_frozen_count':len(frozen),
+                      'stage27_first_future_entry_still_pending_count':len(stage_rows)-len(frozen),
+                      'stage27_research_groups_not_merged_with_reference_returns':True,
+                      'research_cohort_codes_missing_from_stage27':len(curr_codes-seen)}
+          
+          
+          def run(root=ROOT):
+              filtered=load(SHORTLIST);ex=load(EXCLUSION);tri=load(TRIAGE)
+              date,candidates,evidence,excluded=validate_inputs(filtered,ex,tri)
+              in_paths=[SHORTLIST,EXCLUSION,TRIAGE,HISTORY,MARKET_SUMMARY,LATEST,STAGE27_STATUS,STAGE27_R14,STAGE27_PERF,STAGE27_LEDGER]
+              before={str(p):sha(p) for p in in_paths}
+              market_summary=load(MARKET_SUMMARY)
+              sessions,prices,markets,latest=read_archived_history(HISTORY,LATEST,market_summary,set(candidates))
+              prior=load(COHORTS) if COHORTS.exists() else None
+              ledger,created=frozen_cohorts(prior,date,candidates,evidence,excluded,sessions,prices)
+              prev_out=load(RESULTS) if RESULTS.exists() else None
+              observations,counts,directions,tier_results=evaluate(ledger,sessions,prices,prev_out,excluded)
+              source_status=load(STAGE27_STATUS)
+              s27=stage27_crosswalk(STAGE27_R14,source_status,date,set(candidates))
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul')).isoformat()
+              ledger['last_evaluated_kst']=now
+              observation_report={'version':RESULT_VERSION,'generated_kst':now,'latest_verified_market_snapshot':latest,
+                  'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0,
+                  'reference_method':'FROZEN_RESEARCH_DATE_CLOSE_NOT_A_TRADE_ENTRY',
+                  'cohort_research_rows':observations,'observed_session_count':len(sessions),
+                  'excluded_correction_codes':excluded,'stage27_performance_rows_untouched':True}
+              summary={'version':SUMMARY_VERSION,'generated_kst':now,'current_research_market_date':date,
+                  'latest_verified_market_snapshot':latest,'source_archive_sessions':len(sessions),
+                  'current_filtered_candidate_count':len(candidates),'current_research_grade_counts':filtered['candidate_grades'],
+                  'current_evidence_tier_counts':tri['tier_counts'],'historical_cohort_count':len(ledger['cohorts']),
+                  'tracked_research_reference_rows':len(observations),'new_research_cohort_frozen':created,
+                  'horizon_observation_status_counts':counts,'matured_reference_direction_counts':directions,
+                  'matured_status_by_evidence_tier':tier_results,
+                  'expected_horizon_observations':len(observations)*len(HORIZONS),
+                  'excluded_correction_codes':excluded,'stage27_context':s27,
+                  'source_price_type':'EXISTING_VERIFIED_70_SESSION_MARKET_ARCHIVE',
+                  'future_return_is_not_a_trade_return':True,'no_calendar_day_substitution':True,
+                  'no_forward_filled_missing_prices':True,'returns_not_adjusted_for_dividends_splits_fees':True,
+                  'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0,
+                  'official_krx_per_pbr_authenticated':False,'financial_point_in_time_verified':False,
+                  'new_krx_api_requests':0,'new_dart_requests':0,'missing_corrected_filing_retrieval_disabled':True,
+                  'existing_stage27_modified':False,
+                  'limitations':['Reference close is dated research observation, not an executable entry or Stage27 frozen entry close',
+                      'Only observed later market snapshots count as future sessions; missing future sessions remain pending',
+                      'Date-count checks use the archived session series; not separate exchange calendar authentication',
+                      'Unadjusted close comparisons are sensitive to stock splits, corporate actions, dividends and trading suspension',
+                      'Research cohort performance is not a tested trade strategy or buy recommendation'],
+                  'read_only_source_sha256':before}
+              # Fail closed if new files somehow mask changes to historical read-only sources.
+              for p in in_paths:
+                  if before[str(p)]!=sha(p):raise ValueError('UNEXPECTED_INPUT_MUTATION_'+str(p))
+              ROOT.mkdir(parents=True,exist_ok=True)
+              # Write reports only after all validation; never change Stage27 or production financial caches.
+              COHORTS.write_text(json.dumps(ledger,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              RESULTS.write_text(json.dumps(observation_report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              with CSV_OUT.open('w',encoding='utf-8-sig',newline='') as f:
+                  fields=['research_market_date','code','name','grade_research_only','research_evidence_tier','research_reference_close_krw',
+                          'target_session_5','target_close_5','reference_return_pct_5','status_5',
+                          'target_session_10','target_close_10','reference_return_pct_10','status_10',
+                          'target_session_20','target_close_20','reference_return_pct_20','status_20','investment_decisions_authorized']
+                  w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
+                  for row in observations:
+                      o={k:row.get(k) for k in fields if k in row}
+                      for h in HORIZONS:
+                          x=row['horizons'][str(h)]
+                          o.update({f'target_session_{h}':x.get('target_session'),f'target_close_{h}':x.get('target_close_krw'),
+                                    f'reference_return_pct_{h}':x.get('research_reference_return_pct'),f'status_{h}':x.get('status')})
+                      o['investment_decisions_authorized']=False
+                      w.writerow(o)
+              SUMMARY.write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print(json.dumps({'stage':36,'cohort_date':date,'cohorts':len(ledger['cohorts']),
+                    'reference_rows':len(observations),'horizon_status_counts':counts,
+                    'stage27_context':s27,'official_valuation_verified':0,'final_buy_signals':0},ensure_ascii=False))
+              return summary
+          
+          
+          def test():
+              checks=0
+              def check(pred):
+                  nonlocal checks
+                  assert pred
+                  checks+=1
+              def expect(fn,code):
+                  nonlocal checks
+                  try:fn()
+                  except ValueError as e:
+                      assert code in str(e),str(e)
+                      checks+=1
+                      return
+                  raise AssertionError('Expected '+code)
+              c={'code':'000001','name':'test','market_date':'20261119','grade':'A','close_krw':'100','buy_signal':False,'actionable_entry_price':False}
+              e={'code':'000001','research_market_date':'20261119','grade_research_only':'A','evidence_tier':'RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED','actionable_price_verified':False}
+              s={'result':'R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1','research_market_date':'20261119','excluded_codes':['033500'],
+                 'candidate_count':1,'candidates':[c],'investment_decisions_authorized':False,'final_buy_signals':0}
+              ex={'result':'R14_MISSING_CORRECTION_EXCLUSION_GATE_V1','research_market_date':'20261119','excluded_codes':['033500'],
+                  'eligible_research_candidate_count':1,'investment_decisions_authorized':False,'final_buy_signals':0}
+              tri={'result':'R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1','research_market_date':'20261119','excluded_correction_codes':['033500'],
+                   'filtered_input_candidate_count':1,'candidate_evidence_rows':[e],
+                   'tier_counts':{'RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED':1},
+                   'investment_decisions_authorized':False,'final_buy_signals':0}
+              date,a,b,excluded=validate_inputs(s,ex,tri)
+              check(date=='20261119')
+              check(list(a)==['000001'])
+              check(list(b)==['000001'])
+              check(excluded==['033500'])
+              expect(lambda:validate_inputs({**s,'candidate_count':2},ex,tri),'CANDIDATE_COUNT_MISMATCH')
+              expect(lambda:validate_inputs({**s,'excluded_codes':[]},ex,tri),'EXCLUSIONS_NOT_PROPAGATED')
+              expect(lambda:validate_inputs({**s,'candidates':[c,{**c,'code':'033500'}]},ex,tri),'CORRECTION_EXCLUDED_CODE_PRESENT')
+              expect(lambda:validate_inputs({**s,'candidates':[c,c]},ex,tri),'DUPLICATE_CODE')
+              expect(lambda:validate_inputs({**s,'candidates':[{**c,'buy_signal':True}]},ex,tri),'UNAUTHORIZED_ENTRY_PRICE')
+              expect(lambda:validate_inputs(s,ex,{**tri,'research_market_date':'20261118'}),'MIXED_COHORT_DATE')
+              expect(lambda:validate_inputs(s,ex,{**tri,'investment_decisions_authorized':True}),'INPUT_UNAUTHORIZED_INVESTMENT_FLAGS')
+              check(value('100.5')==Decimal('100.5'))
+              check(value('-1') is None)
+              check(value('NaN') is None)
+              check(value('') is None)
+              check(value(True) is None)
+              check(observed_return(Decimal(100),Decimal(107))==7.0)
+              check(observed_return(Decimal(100),Decimal(87))==-13.0)
+              check(observed_return(Decimal(100),Decimal(100))==0)
+              dates=['20261119']+[(dt.datetime(2026,11,20)+dt.timedelta(days=i)).strftime('%Y%m%d') for i in range(25)]
+              prices={('20261119','000001'):Decimal(100)}
+              for i,d in enumerate(dates[1:],1):prices[(d,'000001')]=Decimal(100+i)
+              ledger,added=frozen_cohorts(None,'20261119',a,b,excluded,dates,prices)
+              check(added is True)
+              check(len(ledger['cohorts'])==1)
+              ledger2,added2=frozen_cohorts(ledger,'20261119',a,b,excluded,dates,prices)
+              check(added2 is False)
+              check(ledger2['cohorts']==ledger['cohorts'])
+              expect(lambda:frozen_cohorts(ledger,'20261119',{**a,'000001':{**c,'close_krw':'101'}},b,excluded,dates,prices),'RESEARCH_CLOSE_NOT_MATCHING_ARCHIVED_MARKET')
+              expect(lambda:frozen_cohorts(ledger,'20261119',{**a,'000001':{**c,'grade':'B'}},b,excluded,dates,prices),'PREVIOUS_RESEARCH_COHORT_BASELINE_FROZEN_MISMATCH')
+              obs,count,direction,tiers=evaluate(ledger,dates,prices,None,excluded)
+              check(obs[0]['horizons']['5']['status']=='MATURED_RESEARCH_REFERENCE_ONLY')
+              check(obs[0]['horizons']['5']['target_session']==dates[5])
+              check(obs[0]['horizons']['5']['research_reference_return_pct']==5.0)
+              check(obs[0]['horizons']['10']['research_reference_return_pct']==10.0)
+              check(obs[0]['horizons']['20']['research_reference_return_pct']==20.0)
+              check(count=={'MATURED_RESEARCH_REFERENCE_ONLY':3})
+              check(direction['5_SESSION_UP']==1)
+              check(len(tiers)==1)
+              short=dates[:4]
+              pobs,pc,_,_=evaluate(ledger,short,prices,None,excluded)
+              check(pc=={'PENDING_ARCHIVED_SESSIONS':3})
+              check(pobs[0]['horizons']['5']['target_session'] is None)
+              missing={k:v for k,v in prices.items() if k!=(dates[5],'000001')}
+              m,mc,_,_=evaluate(ledger,dates,missing,None,excluded)
+              check(m[0]['horizons']['5']['status']=='TARGET_SESSION_PRICE_MISSING')
+              check(mc['TARGET_SESSION_PRICE_MISSING']==1)
+              prev={'version':RESULT_VERSION,'research_only':True,'final_buy_signals':0,'cohort_research_rows':obs}
+              carried,cc,_,_=evaluate(ledger,short,prices,prev,excluded)
+              check(cc=={'MATURED_RESEARCH_REFERENCE_ONLY':3})
+              check(carried[0]['horizons']['20']['target_session']==dates[20])
+              expect(lambda:evaluate(ledger,dates,{**prices,(dates[5],'000001'):Decimal(200)},prev,excluded),'HISTORICAL_MATURED_OUTCOME_CHANGED')
+              expect(lambda:evaluate(ledger,dates,prices,prev,['000001']),'CORRECTION_EXCLUDED_REINTRODUCED')
+              check(len(load_previous_results(prev))==1)
+              print(json.dumps({'stage':36,'self_tests_passed':checks,'test_status':'PASS'}))
+          
+          
+          if __name__=='__main__':
+              if len(sys.argv)>1 and sys.argv[1]=='--self-test':test()
+              else:run()
+          PYCODE
+          python -m py_compile /tmp/r14_research_outcome_tracking.py
+          python /tmp/r14_research_outcome_tracking.py --self-test
+          python /tmp/r14_research_outcome_tracking.py
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('v5_reports/stage28')
+          summary=json.loads((root/'r14_reference_5_10_20_summary.json').read_text(encoding='utf-8'))
+          feed=json.loads((root/'r14_eligible_research_candidates.json').read_text(encoding='utf-8'))
+          report=json.loads((root/'r14_reference_5_10_20_observations.json').read_text(encoding='utf-8'))
+          assert summary['version']=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1'
+          assert summary['current_filtered_candidate_count']==feed['candidate_count']
+          assert summary['current_research_market_date']==feed['research_market_date']
+          assert summary['tracked_research_reference_rows']>=feed['candidate_count']
+          assert sum(summary['horizon_observation_status_counts'].values())==summary['expected_horizon_observations']
+          assert report['reference_method']=='FROZEN_RESEARCH_DATE_CLOSE_NOT_A_TRADE_ENTRY'
+          assert all(x['reference_is_not_trade_entry'] is True and x['investment_decisions_authorized'] is False for x in report['cohort_research_rows'])
+          assert summary['excluded_correction_codes']==sorted(feed['excluded_codes'])
+          assert summary['investment_decisions_authorized'] is False and summary['final_buy_signals']==0
+          print('Stage36 research-only 5/10/20 horizon evidence complete; Stage27 unchanged')
+          PY
+
       - name: Run Stage25 fundamental research
         id: fundamental
         continue-on-error: true
@@ -4864,11 +5330,12 @@ jobs:
           OFFICIAL_RATIO_ROUTE_MONITOR_RESULT: ${{ steps.official_ratio_route_monitor.outcome }}
           CALCULATED_RATIO_RESULT: ${{ steps.calculated_ratio.outcome }}
           CALCULATED_RATIO_TRIAGE_RESULT: ${{ steps.calculated_ratio_triage.outcome }}
+          RESEARCH_OUTCOMES_RESULT: ${{ steps.research_outcomes.outcome }}
         run: |
           python - <<'PY'
           import datetime,json,os,pathlib,csv
           root=pathlib.Path('v5_reports/stage28');root.mkdir(parents=True,exist_ok=True)
-          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO','CALCULATED_RATIO_TRIAGE')}
+          statuses={n:os.environ.get(n+'_RESULT','unknown') for n in ('COLLECT','FUNDAMENTAL','DECISION','PERFORMANCE','FULL_MARKET_GRADE','RATIO_PROVENANCE','DART_RECEIPTS','FINANCIAL_VALUES','ORIGINAL_VERSIONS','DATED_RATIO_INPUT','ORIGINAL_XBRL_RECONCILIATION','XBRL_REVISION_DELTA','XBRL_STRUCTURE_DIAG','XBRL_DIMENSION_RECOVERY','XBRL_BASIS_ISOLATION','XBRL_CACHE_BRIDGE','R14_CANDIDATE_GATE','OFFICIAL_RATIO_SOURCE_PROBE','R14_VALUATION_READINESS','OFFICIAL_RATIO_ROUTE_MONITOR','CALCULATED_RATIO','CALCULATED_RATIO_TRIAGE','RESEARCH_OUTCOMES')}
           status_files={
             'official_operating_market':'v5_reports/stage28/official_market_check.json',
             'stage25':'v5_reports/stage25/status.json',
@@ -4897,6 +5364,9 @@ jobs:
             'r14_calculated_ratio_quality_gate':'v5_reports/stage28/r14_calculated_ratio_quality_gate.json',
             'r14_calculated_ratio_evidence_triage':'v5_reports/stage28/r14_calculated_ratio_evidence_triage.json',
             'r14_calculated_ratio_missing_evidence_queue':'v5_reports/stage28/r14_calculated_ratio_missing_evidence_queue.json',
+            'r14_research_reference_cohorts':'v5_reports/stage28/r14_reference_price_cohort_ledger.json',
+            'r14_research_reference_observations':'v5_reports/stage28/r14_reference_5_10_20_observations.json',
+            'r14_research_reference_outcome_summary':'v5_reports/stage28/r14_reference_5_10_20_summary.json',
             'r14_valuation_readiness_gate':'v5_reports/stage28/r14_valuation_readiness_gate.json',
             'r14_valuation_ready_research_queue':'v5_reports/stage28/r14_valuation_ready_research_candidates.json'
           }
@@ -4908,7 +5378,7 @@ jobs:
                       data=json.loads(f.read_text(encoding='utf-8'))
                       # Keep summary small: full 114-candidate evidence stays in its own JSON.
                       if name in ('r14_full_market_research','r14_filing_receipt_audit','r14_filtered_research_shortlist','r14_valuation_readiness_gate','r14_valuation_ready_research_queue','r14_calculated_per_pbr_research','r14_calculated_ratio_evidence_triage','r14_calculated_ratio_missing_evidence_queue'):
-                          data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates','candidate_evidence_rows','missing_evidence_candidates')}
+                          data={k:v for k,v in data.items() if k not in ('candidates','deferred_candidates','candidate_evidence_rows','missing_evidence_candidates','cohorts','cohort_research_rows')}
                       details[name]=data
                   except Exception as e:details[name]={'parse_error':str(e)}
               else:details[name]={'status_file':'not_present'}
@@ -4961,6 +5431,11 @@ jobs:
             'calculated_ratio_evidence_triage_status':('RESEARCH_ONLY_NO_INVESTMENT_AUTHORIZATION' if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' and details.get('r14_calculated_ratio_evidence_triage',{}).get('result')=='R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1' else 'BLOCKED_TRIAGE_NOT_VERIFIED'),
             'calculated_ratio_research_evidence_tiers':(details.get('r14_calculated_ratio_evidence_triage',{}).get('tier_counts') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
             'calculated_ratio_research_missing_evidence_count':(details.get('r14_calculated_ratio_evidence_triage',{}).get('incomplete_research_evidence_count') if statuses.get('CALCULATED_RATIO_TRIAGE')=='success' else None),
+            'research_reference_5_10_20_tracking':('RESEARCH_REFERENCE_RETURNS_NOT_TRADE' if statuses.get('RESEARCH_OUTCOMES')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else 'BLOCKED_RESEARCH_OUTCOME_NOT_VERIFIED'),
+            'active_research_reference_performance_feed':('v5_reports/stage28/r14_reference_5_10_20_observations.json' if statuses.get('RESEARCH_OUTCOMES')=='success' and details.get('r14_research_reference_outcome_summary',{}).get('version')=='R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1' else None),
+            'reference_5_10_20_tracked_research_rows':(details.get('r14_research_reference_outcome_summary',{}).get('tracked_research_reference_rows') if statuses.get('RESEARCH_OUTCOMES')=='success' else None),
+            'reference_5_10_20_horizon_status_counts':(details.get('r14_research_reference_outcome_summary',{}).get('horizon_observation_status_counts') if statuses.get('RESEARCH_OUTCOMES')=='success' else None),
+            'research_reference_prices_are_trade_entries':False,
             'r14_official_ratio_verification':'NOT_VERIFIED_NO_AUTHENTICATED_SOURCE',
             'financial_filing_point_in_time':'NOT_VERIFIED',
             'filing_receipt_version_audit':'EVIDENCE_COLLECTION_NO_FINANCIAL_VALUE_AUTHORIZATION',
@@ -4978,7 +5453,7 @@ jobs:
             'eligible_research_candidate_count':details.get('r14_candidate_eligibility_gate',{}).get('eligible_research_candidate_count'),
             'verified_investment_recommendations':0,
             'investment_decisions_authorized':False,
-            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers remain research-only; Stage27 untouched; no trading signals.'
+            'notice':'R14 125-stock filtered research feed is strictly gated before valuation calculations. Missing corrected-filing stocks stay excluded; no extra DART queries. Official PER/PBR and historical filing PIT are not independently authenticated. Stage34 market cap / owner earnings and equity is research only; share class and PIT not verified. Stage35 supporting-evidence tiers and Stage36 research-reference 5/10/20 observation remain research-only; reference closes are NOT trade entries; Stage27 remains separate and untouched; no trading signals.'
           }
           (root/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print(json.dumps({'component_results':statuses,'source_date':source_date,'stage27_mode':report['stage27_mode']},ensure_ascii=False))
