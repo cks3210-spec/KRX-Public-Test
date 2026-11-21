@@ -1,6 +1,6 @@
 {
   "development_phase": "STAGE28_INTEGRATED",
-  "generated_kst": "2026-11-21T09:32:42.240948+09:00",
+  "generated_kst": "2026-11-21T09:38:49.409508+09:00",
   "component_results": {
     "COLLECT": "success",
     "FUNDAMENTAL": "success",
@@ -39,7 +39,7 @@
     },
     "stage25": {
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T00:32:42.096231+00:00",
+      "generated_utc": "2026-11-21T00:38:49.290474+00:00",
       "market_date": "20261119",
       "source_rows": 6,
       "eligible_rows": 6,
@@ -54,7 +54,7 @@
     "stage26": {
       "stage": 26,
       "status": "RESEARCH_ONLY",
-      "generated_utc": "2026-11-21T00:32:42.156255+00:00",
+      "generated_utc": "2026-11-21T00:38:49.339453+00:00",
       "market_date": "20261119",
       "stage25_input_rows": 6,
       "candidate_rows": 1,
@@ -163,7 +163,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-21T09:26:08.837144+09:00",
+      "generated_kst": "2026-11-21T09:37:03.559273+09:00",
       "market_date": "20261119",
       "candidate_count": 128,
       "required_financial_periods": [
@@ -11452,7 +11452,7 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-21T09:26:09.119157+09:00",
+      "generated_kst": "2026-11-21T09:37:04.097456+09:00",
       "company_queries_this_run": 0,
       "dart_financial_api_requests_this_run": 0,
       "candidate_count": 128,
@@ -11477,19 +11477,19 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-21T09:32:41.988296+09:00",
+      "generated_kst": "2026-11-21T09:38:49.200272+09:00",
       "market_date": "20261119",
       "mismatch_company_count": 4,
       "companies_with_original_or_correction_receipts": 28,
       "document_receipts_required": 62,
-      "archive_hashes_available": 11,
-      "document_queries_this_run": 12,
+      "archive_hashes_available": 61,
+      "document_queries_this_run": 51,
       "this_run_states": {
-        "DOCUMENT_ZIP_HASH_CAPTURED": 11,
-        "NOT_ZIP_RESPONSE": 1,
-        "PENDING_BATCH_LIMIT": 50
+        "REUSED_ARCHIVE_HASH": 11,
+        "DART_API_STATUS_014": 1,
+        "DOCUMENT_ZIP_HASH_CAPTURED": 50
       },
-      "cached_original_document_hashes": 11,
+      "cached_original_document_hashes": 61,
       "companies": [
         {
           "code": "015360",
@@ -11653,9 +11653,9 @@
               ],
               "document_states": {
                 "20251113000523": "DOCUMENT_ZIP_HASH_CAPTURED",
-                "20251126000171": "PENDING_DOCUMENT_QUERY"
+                "20251126000171": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11680,10 +11680,10 @@
                 "20260814000666"
               ],
               "document_states": {
-                "20260319000512": "PENDING_DOCUMENT_QUERY",
-                "20260814000666": "PENDING_DOCUMENT_QUERY"
+                "20260319000512": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260814000666": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11708,10 +11708,10 @@
                 "20260601001661"
               ],
               "document_states": {
-                "20260316001250": "PENDING_DOCUMENT_QUERY",
-                "20260601001661": "PENDING_DOCUMENT_QUERY"
+                "20260316001250": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260601001661": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11736,10 +11736,10 @@
                 "20260318001135"
               ],
               "document_states": {
-                "20260318000268": "PENDING_DOCUMENT_QUERY",
-                "20260318001135": "PENDING_DOCUMENT_QUERY"
+                "20260318000268": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260318001135": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11764,10 +11764,10 @@
                 "20260529000793"
               ],
               "document_states": {
-                "20260318001613": "PENDING_DOCUMENT_QUERY",
-                "20260529000793": "PENDING_DOCUMENT_QUERY"
+                "20260318001613": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260529000793": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11792,10 +11792,10 @@
                 "20260331003904"
               ],
               "document_states": {
-                "20260312001222": "PENDING_DOCUMENT_QUERY",
-                "20260331003904": "PENDING_DOCUMENT_QUERY"
+                "20260312001222": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260331003904": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11820,10 +11820,10 @@
                 "20260814000768"
               ],
               "document_states": {
-                "20260318001704": "PENDING_DOCUMENT_QUERY",
-                "20260814000768": "PENDING_DOCUMENT_QUERY"
+                "20260318001704": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260814000768": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11848,10 +11848,10 @@
                 "20260813001480"
               ],
               "document_states": {
-                "20260316001594": "PENDING_DOCUMENT_QUERY",
-                "20260813001480": "PENDING_DOCUMENT_QUERY"
+                "20260316001594": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260813001480": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11875,9 +11875,9 @@
                 "20261116001593"
               ],
               "document_states": {
-                "20261116001593": "PENDING_DOCUMENT_QUERY"
+                "20261116001593": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11902,10 +11902,10 @@
                 "20260326001257"
               ],
               "document_states": {
-                "20260318000302": "PENDING_DOCUMENT_QUERY",
-                "20260326001257": "PENDING_DOCUMENT_QUERY"
+                "20260318000302": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260326001257": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11930,10 +11930,10 @@
                 "20260413002635"
               ],
               "document_states": {
-                "20260312000821": "PENDING_DOCUMENT_QUERY",
-                "20260413002635": "PENDING_DOCUMENT_QUERY"
+                "20260312000821": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260413002635": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11958,10 +11958,10 @@
                 "20260630000672"
               ],
               "document_states": {
-                "20260312001323": "PENDING_DOCUMENT_QUERY",
-                "20260630000672": "PENDING_DOCUMENT_QUERY"
+                "20260312001323": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260630000672": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -11986,10 +11986,10 @@
                 "20260320001359"
               ],
               "document_states": {
-                "20260320001217": "PENDING_DOCUMENT_QUERY",
-                "20260320001359": "PENDING_DOCUMENT_QUERY"
+                "20260320001217": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260320001359": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             },
@@ -12006,10 +12006,10 @@
                 "20260908000203"
               ],
               "document_states": {
-                "20251114001331": "PENDING_DOCUMENT_QUERY",
-                "20260908000203": "PENDING_DOCUMENT_QUERY"
+                "20251114001331": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260908000203": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12034,10 +12034,10 @@
                 "20251114003069"
               ],
               "document_states": {
-                "20251114001648": "PENDING_DOCUMENT_QUERY",
-                "20251114003069": "PENDING_DOCUMENT_QUERY"
+                "20251114001648": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20251114003069": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12062,10 +12062,10 @@
                 "20260331004794"
               ],
               "document_states": {
-                "20260323000271": "PENDING_DOCUMENT_QUERY",
-                "20260331004794": "PENDING_DOCUMENT_QUERY"
+                "20260323000271": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260331004794": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12090,10 +12090,10 @@
                 "20260601001924"
               ],
               "document_states": {
-                "20260318001194": "PENDING_DOCUMENT_QUERY",
-                "20260601001924": "PENDING_DOCUMENT_QUERY"
+                "20260318001194": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260601001924": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12118,10 +12118,10 @@
                 "20260703000506"
               ],
               "document_states": {
-                "20260312000427": "PENDING_DOCUMENT_QUERY",
-                "20260703000506": "PENDING_DOCUMENT_QUERY"
+                "20260312000427": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260703000506": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12146,10 +12146,10 @@
                 "20260630000845"
               ],
               "document_states": {
-                "20260324001034": "PENDING_DOCUMENT_QUERY",
-                "20260630000845": "PENDING_DOCUMENT_QUERY"
+                "20260324001034": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260630000845": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12174,10 +12174,10 @@
                 "20260407001497"
               ],
               "document_states": {
-                "20260317000428": "PENDING_DOCUMENT_QUERY",
-                "20260407001497": "PENDING_DOCUMENT_QUERY"
+                "20260317000428": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260407001497": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12202,10 +12202,10 @@
                 "20260619000667"
               ],
               "document_states": {
-                "20260313001191": "PENDING_DOCUMENT_QUERY",
-                "20260619000667": "PENDING_DOCUMENT_QUERY"
+                "20260313001191": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260619000667": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12230,10 +12230,10 @@
                 "20260313000415"
               ],
               "document_states": {
-                "20260310002866": "PENDING_DOCUMENT_QUERY",
-                "20260313000415": "PENDING_DOCUMENT_QUERY"
+                "20260310002866": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260313000415": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             },
@@ -12250,10 +12250,10 @@
                 "20261116000581"
               ],
               "document_states": {
-                "20261113000565": "PENDING_DOCUMENT_QUERY",
-                "20261116000581": "PENDING_DOCUMENT_QUERY"
+                "20261113000565": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20261116000581": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12278,10 +12278,10 @@
                 "20260320000432"
               ],
               "document_states": {
-                "20260319000741": "PENDING_DOCUMENT_QUERY",
-                "20260320000432": "PENDING_DOCUMENT_QUERY"
+                "20260319000741": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260320000432": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12306,10 +12306,10 @@
                 "20260731000261"
               ],
               "document_states": {
-                "20260319000839": "PENDING_DOCUMENT_QUERY",
-                "20260731000261": "PENDING_DOCUMENT_QUERY"
+                "20260319000839": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260731000261": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }
@@ -12334,10 +12334,10 @@
                 "20260312001348"
               ],
               "document_states": {
-                "20260312000964": "PENDING_DOCUMENT_QUERY",
-                "20260312001348": "PENDING_DOCUMENT_QUERY"
+                "20260312000964": "DOCUMENT_ZIP_HASH_CAPTURED",
+                "20260312001348": "DOCUMENT_ZIP_HASH_CAPTURED"
               },
-              "document_source_evidence_ready": false,
+              "document_source_evidence_ready": true,
               "reported_receipts_match_asof": false,
               "historical_financial_values_verified": false
             }

@@ -1,6 +1,6 @@
 {
   "format": "R14_DOCUMENT_VERSION_HASH_CACHE_V1",
-  "updated_kst": "2026-11-21T09:32:41.989976+09:00",
+  "updated_kst": "2026-11-21T09:38:49.201346+09:00",
   "rows": {
     "20260310002563": {
       "state": "DOCUMENT_ZIP_HASH_CAPTURED",
@@ -256,6 +256,1121 @@
         }
       ],
       "downloaded_kst": "2026-11-21T09:32:41.768099+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20251126000171": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20251126000171",
+      "zip_sha256": "aaecd86fe4a656f85e4f3ff48abcb652372f161f7b4d96a43e1596ac2b3f2e56",
+      "zip_bytes": 624357,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20251126000171.xml",
+          "size_bytes": 14297569,
+          "sha256": "80aef22ba81a39d5ae65ef231756831bae72b60101413de2ecc42b90390f32f1"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:07.630759+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260319000512": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260319000512",
+      "zip_sha256": "87777470d7401b79487210a91c60c36e8da02465789438e9a74260c941c0e514",
+      "zip_bytes": 375195,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260319000512_00761.xml",
+          "size_bytes": 484078,
+          "sha256": "f75376c5ac8ba04bf611aa6ef74f8e37f755ca6661fcdd3bb8be87d63e781f37"
+        },
+        {
+          "filename": "20260319000512.xml",
+          "size_bytes": 3645729,
+          "sha256": "c9fab2569e1314feca7b988af46191b15e149f1220a741ecfae7619200dc64fa"
+        },
+        {
+          "filename": "20260319000512_00760.xml",
+          "size_bytes": 473717,
+          "sha256": "de7ee68bf0ef11f038f3162a51b2fbf274f9a4ad19a53e5f37512a2ef1ff07b6"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:09.497263+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260814000666": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260814000666",
+      "zip_sha256": "2f216f9cd4ba607b20f2e55f0c318f44014c7eab6481125477fe98dd3278b543",
+      "zip_bytes": 258005,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260814000666.xml",
+          "size_bytes": 3661825,
+          "sha256": "e174cbfe6d4a0bafe8aabbb5537d3b5ea8554df0d02acbd58d44d49e4fab1f69"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:11.359158+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260316001250": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260316001250",
+      "zip_sha256": "3c61c6e17e547a28e2d489bfcfed925885207138bf44b1093050e0d6a3e58d27",
+      "zip_bytes": 635267,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260316001250_00761.xml",
+          "size_bytes": 857138,
+          "sha256": "f1023046e13134a3567628134b7c1ed3df7959c8b22a6fc8105a058dd91ac65d"
+        },
+        {
+          "filename": "20260316001250.xml",
+          "size_bytes": 6770642,
+          "sha256": "8612e9719a303c794c5c282dfcde775652b79795512618f8cb2dc2164e107e48"
+        },
+        {
+          "filename": "20260316001250_00760.xml",
+          "size_bytes": 676230,
+          "sha256": "37301d56b36f665cec733ff57d3b863568df7f045954cfd46fdb583270ca97d5"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:13.857285+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260601001661": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260601001661",
+      "zip_sha256": "97d2a4609011d9700e631faf07a423ec77dda807916022eb1c1d9c2b5e34dd46",
+      "zip_bytes": 471745,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260601001661.xml",
+          "size_bytes": 6999279,
+          "sha256": "c9bb642965390a15d1f0880f7da353a922d3ae87781bf130631ed36f0203ffef"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:15.833055+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318000268": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318000268",
+      "zip_sha256": "c20646925ee80b0be280ab94679b9c3a1c27ca9906c138dc1ff58e4a919efa1d",
+      "zip_bytes": 608277,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318000268_00760.xml",
+          "size_bytes": 684525,
+          "sha256": "28cedee03ed7fcf636e9a6c3741cfc1781772ea58dfe15b957085d678a474796"
+        },
+        {
+          "filename": "20260318000268_00761.xml",
+          "size_bytes": 694833,
+          "sha256": "f4ea490a227b2b67b7e6c8cf021fc7be7c6f09fbb33cd00b55718f08ce426b57"
+        },
+        {
+          "filename": "20260318000268.xml",
+          "size_bytes": 7384756,
+          "sha256": "a1b55acb162c4b4bdd0dad287766c40c01065f6ca637c59363a82c1f5933e726"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:18.237054+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318001135": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318001135",
+      "zip_sha256": "2de1a1a08a2651d906396acff5612a786a7a8bf73e22a8d244dbeb302cc97653",
+      "zip_bytes": 533016,
+      "zip_member_count": 2,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318001135_00760.xml",
+          "size_bytes": 688475,
+          "sha256": "5c821601d8a751e58cb67df63129dbcc556b155c57b61fdcfae45fa9ec615c9a"
+        },
+        {
+          "filename": "20260318001135.xml",
+          "size_bytes": 7388951,
+          "sha256": "eeef539de1d9a063ef7aa754e545b11efb23ba960e4eb8a88cfb29ad7d33fb5f"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:20.344521+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318001613": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318001613",
+      "zip_sha256": "321e4af225bb3bc4a9f11b3dad10b840d24fbbe0375346e5f4d2a9b78dee609d",
+      "zip_bytes": 526052,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318001613_00760.xml",
+          "size_bytes": 660507,
+          "sha256": "f900fd8589ac7f568bb2f1f82b132afba6709e31fac604b08856c2c56d76a553"
+        },
+        {
+          "filename": "20260318001613.xml",
+          "size_bytes": 5139751,
+          "sha256": "d7c04ee7c07998323793e460436eca49145ec7ebff1e8aeb77420df7bfbe12aa"
+        },
+        {
+          "filename": "20260318001613_00761.xml",
+          "size_bytes": 759888,
+          "sha256": "3d1ee3d310716d81d8c186a215caa925e6dad667e7def87e1a20c7bc257a4e9f"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:22.632640+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260529000793": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260529000793",
+      "zip_sha256": "6389e44e2cdef75a138f6c27b2b61584e840c22a9d58c548960c25ae82e2c3b8",
+      "zip_bytes": 372090,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260529000793.xml",
+          "size_bytes": 5163632,
+          "sha256": "eac4a4af6a6edfde36645f653aaf6ae25f3bd1b6dea1a70b5bf5d09c00b6ba81"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:24.356427+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312001222": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312001222",
+      "zip_sha256": "4d92ca9bce1292953373cf75a7d340c64a50d420909635f48080d36a7292151f",
+      "zip_bytes": 1409020,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312001222.xml",
+          "size_bytes": 30177003,
+          "sha256": "836c51ded5e0f06dadf0a7fe0f91e2bbdb529e1cbf06767d13d70160bbaff0cb"
+        },
+        {
+          "filename": "20260312001222_00761.xml",
+          "size_bytes": 2206958,
+          "sha256": "1a57f15a0fc5010d8dba3892800d5f5bbb222aa1f1f3babb4b658846b70e0a52"
+        },
+        {
+          "filename": "20260312001222_00760.xml",
+          "size_bytes": 1732049,
+          "sha256": "82d2993c528b6e2620222a8cf415ea16f04c7fd8437730f42c6cedccfd59887a"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:28.274195+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260331003904": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260331003904",
+      "zip_sha256": "6b6c4bad042a29d522a5e37bace09455a192a0f3dca4a99c85e0739c66f206d1",
+      "zip_bytes": 1096861,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260331003904.xml",
+          "size_bytes": 30219978,
+          "sha256": "e06e0c240e5df63ea92c8b5d11e057d1a9c80857bf8dcc683c9f835e0de193e9"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:31.560577+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318001704": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318001704",
+      "zip_sha256": "d6b10c2eebb3d6f7750714cc5a8f28a39ad5044b930693e7c0a5bb843588e864",
+      "zip_bytes": 464157,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318001704_00761.xml",
+          "size_bytes": 598631,
+          "sha256": "bbbb0a906b058bc419778d710285d4135ebe5b81f8918c68dd4ee820af1d2668"
+        },
+        {
+          "filename": "20260318001704.xml",
+          "size_bytes": 5107922,
+          "sha256": "a0de07462023737ca1840e656770de3ca7429a84d487ab638866753af22e7c3e"
+        },
+        {
+          "filename": "20260318001704_00760.xml",
+          "size_bytes": 579747,
+          "sha256": "95f4ec121d6f1ca9fdf4436ae317d2cf172a580999d4da0b5235600c1885f19d"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:33.790660+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260814000768": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260814000768",
+      "zip_sha256": "1cba401e39ad2c9e800813c3eab4cdea7d8834ff11a428c5f83ba27c4d3aa4f0",
+      "zip_bytes": 326113,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260814000768.xml",
+          "size_bytes": 5124753,
+          "sha256": "d1426337f63e92a3118207987e666646271f3d4dfdb1242acaa69760963b97f8"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:35.753455+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260316001594": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260316001594",
+      "zip_sha256": "ef05c46d1caff514223bf264f62270fe315240845fec1902d82fb23450f6d73a",
+      "zip_bytes": 813301,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260316001594_00761.xml",
+          "size_bytes": 911765,
+          "sha256": "4c78594bfe3f9be220fec671d8e67c80196e7a804b4650acc02b954c106e8d23"
+        },
+        {
+          "filename": "20260316001594.xml",
+          "size_bytes": 9732768,
+          "sha256": "21ef82075b6ad8fa6ea864ce67ece20ce9e67ff99668ebbbbaf18d04f5f82d9d"
+        },
+        {
+          "filename": "20260316001594_00760.xml",
+          "size_bytes": 769094,
+          "sha256": "f2f163eb964e018fab230a4af29744228a760b72ed7970e791c598c43c47ff0e"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:38.293081+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260813001480": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260813001480",
+      "zip_sha256": "42f363230c1bc0be25d2c93cf091f9cc563f632e3a29d6a33615cba571c88921",
+      "zip_bytes": 612840,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260813001480.xml",
+          "size_bytes": 9648780,
+          "sha256": "0aac82beadf7a96909a5176e884ba0f14f2a8fa789c23ee419ca28c69756cc47"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:40.618666+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20261116001593": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20261116001593",
+      "zip_sha256": "2951108389496532eaffb187c1029e6296e7b2c567b39306c114c0dadfd6d840",
+      "zip_bytes": 398072,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20261116001593.xml",
+          "size_bytes": 5677589,
+          "sha256": "92f0bb99c5b7d16980aac538c3cba9c8420307e2599e4c2414bcdbc28fa04528"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:42.476446+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318000302": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318000302",
+      "zip_sha256": "430a66f3fe40095a9be16df949560b531163ec31915b1e06a162ed2e23e18de9",
+      "zip_bytes": 277080,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318000302_00760.xml",
+          "size_bytes": 383478,
+          "sha256": "e53b7edc3975d51d059067ea9c006e58d671b1aefbbfd2aac60fed96669820cf"
+        },
+        {
+          "filename": "20260318000302_00761.xml",
+          "size_bytes": 416139,
+          "sha256": "723079fc644b5197d324b11b02303db8d30fd8340e66bd05d4d63105ca82d0d1"
+        },
+        {
+          "filename": "20260318000302.xml",
+          "size_bytes": 1489983,
+          "sha256": "6bf70859c10eadbaeec6b593eecc764b111825f3f4007ed405ae34ae4029dd04"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:44.355482+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260326001257": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260326001257",
+      "zip_sha256": "7b0efef288755feb453586c8ad70679baab75ca52f2fc91a187daf6cb549035d",
+      "zip_bytes": 243656,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260326001257.xml",
+          "size_bytes": 2003336,
+          "sha256": "87d1836dcea5a93abb3c98480448170221195ee3b6c0ef29d874355609fd6b05"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:45.982534+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312000821": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312000821",
+      "zip_sha256": "dc4a228d515b3821e83e95bd3c96354d4ed009c02c61348f6f3c45b4c45571c2",
+      "zip_bytes": 430376,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312000821_00761.xml",
+          "size_bytes": 571643,
+          "sha256": "91844901ca18e10efbd697916857b68871c859be98c29dc798c3460d90a0ca02"
+        },
+        {
+          "filename": "20260312000821_00760.xml",
+          "size_bytes": 567252,
+          "sha256": "57259c544d2cdddb96ac9ed4581d56fdd52d48b7f7ed68c0cf4e71b71aa48924"
+        },
+        {
+          "filename": "20260312000821.xml",
+          "size_bytes": 4026136,
+          "sha256": "0d81793e25c1775210a78b75481833a670f05d8d55adc7b563c290b85c477bbd"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:47.889505+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260413002635": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260413002635",
+      "zip_sha256": "2571b75d61339a85fe162fddafa7ad0cbea836611a279d0866b9aed99047e05e",
+      "zip_bytes": 299900,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260413002635.xml",
+          "size_bytes": 4034828,
+          "sha256": "b388e3dcdcb098376f792de9dd5a5d428ef7cfafd2e3bedf14649920425200fa"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:49.491678+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312001323": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312001323",
+      "zip_sha256": "9dd4e28d397cad9e981e07acd3cdc3e5d8cd3a26c923d6b0d2192557b87e5649",
+      "zip_bytes": 535859,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312001323_00761.xml",
+          "size_bytes": 641873,
+          "sha256": "fcb385b3a25fe2eadc6934382bd13437e62255c44c34f37ea07adbbd85f8d452"
+        },
+        {
+          "filename": "20260312001323.xml",
+          "size_bytes": 5938376,
+          "sha256": "19cb060b20f9a577803ac105602efdb54bcd3fce67f2686214cdaf91a840a6cd"
+        },
+        {
+          "filename": "20260312001323_00760.xml",
+          "size_bytes": 516432,
+          "sha256": "35a6f1b61bb4f5435fc7131da650a5ab481510a34375cf17c2a2ad814c709c53"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:51.615337+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260630000672": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260630000672",
+      "zip_sha256": "a570642ad71089939e875298fcc2e70ee2e17d542f01767b037c8fa0f1e5afe1",
+      "zip_bytes": 400906,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260630000672.xml",
+          "size_bytes": 6003145,
+          "sha256": "6484a39ad526248370f148fc5c5d023642cf667c4c3b604361f75f351f1b627f"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:53.734208+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260320001217": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260320001217",
+      "zip_sha256": "85683151903ca27a1aed88e18e8807ec5d4b1a1830bef2a4e3c14d89905cf8ec",
+      "zip_bytes": 455654,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260320001217.xml",
+          "size_bytes": 6858692,
+          "sha256": "9bfa1e442f4a75138a1abc993a1e5c701f119883c09cf8a8a2e9e45af44cb9aa"
+        },
+        {
+          "filename": "20260320001217_00760.xml",
+          "size_bytes": 533444,
+          "sha256": "1dbea3fbf82a70e1c87a1e58a1ec4a14757ec44f4ce493f4be7a683f73eb9dc0"
+        },
+        {
+          "filename": "20260320001217_00761.xml",
+          "size_bytes": 589042,
+          "sha256": "aa3b2536e91709221740f0d256c9901877e07906cbc1cdfa1ad6e58c8d48f8a6"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:55.942345+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260320001359": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260320001359",
+      "zip_sha256": "fb67029a9548978ec6424c19359c101211a6d93c5f0adfb0f57163ee4a133abd",
+      "zip_bytes": 392038,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260320001359.xml",
+          "size_bytes": 7148976,
+          "sha256": "c1eaf1e7620cf74ddba4e01aab09e71c98bbf0619d3af1bf9092e681ca04ea43"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:57.803574+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20251114001331": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20251114001331",
+      "zip_sha256": "590db06c67080e8a203114712f5ae1f59f2295f702f9729f8d923c7eeafb6f32",
+      "zip_bytes": 186546,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20251114001331.xml",
+          "size_bytes": 1768387,
+          "sha256": "55308224d0ac53b8d9022252c9c5fd00d7a6f9607ee60686f87beccbacf4c422"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:37:59.287302+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260908000203": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260908000203",
+      "zip_sha256": "8be61ecfd34f79da28ac07d436c1ddc3a2e9aab6ae78f2c6aaf698d2960806da",
+      "zip_bytes": 186527,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260908000203.xml",
+          "size_bytes": 1780824,
+          "sha256": "50fd8ff9fe121e54c6806a6e7784caba14d72ac1c8e63e4c2a2c9db3bcd848f9"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:00.680800+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20251114001648": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20251114001648",
+      "zip_sha256": "f4b1f25b756f67e98f4166956afec2bb9e68e3977be4b4f42f2a7171ee685b1a",
+      "zip_bytes": 146259,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20251114001648.xml",
+          "size_bytes": 1470154,
+          "sha256": "821416af360c6677eae6c4b8d02ca8a4eb97e5a6eec749d44c075e7f1ccb1864"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:02.053715+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20251114003069": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20251114003069",
+      "zip_sha256": "1611e8437a9891e02f68f7a1c124f7a2f9f8d13c29aafa35ac0d219d20e674ec",
+      "zip_bytes": 159230,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20251114003069.xml",
+          "size_bytes": 1699301,
+          "sha256": "2c8d43544db5719dc9ad13aca2c7c3556033049292cbb5ec05ec1f8acfc8d7ee"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:03.419432+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260323000271": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260323000271",
+      "zip_sha256": "b30431577d1cb181cdf262c830fbcc77f2c9261020e84c6908354691f8845454",
+      "zip_bytes": 417774,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260323000271_00761.xml",
+          "size_bytes": 558621,
+          "sha256": "55824201531c1a4a3a29182375b41785ee9375812db6070a4fdea46fa80c5f46"
+        },
+        {
+          "filename": "20260323000271_00760.xml",
+          "size_bytes": 539911,
+          "sha256": "1deca06211f4facb7973484b1af7384a30680f05ae64fa96f4c7d80783c40707"
+        },
+        {
+          "filename": "20260323000271.xml",
+          "size_bytes": 4081815,
+          "sha256": "d1f1129fbbbb4e017e1757d8778890fec5eb19f788d0eee6e1d4fb65dc2428cb"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:05.281414+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260331004794": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260331004794",
+      "zip_sha256": "d0a2b177074eaf66f979e35fcada8fa8bbbdcfacaabe33ae564708334d55af32",
+      "zip_bytes": 293014,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260331004794.xml",
+          "size_bytes": 4085487,
+          "sha256": "babc9a5052661f91b5dcdb7d10c4e26636e7dcda152a88927eb4b1bab35728b8"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:07.184260+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260318001194": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260318001194",
+      "zip_sha256": "3492ac907d52fba4016c299c246e533180fa9a50d9ed28b19926b0179731e103",
+      "zip_bytes": 641493,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260318001194_00761.xml",
+          "size_bytes": 851342,
+          "sha256": "24326bda89c1fba10a455a446a3a349594ac480f36edc867e7f668e319bc9a8f"
+        },
+        {
+          "filename": "20260318001194.xml",
+          "size_bytes": 6892278,
+          "sha256": "da9e6f326ec4f4170d35b5d07fcb40630cc1b662aac2d44bde94521bc5706392"
+        },
+        {
+          "filename": "20260318001194_00760.xml",
+          "size_bytes": 771557,
+          "sha256": "49fd8b30a0bb8a8108032c9fb511b8f9b2c930597cb5a352aa80dc5c5beaa365"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:09.580810+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260601001924": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260601001924",
+      "zip_sha256": "03b622bb0ac165a7d50312d0cd6350aa03ac01cf4aa5bf9b2bc4c18f51a88623",
+      "zip_bytes": 467778,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260601001924.xml",
+          "size_bytes": 6898687,
+          "sha256": "79dfa9782d0166ad84c01f4fe745c57bdfdbbd53eebdcaa707bf41b227a10c53"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:11.570348+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312000427": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312000427",
+      "zip_sha256": "53cff901f87aecef74c436dd7f1ac1c6e11d6839abe140c64375e31aeb57a670",
+      "zip_bytes": 353148,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312000427_00761.xml",
+          "size_bytes": 589179,
+          "sha256": "38de1716de3553f13b39ccb47015b4ab8f96a8b998814da6717fa0c700299221"
+        },
+        {
+          "filename": "20260312000427.xml",
+          "size_bytes": 1947254,
+          "sha256": "dc56aa4e8ac26212c0fd97badb6c4810e599f00fc8e623e3b5d82b5078a79e70"
+        },
+        {
+          "filename": "20260312000427_00760.xml",
+          "size_bytes": 538114,
+          "sha256": "6fcf27eebd64faeb9dcb9154f315a8ecf166696bec153acf442d9433a46ae94b"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:13.321714+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260703000506": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260703000506",
+      "zip_sha256": "4a881e5553122aa6851dad7e71f7cd411e258256771f0c9fbc48e13ffdc6879a",
+      "zip_bytes": 222095,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260703000506.xml",
+          "size_bytes": 2015916,
+          "sha256": "e90c4c673676fecd9195c373c242dab7d760ad849a3d37d6eed5c14971b19a1a"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:14.933781+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260324001034": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260324001034",
+      "zip_sha256": "d79c3bdc02a5fcc32551911315b25f51312f8f0719053741ed3f479f3a5ebbd3",
+      "zip_bytes": 341083,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260324001034_00761.xml",
+          "size_bytes": 565476,
+          "sha256": "d3cb39b928da4c01191aa14521474fc93f2ffa218b9950e4a39f23449ad782c3"
+        },
+        {
+          "filename": "20260324001034_00760.xml",
+          "size_bytes": 518601,
+          "sha256": "adc912d40bb57c7f35507c0adcc6a84600aa15326de20937e89aa2638ae3c01a"
+        },
+        {
+          "filename": "20260324001034.xml",
+          "size_bytes": 1811603,
+          "sha256": "3af23ad18ff9a4c4e7b36cb435f1ccefa48a7d63fd18be5b90d23f53563d7a7b"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:16.782021+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260630000845": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260630000845",
+      "zip_sha256": "6e26130e1108601e01437b7bc8f1428da3ba883c53e950d71d30107e0d1b1a4c",
+      "zip_bytes": 212944,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260630000845.xml",
+          "size_bytes": 1898332,
+          "sha256": "8b852f027739ba071da254ab0433e8f580a3a6e29f570c53abdb19adfc572b60"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:18.519121+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260317000428": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260317000428",
+      "zip_sha256": "b03217e0e88d395179997ce31e1c4aec9b12ef75d05ee778f304159c6d51d1c0",
+      "zip_bytes": 407572,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260317000428.xml",
+          "size_bytes": 3850781,
+          "sha256": "0053c77d97fa01649030f32d30737faeb08e45704fc2a1e701e9a8d95f30ddc6"
+        },
+        {
+          "filename": "20260317000428_00760.xml",
+          "size_bytes": 477739,
+          "sha256": "e91e231195946be57e66d08814b7f9c7b927e8f6c9f29d3a0edbb1a0315ef90a"
+        },
+        {
+          "filename": "20260317000428_00761.xml",
+          "size_bytes": 524112,
+          "sha256": "80bb2e30f32ef8153ceaf76b49aadd6c22cfd4e541cc2fb2da76814fe7b12c9a"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:20.392575+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260407001497": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260407001497",
+      "zip_sha256": "e734ac329aafa3042fb01a75fe948cd06c617e9498d77280d3d6db01795ee275",
+      "zip_bytes": 282014,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260407001497.xml",
+          "size_bytes": 3733520,
+          "sha256": "a5198d1721e5351fa3094a42f295013b490339ac54491880095293610a0d5c08"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:21.997204+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260313001191": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260313001191",
+      "zip_sha256": "5cc0f6a6e0b9d3e2b036a50403e6658dd7c75bdf9a47884bccee065d99484239",
+      "zip_bytes": 1865797,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260313001191_00761.xml",
+          "size_bytes": 3003402,
+          "sha256": "a7d00652158d0db53f87c8ec794d307493bc27d1bccc67fa699eb6ee9d4d105e"
+        },
+        {
+          "filename": "20260313001191.xml",
+          "size_bytes": 28255788,
+          "sha256": "ef72d7f39a6b6a24f6723600a25f1007625b97c468663cd81e75b12f7e066e0c"
+        },
+        {
+          "filename": "20260313001191_00760.xml",
+          "size_bytes": 633438,
+          "sha256": "796da1373eca83f68790c044e282fa1281e85fe15df46cef61bc9e667db6116f"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:26.608024+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260619000667": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260619000667",
+      "zip_sha256": "cf1fe26db8352345e01e1748f42d3c95cf889479b62d8acf2e98b0a52fb58f42",
+      "zip_bytes": 1535487,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260619000667.xml",
+          "size_bytes": 28330579,
+          "sha256": "01a1649e0024fc5250408152d30b2ca5a0933a01574ed621e0373ba515900c11"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:30.761634+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260310002866": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260310002866",
+      "zip_sha256": "a83d2041af46af095e87aec2cde41673a44fbd1f492f1c694c3a42e8988f37a7",
+      "zip_bytes": 460392,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260310002866_00760.xml",
+          "size_bytes": 576906,
+          "sha256": "7b858c4f1f0e5fc099003fe06ecbc160176cc7409bec74d92e3e3d29564d827c"
+        },
+        {
+          "filename": "20260310002866_00761.xml",
+          "size_bytes": 577624,
+          "sha256": "fd8fcbe66c224497b6f0e9eb50b6ce549e6be2c7537e0b453375b626ae990eae"
+        },
+        {
+          "filename": "20260310002866.xml",
+          "size_bytes": 4686852,
+          "sha256": "f02ee14732e89dca74fb81322561fc33e7f6f9fb541085285a2b1a8e59816c71"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:32.755986+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260313000415": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260313000415",
+      "zip_sha256": "e21db1769aed7e58ce180fe3f39dacf543d60b5a15a1f400cec44c81f8414445",
+      "zip_bytes": 327357,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260313000415.xml",
+          "size_bytes": 4703325,
+          "sha256": "20c53ca04762556b77dd18282eae5631c23935aab54a0affc0b2663adb224b8b"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:34.484243+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20261113000565": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20261113000565",
+      "zip_sha256": "7a01379bd27b6459842d62ee5477e5c9c49f89db4c3cb3beda79315a8eda99d9",
+      "zip_bytes": 135345,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20261113000565.xml",
+          "size_bytes": 1293840,
+          "sha256": "cb89ea698f3d89d7c4719f2cb2b830235081c96e8a5fe0e668716ecd672ad8ba"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:35.960145+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20261116000581": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20261116000581",
+      "zip_sha256": "b5c4ca02f6a5f5f1f358d74f27bfdce5ec87d5645cd05c3e0ade374685f18038",
+      "zip_bytes": 137041,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20261116000581.xml",
+          "size_bytes": 1308292,
+          "sha256": "897d221070fcbe8b6b7210668089644ff343ef104e6c0e95bac9f4701ac0f77b"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:37.341131+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260319000741": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260319000741",
+      "zip_sha256": "7f48b7a1074af92488656944e508f5d06d563f53ca77fd6a827004308ec67cf3",
+      "zip_bytes": 317737,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260319000741_00761.xml",
+          "size_bytes": 451131,
+          "sha256": "38acb8962792159d1e9ea60145a8d8b114f4301f72adfddbb3c7d109ee022139"
+        },
+        {
+          "filename": "20260319000741.xml",
+          "size_bytes": 1822056,
+          "sha256": "0a7509255edf55b159332e52080ea09e0755cb036e48e5d1d0128692616b3e67"
+        },
+        {
+          "filename": "20260319000741_00760.xml",
+          "size_bytes": 435380,
+          "sha256": "094337cba2acac7896a1ebf7ee35da9a3e487f3be7052dd0c4a8d4a55d02d5fd"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:39.381895+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260320000432": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260320000432",
+      "zip_sha256": "51e4085daea606b59820f7a992f9bfa2ab399ad49e0a534968579fc9066b6e99",
+      "zip_bytes": 211741,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260320000432.xml",
+          "size_bytes": 1826347,
+          "sha256": "ababdd7d59c5b63ba805f34bab537e946ea1104fc39b49107315440b77fac9b2"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:40.866726+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260319000839": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260319000839",
+      "zip_sha256": "7caa0529caa0816a9d66c6ad88bb64920e8b14874453202eec9161e60d34b935",
+      "zip_bytes": 493100,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260319000839.xml",
+          "size_bytes": 4957213,
+          "sha256": "1c58ac47a3c6280bdccc80be59580fa2aa041b73a7133260af6098dd84ebcb2b"
+        },
+        {
+          "filename": "20260319000839_00761.xml",
+          "size_bytes": 670001,
+          "sha256": "3fca5ec2aab0745bed617b8662128c81d4a65ab251efcb390f3e4bbcc231c814"
+        },
+        {
+          "filename": "20260319000839_00760.xml",
+          "size_bytes": 591684,
+          "sha256": "2ad2fb550b06bb2653a58fca51ad1f2f684b9ce56926afd7384dc69f31805a51"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:42.986728+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260731000261": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260731000261",
+      "zip_sha256": "1c77f15d2a21fa6e6de25269105d7f27312802eb7a32057c9d3126c354733c5f",
+      "zip_bytes": 347522,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260731000261.xml",
+          "size_bytes": 4966467,
+          "sha256": "c1bff4557471ba9440c0c40e4381c89f68ab1034dceb29d506c6d6c2521177e1"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:44.736130+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312000964": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312000964",
+      "zip_sha256": "349815067f523f8458d54aa8551edb825034f12f82a9ac7e8ce8cff9dde5af1a",
+      "zip_bytes": 521687,
+      "zip_member_count": 3,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312000964_00760.xml",
+          "size_bytes": 526469,
+          "sha256": "028fe75a4093f21874c2a56c292c64b0dbf49a8077d5308fd53a798ca84d6984"
+        },
+        {
+          "filename": "20260312000964_00761.xml",
+          "size_bytes": 650750,
+          "sha256": "a1dcb54e9e889087fda80f21bb2a809dab22a29770d85c35e15e68eee92a42eb"
+        },
+        {
+          "filename": "20260312000964.xml",
+          "size_bytes": 5116500,
+          "sha256": "d745d7345858156aac6be5c49a6aff98c66e7f3868e15fcea74a6d02e656c6e6"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:46.890258+09:00",
+      "source_endpoint": "OPENDART_DOCUMENT_XML",
+      "full_original_document_retained": false,
+      "historical_financial_values_verified": false
+    },
+    "20260312001348": {
+      "state": "DOCUMENT_ZIP_HASH_CAPTURED",
+      "receipt_no": "20260312001348",
+      "zip_sha256": "8384e8c2e6799eb81ec1d2de4a35ed3315e9ca28c65febd8172aae2d6ca6975e",
+      "zip_bytes": 380486,
+      "zip_member_count": 1,
+      "xml_and_text_files": [
+        {
+          "filename": "20260312001348.xml",
+          "size_bytes": 5121321,
+          "sha256": "34cf6212128fc41ba0cfb59e5d3fbeac64eafb74c8c9f2760f688ff0167d43db"
+        }
+      ],
+      "downloaded_kst": "2026-11-21T09:38:48.980123+09:00",
       "source_endpoint": "OPENDART_DOCUMENT_XML",
       "full_original_document_retained": false,
       "historical_financial_values_verified": false
