@@ -1,0 +1,122 @@
+{
+  "format": "R14_RECEIPT_XBRL_RESEARCH_CACHE_V1",
+  "updated_kst": "2026-11-21T09:47:13.875698+09:00",
+  "rows": {
+    "20260310002563": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260310002563",
+      "zip_sha256": "9de26e8b5e562f58d657dde0f34ae0bf028dece279e3bc4f673d3509aeaa1749",
+      "downloaded_kst": "2026-11-21T09:43:06.928429+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00105101_2025-12-31.xbrl",
+          "xml_sha256": "067eb11c53461dd0674cb08c5217ca23551000dc3c6c64cdff5f4ed0600c8ccd",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    },
+    "20260318000261": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260318000261",
+      "zip_sha256": "df487283be8e7a372c0e0018fc3a4dea72ac4e2ac472814c6db717ded79af16f",
+      "downloaded_kst": "2026-11-21T09:43:54.001270+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00105101_2025-12-31.xbrl",
+          "xml_sha256": "067eb11c53461dd0674cb08c5217ca23551000dc3c6c64cdff5f4ed0600c8ccd",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    },
+    "20260605000111": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260605000111",
+      "zip_sha256": "02895837e61097b5ef3502905291a6bd7f645219389c7707a94f13bbe11989d7",
+      "downloaded_kst": "2026-11-21T09:44:39.872854+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00105101_2025-12-31.xbrl",
+          "xml_sha256": "1d76866a0f6a9554df961d88c81c2267c7dc79e5ff96e87dbbd1bfafbb12dfba",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    },
+    "20260318001705": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260318001705",
+      "zip_sha256": "c675482ce1bcbe7e31921fd3e8102937e1a86607f68c968807fef97c2494574a",
+      "downloaded_kst": "2026-11-21T09:45:30.635267+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00231105_2025-12-31.xbrl",
+          "xml_sha256": "df29929791fdab5b589ad4307e4b9ff308db7005df828b1bc96430fbea499d08",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    },
+    "20260323001116": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260323001116",
+      "zip_sha256": "c8a8cbc733047cf455a97a3b7fa8e532fee58905943848dbbfb3d9591c793eaa",
+      "downloaded_kst": "2026-11-21T09:46:13.332279+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00361381_2025-12-31.xbrl",
+          "xml_sha256": "f3646debf061d4be7787706dca45edc98f7b8b45e9f105c2ffbb2f2285b95109",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    },
+    "20260319000606": {
+      "state": "XBRL_RECEIPT_ZIP_RETRIEVED",
+      "receipt_no": "20260319000606",
+      "zip_sha256": "0f46304b13c038bbbe308b5c5b1a8510233178f5a6f08388f78f68d9052d4e8b",
+      "downloaded_kst": "2026-11-21T09:47:12.311850+09:00",
+      "source_endpoint": "OPENDART_FNLTT_XBRL",
+      "files": [
+        {
+          "name": "entity00633835_2025-12-31.xbrl",
+          "xml_sha256": "a38fefddf6f60fb29607bba632d8af71d158ff47330c1223cd68e21d91e44f58",
+          "state": "NO_DIRECT_STANDARD_FACTS",
+          "fields": {},
+          "financial_basis_confirmed": false,
+          "historical_financial_values_verified": false
+        }
+      ],
+      "historical_financial_values_verified": false,
+      "official_per_pbr_verified": false
+    }
+  },
+  "investment_decisions_authorized": false,
+  "final_buy_signals": 0
+}

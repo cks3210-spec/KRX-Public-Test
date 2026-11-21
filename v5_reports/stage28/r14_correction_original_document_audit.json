@@ -1,16 +1,15 @@
 {
   "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-  "generated_kst": "2026-11-21T09:38:49.200272+09:00",
+  "generated_kst": "2026-11-21T09:42:18.947242+09:00",
   "market_date": "20261119",
   "mismatch_company_count": 4,
   "companies_with_original_or_correction_receipts": 28,
   "document_receipts_required": 62,
   "archive_hashes_available": 61,
-  "document_queries_this_run": 51,
+  "document_queries_this_run": 1,
   "this_run_states": {
-    "REUSED_ARCHIVE_HASH": 11,
-    "DART_API_STATUS_014": 1,
-    "DOCUMENT_ZIP_HASH_CAPTURED": 50
+    "REUSED_ARCHIVE_HASH": 61,
+    "DART_API_STATUS_014": 1
   },
   "cached_original_document_hashes": 61,
   "companies": [
