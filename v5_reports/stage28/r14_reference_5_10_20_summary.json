@@ -1,6 +1,6 @@
 {
   "version": "R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1",
-  "generated_kst": "2026-11-21T15:45:03.819848+09:00",
+  "generated_kst": "2026-11-21T15:59:48.241426+09:00",
   "current_research_market_date": "20261119",
   "latest_verified_market_snapshot": "20261119",
   "source_archive_sessions": 70,
@@ -17,7 +17,7 @@
   },
   "historical_cohort_count": 1,
   "tracked_research_reference_rows": 125,
-  "new_research_cohort_frozen": true,
+  "new_research_cohort_frozen": false,
   "horizon_observation_status_counts": {
     "PENDING_ARCHIVED_SESSIONS": 375
   },
@@ -75,9 +75,9 @@
     "Research cohort performance is not a tested trade strategy or buy recommendation"
   ],
   "read_only_source_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "d53a34d61a9a45deb5e6bd88d44731c34cb2570cff675cc3d7a42710809b4d59",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "50583a167153d084f3d48c86a3ecf521bf30ba175dfd1b5f065b4f3d139abe8e",
-    "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json": "c9bdb357633b80688b82a13b636fb4187c7fac4487784ee1b32fc50fba489330",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "5f71eea0396b275c955adcf120434fb8e06400fbd6b6518533910bf12e3c66f6",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "9ceeb2b4fd86074be8c3944637273c084eb2f1c0c534d34f40cc68ccda23b99b",
+    "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json": "13c84067a0eab399cbd5dc83eb134656402c272908eda5b6c5d3f3f01e2eaabf",
     "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
     "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c",
     "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",

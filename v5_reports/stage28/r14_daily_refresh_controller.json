@@ -1,0 +1,37 @@
+{
+  "checked_kst": "2026-11-21T15:59:42.848170+09:00",
+  "completed_kst": "2026-11-21T15:59:48.303487+09:00",
+  "decision_reason": "FRESH_ARCHIVE_OR_EXPLICIT_MANUAL_RUN",
+  "event": "push",
+  "expected_completed_session": "20261120",
+  "final_buy_signals": 0,
+  "horizon_status_counts": {
+    "PENDING_ARCHIVED_SESSIONS": 375
+  },
+  "investment_decisions_authorized": false,
+  "last_completed_outcome_market_date": "20261119",
+  "last_successful_outcome_market_date": "20261119",
+  "market_data_promoted_by_this_stage": false,
+  "market_session_today": false,
+  "market_source_evidence": {
+    "archive_sessions": 70,
+    "market_day": "20261119",
+    "market_rows": 2771,
+    "source_sha256": {
+      "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
+      "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+      "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c"
+    }
+  },
+  "newly_matured_horizons": 0,
+  "official_ratio_authentication": false,
+  "pipeline_state": "OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED",
+  "published_market_date": "20261119",
+  "requires_upstream_market_publication": true,
+  "research_only": true,
+  "run_pipeline": true,
+  "source_validation_error": null,
+  "stage27_modified": false,
+  "unverified_filing_retry_attempted": false,
+  "version": "R14_DAILY_SOURCE_AWARE_CONTINUITY_V1"
+}

@@ -1,0 +1,37 @@
+{
+  "final_buy_signals": 0,
+  "generated_kst": "2026-11-21T15:59:48.303487+09:00",
+  "horizon_observations": 375,
+  "horizon_status_counts": {
+    "PENDING_ARCHIVED_SESSIONS": 375
+  },
+  "investment_decisions_authorized": false,
+  "latest_verified_market_date": "20261119",
+  "market_data_promoted_by_this_stage": false,
+  "no_missing_future_price_imputation": true,
+  "official_per_pbr_verified": false,
+  "pipeline_state": "OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED",
+  "prior_evidence_continuity": {
+    "new_observation_rows": 125,
+    "newly_matured_horizons": 0,
+    "prior_matured_horizons_preserved": 0,
+    "prior_observation_rows": 125
+  },
+  "rejected_missing_correction_codes": [
+    "033500",
+    "054950",
+    "097230"
+  ],
+  "research_cohort_count": 1,
+  "research_market_date": "20261119",
+  "research_only": true,
+  "returns_not_adjusted_for_dividends_splits_fees": true,
+  "source_archive_sha256": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
+  "source_market_sha256": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
+  "stage27_modified": false,
+  "stage27_signal_ledger_sha256": "b9946127800df10a526ee3bfa8658d62f197f29223ea513b9f6b7483e8de61c6",
+  "stage27_status_sha256": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+  "tracked_research_reference_rows": 125,
+  "upstream_publisher_required_for_next_market_date": true,
+  "version": "R14_DAILY_SOURCE_AWARE_CONTINUITY_V1"
+}

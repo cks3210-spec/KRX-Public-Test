@@ -1,6 +1,6 @@
 {
   "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
-  "generated_kst": "2026-11-21T15:45:02.299430+09:00",
+  "generated_kst": "2026-11-21T15:59:47.222296+09:00",
   "research_market_date": "20261119",
   "filtered_input_candidate_count": 125,
   "excluded_missing_corrected_filing_codes": [
@@ -54,8 +54,8 @@
     "No fair value, actual buy price, risk rating or investment decision is authorized"
   ],
   "unchanged_input_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "d53a34d61a9a45deb5e6bd88d44731c34cb2570cff675cc3d7a42710809b4d59",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "50583a167153d084f3d48c86a3ecf521bf30ba175dfd1b5f065b4f3d139abe8e",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "5f71eea0396b275c955adcf120434fb8e06400fbd6b6518533910bf12e3c66f6",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "9ceeb2b4fd86074be8c3944637273c084eb2f1c0c534d34f40cc68ccda23b99b",
     "v5_reports/stage28/official_market_check.json": "24b9557cebf3cc40d2145e8db1d00479097d0c8f0c5567a44bbd29dffcc27964",
     "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
     "data/v5_financial_m/annual_financial_index_m.csv": "eec837d79233e8bda7ad6c54ee273fd51b28ec904fb057ad599e544f097c4f38",
@@ -64,7 +64,7 @@
     "data/v5_financial_m/dart_disclosure_evidence.json": "87ac5464b052b7d79c4dba7b8b71ba90669120456b029342310620a719dce86e",
     "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "d70fc16b0d387201a6551fa825cf3c0add5bf52df3dc7c9a6f1b5f44b3719eb4",
-    "v5_reports/stage28/r14_valuation_readiness_gate.json": "8cc7cdd626d02f9ca3a0d5abc84b755b25866a44adc0b87da21210a7caae2004",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "64c9fe44289587fab1693bb551cbc1ee07b3b84b2d03870aed2a6111569bb223",
     "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
   }
 }
