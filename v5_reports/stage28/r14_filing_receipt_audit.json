@@ -1,6 +1,6 @@
 {
   "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-  "generated_kst": "2026-11-22T16:40:43.525297+09:00",
+  "generated_kst": "2026-11-22T17:54:27.427679+09:00",
   "market_date": "20261120",
   "candidate_count": 142,
   "required_financial_periods": [
@@ -8,7 +8,7 @@
     "2025_q3",
     "2026_q3"
   ],
-  "live_company_queries_this_run": 16,
+  "live_company_queries_this_run": 0,
   "remaining_not_live_verified": 0,
   "live_dart_filing_metadata_complete_count": 142,
   "all_required_periods_pre_evaluation_count": 142,
@@ -11125,7 +11125,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01074862",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11223,7 +11223,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00659161",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11307,7 +11307,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01061558",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11391,7 +11391,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00868705",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11475,7 +11475,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00609661",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11559,7 +11559,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00857727",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11643,7 +11643,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00913689",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11727,7 +11727,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00867034",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11811,7 +11811,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00917861",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11895,7 +11895,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01042711",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -11979,7 +11979,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01013311",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -12063,7 +12063,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00819374",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -12147,7 +12147,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01008762",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -12231,7 +12231,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01046708",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -12343,7 +12343,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01061327",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [
@@ -12427,7 +12427,7 @@
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00970453",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261122",
       "filings": [

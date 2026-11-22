@@ -1,6 +1,6 @@
 {
   "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-  "generated_kst": "2026-11-22T17:26:35.687695+09:00",
+  "generated_kst": "2026-11-22T17:55:28.175054+09:00",
   "market_date": "20261120",
   "mismatch_company_count": 5,
   "companies_with_original_or_correction_receipts": 31,
@@ -899,7 +899,7 @@
       "code": "206640",
       "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
-      "comparison_status": null,
+      "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
         {
           "period": "2025_annual",

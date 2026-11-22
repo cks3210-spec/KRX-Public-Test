@@ -1,36 +1,27 @@
 {
   "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
-  "generated_kst": "2026-11-22T17:26:37.614914+09:00",
+  "generated_kst": "2026-11-22T17:55:30.151857+09:00",
   "research_market_date": "20261120",
-  "filtered_input_candidate_count": 128,
+  "filtered_input_candidate_count": 137,
   "excluded_missing_corrected_filing_codes": [
     "015360",
     "033500",
     "054950",
     "097230",
-    "190510",
-    "192440",
-    "194480",
-    "204610",
-    "204620",
-    "206640",
-    "214150",
-    "214180",
-    "214450",
     "215200"
   ],
-  "calculated_per_research_count": 128,
-  "calculated_pbr_research_count": 128,
-  "calculated_both_research_count": 128,
+  "calculated_per_research_count": 137,
+  "calculated_pbr_research_count": 137,
+  "calculated_both_research_count": 137,
   "calculation_blocked_count": 0,
   "candidate_calculation_states": {
-    "RESEARCH_ESTIMATE_BOTH_METRICS": 128
+    "RESEARCH_ESTIMATE_BOTH_METRICS": 137
   },
   "source_quality_warning_counts": {
-    "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 8
+    "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 17
   },
-  "annual_owner_source_reconciled_count": 128,
-  "ttm_owner_source_reconciled_count": 128,
+  "annual_owner_source_reconciled_count": 137,
+  "ttm_owner_source_reconciled_count": 137,
   "annual_parent_owner_comparative_match_count": 120,
   "annual_filing_receipt_listed_asof_count": 96,
   "metric_formulas": {
@@ -65,8 +56,8 @@
     "No fair value, actual buy price, risk rating or investment decision is authorized"
   ],
   "unchanged_input_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
     "v5_reports/stage28/official_market_check.json": "d3698b0c2a674bbf8d0913bb51263ae2b9f47baf469564af1b922408897007c1",
     "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
     "data/v5_financial_m/annual_financial_index_m.csv": "45a002e90b2a0bdbc1473948d780bc4f4cd86cef27b6e5e36c02033b50541b24",
@@ -75,7 +66,7 @@
     "data/v5_financial_m/dart_disclosure_evidence.json": "ea0aab0fac0d9c400df0d83a938b21f61bdb1c65919e9a815651785f5e22934a",
     "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
-    "v5_reports/stage28/r14_valuation_readiness_gate.json": "899135ca4bcc1b268964cd29e1a4be984cb86e99e80117b2e0a10f1987be2252",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "df95755da49f2b727dcee77e6e49b34f1c1a7546fd3217eccba49e6151148aa6",
     "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021"
   }
 }

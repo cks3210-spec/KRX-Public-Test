@@ -1,23 +1,14 @@
 {
   "result": "R14_KRX_OFFICIAL_RATIO_SOURCE_CAPABILITY_RESEARCH_ONLY",
   "version": "R14_KRX_OFFICIAL_RATIO_SOURCE_CONTRACT_V1",
-  "generated_kst": "2026-11-22T17:26:37.077979+09:00",
+  "generated_kst": "2026-11-22T17:55:29.593340+09:00",
   "research_market_date": "20261120",
-  "upstream_filtered_candidate_count": 128,
+  "upstream_filtered_candidate_count": 137,
   "upstream_excluded_codes": [
     "015360",
     "033500",
     "054950",
     "097230",
-    "190510",
-    "192440",
-    "194480",
-    "204610",
-    "204620",
-    "206640",
-    "214150",
-    "214180",
-    "214450",
     "215200"
   ],
   "krx_open_api_service_catalog": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
@@ -40,7 +31,7 @@
   "independently_authenticated_official_per": 0,
   "independently_authenticated_official_pbr": 0,
   "frozen_valuation_queue_from_stage31": true,
-  "safe_candidate_count": 128,
+  "safe_candidate_count": 137,
   "official_verified_candidate_count": 0,
   "new_krx_api_requests": 0,
   "new_dart_api_requests": 0,
@@ -56,8 +47,8 @@
     "Historical filing point-in-time validation and official valuation still blocked"
   ],
   "read_only_source_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
     "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
     "data/v5_financial_m/dart_financial_cache.json": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"

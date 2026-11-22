@@ -1,6 +1,6 @@
 {
   "result": "R14_FILTERED_VALUATION_EVIDENCE_GATE_V1",
-  "generated_kst": "2026-11-22T17:26:37.225827+09:00",
+  "generated_kst": "2026-11-22T17:55:29.733427+09:00",
   "research_market_date": "20261120",
   "input_candidates_path": "v5_reports/stage28/r14_eligible_research_candidates.json",
   "excluded_policy_source": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
@@ -8,36 +8,27 @@
   "official_ratio_provenance_source": "v5_reports/stage28/r14_official_ratio_provenance_audit.json",
   "historical_filing_gate_source": "v5_reports/stage28/r14_valuation_disclosure_gate.json",
   "raw_candidate_count_for_audit_only": 142,
-  "filtered_input_candidate_count": 128,
+  "filtered_input_candidate_count": 137,
   "excluded_for_missing_corrected_filing": [
     "015360",
     "033500",
     "054950",
     "097230",
-    "190510",
-    "192440",
-    "194480",
-    "204610",
-    "204620",
-    "206640",
-    "214150",
-    "214180",
-    "214450",
     "215200"
   ],
   "ready_for_research_valuation_count": 0,
-  "deferred_for_evidence_count": 128,
+  "deferred_for_evidence_count": 137,
   "block_reason_counts": {
-    "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED": 128,
-    "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED": 128,
-    "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED": 128
+    "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED": 137,
+    "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED": 137,
+    "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED": 137
   },
   "authentic_official_per_pbr_independently_confirmed": false,
   "historical_financial_point_in_time_gate_passed": false,
   "official_ratio_source_status": "NO_DATE_MATCHED_KRX_EXPORT",
   "expected_official_ratio_source_file": "data/v5_official_ratio_exports/20261120.csv",
   "input_research_grade_counts": {
-    "B": 104,
+    "B": 113,
     "A": 24
   },
   "ready_queue_output": "v5_reports/stage28/r14_valuation_ready_research_candidates.json",
@@ -1948,9 +1939,144 @@
       "investment_decisions_authorized": false
     },
     {
+      "code": "190510",
+      "name": "나무가",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "192440",
+      "name": "슈피겐코리아",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "194480",
+      "name": "데브시스터즈",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "204610",
+      "name": "티쓰리",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "204620",
+      "name": "글로벌텍스프리",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "206640",
+      "name": "바디텍메드",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
       "code": "213420",
       "name": "덕산네오룩스",
       "grade_research_only": "A",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "214150",
+      "name": "클래시스",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "214180",
+      "name": "헥토이노베이션",
+      "grade_research_only": "B",
+      "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
+      "block_reasons": [
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED",
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED"
+      ],
+      "market_date": "20261120",
+      "derived_ratios_are_not_official": true,
+      "actionable_price_verified": false,
+      "investment_decisions_authorized": false
+    },
+    {
+      "code": "214450",
+      "name": "파마리서치",
+      "grade_research_only": "B",
       "readiness": "DEFER_VALUATION_INSUFFICIENT_OFFICIAL_EVIDENCE",
       "block_reasons": [
         "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED",
@@ -1979,12 +2105,12 @@
     "Ready queue is NOT an investment signal even when future evidence completes"
   ],
   "source_file_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
     "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
     "v5_reports/stage28/r14_official_ratio_provenance_audit.json": "e1812bbf2d77fac350a316ea3037f23ba96080dde93afdae1f4be1f5b3c787bb",
     "v5_reports/stage28/r14_valuation_disclosure_gate.json": "435b8c4fd74b5f0965a0aa00c284193c54bc9bd85d31806ffb43a244c800ed8a",
-    "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "3f98177c53ab9581dc57103ab470039dbc8ad31c5df2ad936054bfcee540c1f4"
+    "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "05c243001b3ee0b4477824ed99220af643e3cb67391a63034bd76b616d7c739e"
   },
   "stage27_status_sha256_read_only": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
   "legacy_financial_cache_sha256_read_only": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"

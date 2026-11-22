@@ -1,11 +1,11 @@
 {
   "development_phase": "STAGE28_INTEGRATED_STAGE38_VERIFIED_KRX_DAILY_MARKET",
-  "generated_kst": "2026-11-22T17:26:39.965920+09:00",
+  "generated_kst": "2026-11-22T17:55:32.240583+09:00",
   "component_results": {
     "COLLECT": "success",
-    "FUNDAMENTAL": "success",
-    "DECISION": "success",
-    "PERFORMANCE": "success",
+    "FUNDAMENTAL": "skipped",
+    "DECISION": "skipped",
+    "PERFORMANCE": "skipped",
     "FULL_MARKET_GRADE": "success",
     "RATIO_PROVENANCE": "success",
     "DART_RECEIPTS": "success",
@@ -24,8 +24,9 @@
     "OFFICIAL_RATIO_ROUTE_MONITOR": "success",
     "CALCULATED_RATIO": "success",
     "CALCULATED_RATIO_TRIAGE": "success",
-    "RESEARCH_OUTCOMES": "success",
-    "STAGE37_CONTINUITY": "success"
+    "RESEARCH_OUTCOMES": "failure",
+    "STAGE37_CONTINUITY": "skipped",
+    "TECHNICAL_SYNC": "success"
   },
   "stage27_mode": "READ_ONLY_SEPARATE_WORKFLOW",
   "market_source_mode": "VERIFIED_KRX_DAILY_MARKET_WITH_CONDITIONAL_STAGE38_PROMOTION",
@@ -34,6 +35,8 @@
   "stage38_market_publication_date": "20261120",
   "stage38_missing_sessions_after_batch": 0,
   "stage38_technical_indicator_refresh_pending": false,
+  "stage40_technical_indicator_sync": "VERIFIED_SOURCE_DATE_MATCH",
+  "stage40_technical_indicator_asof": "20261120",
   "legacy_stage25_scope": "ORIGINAL_LIMITED_FUNDAMENTALS_CSV; NOT_FULL_MARKET",
   "r14_scope": "RAW_FULL_MARKET_AUDIT_AND_FILTERED_RESEARCH_SHORTLIST",
   "active_research_candidate_feed": "v5_reports/stage28/r14_eligible_research_candidates.json",
@@ -42,7 +45,7 @@
   "active_research_valuation_input": "v5_reports/stage28/r14_valuation_ready_research_candidates.json",
   "active_research_valuation_input_state": "OFFICIAL_EVIDENCE_GATED_RESEARCH_ONLY",
   "valuation_ready_candidates": 0,
-  "valuation_deferred_candidates": 128,
+  "valuation_deferred_candidates": 137,
   "valuation_target_prices_verified": 0,
   "calculated_ratios_are_actionable": false,
   "krx_official_ratio_provider_capability": "NOT_LISTED_AS_AVAILABLE_API_SERVICE",
@@ -51,26 +54,24 @@
   "official_ratio_route_monitor_reused": true,
   "r14_self_calculated_ratio_scope": "OWNER_ATTRIBUTABLE_MARKETCAP_RATIO_RESEARCH_ONLY; NOT_OFFICIAL; SHARES_AND_PIT_UNVERIFIED",
   "r14_self_calculated_ratio_gate_state": "RESEARCH_CALCULATED_NO_VALUATION_AUTHORIZATION",
-  "r14_self_calculated_per_count": 128,
-  "r14_self_calculated_pbr_count": 128,
+  "r14_self_calculated_per_count": 137,
+  "r14_self_calculated_pbr_count": 137,
   "active_self_calculated_ratio_research": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
   "calculated_ratio_research_evidence_triage": "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json",
   "calculated_ratio_evidence_triage_status": "RESEARCH_ONLY_NO_INVESTMENT_AUTHORIZATION",
   "calculated_ratio_research_evidence_tiers": {
     "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 96,
     "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 24,
-    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 8,
+    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 17,
     "RESEARCH_CALCULATION_BLOCKED": 0
   },
-  "calculated_ratio_research_missing_evidence_count": 32,
-  "research_reference_5_10_20_tracking": "RESEARCH_REFERENCE_RETURNS_NOT_TRADE",
-  "active_research_reference_performance_feed": "v5_reports/stage28/r14_reference_5_10_20_observations.json",
-  "reference_5_10_20_tracked_research_rows": 253,
-  "reference_5_10_20_horizon_status_counts": {
-    "PENDING_ARCHIVED_SESSIONS": 759
-  },
-  "stage37_daily_market_recheck_state": "OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED",
-  "stage37_research_observation_ready": true,
+  "calculated_ratio_research_missing_evidence_count": 41,
+  "research_reference_5_10_20_tracking": "BLOCKED_RESEARCH_OUTCOME_NOT_VERIFIED",
+  "active_research_reference_performance_feed": null,
+  "reference_5_10_20_tracked_research_rows": null,
+  "reference_5_10_20_horizon_status_counts": null,
+  "stage37_daily_market_recheck_state": "BLOCKED_DAILY_CONTINUITY_NOT_VERIFIED",
+  "stage37_research_observation_ready": false,
   "stage37_upstream_market_publication_required": true,
   "research_reference_prices_are_trade_entries": false,
   "r14_official_ratio_verification": "NOT_VERIFIED_NO_AUTHENTICATED_SOURCE",
@@ -223,7 +224,7 @@
     },
     "r14_filing_receipt_audit": {
       "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-      "generated_kst": "2026-11-22T16:40:43.525297+09:00",
+      "generated_kst": "2026-11-22T17:54:27.427679+09:00",
       "market_date": "20261120",
       "candidate_count": 142,
       "required_financial_periods": [
@@ -231,7 +232,7 @@
         "2025_q3",
         "2026_q3"
       ],
-      "live_company_queries_this_run": 16,
+      "live_company_queries_this_run": 0,
       "remaining_not_live_verified": 0,
       "live_dart_filing_metadata_complete_count": 142,
       "all_required_periods_pre_evaluation_count": 142,
@@ -11348,7 +11349,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01074862",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11446,7 +11447,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00659161",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11530,7 +11531,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01061558",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11614,7 +11615,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00868705",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11698,7 +11699,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00609661",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11782,7 +11783,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00857727",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11866,7 +11867,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00913689",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -11950,7 +11951,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00867034",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12034,7 +12035,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00917861",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12118,7 +12119,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01042711",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12202,7 +12203,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01013311",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12286,7 +12287,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00819374",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12370,7 +12371,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01008762",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12454,7 +12455,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01046708",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12566,7 +12567,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "01061327",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12650,7 +12651,7 @@
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
           "corp_code": "00970453",
           "api_state": "COMPLETE_DART_API",
-          "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+          "source_evidence_level": "SAVED_DART_API_RESULT",
           "last_refresh_failure": null,
           "last_live_check_kst": "20261122",
           "filings": [
@@ -12730,19 +12731,17 @@
     },
     "r14_financial_value_reconciliation": {
       "result": "R14_FINANCIAL_VALUES_VS_DART_RECEIPT_AUDIT",
-      "generated_kst": "2026-11-22T16:41:04.431831+09:00",
-      "company_queries_this_run": 128,
-      "dart_financial_api_requests_this_run": 384,
+      "generated_kst": "2026-11-22T17:54:27.758406+09:00",
+      "company_queries_this_run": 14,
+      "dart_financial_api_requests_this_run": 42,
       "candidate_count": 148,
-      "cached_company_count": 139,
-      "current_api_matched_company_count": 134,
+      "cached_company_count": 148,
+      "current_api_matched_company_count": 143,
       "historical_point_in_time_verified_company_count": 0,
       "official_per_pbr_verified_count": 0,
       "status_counts_this_run": {
-        "CURRENT_ACCOUNT_VALUES_MATCHED": 123,
-        "CACHED_FINISHED": 6,
-        "RECEIPT_VERSION_MISMATCH": 5,
-        "PENDING_BATCH_CAP": 14
+        "CACHED_FINISHED": 134,
+        "CURRENT_ACCOUNT_VALUES_MATCHED": 14
       },
       "data_fetched_by_this_audit": true,
       "financial_cache_modified": false,
@@ -12758,7 +12757,7 @@
     },
     "r14_document_versions": {
       "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-      "generated_kst": "2026-11-22T17:26:35.687695+09:00",
+      "generated_kst": "2026-11-22T17:55:28.175054+09:00",
       "market_date": "20261120",
       "mismatch_company_count": 5,
       "companies_with_original_or_correction_receipts": 31,
@@ -13657,7 +13656,7 @@
           "code": "206640",
           "evaluation_date": "20261122",
           "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
-          "comparison_status": null,
+          "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
           "periods": [
             {
               "period": "2025_annual",
@@ -13758,7 +13757,7 @@
     },
     "r14_xbrl_receipt_financial_research": {
       "result": "STAGE28_RECEIPT_XBRL_RESEARCH_ONLY",
-      "generated_kst": "2026-11-22T17:26:35.916928+09:00",
+      "generated_kst": "2026-11-22T17:55:28.404367+09:00",
       "market_date": "20261120",
       "mismatch_company_count": 0,
       "annual_receipts_expected": 0,
@@ -13781,7 +13780,7 @@
     },
     "r14_xbrl_revision_delta": {
       "result": "R14_XBRL_REVISION_DELTA_RESEARCH_ONLY",
-      "generated_kst": "2026-11-22T17:26:36.061368+09:00",
+      "generated_kst": "2026-11-22T17:55:28.535836+09:00",
       "research_market_date": "20261120",
       "mismatch_periods": 0,
       "status_counts": {},
@@ -13801,7 +13800,7 @@
     "r14_xbrl_structure_diagnostic": {
       "result": "R14_XBRL_STRUCTURE_AND_VERSION_HASH_DIAGNOSTIC_RESEARCH_ONLY",
       "version": "STRICT_XBRL_STRUCTURE_DIAGNOSTIC_V1",
-      "generated_kst": "2026-11-22T17:26:36.249889+09:00",
+      "generated_kst": "2026-11-22T17:55:28.734228+09:00",
       "market_date": "20261120",
       "cached_receipts_total": 6,
       "eligible_receipts_to_diagnose": 6,
@@ -14022,7 +14021,7 @@
     },
     "r14_xbrl_dimension_recovery": {
       "result": "R14_DIMENSIONED_XBRL_ANNUAL_FACT_RESEARCH_ONLY",
-      "generated_kst": "2026-11-22T17:26:36.449400+09:00",
+      "generated_kst": "2026-11-22T17:55:28.936152+09:00",
       "research_market_date": "20261120",
       "available_prior_xbrl_receipts": 6,
       "considered_receipts": 0,
@@ -14046,7 +14045,7 @@
     },
     "r14_xbrl_basis_isolation": {
       "result": "R14_SINGLE_STATEMENT_AXIS_CANDIDATE_RESEARCH_V1",
-      "generated_kst": "2026-11-22T17:26:36.585530+09:00",
+      "generated_kst": "2026-11-22T17:55:29.072301+09:00",
       "research_market_date": "20261120",
       "comparison_periods": 0,
       "available_source_receipts": 5,
@@ -14069,7 +14068,7 @@
     },
     "r14_xbrl_cache_bridge": {
       "result": "R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1",
-      "generated_kst": "2026-11-22T17:26:36.753295+09:00",
+      "generated_kst": "2026-11-22T17:55:29.241804+09:00",
       "research_market_date": "20261120",
       "research_date_source": "v5_reports/stage28/r14_full_market_grade_research.json.market_date",
       "reference_market_data_day_not_evaluation_day": true,
@@ -14107,12 +14106,12 @@
     },
     "r14_candidate_eligibility_gate": {
       "result": "R14_MISSING_CORRECTION_EXCLUSION_GATE_V1",
-      "generated_kst": "2026-11-22T17:26:36.887164+09:00",
+      "generated_kst": "2026-11-22T17:55:29.382514+09:00",
       "research_market_date": "20261120",
       "raw_research_candidate_count": 142,
-      "receipt_mismatch_candidates_checked": 14,
-      "eligible_research_candidate_count": 128,
-      "excluded_candidate_count": 14,
+      "receipt_mismatch_candidates_checked": 5,
+      "eligible_research_candidate_count": 137,
+      "excluded_candidate_count": 5,
       "excluded_candidates": [
         {
           "code": "015360",
@@ -14179,87 +14178,6 @@
           ]
         },
         {
-          "code": "190510",
-          "name": "나무가",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "192440",
-          "name": "슈피겐코리아",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "194480",
-          "name": "데브시스터즈",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "204610",
-          "name": "티쓰리",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "204620",
-          "name": "글로벌텍스프리",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "206640",
-          "name": "바디텍메드",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "214150",
-          "name": "클래시스",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "214180",
-          "name": "헥토이노베이션",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
-          "code": "214450",
-          "name": "파마리서치",
-          "previous_research_grade": "B",
-          "status": "EXCLUDE",
-          "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
-          "periods": [],
-          "selected_receipts": []
-        },
-        {
           "code": "215200",
           "name": "메가스터디교육",
           "previous_research_grade": "A",
@@ -14281,19 +14199,10 @@
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "eligible_research_grade_counts": {
-        "B": 104,
+        "B": 113,
         "A": 24
       },
       "eligible_candidate_output": "v5_reports/stage28/r14_eligible_research_candidates.json",
@@ -14312,12 +14221,12 @@
     },
     "r14_filtered_research_shortlist": {
       "result": "R14_FILTERED_RESEARCH_ONLY_CANDIDATES_V1",
-      "generated_kst": "2026-11-22T17:26:36.887164+09:00",
+      "generated_kst": "2026-11-22T17:55:29.382514+09:00",
       "research_market_date": "20261120",
       "source_raw_report": "v5_reports/stage28/r14_full_market_grade_research.json",
-      "candidate_count": 128,
+      "candidate_count": 137,
       "candidate_grades": {
-        "B": 104,
+        "B": 113,
         "A": 24
       },
       "excluded_codes": [
@@ -14325,15 +14234,6 @@
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "source_gate": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
@@ -14345,23 +14245,14 @@
     "r14_official_ratio_source_capability": {
       "result": "R14_KRX_OFFICIAL_RATIO_SOURCE_CAPABILITY_RESEARCH_ONLY",
       "version": "R14_KRX_OFFICIAL_RATIO_SOURCE_CONTRACT_V1",
-      "generated_kst": "2026-11-22T17:26:37.077979+09:00",
+      "generated_kst": "2026-11-22T17:55:29.593340+09:00",
       "research_market_date": "20261120",
-      "upstream_filtered_candidate_count": 128,
+      "upstream_filtered_candidate_count": 137,
       "upstream_excluded_codes": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "krx_open_api_service_catalog": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
@@ -14384,7 +14275,7 @@
       "independently_authenticated_official_per": 0,
       "independently_authenticated_official_pbr": 0,
       "frozen_valuation_queue_from_stage31": true,
-      "safe_candidate_count": 128,
+      "safe_candidate_count": 137,
       "official_verified_candidate_count": 0,
       "new_krx_api_requests": 0,
       "new_dart_api_requests": 0,
@@ -14400,8 +14291,8 @@
         "Historical filing point-in-time validation and official valuation still blocked"
       ],
       "read_only_source_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
         "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
         "data/v5_financial_m/dart_financial_cache.json": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"
@@ -14412,7 +14303,7 @@
       "market_date": "20261120",
       "source_audit": "v5_reports/stage28/r14_official_ratio_source_capability_audit.json",
       "source_import_status": "DATE_MATCHED_FILE_NOT_SUPPLIED",
-      "candidate_count": 128,
+      "candidate_count": 137,
       "input_ratio_rows": 0,
       "matched_filtered_codes": 0,
       "comparison_is_not_independent_authentication": true,
@@ -14427,7 +14318,7 @@
     "r14_official_ratio_route_monitor": {
       "result": "R14_OFFICIAL_RATIO_CHANNEL_FEASIBILITY_RESEARCH_ONLY",
       "version": "R14_OFFICIAL_RATIO_ROUTE_MONITOR_V1",
-      "generated_kst": "2026-11-22T17:26:37.411639+09:00",
+      "generated_kst": "2026-11-22T17:55:29.931432+09:00",
       "last_live_check_kst": "2026-11-21T14:14:12.458884+09:00",
       "research_market_date": "20261120",
       "source_check_reused": true,
@@ -14462,21 +14353,12 @@
       "source_policy_decision": "NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED",
       "ratio_source_authenticated": false,
       "individual_stock_per_pbr_verified": 0,
-      "candidate_count": 128,
+      "candidate_count": 137,
       "excluded_codes": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "download_of_undocumented_or_limited_krx_endpoint_attempted": false,
@@ -14498,21 +14380,12 @@
       "result": "R14_KRX_RATIO_ACQUISITION_POLICY_WITH_SAFE_FALLBACK_V1",
       "research_market_date": "20261120",
       "official_feed_ready": false,
-      "research_candidates_preserved": 128,
+      "research_candidates_preserved": 137,
       "excluded_codes": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "acquisition_decision": "NO_VERIFIED_AUTOMATED_STOCK_PER_PBR_DATA_FEED",
@@ -14531,28 +14404,19 @@
     },
     "r14_calculated_per_pbr_research": {
       "result": "R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1",
-      "generated_kst": "2026-11-22T17:26:37.614914+09:00",
+      "generated_kst": "2026-11-22T17:55:30.151857+09:00",
       "research_market_date": "20261120",
-      "candidate_count": 128,
+      "candidate_count": 137,
       "excluded_codes": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
-      "calculated_per_research_count": 128,
-      "calculated_pbr_research_count": 128,
-      "calculated_both_research_count": 128,
+      "calculated_per_research_count": 137,
+      "calculated_pbr_research_count": 137,
+      "calculated_both_research_count": 137,
       "calculated_ratios": [
         {
           "code": "000050",
@@ -20210,6 +20074,270 @@
           "research_calculation_only": true
         },
         {
+          "code": "190510",
+          "name": "나무가",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 12.0563,
+          "pbr_calculated_research": 1.2714,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 15500,
+          "listed_market_cap_krw": 218322413500,
+          "implied_shares_from_marketcap": 14085317,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 25114747653,
+          "owner_attributable_equity_krw": 171713874677,
+          "owner_attributable_ttm_profit_krw": 18108512152,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "192440",
+          "name": "슈피겐코리아",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 5.6252,
+          "pbr_calculated_research": 0.3507,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 29850,
+          "listed_market_cap_krw": 185558435550,
+          "implied_shares_from_marketcap": 6216363,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 29024271288,
+          "owner_attributable_equity_krw": 529093809545,
+          "owner_attributable_ttm_profit_krw": 32986830543,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "194480",
+          "name": "데브시스터즈",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 10.4242,
+          "pbr_calculated_research": 0.776,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 10600,
+          "listed_market_cap_krw": 128992990000,
+          "implied_shares_from_marketcap": 12169150,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 10492460889,
+          "owner_attributable_equity_krw": 166231969344,
+          "owner_attributable_ttm_profit_krw": 12374335573,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "204610",
+          "name": "티쓰리",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 9.2679,
+          "pbr_calculated_research": 1.5394,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 2630,
+          "listed_market_cap_krw": 146888708600,
+          "implied_shares_from_marketcap": 55851220,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 16934715649,
+          "owner_attributable_equity_krw": 95417735765,
+          "owner_attributable_ttm_profit_krw": 15849194639,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "204620",
+          "name": "글로벌텍스프리",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 12.4845,
+          "pbr_calculated_research": 3.1469,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 6270,
+          "listed_market_cap_krw": 440676479100,
+          "implied_shares_from_marketcap": 70283330,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 34722338002,
+          "owner_attributable_equity_krw": 140033393923,
+          "owner_attributable_ttm_profit_krw": 35298022029,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "206640",
+          "name": "바디텍메드",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 11.4852,
+          "pbr_calculated_research": 0.8909,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 9580,
+          "listed_market_cap_krw": 206045883180,
+          "implied_shares_from_marketcap": 21507921,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 23652989514,
+          "owner_attributable_equity_krw": 231276007687,
+          "owner_attributable_ttm_profit_krw": 17940103360,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
           "code": "213420",
           "name": "덕산네오룩스",
           "research_grade": "A",
@@ -20252,6 +20380,138 @@
             "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
           ],
           "research_calculation_only": true
+        },
+        {
+          "code": "214150",
+          "name": "클래시스",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 13.5171,
+          "pbr_calculated_research": 2.5718,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 21800,
+          "listed_market_cap_krw": 1422137366200,
+          "implied_shares_from_marketcap": 65235659,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 131935919643,
+          "owner_attributable_equity_krw": 552973923820,
+          "owner_attributable_ttm_profit_krw": 105210083974,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "214180",
+          "name": "헥토이노베이션",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 5.1715,
+          "pbr_calculated_research": 0.7476,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 12790,
+          "listed_market_cap_krw": 166185163930,
+          "implied_shares_from_marketcap": 12993367,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 30525142337,
+          "owner_attributable_equity_krw": 222280460798,
+          "owner_attributable_ttm_profit_krw": 32134945613,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
+        },
+        {
+          "code": "214450",
+          "name": "파마리서치",
+          "research_grade": "B",
+          "market_date": "20261120",
+          "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+          "official_krx_per_pbr": false,
+          "share_class_independently_verified": false,
+          "historical_point_in_time_verified": false,
+          "actionable_entry_price": false,
+          "investment_decisions_authorized": false,
+          "buy_signal": false,
+          "per_calculated_research": 19.556,
+          "pbr_calculated_research": 4.1448,
+          "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+          "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+          "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+          "close_krw": 275000,
+          "listed_market_cap_krw": 2857153200000,
+          "implied_shares_from_marketcap": 10389648,
+          "market_cap_ordinary_share_class_not_authenticated": true,
+          "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+          "cache_source_checks": {
+            "annual_reconciled": true,
+            "ttm_reconciled": true,
+            "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+            "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+          },
+          "financial_basis": "CFS",
+          "annual_financial_year": "2025",
+          "financial_cache_snapshot_date": "20261116",
+          "owner_attributable_annual_profit_krw": 165120956459,
+          "owner_attributable_equity_krw": 689331204119,
+          "owner_attributable_ttm_profit_krw": 146101416057,
+          "filing_evidence": {
+            "asof_receipt_listed": false,
+            "cached_values_matched_to_receipt": false
+          },
+          "independent_annual_comparative_cache_matches_owner_profit": false,
+          "research_source_quality_flags": [
+            "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+          ],
+          "research_calculation_only": true
         }
       ],
       "source_type": "SELF_CALCULATED_FROM_KRX_SHAPED_MARKET_SNAPSHOT_AND_OPENDART_OWNER_ATTRIBUTES_RESEARCH",
@@ -20264,37 +20524,28 @@
     },
     "r14_calculated_ratio_quality_gate": {
       "result": "R14_OWNER_ATTRIBUTABLE_CALCULATED_RATIO_EVIDENCE_GATE_RESEARCH_V1",
-      "generated_kst": "2026-11-22T17:26:37.614914+09:00",
+      "generated_kst": "2026-11-22T17:55:30.151857+09:00",
       "research_market_date": "20261120",
-      "filtered_input_candidate_count": 128,
+      "filtered_input_candidate_count": 137,
       "excluded_missing_corrected_filing_codes": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
-      "calculated_per_research_count": 128,
-      "calculated_pbr_research_count": 128,
-      "calculated_both_research_count": 128,
+      "calculated_per_research_count": 137,
+      "calculated_pbr_research_count": 137,
+      "calculated_both_research_count": 137,
       "calculation_blocked_count": 0,
       "candidate_calculation_states": {
-        "RESEARCH_ESTIMATE_BOTH_METRICS": 128
+        "RESEARCH_ESTIMATE_BOTH_METRICS": 137
       },
       "source_quality_warning_counts": {
-        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 8
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED": 17
       },
-      "annual_owner_source_reconciled_count": 128,
-      "ttm_owner_source_reconciled_count": 128,
+      "annual_owner_source_reconciled_count": 137,
+      "ttm_owner_source_reconciled_count": 137,
       "annual_parent_owner_comparative_match_count": 120,
       "annual_filing_receipt_listed_asof_count": 96,
       "metric_formulas": {
@@ -20329,8 +20580,8 @@
         "No fair value, actual buy price, risk rating or investment decision is authorized"
       ],
       "unchanged_input_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
         "v5_reports/stage28/official_market_check.json": "d3698b0c2a674bbf8d0913bb51263ae2b9f47baf469564af1b922408897007c1",
         "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
         "data/v5_financial_m/annual_financial_index_m.csv": "45a002e90b2a0bdbc1473948d780bc4f4cd86cef27b6e5e36c02033b50541b24",
@@ -20339,13 +20590,13 @@
         "data/v5_financial_m/dart_disclosure_evidence.json": "ea0aab0fac0d9c400df0d83a938b21f61bdb1c65919e9a815651785f5e22934a",
         "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "94121092469e41dbaa780dd97ee36144c0dda93207edd249e0f49cb201d487bd",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
-        "v5_reports/stage28/r14_valuation_readiness_gate.json": "899135ca4bcc1b268964cd29e1a4be984cb86e99e80117b2e0a10f1987be2252",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "df95755da49f2b727dcee77e6e49b34f1c1a7546fd3217eccba49e6151148aa6",
         "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021"
       }
     },
     "r14_calculated_ratio_evidence_triage": {
       "result": "R14_CALCULATED_RATIO_EVIDENCE_TIERS_RESEARCH_V1",
-      "generated_kst": "2026-11-22T17:26:37.817448+09:00",
+      "generated_kst": "2026-11-22T17:55:30.357056+09:00",
       "research_market_date": "20261120",
       "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
       "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
@@ -20355,15 +20606,6 @@
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "official_krx_ratios_independently_verified": 0,
@@ -20375,23 +20617,23 @@
       "research_only": true,
       "new_network_requests_this_stage": 0,
       "missing_corrected_filing_retrieval_disabled": true,
-      "filtered_input_candidate_count": 128,
-      "research_calculated_both_count": 128,
+      "filtered_input_candidate_count": 137,
+      "research_calculated_both_count": 137,
       "tier_counts": {
         "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 96,
         "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 24,
-        "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 8,
+        "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 17,
         "RESEARCH_CALCULATION_BLOCKED": 0
       },
       "evidence_gap_counts": {
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT": 128,
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED": 128,
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED": 128,
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE": 32,
-        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED": 8
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT": 137,
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED": 137,
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED": 137,
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE": 41,
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED": 17
       },
       "strongest_research_evidence_count_not_verified": 96,
-      "incomplete_research_evidence_count": 32,
+      "incomplete_research_evidence_count": 41,
       "actionable_valuation_count": 0,
       "limitations": [
         "Two supporting checks are not provider authentication or point-in-time filing-value verification",
@@ -20401,11 +20643,11 @@
         "The pre-existing 3 missing-correction exclusions remain permanent for this research snapshot"
       ],
       "source_file_sha256_read_only": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
-        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "bacaf366eef83d28cd5cfc42755e174a9b294bf4ae44f725d4c780757f1a4ddb",
-        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "80f052ecfaf4585bedc7ab661a9cdae30287b5eca7d25da09b7c3c9bafbaac96",
-        "v5_reports/stage28/r14_valuation_readiness_gate.json": "899135ca4bcc1b268964cd29e1a4be984cb86e99e80117b2e0a10f1987be2252",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
+        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "2fcb6e8588dd01ea0efaf8c586adb306e217ef75913bc198d9b8d734cac8fee8",
+        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "584cc697bb5d5a490f298cb4e71ebf46abea1be94e54e4aa568d768bbd8cd565",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "df95755da49f2b727dcee77e6e49b34f1c1a7546fd3217eccba49e6151148aa6",
         "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
         "data/v5_financial_m/dart_financial_cache.json": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"
       },
@@ -20413,7 +20655,7 @@
     },
     "r14_calculated_ratio_missing_evidence_queue": {
       "result": "R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1",
-      "generated_kst": "2026-11-22T17:26:37.817448+09:00",
+      "generated_kst": "2026-11-22T17:55:30.357056+09:00",
       "research_market_date": "20261120",
       "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
       "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
@@ -20423,15 +20665,6 @@
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "official_krx_ratios_independently_verified": 0,
@@ -20443,8 +20676,8 @@
       "research_only": true,
       "new_network_requests_this_stage": 0,
       "missing_corrected_filing_retrieval_disabled": true,
-      "research_candidates_kept": 128,
-      "missing_evidence_candidate_count": 32,
+      "research_candidates_kept": 137,
+      "missing_evidence_candidate_count": 41,
       "all_candidates_still_need_share_class_and_pit_authentication": true,
       "no_automatic_missing_correction_retry": true,
       "next_development_priorities": [
@@ -20455,11 +20688,11 @@
       ],
       "actionable_valuation_count": 0,
       "source_file_sha256_read_only": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
-        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "bacaf366eef83d28cd5cfc42755e174a9b294bf4ae44f725d4c780757f1a4ddb",
-        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "80f052ecfaf4585bedc7ab661a9cdae30287b5eca7d25da09b7c3c9bafbaac96",
-        "v5_reports/stage28/r14_valuation_readiness_gate.json": "899135ca4bcc1b268964cd29e1a4be984cb86e99e80117b2e0a10f1987be2252",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
+        "v5_reports/stage28/r14_calculated_per_pbr_research.json": "2fcb6e8588dd01ea0efaf8c586adb306e217ef75913bc198d9b8d734cac8fee8",
+        "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "584cc697bb5d5a490f298cb4e71ebf46abea1be94e54e4aa568d768bbd8cd565",
+        "v5_reports/stage28/r14_valuation_readiness_gate.json": "df95755da49f2b727dcee77e6e49b34f1c1a7546fd3217eccba49e6151148aa6",
         "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
         "data/v5_financial_m/dart_financial_cache.json": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"
       }
@@ -32028,7 +32261,7 @@
       "baseline_latest": "20261120",
       "baseline_rows": 193557,
       "baseline_sessions": 70,
-      "checked_kst": "2026-11-22T16:40:36.180990+09:00",
+      "checked_kst": "2026-11-22T17:54:06.230335+09:00",
       "current_market_date": "20261120",
       "data_provider_base": "https://data-dbg.krx.co.kr/svc/apis/sto/",
       "final_buy_signals": 0,
@@ -32052,18 +32285,13 @@
       "version": "STAGE28_R14_VERIFIED_OFFICIAL_MARKET_AUTO_PUBLISH_V1"
     },
     "r14_daily_source_gate": {
-      "checked_kst": "2026-11-22T16:40:38.151243+09:00",
-      "completed_kst": "2026-11-22T17:26:39.740220+09:00",
+      "checked_kst": "2026-11-22T17:54:08.223062+09:00",
       "decision_reason": "FRESH_ARCHIVE_OR_EXPLICIT_MANUAL_RUN",
       "event": "push",
       "expected_completed_session": "20261120",
       "final_buy_signals": 0,
-      "horizon_status_counts": {
-        "PENDING_ARCHIVED_SESSIONS": 759
-      },
       "investment_decisions_authorized": false,
-      "last_completed_outcome_market_date": "20261119",
-      "last_successful_outcome_market_date": "20261120",
+      "last_completed_outcome_market_date": "20261120",
       "market_data_promoted_by_this_stage": false,
       "market_session_today": false,
       "market_source_evidence": {
@@ -32076,9 +32304,8 @@
           "data/summary.json": "0b72c5910c9d73d4c065ce3a7de43ac975c5c2260c51f88e5b931dea6768f02f"
         }
       },
-      "newly_matured_horizons": 0,
       "official_ratio_authentication": false,
-      "pipeline_state": "OUTCOMES_RECHECKED_AND_FROZEN_EVIDENCE_PRESERVED",
+      "pipeline_state": "RECHECK_APPROVED",
       "published_market_date": "20261120",
       "requires_upstream_market_publication": true,
       "research_only": true,
@@ -32136,9 +32363,62 @@
       "upstream_publisher_required_for_next_market_date": true,
       "version": "R14_DAILY_SOURCE_AWARE_CONTINUITY_V1"
     },
+    "r14_stage40_technical_sync": {
+      "computed_marketcap_1000uk_rows": 1245,
+      "counts": {
+        "cap_eligible": 1245,
+        "gc_observation_eligible": 1240,
+        "ma10_ready": 1240,
+        "ma20_ready": 1238,
+        "ma5_ready": 1243,
+        "ma60_ready": 1231,
+        "return_20d_ready": 1238,
+        "technical_screen": 8,
+        "three_session_ma5_above_ma10": 263,
+        "uptrend": 201,
+        "v4_ready": 1214,
+        "v4_screen": 7,
+        "volume_20d_ready": 1221
+      },
+      "final_buy_signals": 0,
+      "financial_cache_modified": false,
+      "golden_cross_observation_rows": 263,
+      "golden_cross_used_for_stock_ratings": false,
+      "historical_price_archive_modified": false,
+      "input_sha256": {
+        "data/daily_70d.csv.gz": "b8de69950ee14830df71622d93af4dcc1a3a19620c21a8faa382b199f5a0dc23",
+        "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
+        "data/summary.json": "0b72c5910c9d73d4c065ce3a7de43ac975c5c2260c51f88e5b931dea6768f02f"
+      },
+      "investment_decisions_authorized": false,
+      "limitations": [
+        "These are technical observations, not investment-grade trade signals",
+        "Financial/PER/PBR and common-share-class verification remains separate",
+        "Missing observations produce blank metrics rather than a forward-filled close",
+        "Golden-cross is tracked only for legacy continuity; not a scoring factor"
+      ],
+      "ma_method": "simple arithmetic mean of preceding n closes including valuation day; no gaps",
+      "missing_history_price_forward_filled": false,
+      "official_per_pbr_verified_by_stage": false,
+      "result": "VERIFIED_TECHNICAL_DATE_MATCH",
+      "source_market_date": "20261120",
+      "stage27_modified": false,
+      "status": "RESEARCH_TECHNICAL_STATISTICS_ONLY",
+      "technical_statistics_asof": "20261120",
+      "v4_candidate_screen_rows": 1214,
+      "v4_return_band_pct": [
+        -5,
+        3
+      ],
+      "v4_screen_true_count": 7,
+      "v4_volume_ratio_method": "average latest 20 sessions / prior 20 sessions",
+      "v4_volume_ratio_threshold": 3,
+      "version": "R14_STAGE40_TECHNICAL_SOURCE_DATE_SYNC_V1",
+      "volume_multiple_method": "latest volume / previous 20-session average volume"
+    },
     "r14_valuation_readiness_gate": {
       "result": "R14_FILTERED_VALUATION_EVIDENCE_GATE_V1",
-      "generated_kst": "2026-11-22T17:26:37.225827+09:00",
+      "generated_kst": "2026-11-22T17:55:29.733427+09:00",
       "research_market_date": "20261120",
       "input_candidates_path": "v5_reports/stage28/r14_eligible_research_candidates.json",
       "excluded_policy_source": "v5_reports/stage28/r14_candidate_exclusion_gate.json",
@@ -32146,36 +32426,27 @@
       "official_ratio_provenance_source": "v5_reports/stage28/r14_official_ratio_provenance_audit.json",
       "historical_filing_gate_source": "v5_reports/stage28/r14_valuation_disclosure_gate.json",
       "raw_candidate_count_for_audit_only": 142,
-      "filtered_input_candidate_count": 128,
+      "filtered_input_candidate_count": 137,
       "excluded_for_missing_corrected_filing": [
         "015360",
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "ready_for_research_valuation_count": 0,
-      "deferred_for_evidence_count": 128,
+      "deferred_for_evidence_count": 137,
       "block_reason_counts": {
-        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED": 128,
-        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED": 128,
-        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED": 128
+        "KRX_OFFICIAL_RATIO_SOURCE_NOT_AUTHENTICATED": 137,
+        "PER_CODE_OFFICIAL_PER_PBR_NOT_INDEPENDENTLY_VERIFIED": 137,
+        "ASOF_FINANCIAL_STATEMENT_NOT_INDEPENDENTLY_VERIFIED": 137
       },
       "authentic_official_per_pbr_independently_confirmed": false,
       "historical_financial_point_in_time_gate_passed": false,
       "official_ratio_source_status": "NO_DATE_MATCHED_KRX_EXPORT",
       "expected_official_ratio_source_file": "data/v5_official_ratio_exports/20261120.csv",
       "input_research_grade_counts": {
-        "B": 104,
+        "B": 113,
         "A": 24
       },
       "ready_queue_output": "v5_reports/stage28/r14_valuation_ready_research_candidates.json",
@@ -32195,19 +32466,19 @@
         "Ready queue is NOT an investment signal even when future evidence completes"
       ],
       "source_file_sha256": {
-        "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
-        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+        "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+        "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
         "v5_reports/stage28/r14_krx_official_ratio_source_gate.json": "7d213d9b5e52de6802c129ccdc6b8a2535b437e330f0c272e82a8ef10efe3e70",
         "v5_reports/stage28/r14_official_ratio_provenance_audit.json": "e1812bbf2d77fac350a316ea3037f23ba96080dde93afdae1f4be1f5b3c787bb",
         "v5_reports/stage28/r14_valuation_disclosure_gate.json": "435b8c4fd74b5f0965a0aa00c284193c54bc9bd85d31806ffb43a244c800ed8a",
-        "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "3f98177c53ab9581dc57103ab470039dbc8ad31c5df2ad936054bfcee540c1f4"
+        "v5_reports/stage28/r14_financial_value_reconciliation_cache.json": "05c243001b3ee0b4477824ed99220af643e3cb67391a63034bd76b616d7c739e"
       },
       "stage27_status_sha256_read_only": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
       "legacy_financial_cache_sha256_read_only": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"
     },
     "r14_valuation_ready_research_queue": {
       "result": "R14_OFFICIAL_EVIDENCE_READY_VALUATION_RESEARCH_QUEUE_V1",
-      "generated_kst": "2026-11-22T17:26:37.225827+09:00",
+      "generated_kst": "2026-11-22T17:55:29.733427+09:00",
       "research_market_date": "20261120",
       "source_gate": "v5_reports/stage28/r14_valuation_readiness_gate.json",
       "ready_count": 0,
@@ -32216,15 +32487,6 @@
         "033500",
         "054950",
         "097230",
-        "190510",
-        "192440",
-        "194480",
-        "204610",
-        "204620",
-        "206640",
-        "214150",
-        "214180",
-        "214450",
         "215200"
       ],
       "investment_decisions_authorized": false,
@@ -32238,19 +32500,10 @@
     "033500",
     "054950",
     "097230",
-    "190510",
-    "192440",
-    "194480",
-    "204610",
-    "204620",
-    "206640",
-    "214150",
-    "214180",
-    "214450",
     "215200"
   ],
-  "eligible_research_candidate_count": 128,
+  "eligible_research_candidate_count": 137,
   "verified_investment_recommendations": 0,
   "investment_decisions_authorized": false,
-  "notice": "Stage38 authorized KRX daily-market publisher validates both markets and preserves 70 consecutive KRX sessions; never overwrites on a failed or partial source. Technical MA/cross counts require their own refresh. R14 research-only ratios, evidence tiers, 5/10/20 reference returns remain independent of trade signals; Stage27 is read-only; missing corrected filings remain excluded."
+  "notice": "Stage38 authorized KRX daily-market publisher validates both markets and preserves 70 consecutive KRX sessions; never overwrites on a failed or partial source. Stage40 dated technical statistics are rebuilt and audited from the same verified archive. R14 research-only ratios, evidence tiers, 5/10/20 reference returns remain independent of trade signals; Stage27 is read-only; missing corrected filings remain excluded."
 }

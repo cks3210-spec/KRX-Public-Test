@@ -1,6 +1,6 @@
 {
   "format": "R14_FINANCIAL_COMPARISON_CACHE_V1",
-  "updated_kst": "2026-11-22T16:41:04.431831+09:00",
+  "updated_kst": "2026-11-22T17:54:27.758406+09:00",
   "rows": {
     "000270": {
       "code": "000270",
@@ -7462,14 +7462,14 @@
       "code": "229640",
       "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "receipt_selection": {
-        "evaluation_date": "20261121",
+        "evaluation_date": "20261122",
         "receipts": {
           "2025_annual": "20260316001365",
           "2025_q3": "20251114000977",
           "2026_q3": "20261116000573"
         }
       },
-      "checked_kst": "2026-11-21T16:24:46.568812+09:00",
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
       "periods": {
         "2025_annual": {
           "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
@@ -7523,14 +7523,14 @@
       "code": "267250",
       "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "receipt_selection": {
-        "evaluation_date": "20261121",
+        "evaluation_date": "20261122",
         "receipts": {
           "2025_annual": "20260320000872",
           "2025_q3": "20251114002262",
           "2026_q3": "20261116001460"
         }
       },
-      "checked_kst": "2026-11-21T16:24:46.568812+09:00",
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
       "periods": {
         "2025_annual": {
           "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
@@ -7584,14 +7584,14 @@
       "code": "294870",
       "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "receipt_selection": {
-        "evaluation_date": "20261121",
+        "evaluation_date": "20261122",
         "receipts": {
           "2025_annual": "20260318001249",
           "2025_q3": "20251114001579",
           "2026_q3": "20261113001082"
         }
       },
-      "checked_kst": "2026-11-21T16:24:46.568812+09:00",
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
       "periods": {
         "2025_annual": {
           "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
@@ -7645,14 +7645,14 @@
       "code": "383800",
       "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "receipt_selection": {
-        "evaluation_date": "20261121",
+        "evaluation_date": "20261122",
         "receipts": {
           "2025_annual": "20260323001295",
           "2025_q3": "20251114002923",
           "2026_q3": "20261116001580"
         }
       },
-      "checked_kst": "2026-11-21T16:24:46.568812+09:00",
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
       "periods": {
         "2025_annual": {
           "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
@@ -7706,14 +7706,14 @@
       "code": "487570",
       "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "receipt_selection": {
-        "evaluation_date": "20261121",
+        "evaluation_date": "20261122",
         "receipts": {
           "2025_annual": "20260312001348",
           "2025_q3": "20251114002078",
           "2026_q3": "20261116000688"
         }
       },
-      "checked_kst": "2026-11-21T16:24:46.568812+09:00",
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
       "periods": {
         "2025_annual": {
           "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
@@ -8418,6 +8418,555 @@
           ],
           "compared_count": 5,
           "receipt_no": "20261116001165",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "190510": {
+      "code": "190510",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260318000744",
+          "2025_q3": "20251114000033",
+          "2026_q3": "20261116000945"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260318000744",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114000033",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116000945",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "192440": {
+      "code": "192440",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260320001111",
+          "2025_q3": "20251114000202",
+          "2026_q3": "20261116000250"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260320001111",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114000202",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116000250",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "194480": {
+      "code": "194480",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260316001364",
+          "2025_q3": "20251114002643",
+          "2026_q3": "20261116001692"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260316001364",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114002643",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116001692",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "204610": {
+      "code": "204610",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260312000986",
+          "2025_q3": "20251114001690",
+          "2026_q3": "20261116001314"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260312000986",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114001690",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116001314",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "204620": {
+      "code": "204620",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260323001065",
+          "2025_q3": "20251114001385",
+          "2026_q3": "20261116001444"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260323001065",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114001385",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116001444",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "206640": {
+      "code": "206640",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260727000339",
+          "2025_q3": "20251114001350",
+          "2026_q3": "20261117000126"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260727000339",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114001350",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261117000126",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "214150": {
+      "code": "214150",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260323001541",
+          "2025_q3": "20251114002953",
+          "2026_q3": "20261116000298"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260323001541",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114002953",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116000298",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "214180": {
+      "code": "214180",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260319001375",
+          "2025_q3": "20251114002151",
+          "2026_q3": "20261116002039"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260319001375",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114002151",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261116002039",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        }
+      },
+      "source": "OPEN_DART_CURRENT_FINANCIAL_API_RECEIPT_AUDIT",
+      "historical_point_in_time_verified": false,
+      "investment_decisions_authorized": false
+    },
+    "214450": {
+      "code": "214450",
+      "status": "CURRENT_ACCOUNT_VALUES_MATCHED",
+      "receipt_selection": {
+        "evaluation_date": "20261122",
+        "receipts": {
+          "2025_annual": "20260319001417",
+          "2025_q3": "20251114000932",
+          "2026_q3": "20261113001686"
+        }
+      },
+      "checked_kst": "2026-11-22T17:54:27.758406+09:00",
+      "periods": {
+        "2025_annual": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "previous_equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 6,
+          "receipt_no": "20260319001417",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2025_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20251114000932",
+          "fs_div": "CFS",
+          "point_in_time_verified": false
+        },
+        "2026_q3": {
+          "status": "CURRENT_DART_VALUES_MATCH_RECEIPT_AND_CACHE",
+          "compared_fields": [
+            "profit",
+            "equity",
+            "assets",
+            "liabilities",
+            "revenue"
+          ],
+          "compared_count": 5,
+          "receipt_no": "20261113001686",
           "fs_div": "CFS",
           "point_in_time_verified": false
         }

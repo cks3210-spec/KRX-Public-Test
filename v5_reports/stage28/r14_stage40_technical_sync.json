@@ -1,0 +1,53 @@
+{
+  "computed_marketcap_1000uk_rows": 1245,
+  "counts": {
+    "cap_eligible": 1245,
+    "gc_observation_eligible": 1240,
+    "ma10_ready": 1240,
+    "ma20_ready": 1238,
+    "ma5_ready": 1243,
+    "ma60_ready": 1231,
+    "return_20d_ready": 1238,
+    "technical_screen": 8,
+    "three_session_ma5_above_ma10": 263,
+    "uptrend": 201,
+    "v4_ready": 1214,
+    "v4_screen": 7,
+    "volume_20d_ready": 1221
+  },
+  "final_buy_signals": 0,
+  "financial_cache_modified": false,
+  "golden_cross_observation_rows": 263,
+  "golden_cross_used_for_stock_ratings": false,
+  "historical_price_archive_modified": false,
+  "input_sha256": {
+    "data/daily_70d.csv.gz": "b8de69950ee14830df71622d93af4dcc1a3a19620c21a8faa382b199f5a0dc23",
+    "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
+    "data/summary.json": "0b72c5910c9d73d4c065ce3a7de43ac975c5c2260c51f88e5b931dea6768f02f"
+  },
+  "investment_decisions_authorized": false,
+  "limitations": [
+    "These are technical observations, not investment-grade trade signals",
+    "Financial/PER/PBR and common-share-class verification remains separate",
+    "Missing observations produce blank metrics rather than a forward-filled close",
+    "Golden-cross is tracked only for legacy continuity; not a scoring factor"
+  ],
+  "ma_method": "simple arithmetic mean of preceding n closes including valuation day; no gaps",
+  "missing_history_price_forward_filled": false,
+  "official_per_pbr_verified_by_stage": false,
+  "result": "VERIFIED_TECHNICAL_DATE_MATCH",
+  "source_market_date": "20261120",
+  "stage27_modified": false,
+  "status": "RESEARCH_TECHNICAL_STATISTICS_ONLY",
+  "technical_statistics_asof": "20261120",
+  "v4_candidate_screen_rows": 1214,
+  "v4_return_band_pct": [
+    -5,
+    3
+  ],
+  "v4_screen_true_count": 7,
+  "v4_volume_ratio_method": "average latest 20 sessions / prior 20 sessions",
+  "v4_volume_ratio_threshold": 3,
+  "version": "R14_STAGE40_TECHNICAL_SOURCE_DATE_SYNC_V1",
+  "volume_multiple_method": "latest volume / previous 20-session average volume"
+}
