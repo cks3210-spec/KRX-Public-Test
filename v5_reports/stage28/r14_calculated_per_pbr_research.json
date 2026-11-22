@@ -1,17 +1,27 @@
 {
   "result": "R14_OWNER_ATTRIBUTABLE_MARKETCAP_RATIOS_RESEARCH_V1",
-  "generated_kst": "2026-11-21T17:12:02.822321+09:00",
+  "generated_kst": "2026-11-22T17:26:37.614914+09:00",
   "research_market_date": "20261120",
-  "candidate_count": 122,
+  "candidate_count": 128,
   "excluded_codes": [
     "015360",
     "033500",
     "054950",
-    "097230"
+    "097230",
+    "190510",
+    "192440",
+    "194480",
+    "204610",
+    "204620",
+    "206640",
+    "214150",
+    "214180",
+    "214450",
+    "215200"
   ],
-  "calculated_per_research_count": 122,
-  "calculated_pbr_research_count": 122,
-  "calculated_both_research_count": 122,
+  "calculated_per_research_count": 128,
+  "calculated_pbr_research_count": 128,
+  "calculated_both_research_count": 128,
   "calculated_ratios": [
     {
       "code": "000050",
@@ -4249,7 +4259,10 @@
       "owner_attributable_equity_krw": 285087266334,
       "owner_attributable_ttm_profit_krw": 20797965538,
       "filing_evidence": {
-        "asof_receipt_listed": false,
+        "asof_receipt_listed": true,
+        "receipt_numbers_for_research": [
+          "20260316001660"
+        ],
         "cached_values_matched_to_receipt": false
       },
       "independent_annual_comparative_cache_matches_owner_profit": true,
@@ -4291,7 +4304,10 @@
       "owner_attributable_equity_krw": 995338844132,
       "owner_attributable_ttm_profit_krw": 73827197946,
       "filing_evidence": {
-        "asof_receipt_listed": false,
+        "asof_receipt_listed": true,
+        "receipt_numbers_for_research": [
+          "20260320001410"
+        ],
         "cached_values_matched_to_receipt": false
       },
       "independent_annual_comparative_cache_matches_owner_profit": true,
@@ -4333,7 +4349,10 @@
       "owner_attributable_equity_krw": 227082622303,
       "owner_attributable_ttm_profit_krw": 84053435809,
       "filing_evidence": {
-        "asof_receipt_listed": false,
+        "asof_receipt_listed": true,
+        "receipt_numbers_for_research": [
+          "20260323001029"
+        ],
         "cached_values_matched_to_receipt": false
       },
       "independent_annual_comparative_cache_matches_owner_profit": true,
@@ -4375,7 +4394,10 @@
       "owner_attributable_equity_krw": 50388039934,
       "owner_attributable_ttm_profit_krw": 12470886300,
       "filing_evidence": {
-        "asof_receipt_listed": false,
+        "asof_receipt_listed": true,
+        "receipt_numbers_for_research": [
+          "20260319000615"
+        ],
         "cached_values_matched_to_receipt": false
       },
       "independent_annual_comparative_cache_matches_owner_profit": true,
@@ -5426,6 +5448,270 @@
       "owner_attributable_annual_profit_krw": 38229673563,
       "owner_attributable_equity_krw": 391301167041,
       "owner_attributable_ttm_profit_krw": 44607481078,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "136480",
+      "name": "하림",
+      "research_grade": "B",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 6.453,
+      "pbr_calculated_research": 0.8469,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 2595,
+      "listed_market_cap_krw": 275614176690,
+      "implied_shares_from_marketcap": 106209702,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 38536311000,
+      "owner_attributable_equity_krw": 325441884000,
+      "owner_attributable_ttm_profit_krw": 42711111000,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "136540",
+      "name": "윈스테크넷",
+      "research_grade": "B",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 8.1752,
+      "pbr_calculated_research": 0.8012,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 12060,
+      "listed_market_cap_krw": 148093736760,
+      "implied_shares_from_marketcap": 12279746,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 18404794500,
+      "owner_attributable_equity_krw": 184835831165,
+      "owner_attributable_ttm_profit_krw": 18114966951,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "148150",
+      "name": "세경하이테크",
+      "research_grade": "B",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 2.9804,
+      "pbr_calculated_research": 0.4251,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 2820,
+      "listed_market_cap_krw": 100230746760,
+      "implied_shares_from_marketcap": 35542818,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 48779323498,
+      "owner_attributable_equity_krw": 235784603798,
+      "owner_attributable_ttm_profit_krw": 33630183494,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "160980",
+      "name": "싸이맥스",
+      "research_grade": "A",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 8.6738,
+      "pbr_calculated_research": 0.959,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 17050,
+      "listed_market_cap_krw": 186258343150,
+      "implied_shares_from_marketcap": 10924243,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 14939385633,
+      "owner_attributable_equity_krw": 194222604268,
+      "owner_attributable_ttm_profit_krw": 21473556321,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "176750",
+      "name": "듀켐바이오",
+      "research_grade": "B",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 22.3041,
+      "pbr_calculated_research": 2.9854,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 5160,
+      "listed_market_cap_krw": 147001795200,
+      "implied_shares_from_marketcap": 28488720,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 6479757905,
+      "owner_attributable_equity_krw": 49239976454,
+      "owner_attributable_ttm_profit_krw": 6590782573,
+      "filing_evidence": {
+        "asof_receipt_listed": false,
+        "cached_values_matched_to_receipt": false
+      },
+      "independent_annual_comparative_cache_matches_owner_profit": false,
+      "research_source_quality_flags": [
+        "OWNER_PROFIT_COMPARATIVE_NOT_CONFIRMED"
+      ],
+      "research_calculation_only": true
+    },
+    {
+      "code": "213420",
+      "name": "덕산네오룩스",
+      "research_grade": "A",
+      "market_date": "20261120",
+      "source_data_type": "EXISTING_KRX_MARKET_AND_OPENDART_PARENT_OWNER_RESEARCH",
+      "official_krx_per_pbr": false,
+      "share_class_independently_verified": false,
+      "historical_point_in_time_verified": false,
+      "actionable_entry_price": false,
+      "investment_decisions_authorized": false,
+      "buy_signal": false,
+      "per_calculated_research": 9.0505,
+      "pbr_calculated_research": 1.0442,
+      "per_status": "PROVISIONAL_MARKETCAP_TO_OWNER_TTM_PROFIT_RESEARCH",
+      "pbr_status": "PROVISIONAL_MARKETCAP_TO_OWNER_EQUITY_RESEARCH",
+      "calculated_ratio_status": "RESEARCH_ESTIMATE_BOTH_METRICS",
+      "close_krw": 19000,
+      "listed_market_cap_krw": 471792401000,
+      "implied_shares_from_marketcap": 24831179,
+      "market_cap_ordinary_share_class_not_authenticated": true,
+      "valuation_market_basis": "KRX_SNAPSHOT_MKTCAP_ISU_CD_NO_SHARE_CLASS_CONFIRMATION",
+      "cache_source_checks": {
+        "annual_reconciled": true,
+        "ttm_reconciled": true,
+        "ttm_formula": "annual_parent_owner_profit + current_ytd_owner_profit - prior_ytd_owner_profit",
+        "reason": "CUMULATIVE_OWNER_TTM_MATCH"
+      },
+      "financial_basis": "CFS",
+      "annual_financial_year": "2025",
+      "financial_cache_snapshot_date": "20261116",
+      "owner_attributable_annual_profit_krw": 53190500581,
+      "owner_attributable_equity_krw": 451843499471,
+      "owner_attributable_ttm_profit_krw": 52128849927,
       "filing_evidence": {
         "asof_receipt_listed": false,
         "cached_values_matched_to_receipt": false

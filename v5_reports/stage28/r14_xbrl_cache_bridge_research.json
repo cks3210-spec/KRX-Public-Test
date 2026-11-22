@@ -1,6 +1,6 @@
 {
   "result": "R14_RECEIPT_AWARE_XBRL_TO_CACHE_RESEARCH_V1",
-  "generated_kst": "2026-11-21T17:12:02.210786+09:00",
+  "generated_kst": "2026-11-22T17:26:36.753295+09:00",
   "research_market_date": "20261120",
   "research_date_source": "v5_reports/stage28/r14_full_market_grade_research.json.market_date",
   "reference_market_data_day_not_evaluation_day": true,
@@ -32,7 +32,7 @@
     "Market reference date and historical evaluation date must remain distinct"
   ],
   "source_file_sha256": {
-    "legacy_dart_financial_cache": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a",
-    "stage27_status": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9"
+    "legacy_dart_financial_cache": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547",
+    "stage27_status": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021"
   }
 }

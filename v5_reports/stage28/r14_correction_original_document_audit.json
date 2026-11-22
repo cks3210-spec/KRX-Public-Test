@@ -1,21 +1,21 @@
 {
   "result": "STAGE28_DART_ORIGINAL_AND_CORRECTION_DOCUMENT_AUDIT",
-  "generated_kst": "2026-11-21T17:06:57.140884+09:00",
+  "generated_kst": "2026-11-22T17:26:35.687695+09:00",
   "market_date": "20261120",
-  "mismatch_company_count": 4,
-  "companies_with_original_or_correction_receipts": 29,
-  "document_receipts_required": 64,
+  "mismatch_company_count": 5,
+  "companies_with_original_or_correction_receipts": 31,
+  "document_receipts_required": 70,
   "archive_hashes_available": 61,
   "document_queries_this_run": 0,
   "this_run_states": {
     "REUSED_ARCHIVE_HASH": 61,
-    "PENDING_BATCH_LIMIT": 3
+    "PENDING_BATCH_LIMIT": 9
   },
   "cached_original_document_hashes": 61,
   "companies": [
     {
       "code": "015360",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
@@ -47,7 +47,7 @@
     },
     {
       "code": "033500",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
@@ -77,7 +77,7 @@
     },
     {
       "code": "054950",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
@@ -107,7 +107,7 @@
     },
     {
       "code": "097230",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "RECEIPT_VERSION_MISMATCH",
       "periods": [
@@ -136,8 +136,38 @@
       ]
     },
     {
+      "code": "215200",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": "RECEIPT_VERSION_MISMATCH",
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318000849",
+          "selected_asof_receipt": "20260326000491",
+          "returned_current_api_receipts": [
+            "20260318000849"
+          ],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": true,
+          "receipt_ids_to_archive": [
+            "20260318000849",
+            "20260326000491"
+          ],
+          "document_states": {
+            "20260318000849": "PENDING_DOCUMENT_QUERY",
+            "20260326000491": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
       "code": "000370",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -185,7 +215,7 @@
     },
     {
       "code": "000970",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -213,7 +243,7 @@
     },
     {
       "code": "000990",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -241,7 +271,7 @@
     },
     {
       "code": "002990",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -269,7 +299,7 @@
     },
     {
       "code": "003100",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -297,7 +327,7 @@
     },
     {
       "code": "005830",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -325,7 +355,7 @@
     },
     {
       "code": "011560",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -353,7 +383,7 @@
     },
     {
       "code": "018670",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -381,7 +411,7 @@
     },
     {
       "code": "030200",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -407,7 +437,7 @@
     },
     {
       "code": "034950",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -463,7 +493,7 @@
     },
     {
       "code": "036190",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -491,7 +521,7 @@
     },
     {
       "code": "049430",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -539,7 +569,7 @@
     },
     {
       "code": "049520",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -567,7 +597,7 @@
     },
     {
       "code": "052330",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -595,7 +625,7 @@
     },
     {
       "code": "093050",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -623,7 +653,7 @@
     },
     {
       "code": "093190",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -651,7 +681,7 @@
     },
     {
       "code": "094820",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -679,7 +709,7 @@
     },
     {
       "code": "101930",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -707,7 +737,7 @@
     },
     {
       "code": "105560",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -735,7 +765,7 @@
     },
     {
       "code": "114810",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -783,7 +813,7 @@
     },
     {
       "code": "114840",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -811,7 +841,7 @@
     },
     {
       "code": "119610",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -839,7 +869,7 @@
     },
     {
       "code": "123410",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [
@@ -866,8 +896,56 @@
       ]
     },
     {
+      "code": "206640",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "comparison_status": null,
+      "periods": [
+        {
+          "period": "2025_annual",
+          "original_receipt": "20260318001631",
+          "selected_asof_receipt": "20260727000339",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20260318001631",
+            "20260727000339"
+          ],
+          "document_states": {
+            "20260318001631": "PENDING_DOCUMENT_QUERY",
+            "20260727000339": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        },
+        {
+          "period": "2026_q3",
+          "original_receipt": "20261113000774",
+          "selected_asof_receipt": "20261117000126",
+          "returned_current_api_receipts": [],
+          "returned_receipts_in_period": true,
+          "correction_or_multiple_receipts": true,
+          "reported_receipt_mismatch": false,
+          "receipt_ids_to_archive": [
+            "20261113000774",
+            "20261117000126"
+          ],
+          "document_states": {
+            "20261113000774": "PENDING_DOCUMENT_QUERY",
+            "20261117000126": "PENDING_DOCUMENT_QUERY"
+          },
+          "document_source_evidence_ready": false,
+          "reported_receipts_match_asof": false,
+          "historical_financial_values_verified": false
+        }
+      ]
+    },
+    {
       "code": "487570",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "comparison_status": "CURRENT_ACCOUNT_VALUES_MATCHED",
       "periods": [

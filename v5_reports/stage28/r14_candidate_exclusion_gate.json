@@ -1,11 +1,11 @@
 {
   "result": "R14_MISSING_CORRECTION_EXCLUSION_GATE_V1",
-  "generated_kst": "2026-11-21T17:12:02.306420+09:00",
+  "generated_kst": "2026-11-22T17:26:36.887164+09:00",
   "research_market_date": "20261120",
-  "raw_research_candidate_count": 126,
-  "receipt_mismatch_candidates_checked": 4,
-  "eligible_research_candidate_count": 122,
-  "excluded_candidate_count": 4,
+  "raw_research_candidate_count": 142,
+  "receipt_mismatch_candidates_checked": 14,
+  "eligible_research_candidate_count": 128,
+  "excluded_candidate_count": 14,
   "excluded_candidates": [
     {
       "code": "015360",
@@ -70,17 +70,124 @@
       "selected_receipts": [
         "20260325000430"
       ]
+    },
+    {
+      "code": "190510",
+      "name": "나무가",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "192440",
+      "name": "슈피겐코리아",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "194480",
+      "name": "데브시스터즈",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "204610",
+      "name": "티쓰리",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "204620",
+      "name": "글로벌텍스프리",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "206640",
+      "name": "바디텍메드",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "214150",
+      "name": "클래시스",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "214180",
+      "name": "헥토이노베이션",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "214450",
+      "name": "파마리서치",
+      "previous_research_grade": "B",
+      "status": "EXCLUDE",
+      "reason": "FINANCIAL_RECONCILIATION_UNVERIFIED",
+      "periods": [],
+      "selected_receipts": []
+    },
+    {
+      "code": "215200",
+      "name": "메가스터디교육",
+      "previous_research_grade": "A",
+      "status": "EXCLUDE",
+      "reason": "MISSING_CORRECTION_AUDIT_EVIDENCE",
+      "all_reasons": [
+        "MISSING_CORRECTION_AUDIT_EVIDENCE"
+      ],
+      "periods": [
+        "2025_annual"
+      ],
+      "selected_receipts": [
+        "20260326000491"
+      ]
     }
   ],
   "excluded_codes": [
     "015360",
     "033500",
     "054950",
-    "097230"
+    "097230",
+    "190510",
+    "192440",
+    "194480",
+    "204610",
+    "204620",
+    "206640",
+    "214150",
+    "214180",
+    "214450",
+    "215200"
   ],
   "eligible_research_grade_counts": {
-    "B": 100,
-    "A": 22
+    "B": 104,
+    "A": 24
   },
   "eligible_candidate_output": "v5_reports/stage28/r14_eligible_research_candidates.json",
   "raw_screening_history_untouched": true,

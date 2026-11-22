@@ -1,57 +1,68 @@
 {
   "version": "R14_RESEARCH_5_10_20_SESSION_SUMMARY_V1",
-  "generated_kst": "2026-11-21T15:59:48.241426+09:00",
-  "current_research_market_date": "20261119",
-  "latest_verified_market_snapshot": "20261119",
+  "generated_kst": "2026-11-22T17:26:39.635996+09:00",
+  "current_research_market_date": "20261120",
+  "latest_verified_market_snapshot": "20261120",
   "source_archive_sessions": 70,
-  "current_filtered_candidate_count": 125,
+  "current_filtered_candidate_count": 128,
   "current_research_grade_counts": {
-    "B": 102,
-    "A": 23
+    "B": 104,
+    "A": 24
   },
   "current_evidence_tier_counts": {
-    "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 95,
-    "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 27,
-    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 3,
+    "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 96,
+    "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": 24,
+    "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": 8,
     "RESEARCH_CALCULATION_BLOCKED": 0
   },
-  "historical_cohort_count": 1,
-  "tracked_research_reference_rows": 125,
-  "new_research_cohort_frozen": false,
+  "historical_cohort_count": 2,
+  "tracked_research_reference_rows": 253,
+  "new_research_cohort_frozen": true,
   "horizon_observation_status_counts": {
-    "PENDING_ARCHIVED_SESSIONS": 375
+    "PENDING_ARCHIVED_SESSIONS": 759
   },
   "matured_reference_direction_counts": {},
   "matured_status_by_evidence_tier": {
     "RESEARCH_TWO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": {
-      "5_PENDING_ARCHIVED_SESSIONS": 95,
-      "10_PENDING_ARCHIVED_SESSIONS": 95,
-      "20_PENDING_ARCHIVED_SESSIONS": 95
+      "5_PENDING_ARCHIVED_SESSIONS": 191,
+      "10_PENDING_ARCHIVED_SESSIONS": 191,
+      "20_PENDING_ARCHIVED_SESSIONS": 191
     },
     "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED": {
-      "5_PENDING_ARCHIVED_SESSIONS": 27,
-      "10_PENDING_ARCHIVED_SESSIONS": 27,
-      "20_PENDING_ARCHIVED_SESSIONS": 27
+      "5_PENDING_ARCHIVED_SESSIONS": 51,
+      "10_PENDING_ARCHIVED_SESSIONS": 51,
+      "20_PENDING_ARCHIVED_SESSIONS": 51
     },
     "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED": {
-      "5_PENDING_ARCHIVED_SESSIONS": 3,
-      "10_PENDING_ARCHIVED_SESSIONS": 3,
-      "20_PENDING_ARCHIVED_SESSIONS": 3
+      "5_PENDING_ARCHIVED_SESSIONS": 11,
+      "10_PENDING_ARCHIVED_SESSIONS": 11,
+      "20_PENDING_ARCHIVED_SESSIONS": 11
     }
   },
-  "expected_horizon_observations": 375,
+  "expected_horizon_observations": 759,
   "excluded_correction_codes": [
+    "015360",
     "033500",
     "054950",
-    "097230"
+    "097230",
+    "190510",
+    "192440",
+    "194480",
+    "204610",
+    "204620",
+    "206640",
+    "214150",
+    "214180",
+    "214450",
+    "215200"
   ],
   "stage27_context": {
-    "stage27_overlap_research_codes": 111,
+    "stage27_overlap_research_codes": 0,
     "stage27_rows_read_only": 114,
     "stage27_trade_like_entry_price_frozen_count": 0,
-    "stage27_first_future_entry_still_pending_count": 111,
+    "stage27_first_future_entry_still_pending_count": 0,
     "stage27_research_groups_not_merged_with_reference_returns": true,
-    "research_cohort_codes_missing_from_stage27": 14
+    "research_cohort_codes_missing_from_stage27": 128
   },
   "source_price_type": "EXISTING_VERIFIED_70_SESSION_MARKET_ARCHIVE",
   "future_return_is_not_a_trade_return": true,
@@ -75,15 +86,15 @@
     "Research cohort performance is not a tested trade strategy or buy recommendation"
   ],
   "read_only_source_sha256": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "5f71eea0396b275c955adcf120434fb8e06400fbd6b6518533910bf12e3c66f6",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "9ceeb2b4fd86074be8c3944637273c084eb2f1c0c534d34f40cc68ccda23b99b",
-    "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json": "13c84067a0eab399cbd5dc83eb134656402c272908eda5b6c5d3f3f01e2eaabf",
-    "data/daily_70d.csv.gz": "c6fa659a5b9ad05e971ddcfc4669c7e67a4fbe9f3f45bb1043853a7db6de0c76",
-    "data/summary.json": "31d9286a8e560c1441b483838c74c9b2eae0b3bd99f489d8ce36f6490720246c",
-    "data/latest.csv": "61bd59f0c3b78bf5fcc85bef153d6d8bb395b4ce8bde993bb8e6737b68077ef0",
-    "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+    "v5_reports/stage28/r14_calculated_ratio_evidence_triage.json": "e2d0e6afb580cc70948cd145b354bd679ffa29d1836111fa25c8737204dd5ad7",
+    "data/daily_70d.csv.gz": "b8de69950ee14830df71622d93af4dcc1a3a19620c21a8faa382b199f5a0dc23",
+    "data/summary.json": "0b72c5910c9d73d4c065ce3a7de43ac975c5c2260c51f88e5b931dea6768f02f",
+    "data/latest.csv": "ef6e6ade8baa942c476e571006d2f384e6f016e051e6d2124f6df80b2552f0c3",
+    "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
     "v5_reports/stage27/r14_research_snapshots.csv": "3f67946eeed3951458826f86b656b352b333a8a02c82d0c80044abc840fee7aa",
-    "v5_reports/stage27/performance_5_10_20.csv": "561126f3cdaa778d8b3469a067342139667b701e90241fd1e7da1c08bfd37e19",
+    "v5_reports/stage27/performance_5_10_20.csv": "70159053347d4e5a3456e03a3e160b370154eb4fa31af67fb29ab0287ea765e8",
     "v5_reports/stage27/signal_ledger.csv": "b9946127800df10a526ee3bfa8658d62f197f29223ea513b9f6b7483e8de61c6"
   }
 }

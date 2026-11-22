@@ -1,6 +1,6 @@
 {
   "result": "R14_CALCULATED_RATIO_RESEARCH_EVIDENCE_GAPS_V1",
-  "generated_kst": "2026-11-21T17:12:02.963347+09:00",
+  "generated_kst": "2026-11-22T17:26:37.817448+09:00",
   "research_market_date": "20261120",
   "source_ratio_report": "v5_reports/stage28/r14_calculated_per_pbr_research.json",
   "source_quality_gate": "v5_reports/stage28/r14_calculated_ratio_quality_gate.json",
@@ -9,7 +9,17 @@
     "015360",
     "033500",
     "054950",
-    "097230"
+    "097230",
+    "190510",
+    "192440",
+    "194480",
+    "204610",
+    "204620",
+    "206640",
+    "214150",
+    "214180",
+    "214450",
+    "215200"
   ],
   "official_krx_ratios_independently_verified": 0,
   "receipt_bound_financial_values_authenticated": false,
@@ -20,72 +30,12 @@
   "research_only": true,
   "new_network_requests_this_stage": 0,
   "missing_corrected_filing_retrieval_disabled": true,
-  "research_candidates_kept": 122,
-  "missing_evidence_candidate_count": 30,
+  "research_candidates_kept": 128,
+  "missing_evidence_candidate_count": 32,
   "missing_evidence_candidates": [
     {
       "code": "005940",
       "name": "NH투자증권",
-      "grade_research_only": "B",
-      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
-      "missing_evidence_reasons": [
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
-      ],
-      "excluded_missing_correction_stock": false,
-      "source_retrieval_attempted": false,
-      "actionable_price_verified": false
-    },
-    {
-      "code": "078150",
-      "name": "HB테크놀러지",
-      "grade_research_only": "B",
-      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
-      "missing_evidence_reasons": [
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
-      ],
-      "excluded_missing_correction_stock": false,
-      "source_retrieval_attempted": false,
-      "actionable_price_verified": false
-    },
-    {
-      "code": "078340",
-      "name": "컴투스",
-      "grade_research_only": "B",
-      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
-      "missing_evidence_reasons": [
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
-      ],
-      "excluded_missing_correction_stock": false,
-      "source_retrieval_attempted": false,
-      "actionable_price_verified": false
-    },
-    {
-      "code": "080220",
-      "name": "제주반도체",
-      "grade_research_only": "B",
-      "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
-      "missing_evidence_reasons": [
-        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
-        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
-        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
-        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
-      ],
-      "excluded_missing_correction_stock": false,
-      "source_retrieval_attempted": false,
-      "actionable_price_verified": false
-    },
-    {
-      "code": "080580",
-      "name": "오킨스전자",
       "grade_research_only": "B",
       "evidence_tier": "RESEARCH_ONE_SUPPORTING_CHECK_NOT_PIT_AUTHENTICATED",
       "missing_evidence_reasons": [
@@ -474,6 +424,102 @@
       "excluded_missing_correction_stock": false,
       "source_retrieval_attempted": false,
       "actionable_price_verified": false
+    },
+    {
+      "code": "136480",
+      "name": "하림",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "136540",
+      "name": "윈스테크넷",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "148150",
+      "name": "세경하이테크",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "160980",
+      "name": "싸이맥스",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "176750",
+      "name": "듀켐바이오",
+      "grade_research_only": "B",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
+    },
+    {
+      "code": "213420",
+      "name": "덕산네오룩스",
+      "grade_research_only": "A",
+      "evidence_tier": "RESEARCH_NO_SUPPORTING_CHECKS_NOT_PIT_AUTHENTICATED",
+      "missing_evidence_reasons": [
+        "ANNUAL_OWNER_PROFIT_COMPARATIVE_NOT_MATCHED",
+        "ANNUAL_REPORT_RECEIPT_DATE_NOT_EVIDENCED_AS_OF_MARKET_DATE",
+        "CACHED_FINANCIAL_VALUES_NOT_AUTHENTICATED_TO_HISTORICAL_RECEIPT",
+        "MARKET_CAP_SHARE_CLASS_SCOPE_NOT_VERIFIED",
+        "OFFICIAL_KRX_PER_PBR_NOT_VERIFIED"
+      ],
+      "excluded_missing_correction_stock": false,
+      "source_retrieval_attempted": false,
+      "actionable_price_verified": false
     }
   ],
   "all_candidates_still_need_share_class_and_pit_authentication": true,
@@ -486,12 +532,12 @@
   ],
   "actionable_valuation_count": 0,
   "source_file_sha256_read_only": {
-    "v5_reports/stage28/r14_eligible_research_candidates.json": "a3dbd4aab36f3f3370848a761aceff119517aaf59f6dfcd87c24e9662dc98ede",
-    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "2b80577520ee841eeb30119a8f7aabdb5e72d7292792e90213a61b44bff20582",
-    "v5_reports/stage28/r14_calculated_per_pbr_research.json": "70d1acc3abcff77962e357c3867646d46b2a1274837a55a17cd4ea9c05dd1783",
-    "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "ec2baf1aa5c2d6459b647021e69b917e6eaa37ff31898770f8239c1074d141bf",
-    "v5_reports/stage28/r14_valuation_readiness_gate.json": "8c28aae34c625f021e05dd40e20de4db4f2ec56ea300758003769aa04873a768",
-    "v5_reports/stage27/status.json": "cfe754ee1f5dc962d08c0e70e4af6a6a4cd111802e47cc680fc2fee50d3b7fd9",
-    "data/v5_financial_m/dart_financial_cache.json": "126679e0606ff060f095a1931728e4803596c9603295482ec4a311922790105a"
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "8df76b8fc92f1d3d24ed8322f276baea24fd2829701cf09914f02e976907f918",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "68be8355bf208cae585047c26edae2358f509e148233f76a8074a410262f607f",
+    "v5_reports/stage28/r14_calculated_per_pbr_research.json": "bacaf366eef83d28cd5cfc42755e174a9b294bf4ae44f725d4c780757f1a4ddb",
+    "v5_reports/stage28/r14_calculated_ratio_quality_gate.json": "80f052ecfaf4585bedc7ab661a9cdae30287b5eca7d25da09b7c3c9bafbaac96",
+    "v5_reports/stage28/r14_valuation_readiness_gate.json": "899135ca4bcc1b268964cd29e1a4be984cb86e99e80117b2e0a10f1987be2252",
+    "v5_reports/stage27/status.json": "04b7e196314955a15f55b6d4a24a9d6fb0d93ce874235034c0ebca8888847021",
+    "data/v5_financial_m/dart_financial_cache.json": "559569e96442f8a701dd46c5796e66f488b0160adeeafccfb51129ca6c271547"
   }
 }

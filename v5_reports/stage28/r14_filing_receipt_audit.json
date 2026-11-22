@@ -1,21 +1,21 @@
 {
   "result": "R14_FILING_RECEIPT_VERSION_AUDIT",
-  "generated_kst": "2026-11-21T16:24:40.923185+09:00",
+  "generated_kst": "2026-11-22T16:40:43.525297+09:00",
   "market_date": "20261120",
-  "candidate_count": 126,
+  "candidate_count": 142,
   "required_financial_periods": [
     "2025_annual",
     "2025_q3",
     "2026_q3"
   ],
-  "live_company_queries_this_run": 4,
+  "live_company_queries_this_run": 16,
   "remaining_not_live_verified": 0,
-  "live_dart_filing_metadata_complete_count": 126,
-  "all_required_periods_pre_evaluation_count": 126,
-  "correction_or_multiple_receipt_companies": 28,
+  "live_dart_filing_metadata_complete_count": 142,
+  "all_required_periods_pre_evaluation_count": 142,
+  "correction_or_multiple_receipt_companies": 30,
   "post_evaluation_revision_or_filing_companies": 0,
   "api_state_counts": {
-    "COMPLETE_DART_API": 126
+    "COMPLETE_DART_API": 142
   },
   "cached_financial_values_to_receipts_verified": 0,
   "point_in_time_financials_verified": false,
@@ -33,7 +33,7 @@
       "code": "003280",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00167208",
       "api_state": "COMPLETE_DART_API",
@@ -117,7 +117,7 @@
       "code": "011560",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00133876",
       "api_state": "COMPLETE_DART_API",
@@ -215,7 +215,7 @@
       "code": "032620",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00220057",
       "api_state": "COMPLETE_DART_API",
@@ -299,7 +299,7 @@
       "code": "054950",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00361381",
       "api_state": "COMPLETE_DART_API",
@@ -397,7 +397,7 @@
       "code": "110990",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00576798",
       "api_state": "COMPLETE_DART_API",
@@ -481,7 +481,7 @@
       "code": "114810",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00625942",
       "api_state": "COMPLETE_DART_API",
@@ -593,7 +593,7 @@
       "code": "000270",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00106641",
       "api_state": "COMPLETE_DART_API",
@@ -677,7 +677,7 @@
       "code": "002810",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00127167",
       "api_state": "COMPLETE_DART_API",
@@ -761,7 +761,7 @@
       "code": "018120",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00170877",
       "api_state": "COMPLETE_DART_API",
@@ -845,7 +845,7 @@
       "code": "036170",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00232821",
       "api_state": "COMPLETE_DART_API",
@@ -929,7 +929,7 @@
       "code": "036190",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00176516",
       "api_state": "COMPLETE_DART_API",
@@ -1041,7 +1041,7 @@
       "code": "041190",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00231664",
       "api_state": "COMPLETE_DART_API",
@@ -1125,7 +1125,7 @@
       "code": "042000",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00260879",
       "api_state": "COMPLETE_DART_API",
@@ -1209,7 +1209,7 @@
       "code": "053610",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00325112",
       "api_state": "COMPLETE_DART_API",
@@ -1293,7 +1293,7 @@
       "code": "064850",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00331016",
       "api_state": "COMPLETE_DART_API",
@@ -1377,7 +1377,7 @@
       "code": "071280",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00363486",
       "api_state": "COMPLETE_DART_API",
@@ -1461,7 +1461,7 @@
       "code": "071970",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00406046",
       "api_state": "COMPLETE_DART_API",
@@ -1545,7 +1545,7 @@
       "code": "083450",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00540863",
       "api_state": "COMPLETE_DART_API",
@@ -1629,7 +1629,7 @@
       "code": "092460",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00528515",
       "api_state": "COMPLETE_DART_API",
@@ -1713,7 +1713,7 @@
       "code": "101930",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00482426",
       "api_state": "COMPLETE_DART_API",
@@ -1825,7 +1825,7 @@
       "code": "104830",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00623661",
       "api_state": "COMPLETE_DART_API",
@@ -1909,7 +1909,7 @@
       "code": "383220",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01568413",
       "api_state": "COMPLETE_DART_API",
@@ -1993,7 +1993,7 @@
       "code": "002900",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00117230",
       "api_state": "COMPLETE_DART_API",
@@ -2077,7 +2077,7 @@
       "code": "003090",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00111810",
       "api_state": "COMPLETE_DART_API",
@@ -2161,7 +2161,7 @@
       "code": "003100",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00131896",
       "api_state": "COMPLETE_DART_API",
@@ -2259,7 +2259,7 @@
       "code": "007340",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00116949",
       "api_state": "COMPLETE_DART_API",
@@ -2343,7 +2343,7 @@
       "code": "013030",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00165060",
       "api_state": "COMPLETE_DART_API",
@@ -2427,7 +2427,7 @@
       "code": "014940",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00141608",
       "api_state": "COMPLETE_DART_API",
@@ -2511,7 +2511,7 @@
       "code": "018290",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00150165",
       "api_state": "COMPLETE_DART_API",
@@ -2595,7 +2595,7 @@
       "code": "025770",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00159342",
       "api_state": "COMPLETE_DART_API",
@@ -2679,7 +2679,7 @@
       "code": "030190",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00158325",
       "api_state": "COMPLETE_DART_API",
@@ -2763,7 +2763,7 @@
       "code": "033500",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00231105",
       "api_state": "COMPLETE_DART_API",
@@ -2861,7 +2861,7 @@
       "code": "035900",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00258689",
       "api_state": "COMPLETE_DART_API",
@@ -2945,7 +2945,7 @@
       "code": "041510",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00260930",
       "api_state": "COMPLETE_DART_API",
@@ -3029,7 +3029,7 @@
       "code": "049520",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00256380",
       "api_state": "COMPLETE_DART_API",
@@ -3127,7 +3127,7 @@
       "code": "051160",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00389110",
       "api_state": "COMPLETE_DART_API",
@@ -3211,7 +3211,7 @@
       "code": "053300",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00306454",
       "api_state": "COMPLETE_DART_API",
@@ -3295,7 +3295,7 @@
       "code": "064400",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00139834",
       "api_state": "COMPLETE_DART_API",
@@ -3379,7 +3379,7 @@
       "code": "068930",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00398808",
       "api_state": "COMPLETE_DART_API",
@@ -3463,7 +3463,7 @@
       "code": "072870",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00422284",
       "api_state": "COMPLETE_DART_API",
@@ -3547,7 +3547,7 @@
       "code": "093190",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00478900",
       "api_state": "COMPLETE_DART_API",
@@ -3645,7 +3645,7 @@
       "code": "093520",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00596677",
       "api_state": "COMPLETE_DART_API",
@@ -3729,7 +3729,7 @@
       "code": "094820",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00485177",
       "api_state": "COMPLETE_DART_API",
@@ -3827,7 +3827,7 @@
       "code": "101490",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00411048",
       "api_state": "COMPLETE_DART_API",
@@ -3911,7 +3911,7 @@
       "code": "102710",
       "grade_research_only": "A",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00530185",
       "api_state": "COMPLETE_DART_API",
@@ -3995,7 +3995,7 @@
       "code": "123410",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00803425",
       "api_state": "COMPLETE_DART_API",
@@ -4093,7 +4093,7 @@
       "code": "000660",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00164779",
       "api_state": "COMPLETE_DART_API",
@@ -4177,7 +4177,7 @@
       "code": "002310",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00138729",
       "api_state": "COMPLETE_DART_API",
@@ -4261,7 +4261,7 @@
       "code": "003200",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00146269",
       "api_state": "COMPLETE_DART_API",
@@ -4345,7 +4345,7 @@
       "code": "005710",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00111874",
       "api_state": "COMPLETE_DART_API",
@@ -4429,7 +4429,7 @@
       "code": "005830",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00159102",
       "api_state": "COMPLETE_DART_API",
@@ -4527,7 +4527,7 @@
       "code": "011200",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00164645",
       "api_state": "COMPLETE_DART_API",
@@ -4611,7 +4611,7 @@
       "code": "016380",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00115676",
       "api_state": "COMPLETE_DART_API",
@@ -4695,7 +4695,7 @@
       "code": "023600",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00125938",
       "api_state": "COMPLETE_DART_API",
@@ -4779,7 +4779,7 @@
       "code": "037460",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00128315",
       "api_state": "COMPLETE_DART_API",
@@ -4863,7 +4863,7 @@
       "code": "039830",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00141556",
       "api_state": "COMPLETE_DART_API",
@@ -4947,7 +4947,7 @@
       "code": "045100",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00216762",
       "api_state": "COMPLETE_DART_API",
@@ -5031,7 +5031,7 @@
       "code": "046440",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00405278",
       "api_state": "COMPLETE_DART_API",
@@ -5115,7 +5115,7 @@
       "code": "078340",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00476498",
       "api_state": "COMPLETE_DART_API",
@@ -5199,7 +5199,7 @@
       "code": "080220",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00447487",
       "api_state": "COMPLETE_DART_API",
@@ -5283,7 +5283,7 @@
       "code": "089890",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00365934",
       "api_state": "COMPLETE_DART_API",
@@ -5367,7 +5367,7 @@
       "code": "093050",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00593032",
       "api_state": "COMPLETE_DART_API",
@@ -5465,7 +5465,7 @@
       "code": "098120",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00568188",
       "api_state": "COMPLETE_DART_API",
@@ -5549,7 +5549,7 @@
       "code": "114840",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00692254",
       "api_state": "COMPLETE_DART_API",
@@ -5647,7 +5647,7 @@
       "code": "175330",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00980122",
       "api_state": "COMPLETE_DART_API",
@@ -5731,7 +5731,7 @@
       "code": "487570",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01854763",
       "api_state": "COMPLETE_DART_API",
@@ -5829,7 +5829,7 @@
       "code": "005290",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00118804",
       "api_state": "COMPLETE_DART_API",
@@ -5913,7 +5913,7 @@
       "code": "030200",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00190321",
       "api_state": "COMPLETE_DART_API",
@@ -5997,7 +5997,7 @@
       "code": "060250",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00357740",
       "api_state": "COMPLETE_DART_API",
@@ -6081,7 +6081,7 @@
       "code": "099430",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00636656",
       "api_state": "COMPLETE_DART_API",
@@ -6165,7 +6165,7 @@
       "code": "000050",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00101628",
       "api_state": "COMPLETE_DART_API",
@@ -6249,7 +6249,7 @@
       "code": "000370",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00135917",
       "api_state": "COMPLETE_DART_API",
@@ -6375,7 +6375,7 @@
       "code": "000430",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00111847",
       "api_state": "COMPLETE_DART_API",
@@ -6459,7 +6459,7 @@
       "code": "000970",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00159573",
       "api_state": "COMPLETE_DART_API",
@@ -6557,7 +6557,7 @@
       "code": "000990",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00160843",
       "api_state": "COMPLETE_DART_API",
@@ -6655,7 +6655,7 @@
       "code": "001520",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00117337",
       "api_state": "COMPLETE_DART_API",
@@ -6739,7 +6739,7 @@
       "code": "002100",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00101433",
       "api_state": "COMPLETE_DART_API",
@@ -6823,7 +6823,7 @@
       "code": "002170",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00127042",
       "api_state": "COMPLETE_DART_API",
@@ -6907,7 +6907,7 @@
       "code": "002990",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00106313",
       "api_state": "COMPLETE_DART_API",
@@ -7005,7 +7005,7 @@
       "code": "003230",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00126955",
       "api_state": "COMPLETE_DART_API",
@@ -7089,7 +7089,7 @@
       "code": "003480",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00163673",
       "api_state": "COMPLETE_DART_API",
@@ -7173,7 +7173,7 @@
       "code": "005940",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00120182",
       "api_state": "COMPLETE_DART_API",
@@ -7257,7 +7257,7 @@
       "code": "007700",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00126487",
       "api_state": "COMPLETE_DART_API",
@@ -7341,7 +7341,7 @@
       "code": "009540",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00164830",
       "api_state": "COMPLETE_DART_API",
@@ -7425,7 +7425,7 @@
       "code": "010120",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00105855",
       "api_state": "COMPLETE_DART_API",
@@ -7509,7 +7509,7 @@
       "code": "012630",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00164636",
       "api_state": "COMPLETE_DART_API",
@@ -7593,7 +7593,7 @@
       "code": "015360",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00105101",
       "api_state": "COMPLETE_DART_API",
@@ -7705,7 +7705,7 @@
       "code": "017890",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00158565",
       "api_state": "COMPLETE_DART_API",
@@ -7789,7 +7789,7 @@
       "code": "018670",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00144164",
       "api_state": "COMPLETE_DART_API",
@@ -7901,7 +7901,7 @@
       "code": "027410",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00219097",
       "api_state": "COMPLETE_DART_API",
@@ -7985,7 +7985,7 @@
       "code": "027710",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00192499",
       "api_state": "COMPLETE_DART_API",
@@ -8069,7 +8069,7 @@
       "code": "032190",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00238782",
       "api_state": "COMPLETE_DART_API",
@@ -8153,7 +8153,7 @@
       "code": "032640",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00231363",
       "api_state": "COMPLETE_DART_API",
@@ -8237,7 +8237,7 @@
       "code": "034950",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00156956",
       "api_state": "COMPLETE_DART_API",
@@ -8335,7 +8335,7 @@
       "code": "036630",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00268002",
       "api_state": "COMPLETE_DART_API",
@@ -8419,7 +8419,7 @@
       "code": "041520",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00137289",
       "api_state": "COMPLETE_DART_API",
@@ -8503,7 +8503,7 @@
       "code": "043150",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00264255",
       "api_state": "COMPLETE_DART_API",
@@ -8587,7 +8587,7 @@
       "code": "045390",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00318316",
       "api_state": "COMPLETE_DART_API",
@@ -8671,7 +8671,7 @@
       "code": "049430",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00152783",
       "api_state": "COMPLETE_DART_API",
@@ -8783,7 +8783,7 @@
       "code": "051500",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00127954",
       "api_state": "COMPLETE_DART_API",
@@ -8867,7 +8867,7 @@
       "code": "052330",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00305297",
       "api_state": "COMPLETE_DART_API",
@@ -8965,7 +8965,7 @@
       "code": "052400",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00349732",
       "api_state": "COMPLETE_DART_API",
@@ -9049,7 +9049,7 @@
       "code": "053800",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00298270",
       "api_state": "COMPLETE_DART_API",
@@ -9133,7 +9133,7 @@
       "code": "061090",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01010615",
       "api_state": "COMPLETE_DART_API",
@@ -9217,7 +9217,7 @@
       "code": "065710",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00220622",
       "api_state": "COMPLETE_DART_API",
@@ -9301,7 +9301,7 @@
       "code": "067160",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00399694",
       "api_state": "COMPLETE_DART_API",
@@ -9385,7 +9385,7 @@
       "code": "078150",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00255275",
       "api_state": "COMPLETE_DART_API",
@@ -9469,7 +9469,7 @@
       "code": "078930",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00500254",
       "api_state": "COMPLETE_DART_API",
@@ -9553,7 +9553,7 @@
       "code": "080580",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00543107",
       "api_state": "COMPLETE_DART_API",
@@ -9637,7 +9637,7 @@
       "code": "084370",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00531014",
       "api_state": "COMPLETE_DART_API",
@@ -9721,7 +9721,7 @@
       "code": "086670",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00524786",
       "api_state": "COMPLETE_DART_API",
@@ -9805,7 +9805,7 @@
       "code": "093320",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00603348",
       "api_state": "COMPLETE_DART_API",
@@ -9889,7 +9889,7 @@
       "code": "095610",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00524421",
       "api_state": "COMPLETE_DART_API",
@@ -9973,7 +9973,7 @@
       "code": "097230",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00633835",
       "api_state": "COMPLETE_DART_API",
@@ -10071,7 +10071,7 @@
       "code": "101160",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00580065",
       "api_state": "COMPLETE_DART_API",
@@ -10155,7 +10155,7 @@
       "code": "105560",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00688996",
       "api_state": "COMPLETE_DART_API",
@@ -10267,7 +10267,7 @@
       "code": "108380",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00111193",
       "api_state": "COMPLETE_DART_API",
@@ -10351,7 +10351,7 @@
       "code": "131290",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00372226",
       "api_state": "COMPLETE_DART_API",
@@ -10435,7 +10435,7 @@
       "code": "229640",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01093007",
       "api_state": "COMPLETE_DART_API",
@@ -10519,7 +10519,7 @@
       "code": "267250",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01205709",
       "api_state": "COMPLETE_DART_API",
@@ -10603,7 +10603,7 @@
       "code": "294870",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01310269",
       "api_state": "COMPLETE_DART_API",
@@ -10687,7 +10687,7 @@
       "code": "383800",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "01562589",
       "api_state": "COMPLETE_DART_API",
@@ -10771,11 +10771,11 @@
       "code": "086450",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00114808",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10855,11 +10855,11 @@
       "code": "001800",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00117577",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -10939,11 +10939,11 @@
       "code": "003300",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00162993",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -11023,11 +11023,11 @@
       "code": "119610",
       "grade_research_only": "B",
       "financial_reference_market_date": "20261120",
-      "evaluation_date": "20261121",
+      "evaluation_date": "20261122",
       "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
       "corp_code": "00604426",
       "api_state": "COMPLETE_DART_API",
-      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "source_evidence_level": "SAVED_DART_API_RESULT",
       "last_refresh_failure": null,
       "last_live_check_kst": "20261121",
       "filings": [
@@ -11114,6 +11114,1392 @@
       "all_required_period_receipts_found_before_evaluation": true,
       "post_evaluation_filing_exists": false,
       "correction_or_multiple_receipts_present": true,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "215200": {
+      "code": "215200",
+      "grade_research_only": "A",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01074862",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001872",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318000849",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260326000491",
+          "rcept_dt": "20260326",
+          "report_nm": "[첨부정정]사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": true
+        },
+        {
+          "rcept_no": "20261116001240",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318000849",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            },
+            {
+              "rcept_no": "20260326000491",
+              "rcept_dt": "20260326",
+              "report_nm": "[첨부정정]사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": true
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260326000491",
+          "multiple_or_corrected_receipts": true
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001872",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001872",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001240",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116001240",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": true,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "160980": {
+      "code": "160980",
+      "grade_research_only": "A",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00659161",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001882",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260323001377",
+          "rcept_dt": "20260323",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000794",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260323001377",
+              "rcept_dt": "20260323",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260323001377",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001882",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001882",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000794",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261113000794",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "213420": {
+      "code": "213420",
+      "grade_research_only": "A",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01061558",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251113000852",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318001436",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001365",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318001436",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260318001436",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000852",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251113000852",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001365",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261113001365",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "136540": {
+      "code": "136540",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00868705",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001170",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260312000862",
+          "rcept_dt": "20260312",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001351",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260312000862",
+              "rcept_dt": "20260312",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260312000862",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001170",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001170",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001351",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261113001351",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "204610": {
+      "code": "204610",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00609661",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001690",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260312000986",
+          "rcept_dt": "20260312",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116001314",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260312000986",
+              "rcept_dt": "20260312",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260312000986",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001690",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001690",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001314",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116001314",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "136480": {
+      "code": "136480",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00857727",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251112000411",
+          "rcept_dt": "20251112",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318000871",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261111000306",
+          "rcept_dt": "20261111",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318000871",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260318000871",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251112000411",
+              "rcept_dt": "20251112",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251112000411",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261111000306",
+              "rcept_dt": "20261111",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261111000306",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "148150": {
+      "code": "148150",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00913689",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114002670",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260323001499",
+          "rcept_dt": "20260323",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113000981",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260323001499",
+              "rcept_dt": "20260323",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260323001499",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002670",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114002670",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000981",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261113000981",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "176750": {
+      "code": "176750",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00867034",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251113000278",
+          "rcept_dt": "20251113",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318001568",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116001165",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318001568",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260318001568",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251113000278",
+              "rcept_dt": "20251113",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251113000278",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001165",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116001165",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "192440": {
+      "code": "192440",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00917861",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114000202",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260320001111",
+          "rcept_dt": "20260320",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000250",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260320001111",
+              "rcept_dt": "20260320",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260320001111",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000202",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114000202",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000250",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116000250",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "204620": {
+      "code": "204620",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01042711",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001385",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260323001065",
+          "rcept_dt": "20260323",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116001444",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260323001065",
+              "rcept_dt": "20260323",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260323001065",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001385",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001385",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001444",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116001444",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "214180": {
+      "code": "214180",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01013311",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114002151",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260319001375",
+          "rcept_dt": "20260319",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116002039",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260319001375",
+              "rcept_dt": "20260319",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260319001375",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002151",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114002151",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116002039",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116002039",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "190510": {
+      "code": "190510",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00819374",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114000033",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318000744",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000945",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318000744",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260318000744",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000033",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114000033",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000945",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116000945",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "194480": {
+      "code": "194480",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01008762",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114002643",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260316001364",
+          "rcept_dt": "20260316",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116001692",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260316001364",
+              "rcept_dt": "20260316",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260316001364",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002643",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114002643",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116001692",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116001692",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "206640": {
+      "code": "206640",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01046708",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114001350",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260318001631",
+          "rcept_dt": "20260318",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260727000339",
+          "rcept_dt": "20260727",
+          "report_nm": "[기재정정]사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": true
+        },
+        {
+          "rcept_no": "20261113000774",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261117000126",
+          "rcept_dt": "20261117",
+          "report_nm": "[기재정정]분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": true
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260318001631",
+              "rcept_dt": "20260318",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            },
+            {
+              "rcept_no": "20260727000339",
+              "rcept_dt": "20260727",
+              "report_nm": "[기재정정]사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": true
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260727000339",
+          "multiple_or_corrected_receipts": true
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114001350",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114001350",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113000774",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            },
+            {
+              "rcept_no": "20261117000126",
+              "rcept_dt": "20261117",
+              "report_nm": "[기재정정]분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": true
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261117000126",
+          "multiple_or_corrected_receipts": true
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": true,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "214150": {
+      "code": "214150",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "01061327",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114002953",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260323001541",
+          "rcept_dt": "20260323",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261116000298",
+          "rcept_dt": "20261116",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260323001541",
+              "rcept_dt": "20260323",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260323001541",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114002953",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114002953",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261116000298",
+              "rcept_dt": "20261116",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261116000298",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
+      "financial_values_matched_to_receipts": false,
+      "point_in_time_financials_verified": false
+    },
+    "214450": {
+      "code": "214450",
+      "grade_research_only": "B",
+      "financial_reference_market_date": "20261120",
+      "evaluation_date": "20261122",
+      "evaluation_date_source": "AUDIT_TIME_NOT_HISTORICAL_SIGNAL",
+      "corp_code": "00970453",
+      "api_state": "COMPLETE_DART_API",
+      "source_evidence_level": "LIVE_DART_LIST_COMPLETE",
+      "last_refresh_failure": null,
+      "last_live_check_kst": "20261122",
+      "filings": [
+        {
+          "rcept_no": "20251114000932",
+          "rcept_dt": "20251114",
+          "report_nm": "분기보고서 (2025.09)",
+          "period_key": "2025_q3",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20260319001417",
+          "rcept_dt": "20260319",
+          "report_nm": "사업보고서 (2025.12)",
+          "period_key": "2025_annual",
+          "possible_correction": false
+        },
+        {
+          "rcept_no": "20261113001686",
+          "rcept_dt": "20261113",
+          "report_nm": "분기보고서 (2026.09)",
+          "period_key": "2026_q3",
+          "possible_correction": false
+        }
+      ],
+      "filing_periods": {
+        "2025_annual": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20260319001417",
+              "rcept_dt": "20260319",
+              "report_nm": "사업보고서 (2025.12)",
+              "period_key": "2025_annual",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20260319001417",
+          "multiple_or_corrected_receipts": false
+        },
+        "2025_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20251114000932",
+              "rcept_dt": "20251114",
+              "report_nm": "분기보고서 (2025.09)",
+              "period_key": "2025_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20251114000932",
+          "multiple_or_corrected_receipts": false
+        },
+        "2026_q3": {
+          "pre_evaluation_receipts": [
+            {
+              "rcept_no": "20261113001686",
+              "rcept_dt": "20261113",
+              "report_nm": "분기보고서 (2026.09)",
+              "period_key": "2026_q3",
+              "possible_correction": false
+            }
+          ],
+          "post_evaluation_receipts": [],
+          "latest_available_asof_evaluation": "20261113001686",
+          "multiple_or_corrected_receipts": false
+        }
+      },
+      "all_required_period_receipts_found_before_evaluation": true,
+      "post_evaluation_filing_exists": false,
+      "correction_or_multiple_receipts_present": false,
       "financial_values_matched_to_receipts": false,
       "point_in_time_financials_verified": false
     }
