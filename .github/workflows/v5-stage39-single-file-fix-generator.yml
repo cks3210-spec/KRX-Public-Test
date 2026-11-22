@@ -1,0 +1,297 @@
+name: KRX v5 Stage39 Single-File Fix Generator
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v5-stage39-delivery
+  cancel-in-progress: false
+jobs:
+  build-replacement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout original main without changing prior research data
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build complete Stage28 replacement and verify Stage36 Stage37 on 125 plus 122 real records
+        id: patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/stage39_patch_engine.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """One-use Stage39 patch engine. Preserves the entire original Stage28 orchestrator.
+
+          Performs only audited, count=1, anchored code substitutions in the two embedded
+          Stage36 and Stage37 modules. Prevents silently rewriting unexpected revisions.
+          """
+          from __future__ import annotations
+          import copy
+          import hashlib
+          import importlib.util
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          import tempfile
+          import textwrap
+
+          TARGET = Path('.github/workflows/v5-stage28-final-orchestrator.yml')
+          ORIGINAL_BLOB = '25ed9407e1d6166f68dad619fd19b9c9731a4c19'
+
+
+          def substitute(source, name, pattern, build):
+              regex = re.compile(pattern, re.MULTILINE)
+              hits = list(regex.finditer(source))
+              if len(hits) != 1:
+                  raise ValueError(f'STAGE39_PATCH_TARGET_COUNT_{name}_{len(hits)}')
+              item = hits[0]
+              replacement = build(item)
+              return source[:item.start()] + replacement + source[item.end():]
+
+
+          def same_line(content):
+              return lambda match: match.group('pad') + content
+
+
+          def patch(source):
+              if 'STAGE39_PER_DATE_COHORT_EXCLUSION_PATCH_APPLIED' in source:
+                  raise ValueError('STAGE39_ALREADY_PATCHED_REFUSING_REPEAT')
+              if 'EXCLUDED_CODE_IN_FROZEN_COHORT' not in source:
+                  raise ValueError('EXPECTED_STAGE36_DEFECT_NOT_FOUND')
+              source = substitute(source, 'historical_frozen_policy',
+                  r"^(?P<pad>[ ]*)if any\(x in excluded for x in codes\):raise ValueError\('EXCLUDED_CODE_IN_FROZEN_COHORT'\)$",
+                  lambda m: '\n'.join(m.group('pad')+line for line in [
+                      "# STAGE39_PER_DATE_COHORT_EXCLUSION_PATCH_APPLIED",
+                      "own_excluded=c.get('excluded_correction_codes')",
+                      "if not isinstance(own_excluded,list) or len(own_excluded)!=len(set(own_excluded)) or not all(isinstance(x,str) and CODE.fullmatch(x) for x in own_excluded):",
+                      "    raise ValueError('INVALID_FROZEN_COHORT_DATE_EXCLUSIONS')",
+                      "if set(codes)&set(own_excluded):raise ValueError('EXCLUDED_CODE_IN_OWN_DATE_FROZEN_COHORT')",
+                  ]).replace(m.group('pad')+'    raise', m.group('pad')+'    raise'))
+              # Insert same-day immutability check before the existing same-day count/price guard.
+              source = substitute(source, 'same_day_immutable_policy',
+                  r"^(?P<pad>[ ]*)if previous\['candidates'\]!=new_candidates or previous\.get\('candidate_count'\)!=len\(new_candidates\):$",
+                  lambda m: m.group('pad')+"if sorted(previous.get('excluded_correction_codes',[]))!=sorted(excluded):\n"+
+                            m.group('pad')+"    raise ValueError('PREVIOUS_RESEARCH_COHORT_EXCLUSIONS_FROZEN')\n"+
+                            m.group(0))
+              source = substitute(source, 'evaluate_cohort_own_exclusions',
+                  r"^(?P<pad>[ ]*)i=index_by_day\.get\(date\)$",
+                  lambda m: m.group('pad')+"own_excluded=cohort.get('excluded_correction_codes')\n"+
+                            m.group('pad')+"if not isinstance(own_excluded,list):raise ValueError('MISSING_COHORT_DATE_EXCLUSIONS')\n"+
+                            m.group('pad')+"if date==ledger['cohorts'][-1]['research_market_date'] and sorted(own_excluded)!=sorted(excluded):\n"+
+                            m.group('pad')+"    raise ValueError('CURRENT_COHORT_EXCLUSION_POLICY_CHANGED')\n"+m.group(0))
+              source = substitute(source, 'evaluate_no_retroactive_exclusions',
+                  r"^(?P<pad>[ ]*)if code in excluded:raise ValueError\('CORRECTION_EXCLUDED_REINTRODUCED'\)$",
+                  same_line("if code in own_excluded:raise ValueError('CORRECTION_EXCLUDED_REINTRODUCED_IN_OWN_DATE')"))
+              source = substitute(source, 'historical_prices_union',
+                  r"^(?P<pad>[ ]*)sessions,prices,markets,latest=read_archived_history\(HISTORY,LATEST,market_summary,set\(candidates\)\)\n(?P=pad)prior=load\(COHORTS\) if COHORTS\.exists\(\) else None$",
+                  lambda m: '\n'.join(m.group('pad')+line for line in [
+                      "prior=load(COHORTS) if COHORTS.exists() else None",
+                      "tracked_codes=set(candidates)",
+                      "if prior is not None:",
+                      "    if not isinstance(prior.get('cohorts'),list):raise ValueError('INVALID_PRIOR_COHORTS')",
+                      "    for frozen in prior['cohorts']:",
+                      "        tracked_codes.update(index(frozen.get('candidates'),'FROZEN_COHORT'))",
+                      "sessions,prices,markets,latest=read_archived_history(HISTORY,LATEST,market_summary,tracked_codes)",
+                  ]))
+              # The existing 42-test fixture intentionally used newest exclusions against the historical cohort.
+              # Replace that invalid expectation with a matching-date policy mismatch assertion.
+              source = substitute(source, 'stage36_previous_negative_test',
+                  r"^(?P<pad>[ ]*)expect\(lambda:evaluate\(ledger,dates,prices,prev,\['000001'\]\),'CORRECTION_EXCLUDED_REINTRODUCED'\)$",
+                  same_line("expect(lambda:evaluate(ledger,dates,prices,prev,['000001']),'CURRENT_COHORT_EXCLUSION_POLICY_CHANGED')"))
+              # Extend existing Stage36 regression tests to cover the real 11/19 -> 11/20 exclusion expansion.
+              source = substitute(source, 'stage36_cross_date_regression',
+                  r"^(?P<pad>[ ]*)check\(len\(load_previous_results\(prev\)\)==1\)$",
+                  lambda m: m.group(0)+'\n'+'\n'.join(m.group('pad')+line for line in [
+                      "# A code is eligible on 11/19, then excluded on 11/20. Preserve its 11/19 cohort.",
+                      "fresh={'000002':{**c,'code':'000002','market_date':'20261120','close_krw':'200'}}",
+                      "fresh_triage={'000002':{**e,'code':'000002','research_market_date':'20261120'}}",
+                      "today_excluded=['000001','033500']",
+                      "extended_prices={**prices,('20261120','000002'):Decimal(200)}",
+                      "extended,created=frozen_cohorts(ledger,'20261120',fresh,fresh_triage,today_excluded,dates,extended_prices)",
+                      "check(created is True and len(extended['cohorts'])==2)",
+                      "check(extended['cohorts'][0]==ledger['cohorts'][0])",
+                      "check(extended['cohorts'][1]['excluded_correction_codes']==today_excluded)",
+                      "out,counts2,_,_=evaluate(extended,dates,extended_prices,prev,today_excluded)",
+                      "check(len(out)==2 and out[0]['code']=='000001' and out[1]['code']=='000002')",
+                      "check(out[0]['horizons']['5']==obs[0]['horizons']['5'])",
+                      "expect(lambda:frozen_cohorts(extended,'20261120',fresh,fresh_triage,['033500'],dates,extended_prices),'PREVIOUS_RESEARCH_COHORT_EXCLUSIONS_FROZEN')",
+                      "tampered=json.loads(json.dumps(extended))",
+                      "tampered['cohorts'][0]['excluded_correction_codes']=['000001']",
+                      "expect(lambda:frozen_cohorts(tampered,'20261120',fresh,fresh_triage,today_excluded,dates,extended_prices),'EXCLUDED_CODE_IN_OWN_DATE_FROZEN_COHORT')",
+                  ]))
+              # Stage37 previously rejected any old cohort appearing in the *current* exclusion list.
+              # Validate historical rows strictly against their own original exclusion set instead.
+              dated_gate = '''def validate_dated_exclusion_policy(ledger, exclusion, active_date, observed_rows):
+              # Invariant: each dated research cohort owns its original exclusion policy.
+              if not isinstance(ledger.get('cohorts'),list) or not isinstance(observed_rows,list):
+                  raise ValueError('INVALID_DATED_COHORT_EVIDENCE')
+              by_day={}
+              expected=set()
+              for cohort in ledger['cohorts']:
+                  day=check_date(cohort.get('research_market_date'))
+                  if day in by_day:raise ValueError('DUPLICATE_FROZEN_COHORT_DATE')
+                  exclusions=cohort.get('excluded_correction_codes')
+                  if not isinstance(exclusions,list) or len(exclusions)!=len(set(exclusions)) or not all(isinstance(x,str) and re.fullmatch(r'\\d{6}',x) for x in exclusions):
+                      raise ValueError('INVALID_DATED_COHORT_EXCLUSIONS')
+                  entries=cohort.get('candidates')
+                  if not isinstance(entries,list):raise ValueError('INVALID_DATED_COHORT_ROWS')
+                  codes=[r.get('code') for r in entries]
+                  if len(codes)!=len(set(codes)) or not all(isinstance(c,str) and re.fullmatch(r'\\d{6}',c) for c in codes):
+                      raise ValueError('DUPLICATE_OR_INVALID_DATED_CODE')
+                  if set(codes)&set(exclusions):raise ValueError('EXCLUDED_STOCK_IN_OWN_DATE_COHORT')
+                  if len(codes)!=cohort.get('candidate_count'):raise ValueError('DATED_COHORT_COUNT_MISMATCH')
+                  expected.update((day,c) for c in codes)
+                  by_day[day]=cohort
+              if active_date not in by_day or exclusion.get('research_market_date')!=active_date:
+                  raise ValueError('ACTIVE_COHORT_DATE_POLICY_MISMATCH')
+              if sorted(by_day[active_date]['excluded_correction_codes'])!=sorted(exclusion.get('excluded_codes',[])):
+                  raise ValueError('ACTIVE_COHORT_EXCLUDED_SET_CHANGED')
+              observed=[(r.get('research_market_date'),r.get('code')) for r in observed_rows]
+              if len(observed)!=len(set(observed)) or set(observed)!=expected:
+                  raise ValueError('FROZEN_COHORT_AND_OBSERVATIONS_DIFFER')
+              return len(by_day)
+          '''
+              source = substitute(source, 'stage37_dated_gate_def',
+                  r"^(?P<pad>[ ]*)def after\(\):$",
+                  lambda m: '\n'.join(m.group('pad')+line if line else '' for line in dated_gate.splitlines())+'\n\n'+m.group(0))
+              source = substitute(source, 'stage37_remove_retroactive_check',
+                  r"^(?P<pad>[ ]*)excluded=set\(ex\['excluded_codes'\]\)\n(?P=pad)if any\(row\['code'\] in excluded for row in rows\):\n(?P=pad)    raise ValueError\('EXCLUDED_STOCK_IN_OUTCOME_HISTORY'\)$",
+                  lambda m: m.group('pad')+"excluded=set(ex['excluded_codes'])\n"+
+                            m.group('pad')+"dated_cohorts=validate_dated_exclusion_policy(led,ex,s.get('current_research_market_date'),rows)")
+              source = substitute(source, 'stage37_date_policy_tests',
+                  r"^(?P<pad>[ ]*)yes\(len\(frozen_items\(old\)\)==1\)$",
+                  lambda m: m.group(0)+'\n'+'\n'.join(m.group('pad')+line for line in [
+                      "history={'cohorts':[",
+                      "    {'research_market_date':'20261119','candidate_count':1,'candidates':[{'code':'000050'}],'excluded_correction_codes':['033500']},",
+                      "    {'research_market_date':'20261120','candidate_count':1,'candidates':[{'code':'000270'}],'excluded_correction_codes':['000050','033500']}]} ",
+                      "ex_now={'research_market_date':'20261120','excluded_codes':['000050','033500']}",
+                      "rows_now=[{'research_market_date':'20261119','code':'000050'},{'research_market_date':'20261120','code':'000270'}]",
+                      "yes(validate_dated_exclusion_policy(history,ex_now,'20261120',rows_now)==2)",
+                      "bad=copy.deepcopy(history);bad['cohorts'][0]['excluded_correction_codes']=['000050']",
+                      "fails(lambda:validate_dated_exclusion_policy(bad,ex_now,'20261120',rows_now),'EXCLUDED_STOCK_IN_OWN_DATE_COHORT')",
+                      "bad=copy.deepcopy(history);bad['cohorts'][1]['excluded_correction_codes']=['033500']",
+                      "fails(lambda:validate_dated_exclusion_policy(bad,ex_now,'20261120',rows_now),'ACTIVE_COHORT_EXCLUDED_SET_CHANGED')",
+                      "fails(lambda:validate_dated_exclusion_policy(history,ex_now,'20261120',rows_now[:1]),'FROZEN_COHORT_AND_OBSERVATIONS_DIFFER')",
+                  ]))
+              return source
+
+
+          def embedded_code(yaml_text, basename):
+              marker=f"cat > /tmp/{basename} <<'PYCODE'\n"
+              if yaml_text.count(marker)!=1:raise ValueError('EMBEDDED_MODULE_NOT_UNIQUE_'+basename)
+              inner=yaml_text.split(marker,1)[1].split('\n          PYCODE\n',1)[0]
+              return textwrap.dedent(inner)+'\n'
+
+
+          def import_embedded(code, name, directory):
+              p=Path(directory)/f'{name}.py'
+              p.write_text(code,encoding='utf-8')
+              compile(code,str(p),'exec')
+              result=subprocess.run([sys.executable,str(p),'--self-test'],text=True,capture_output=True)
+              if result.returncode:raise ValueError(f'{name}_SELFTEST_FAILED:'+result.stderr[-1500:]+result.stdout[-500:])
+              spec=importlib.util.spec_from_file_location(name,p)
+              module=importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              return module,result.stdout.strip()
+
+
+          def verify_real_regression(stage36,stage37):
+              # Test the checked-in 11/19 125 + 11/20 122 data, without writing any report.
+              root=Path('v5_reports/stage28')
+              paths=[Path('data/latest.csv'),Path('data/summary.json'),Path('data/daily_70d.csv.gz'),
+                     Path('v5_reports/stage27/status.json'),Path('v5_reports/stage27/signal_ledger.csv')]
+              before={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+              shortlist=stage36.load(root/'r14_eligible_research_candidates.json')
+              exclusion=stage36.load(root/'r14_candidate_exclusion_gate.json')
+              triage=stage36.load(root/'r14_calculated_ratio_evidence_triage.json')
+              prior=stage36.load(root/'r14_reference_price_cohort_ledger.json')
+              earlier=stage36.load(root/'r14_reference_5_10_20_observations.json')
+              date,candidates,evidence,excluded=stage36.validate_inputs(shortlist,exclusion,triage)
+              if date!='20261120' or len(candidates)!=122:
+                  raise ValueError('REAL_FIXTURE_CHANGED_EXPECTED_20261120_122')
+              if len(prior['cohorts'])!=1 or prior['cohorts'][0]['research_market_date']!='20261119' or len(prior['cohorts'][0]['candidates'])!=125:
+                  raise ValueError('REAL_20261119_FROZEN_125_NOT_FOUND')
+              tracked=set(candidates)
+              for c in prior['cohorts']:
+                  tracked.update(stage36.index(c['candidates'],'FROZEN_COHORT'))
+              history=stage36.load(Path('data/summary.json'))
+              sessions,prices,markets,latest=stage36.read_archived_history(Path('data/daily_70d.csv.gz'),Path('data/latest.csv'),history,tracked)
+              new_ledger,created=stage36.frozen_cohorts(prior,date,candidates,evidence,excluded,sessions,prices)
+              if not created or len(new_ledger['cohorts'])!=2 or new_ledger['cohorts'][0]!=prior['cohorts'][0]:
+                  raise ValueError('PRIOR_COHORT_NOT_PRESERVED')
+              rows,counts,_,_=stage36.evaluate(new_ledger,sessions,prices,earlier,excluded)
+              if len(rows)!=247 or len(earlier['cohort_research_rows'])!=125:
+                  raise ValueError('HISTORICAL_RESEARCH_ROWS_NOT_CARRIED')
+              stage37.validate_dated_exclusion_policy(new_ledger,exclusion,date,rows)
+              continuity=stage37.validate_continuity(earlier,{'version':stage36.RESULT_VERSION,
+                  'investment_decisions_authorized':False,'research_only':True,'cohort_research_rows':rows})
+              if continuity['prior_observation_rows']!=125 or continuity['new_observation_rows']!=247:
+                  raise ValueError('CONTINUITY_COUNTS_WRONG')
+              if any(hashlib.sha256(p.read_bytes()).hexdigest()!=before[str(p)] for p in paths):
+                  raise ValueError('PRODUCTION_OR_STAGE27_SOURCE_MUTATED')
+              return {'market_date':date,'prior_cohort_count':125,'current_cohort_count':122,
+                      'expected_total_research_reference_rows':247,
+                      'observed_horizons':len(rows)*3,'cohort_date_scoped_exclusions':True,
+                      'stage27_input_sha256_unchanged':True,'new_cohort_created_in_memory_only':True}
+
+
+          def main():
+              original=TARGET.read_text(encoding='utf-8')
+              original_sha=subprocess.run(['git','hash-object',str(TARGET)],capture_output=True,text=True,check=True).stdout.strip()
+              if original_sha!=ORIGINAL_BLOB:
+                  raise ValueError('REMOTE_WORKFLOW_CHANGED_NO_BLIND_OVERWRITE:'+original_sha)
+              fixed=patch(original)
+              with tempfile.TemporaryDirectory() as scratch:
+                  a,ta=import_embedded(embedded_code(fixed,'r14_research_outcome_tracking.py'),'stage36',scratch)
+                  b,tb=import_embedded(embedded_code(fixed,'stage37_daily_controller.py'),'stage37',scratch)
+                  regression=verify_real_regression(a,b)
+              out=Path('stage39_delivery/v5-stage28-final-orchestrator.yml')
+              out.parent.mkdir(parents=True,exist_ok=True)
+              out.write_text(fixed,encoding='utf-8')
+              print(json.dumps({'stage36_selftest':ta,'stage37_selftest':tb,'live_fixture_regression':regression,
+                 'workflow_original_blob':ORIGINAL_BLOB,'updated_workflow_chars':len(fixed),'delivery_file':str(out),'source_workflow_unmodified':True},
+                 ensure_ascii=False,indent=2))
+
+
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/stage39_patch_engine.py
+          python /tmp/stage39_patch_engine.py | tee /tmp/stage39_validation.json
+          test -s stage39_delivery/v5-stage28-final-orchestrator.yml
+          echo "### Stage39 source-safe complete replacement passed regression tests" >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/stage39_validation.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish downloadable one-file replacement as a GitHub Release asset
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG='v5-stage39-cohort-fix-20261121'
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'Release tag exists; refusing unreviewed overwrite' >&2
+            exit 1
+          fi
+          gh release create "$TAG" 'stage39_delivery/v5-stage28-final-orchestrator.yml' \
+            --repo "$GITHUB_REPOSITORY" --target main \
+            --title 'KRX v5 Stage39 complete Stage28 workflow replacement' \
+            --notes 'Validated full workflow; date-scoped Stage36/37 exclusion policy; preserves 20261119 125 and adds 20261120 122; Stage27 read-only; research-only no buy signal. Download the YAML asset and replace the existing workflow file manually.'
+          echo "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/v5-stage28-final-orchestrator.yml" >> "$GITHUB_STEP_SUMMARY"
+      - name: Backup artifact only if the replacement passed all tests
+        if: ${{ always() && steps.patch.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage39-single-file-replacement-backup
+          path: stage39_delivery/v5-stage28-final-orchestrator.yml
+          if-no-files-found: error
