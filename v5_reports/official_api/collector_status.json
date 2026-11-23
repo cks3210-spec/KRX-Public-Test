@@ -1,23 +1,23 @@
 {
-  "checked_kst": "2026-11-20T16:28:05.508626+09:00",
+  "checked_kst": "2026-11-23T16:51:33.788714+09:00",
   "source": "KRX_OFFICIAL_OPEN_API",
   "status": "SOURCE_VERIFIED",
   "production_data_modified": false,
   "raw_market_data_published": false,
   "attempts": [
     {
-      "date": "20261119",
+      "date": "20261120",
       "counts": {
-        "KOSPI": 936,
-        "KOSDAQ": 1835
+        "KOSPI": 935,
+        "KOSDAQ": 1836
       },
       "errors": {}
     }
   ],
-  "source_date": "20261119",
+  "source_date": "20261120",
   "market_counts": {
-    "KOSPI": 936,
-    "KOSDAQ": 1835
+    "KOSPI": 935,
+    "KOSDAQ": 1836
   },
   "total_rows": 2771,
   "fresh_for_latest_expected_date": true,
