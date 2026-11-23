@@ -28,13 +28,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/v5-stage28-final-orchestrator.yml'
-  workflow_run:
-    workflows: ['KRX v5 R14 OpenDART Auto Continue', 'KRX v5 Official Market Date Collector']
-    types: [completed]
-    branches: [main]
-  schedule:
-    - cron: '30 14 * * 1-5' # 23:30 KST weekday integration fallback
-    - cron: '30 23 * * 0-4' # 08:30 KST Mon-Fri, P3 capture only; archive-date gated
+  # All automatic market-data requests now run only in the standalone 08:30 KST collector.
+  # P3 capture and long integration remain explicit manual actions only.
 permissions:
   contents: write
 concurrency:
@@ -177,8 +172,8 @@ jobs:
           print('QUICK_CHANGE_TEST_PASS: Stages36,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56 and DART cache; no live API')
           PY
   p3-basic-capture:
-    # No heavy Stage28 run: triggered only by official market collector, 08:30 KST, or explicit P3-only dispatch.
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.name == 'KRX v5 Official Market Date Collector' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'schedule' && github.event.schedule == '30 23 * * 0-4') || (github.event_name == 'workflow_dispatch' && inputs.p3_capture_only == true && inputs.stage55_cached_audit_only != true && inputs.stage56_ratio_intake_only != true && inputs.stage57_source_route_only != true) }}
+    # Stock-basic P3 API is used only for explicit manual refresh, not as another daily market collector.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.p3_capture_only == true && inputs.stage55_cached_audit_only != true && inputs.stage56_ratio_intake_only != true && inputs.stage57_source_route_only != true }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -461,7 +456,7 @@ jobs:
           if-no-files-found: ignore
 
   integrate:
-    if: ${{ github.event_name != 'push' && (github.event_name != 'workflow_run' || (github.event.workflow_run.name == 'KRX v5 R14 OpenDART Auto Continue' && github.event.workflow_run.conclusion == 'success')) && (github.event_name != 'schedule' || github.event.schedule != '30 23 * * 0-4') && (github.event_name != 'workflow_dispatch' || (inputs.p3_capture_only != true && inputs.stage55_cached_audit_only != true && inputs.stage56_ratio_intake_only != true && inputs.stage57_source_route_only != true)) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.p3_capture_only != true && inputs.stage55_cached_audit_only != true && inputs.stage56_ratio_intake_only != true && inputs.stage57_source_route_only != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -535,10 +530,10 @@ jobs:
 
 
           def completed_session(now,calendar):
+              # KRX FAQ: stock close is first available on the NEXT business day at 08:00.
+              # The same-day 18:30 collection heuristic must never collect unpublished closes.
               day=now.date().isoformat()
               if calendar.is_session(day):
-                  if (now.hour,now.minute)>=(18,30):
-                      return now.strftime('%Y%m%d')
                   return calendar.previous_session(day).strftime('%Y%m%d')
               return calendar.date_to_session(day,direction='previous').strftime('%Y%m%d')
 
@@ -754,6 +749,9 @@ jobs:
                       'report_is_not_per_pbr':True,'attempted_sessions':[],'api_calls':0,'market_data_was_promoted':False}
               report_path=root/REPORT_REL
               event=os.getenv('GITHUB_EVENT_NAME','workflow_dispatch')
+              # Explicit manual integration cannot request official data before 08:30 KST.
+              if (now.hour,now.minute)<(8,30):
+                  return {**report,'state':'SKIPPED_BEFORE_0830_KST','reason':'EARLIEST_KRX_DAILY_REQUEST_0830_KST'}
               if event in ('schedule','workflow_run') and not cal.is_session(now.date().isoformat()):
                   # The user's no-holiday-report policy: no report file mutation on closed sessions.
                   return {**report,'state':'SKIPPED_KRX_CLOSED','reason':'KRX_SESSION_CLOSED_NO_REPORT'}
@@ -827,7 +825,8 @@ jobs:
               chk(not same_market_schema_in_any_order(('BAS_DD',)*len(CANON)))
               chk(completed_session(dt.datetime(2026,11,21,15,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
               chk(completed_session(dt.datetime(2026,11,23,18,29,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
-              chk(completed_session(dt.datetime(2026,11,23,18,30,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261123')
+              chk(completed_session(dt.datetime(2026,11,23,18,30,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261120')
+              chk(completed_session(dt.datetime(2026,11,24,8,30,tzinfo=ZoneInfo('Asia/Seoul')),cal)=='20261123')
               chk(date8('20261120')=='20261120')
               try:date8('20261133');raise AssertionError('BAD_DATE_ACCEPTED')
               except ValueError:checks+=1
