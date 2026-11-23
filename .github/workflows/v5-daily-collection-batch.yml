@@ -1,9 +1,8 @@
 name: KRX v5 Daily Collection Batch
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 9 * * 1-5'  # 18:30 KST
-    - cron: '0 11 * * 1-5'  # 20:00 KST retry
+  # Manual-only legacy workflow. Official closing prices are collected once at
+  # 08:30 KST by v5-official-market-date-collector.yml.
 permissions:
   contents: write
 concurrency:
