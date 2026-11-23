@@ -1,8 +1,8 @@
 name: V5 Stage60 KRX Holiday Gate Fresh Data Pipeline
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 9 * * 1-5' # 18:30 KST; calendar gate also blocks KRX holidays
+  # Manual-only legacy workflow. Official closing prices are collected once at
+  # 08:30 KST by v5-official-market-date-collector.yml.
 permissions:
   contents: write
 concurrency:
