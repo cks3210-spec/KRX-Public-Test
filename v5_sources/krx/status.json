@@ -1,6 +1,16 @@
 {
-  "status": "SKIPPED_WEEKEND",
-  "checked_kst": "2026-11-21T03:00:15.104569+09:00",
+  "status": "SOURCE_UNAVAILABLE",
+  "checked_kst": "2026-11-24T06:39:54.576911+09:00",
   "source": "pykrx/KRX",
-  "production_data_modified": false
+  "production_data_modified": false,
+  "attempted_dates": [
+    "20261124",
+    "20261123",
+    "20261122",
+    "20261121",
+    "20261120",
+    "20261119",
+    "20261118",
+    "20261117"
+  ]
 }
