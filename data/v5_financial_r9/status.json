@@ -1,38 +1,38 @@
 {
   "version": "R9",
-  "generated_kst": "2026-11-20T19:21:55.130696+09:00",
+  "generated_kst": "2026-11-23T20:06:44.877700+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "market_date": "20261119",
-  "expected_market_date": "20261119",
+  "market_date": "20261120",
+  "expected_market_date": "20261120",
   "market_snapshot_stale": false,
   "market_rows": 2771,
-  "eligible_rows": 1247,
-  "annual_complete_in_universe": 675,
-  "pending_annual": 572,
-  "annual_coverage_pct": 54.13,
-  "annual_cache_entries": 677,
+  "eligible_rows": 1221,
+  "annual_complete_in_universe": 757,
+  "pending_annual": 464,
+  "annual_coverage_pct": 62.0,
+  "annual_cache_entries": 773,
   "imported_from_prior": {
     "R7": 0,
     "R8": 0
   },
-  "new_annual_records": 97,
+  "new_annual_records": 96,
   "dart_api_calls": 120,
-  "cooldown_skipped": 98,
-  "unmapped_count": 20,
-  "provisional_ab_count": 448,
+  "cooldown_skipped": 120,
+  "unmapped_count": 23,
+  "provisional_ab_count": 498,
   "market_breakdown": {
-    "KOSPI": {
-      "eligible": 607,
-      "annual_complete": 367,
-      "provisional_ab": 257
-    },
     "KOSDAQ": {
-      "eligible": 640,
-      "annual_complete": 308,
-      "provisional_ab": 191
+      "eligible": 620,
+      "annual_complete": 350,
+      "provisional_ab": 210
+    },
+    "KOSPI": {
+      "eligible": 601,
+      "annual_complete": 407,
+      "provisional_ab": 288
     }
   },
   "error_count": 0,
