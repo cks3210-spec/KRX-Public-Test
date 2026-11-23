@@ -65,6 +65,7 @@ jobs:
               'r14_stage51_krx_auth_audit.py':'STAGE51_PYCODE',
               'r14_stage52_p3_proof_snapshot.py':'STAGE52_PYCODE',
               'r14_stage53_krx_p3_capture.py':'STAGE53_PYCODE',
+              'r14_stage54_p3_cached_bridge.py':'STAGE54_PYCODE',
           }
           with tempfile.TemporaryDirectory(prefix='krx_quick_tests_') as temp:
               for name,ending in modules.items():
@@ -151,7 +152,9 @@ jobs:
               subprocess.run([sys.executable,str(pathlib.Path(temp)/'r14_stage52_p3_proof_snapshot.py'),'--check'],check=True,timeout=90)
               # Stage53 reads dated KRX archive; absolutely no API or writes on push.
               subprocess.run([sys.executable,str(pathlib.Path(temp)/'r14_stage53_krx_p3_capture.py'),'--check'],check=True,timeout=90)
-          print('QUICK_CHANGE_TEST_PASS: Stages36,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53 and DART cache; no live API')
+              # Stage54 consumes archived P3 proof and 137 current candidate rows, without API or writes.
+              subprocess.run([sys.executable,str(pathlib.Path(temp)/'r14_stage54_p3_cached_bridge.py'),'--check'],check=True,timeout=90)
+          print('QUICK_CHANGE_TEST_PASS: Stages36,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54 and DART cache; no live API')
           PY
   p3-basic-capture:
     # No heavy Stage28 run: triggered only by official market collector, 08:30 KST, or explicit P3-only dispatch.
@@ -243,12 +246,84 @@ jobs:
           python -m py_compile /tmp/r14_stage50_krx_shareclass.py /tmp/r14_stage53_krx_p3_capture.py
           python /tmp/r14_stage53_krx_p3_capture.py --self-test
           python /tmp/r14_stage53_krx_p3_capture.py --capture
+          # Green CI must mean a date-scoped capture exists, not just that the script exited zero.
+          python - <<'PY'
+          from pathlib import Path
+          sessions=sorted(Path('data/v5_official_market_archive').glob('20??????.csv'))
+          if not sessions: raise RuntimeError('STAGE54_OFFICIAL_MARKET_ARCHIVE_MISSING')
+          capture=Path('data/v5_official_shareclass_archive')/(sessions[-1].stem+'.json')
+          if not capture.is_file(): raise RuntimeError('STAGE54_KRX_API_CAPTURE_NOT_SAVED_CHECK_ERROR_LOG')
+          print('STAGE54_P3_CAPTURE_PRESENT',capture.as_posix())
+          PY
+      - name: Stage54 join immutable captured KRX basic-info to dated R14 A/B research without API
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_stage54_p3_cached_bridge.py <<'STAGE54_PYCODE'
+          # Stage54 source compressed only for GitHub YAML size; original SHA256 verified before exec.
+          import base64,hashlib,zlib
+          _source=zlib.decompress(base64.b64decode(''.join((
+          'eNq9O9ty4kiW73yFtmc7EsYyxq6qrm4RmggKcJmwCxjA7u5h2AwZhK0xSLQk7HI7HLEPG/u0r/sBG/O0bx17i33Y/aGZ3n/Yc05mSikhKKqrZoioKpAyzzl57pesX/3N0ToKj649/8j1',
+          '743VY3wb+C9KX3zxxTB2btxXLy1jFQbLIHaNXvfie+PeDb2551wvXOMPgedHxhzeGvGta3jL5TqmF2LnC6P/woh8ZxXdBnG1VGoFbmT4QWxMncXCcHyj0e9UjYYRuj+s3Sg+vA7W/izZ',
+          'YHhi8a0XxUHowR7DiQ6DOVITzKulb0MvBniB7xozJ3YPo2mwcmfGDMi7h39DN3KdcHoLX1ZBGBsPHpxrHRvLYObNHz3/hkiOgnU4dY2FO7txwyoeuuQtab0T3qycMHJNYxosFu409gI/',
+          'gh/RvUn4Ym8J726d6HbhXZvGH6LANwGXacTucjX3Fm6J+LJyYlxgSKh9+FkqDXq9kWHTjzK7f8UFidFRhGw7+ZpVSqftdgtW0MIjg4XHL7m78G48YC5XJ+NTx595SEtURfSs9K4xOG+n',
+          'kOGVcwTgg/ncm3rOgi+d8M6NOW4GHgGaN41hp7l9fXTrhO504USRtqffQAyhW50GyxWcsxyyvxs3Dn9XO/xm8vTV89/CkrP2d5tL4L1zOIclL2lN+7t+uzmiU7LzwXf86hUfjhpv269e',
+          '8N7paafZaVxwIo83G/3R5aDNr45ZqXc56l+O+FV7MOz0uht7X/L+C1jfPGu3ePuq02p3m23+ZtBpvRXb3zVGzTO1K0HT7L171+vyRrfFmxeN4ZAPgbTOqUDNaU+7xUql0sydG8t1FJfv',
+          'ncXaRXE7wPeKVTLg481JXemVeIKf0PEi17jCh+0wDMIyU5Qy40ABkKBn3g2YQXklAYZuvA59pWJVEMbJq6/KqypsmvHrRxB7uVKp3rrv5T4FZhE4swQIqr2xqoJp+GXXn4Ly+zc2W8fz',
+          'w68PI++GVcCojLlGr0CK+lQlQHMF9of4sazOGgEPoziE30DNauFM3TIzmWkwVqnCc28FxGjQPD8uRxXkUFT1opk79ZbOogyowdzFu9/UDHcBjOqCOUt8q9C999yH8tx1Z2hFNtqEaQgd',
+          'BhcQ20LdTePaibwpPSGFkTSSoNRmQMvRKMsVIHLQHrYbg+YZR4j8XWc47HTfMkExboDDiaPLzeLNzHmEF/iseuPGZZaYobQqNEQJhFB7ETjH2PGBN7DVRH6JE4NdzNeLxdKJp7dgGSe1',
+          '38/Abhi6lUckr9UYtXmne9W46LSYwi0cTjX5AtBW+EXAZl9+/+Xyy5lcHbnor+gcKbmps9hCpNplGgvwuILUBWiNel6x7QJofApOO2ZIdxMMqEPEN3uX3RH83T296DRHOr4Uguffg9Iu',
+          'XR84BwoRoXvlzhqcdOj96MJR0P+fOqgUSEm6ce754Jqu148c9Be+wnlsuwb4L7vDxikgT8i4aIPdDzQWzqSsgDGpGoF/RSaCNbIqePfMctIsWJ1omL6YfG5Ft30dR6pxRhBqbwlU+nLD',
+          '8tACTOOJgVRAnyx21rtocakS6Pq6vRHvowZ3R2Byuu5ZqArMWXkc42vErJqZAMcPy7p/7r4HOUe4rYhqEygIpneC3i17cmd5Ftqn4re0Im2ppghJWkAyhZwCFQAlmcQFR8sFxKqModm2',
+          '0PxcsBj2Lgfg85FhbCs6EfURRjYQ9PptCAP9DkSTXvNcQESv1h/0MJgMFPSscRYgQCHIrEYZiG2fFBxpGrozMAEMtovg5iaj9yZTka/ThRDVv2iDEvSAiHZz0B5xYFRv2N5BxEdaWHbz',
+          'FitTRiaZ3W30h2e90XYaVsc8zd84AvUps6AoGXGRS36IltVJmpKs3JCvrsOinSbLUsWHTRAob541um8TPoXBQ2RnweOjLT4RX5mpO9zYlwoXPSWuBrsB5RlAXBHEDHrfDjX5qSgDUdgN',
+          'VyEEPzsX3ynyztbLVSSwu360Dl3uRFPPs8U5I0gW+Z37GNmjENKQyIVE1QEeRzZFYXAakBdQsHfzGcIWMYE7D3wSEeLkghQ8lkZo0cHOGsOzvJ+HqA0qPXXtIpvjkLzfu6gF22Kl2m7O',
+          'vKliO+xXj4GmJ3beG/Y7cFD4t9X4LXsG0oRhoqG2u41us73Jc0IEjrF8r+I32Sf4Js2hEL7rIFiUIYfVwjQmO8m+aAWW5CoumZD0wCdxtSqpUcudB2IqM2sVwKG9WUcOpfP08vC4gknQ',
+          'HGLFPWxPuFgVlgJyRPVu8cQVpUdNo/6cfK2Nh6QzhAIRCIy3WvKEFcIRIg7S160ubLEgYQEZodAKdz7HMgiiAAV+J46JfcICE+wZPuTs+AX3/JkLqSj6vMWjgJO15D3hJMlX4AMcb84h',
+          'wHLcSzAlrDJG3QQgWmb74hRDA6R7/PSi8bYwRUFtK4w7U2fFsaBxQg9slFOABsk9PYONeVG0vsadT5JuqhrIg/PLLsrruFarXZ6DtnSh1JAVBzjzy+55t/dtVxQe8q2IPuDmLwed0ff8',
+          '7aB32WfPUgFkTSTqlBGEuaHKQYCr7+2n5zrorxPOhGuKbK16rTbxkRuWK3WDqN+5Rjgq1JXgQWlLmq2gc7HhkeBQZ3jJhwNI+ZSblUmRZte4wUxyYHSX+AR08jU9wB+Q1DpQBmPJUmYN',
+          'VrEEFvxrfGxNEsBCHil28VvDnPcpWdxkGlDFauZNpFQSQihd83zBUnoq80bNMIU0QIKtyz6oECZoUjS9VnsHLQnVKN+3gz7vvoPsOSGuaOV5ByrT4ei82QYWj/I7kmUXnSHEvLPBUGg/',
+          'noGSSU1thmeNQVuoWkohqUKem4XanhUuPdIxWbpSjenH5MA+TvcgO8fI4Amiq+t6OhZok/XENgwBZX0Vev87i3zoOOM/J8Kt3ZlZ5+nF7hJ8JwSIN73GoCUKk2Gh2RMu/QCA6yPcAFin',
+          'sMkdKDLsIQcx2YFDqy9BRQUKIUXaWlxkUbmfSei3Vv6m7z4sPN+12UYTQFJBuRJmP2Woi6otYNDAdSAclOcV7VRkTtqO1MD1h1sOqtpK6EUzL0RSZjJR42O2saOqlOmNfu6PRqgqHJX7',
+          'JKixU9C5astcJ5NMQl40hXiLPncZ7ulMUT+1M+Y9aupPM76UjlkUzrd5NExYhFfbdGuC7OSAVFyCI0PHlWdvghu7PxL/qIV9smF/0ITER7d/QqQtfHc+gviXWyTckUQNZdRlxlkqLo4V',
+          'CFrHKugX6oJu5UByppts/SWqJrdqUtf8RaHKoX6TP5O5v6AtzVfVO/wu31ECrcpKxYHLbgebmW1sQ5FdSyTOeuaBMo0n9XUEKoZgKvUlpBloxfBUOgW7lmjWFEWrmjU5tZrKNB++/wXC',
+          'JFJYEA6TRkwe5XRbOS8gi7c3oYPEInxMBgA+/jkgR5t0eOivt4NGaxsOhwyR4gSknOEjJ1nky025OK12M1Vlvq+kocKTV53ZTHCmLvpENsmeQIrHhNMWWpA+ztIrOk15Y6I9WetJD4+d',
+          'oE5X+SdWBHCsciMINARrrCxqksIfk7uBpGKSNnMNKmtAfdGNCO74ztIVxU5+mWmwbuMd+RCp1TllzngRiVPzIhNAhG+Uli4CqK7uwgdWyQi7edHbtJMi0NLvTCq/sSHr5rX0TwZcPjXP',
+          'Z0Siu/UxOVFEZmKLQG/bYtpAtiSEoaV8IBD28x//50//9U9MX1GQ6uHKP//7f/zfP/4nrNdPLTzAAZWUEnUmPyPrFM8t6Tmqzgqrr5wCCl+j3j0JN2GRN1D6Y+XUyZT2acEz8W2iNxuZ',
+          'HBr5kLjRN5HQiIYYjflEVsMsSWBmc9LsEb3HXN1JVV5SfFpJfZcBASXiD2tnAYXl1EEPwCytiSerwHaLD9pXnfa38M9vLzsDCOuiZiGKpCeXwMV0osxwZXuI4QFUhyeDBByMZjbTcoYW',
+          'Ct69c9rBlCFL4JbGmBMF87QktqQL0jtgIsvZ6IPJpToOzflprk0sfFYDmmi9iO2npANrZSdsZvGYQ7Sa80MAKzMuSEnRF+7SBshxLflFB7721SE56iQuEtqsYfhUldnsTYhGFclD8db4',
+          'leGI5FqNrA1nga5aOmhHVIwSRmZwTbhJEzMoVZP/Q2qVaWRI5dqhxvq59tEzJb/aPpqWLk6xfKjVrPR4s6uMOKEQ4VrHPDu5UI1DkePDu6dUJXEopBJ2SxYBydDO3JLZW0XVQnZSkv3k',
+          'lUtll8UAxaDjefMAWufTSpsImmncutM7OJ/wxs/6/FRYqZkMhcTvcapBk6JJ0H7myT5kiPtYBqpN6okS6W2Rtz6iepbT3nDtlx/wRofocScjcLwYYUbrJRzv0VYj4WToJu92gP1R/yHh',
+          'OTWs01F7/kYAztSYqXXaJYJcZ71SqQsBKHREYIoldkLIDmy8pHFUpjsakbgxw4FnUwfYN+NK0pwdSCTjjKgmB5lBokQkIFfFtE0fEqb1B47WxDLIniSf2Omg97t2Nz1oQTWHziMLj3oG',
+          'EiN1C9h7ZuY6BhstAvVJmFiWNMx/6cRiA/S8Svwus9/r3Em4GDn3oGwTgljaQ+gXne4571OXdQ/JS7VEt50IwJfVFr4I7sr3mlz8wF8E6OlT/w6BzgXdvK/7qqeF++aOtyg/BOHMnPu7',
+          '90O1Ys39sia591N3FWt3SVAkriXxIEyqACFjd6k9WHZzUhd3URq0Hjy0vI+iBq6goQgj3ZPQLRREXmuqjly8ygQ8a3khuJIgfCyTcsTLVXoe8IKuTbeK4HGlPg8xm3aPmFASofF12ccV',
+          'b2RmWRcllHhG39W66vJu5mHvWuTl8leCEVyezU5qJ18dH5/UWJ0KVKifywyS+9qrGijZn/7tf//807+KsRGNj16/elGDtIyWnLymJf/908///A/pZMlkWBuwStp7ppsogqAjvAlwoF8a',
+          'SC/c4JUTYUsPm7a0o/NGEGxst5HuY6ut/iC/Bw/lsWr+qD4FfJG9IlNVcaZeWplpMZTBQQ0DTPCxqjOpxWpS3YUqRKyzdLQYT+SiZBMtN3MFloaGuofjJ0Wfxc4Hr9kB7j8Ahn8tCZZT',
+          'A1ltyCNYiOBAq3rEm8abN4Mr8TKT52pllaWKKrOolLIyINN+uUVipg/LQE6qHzr7zjLQomrveQ/OTrQrH/Nkmol5jRoVWsdmpruNv3PjShHi87NIizns11+9fM5d/JDa/JlQXBOK59Qj',
+          'oyPWSwjlUYqSEnn1wtrn4oUuiYIkCrhnFty0sE7MgmsVBeXRJyWt+9Ry+UsORdXcXnXc3qPYBMPuSWsBjj1mqhbFbnFdwqK7CdoVCOB6aetVI9S83cl4NmMXKE7Mgg6tldjLceKlrePn',
+          '5yLsxZMa64ks1Tp5NneOW3InKr4iYf01b2+kJne9Et0pFYJEBlm/XgmfzWP3fazTQiZaQIyWdWG1QP5a7/5Qz0843KICI2nUWSIYqKYQ9mu3NCL0LqzS1s3mxEd5Uaz47Ke9GhUgVTpn',
+          'QXF08tl8QyqmebhFHkjybnGEZpSUO/PQFGcytVt0+IEkNBpvKeAmtn1SqcOKUK8TbXtnryEDGjZuHg8g1Kg1hi0JWPEhRk3yIPduMCCmzGa6YjXerJgn6d26sVZbbuyHvblewmT8odoe',
+          'gEjru15p0gFDW/uQwt1BOvrjDkkh/39U5akiMRXFrrudGWS/2KppyVjz0xP7xSe5Capfdl9xMxfO8nrmWNuYspO6k/pnOO7+AVOUj5+DI1uvFn00Oz6GeiLmc7BsM78C4xCRdjLOZ4YT',
+          'VWkdf8M+A++23Wv7aM595CEgNnxayLx1fMgt7TENoN+LKyjvqQhPFBuczKQuF45rk7FWyExwrvP3P//LT6yeWW/L5X8RO83e2PwlpooU4j+fRp6L0LS4PCHmpBkFMOf1N9+Aen1CDBU8',
+          '2DpA3P/we1GLzYRPoZZ6Btpm+k3/14d+bjTk0ils0rUQXwxWOcCe2WYPL8eZXRdc9mcOhDicvWIJbVKzxLZFNU3Rj14dHouBOkbBitar0/hDve0bSNhevYQiEYsOar3xFba3IN/yTYqb',
+          '6wgnedjEey5q2Xlzg3NMGTmH8MohGfJ8zpnor6xs9X/6qo3wZo05Sx9/YU9phVN8KE7EY6D4EGk4RBqYKdJXG/9DBEgvBmSsaAelI3uvXq2vF150W7xeXAGxV1UiF/dFadPbqSb8sWR/',
+          'spT2+NZ+2alK4JXS/wMTjMRS',
+          ))))
+          if hashlib.sha256(_source).hexdigest()!='5d075c46c69bfdcbd55e32a32739287060dcfa6b044d38431a22c133116d34cc':
+              raise RuntimeError('STAGE54_SOURCE_SHA256_MISMATCH')
+          exec(compile(_source.decode('utf-8'),__file__,'exec'))
+          STAGE54_PYCODE
+          python /tmp/r14_stage54_p3_cached_bridge.py --self-test
+          python /tmp/r14_stage54_p3_cached_bridge.py --publish
       - name: Persist only new immutable KRX official P3 date evidence in GitHub
         shell: bash
         run: |
           set -euo pipefail
           if [ -d data/v5_official_shareclass_archive ]; then
             git add -- data/v5_official_shareclass_archive/*.json
+          for p in v5_reports/stage28/r14_stage54_p3_cached_evidence_*.json; do
+            if [ -f "$p" ]; then git add -- "$p"; fi
+          done
             if ! git diff --cached --quiet; then
               git config user.name 'github-actions[bot]'
               git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -262,7 +337,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: stage53-krx-p3-request-bound-evidence
-          path: data/v5_official_shareclass_archive/*.json
+          path: |
+            data/v5_official_shareclass_archive/*.json
+            v5_reports/stage28/r14_stage54_p3_cached_evidence_*.json
           if-no-files-found: ignore
 
   integrate:
