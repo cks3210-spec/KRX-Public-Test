@@ -1,44 +1,44 @@
 {
   "version": "R10",
-  "generated_kst": "2026-11-20T20:52:39.068127+09:00",
+  "generated_kst": "2026-11-23T22:08:29.317889+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
   "r9_cache_modified": false,
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "market_date": "20261119",
+  "market_date": "20261120",
   "market_snapshot_stale": false,
-  "r9_status_market_date": "20261119",
+  "r9_status_market_date": "20261120",
   "input_date_mismatch": false,
   "annual_year": 2025,
-  "eligible_rows": 1247,
-  "annual_cache_entries": 677,
-  "annual_fields_present": 427,
-  "provisional_ab_count": 276,
+  "eligible_rows": 1221,
+  "annual_cache_entries": 773,
+  "annual_fields_present": 483,
+  "provisional_ab_count": 307,
   "market_breakdown": {
     "KOSPI": {
-      "eligible": 607,
-      "annual_fields_present": 221,
-      "provisional_ab": 140
+      "eligible": 601,
+      "annual_fields_present": 249,
+      "provisional_ab": 161
     },
     "KOSDAQ": {
-      "eligible": 640,
-      "annual_fields_present": 206,
-      "provisional_ab": 136
+      "eligible": 620,
+      "annual_fields_present": 234,
+      "provisional_ab": 146
     }
   },
   "issue_counts": {
-    "OWNER_ATTRIBUTION_UNVERIFIED": 1247,
-    "OFFICIAL_PER_PBR_UNVERIFIED": 1247,
-    "SECTOR_CLASSIFICATION_UNVERIFIED": 1247,
-    "SHARE_CLASS_UNVERIFIED": 1247,
-    "BALANCE_SHEET_INCONSISTENT": 247,
-    "REFERENCE_PE_UNAVAILABLE": 721,
+    "BALANCE_SHEET_INCONSISTENT": 272,
+    "OWNER_ATTRIBUTION_UNVERIFIED": 1221,
+    "OFFICIAL_PER_PBR_UNVERIFIED": 1221,
+    "SECTOR_CLASSIFICATION_UNVERIFIED": 1221,
+    "SHARE_CLASS_UNVERIFIED": 1221,
     "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 45,
-    "NO_ANNUAL_RECORD": 572,
-    "REFERENCE_PB_UNAVAILABLE": 574,
-    "POSSIBLE_PREFERRED_SHARE": 23,
-    "NONPOSITIVE_EQUITY": 2
+    "REFERENCE_PE_UNAVAILABLE": 632,
+    "NO_ANNUAL_RECORD": 464,
+    "REFERENCE_PB_UNAVAILABLE": 467,
+    "NONPOSITIVE_EQUITY": 3,
+    "POSSIBLE_PREFERRED_SHARE": 23
   },
   "ttm_computable": 0,
   "official_source_used": false,
