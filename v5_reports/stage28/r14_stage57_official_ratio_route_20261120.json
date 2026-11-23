@@ -1,0 +1,57 @@
+{
+  "candidate_count": 137,
+  "final_buy_signals": 0,
+  "investment_decisions_authorized": false,
+  "new_dart_api_requests": 0,
+  "new_krx_api_requests": 0,
+  "new_unapproved_web_requests": 0,
+  "next_step": "OBTAIN_AUTHORIZED_KRX_P2_SOURCE_ACCESS_AND_EFFECTIVE_DATE_EVIDENCE; THEN_RUN_STAGE56",
+  "p1_historical_financial_asof_verified_count": 0,
+  "p2_official_pbr_verified_count": 0,
+  "p2_official_per_verified_count": 0,
+  "p3_historical_asof_independently_verified": false,
+  "p3_request_bound_research_matches": 137,
+  "per_stock_ratio_values_in_public_report": false,
+  "published_raw_ratio_data": false,
+  "required_proof_for_future_official_approval": [
+    "DOCUMENTED_DISTRIBUTION_PERMISSION_AND_PUBLICATION_SCOPE",
+    "AUTHENTIC_PROVIDER_ORIGIN_OR_LICENSED_FEED_CONTRACT",
+    "PROVIDER_ATTESTED_ROW_EFFECTIVE_DATE_FOR_TARGET_MARKET_DATE",
+    "MATCHED_STOCK_CODE_MARKET_AND_UNMODIFIED_SOURCE_DIGEST",
+    "KNOWN_VALUATION_FORMULA_AND_FINANCIAL_REPORTING_BASIS"
+  ],
+  "research_market_date": "20261120",
+  "route_state": "AWAITING_AUTHORIZED_OFFICIAL_DATED_RATIO_DISTRIBUTION",
+  "source_digests_sha256": {
+    "acquisition": "ef0094f4d26e4e469921f37ee96eef001b16fb8e3a04bfe0712b114d159fe366",
+    "cap": "9ad2043a82beae63fabddeb60db27a8d843777e094b0afb3d27f6d4ba35e4e69",
+    "feed": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee",
+    "p2": "1817d5de737756c515df83ac40164277da3cc245002563ae444812e63efc1ed7",
+    "p3": "2dc0be2e9b92331c59eb41b1912a85bfb2ec97cc97c2fc747cda13718fa1e49f"
+  },
+  "source_routes": [
+    {
+      "discovery_only": true,
+      "official_dated_per_pbr_available": false,
+      "route": "KRX_OPEN_API",
+      "status": "NO_PUBLISHED_STOCK_PER_PBR_ENDPOINT_IN_REVIEWED_CATALOG",
+      "url": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd"
+    },
+    {
+      "independent_date_proof_present": false,
+      "provider_permission_documented": false,
+      "route": "KRX_DATA_MARKETPLACE",
+      "status": "WEB_STATISTICS_ACCESS_NOT_EQUIVALENT_TO_APPROVED_PROGRAMMATIC_FEED",
+      "url": "https://data.krx.co.kr/"
+    },
+    {
+      "independent_date_proof_present": false,
+      "provider_permission_documented": false,
+      "route": "KIND_VALUEUP_INDICATORS",
+      "status": "SEPARATE_QUARTERLY_BASED_INDICATORS_NOT_INTERCHANGEABLE_WITH_MARKETPLACE_DAILY_RATIOS",
+      "url": "https://kind.krx.co.kr/valueup/invstindicstocks.do?method=valueupInvstIndicRankIsuMain"
+    }
+  ],
+  "stage56_accepted_source": "USER_SUPPLIED_RESEARCH_ONLY_UNTIL_PROVIDER_PROVENANCE_VERIFIED",
+  "version": "KRX_V5_STAGE57_AUTHORIZED_P2_ROUTE_AUDIT_V1"
+}
