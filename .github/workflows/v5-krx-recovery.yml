@@ -1,8 +1,8 @@
 name: KRX v5 Source Recovery
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 10 * * 1-5' # 19:00 KST
+  # Manual recovery only. Automatic market close collection is restricted to the
+  # separate KRX v5 Official Market Date Collector at 08:30 KST.
 permissions:
   contents: write
 concurrency:
