@@ -7,9 +7,7 @@ name: KRX v5 Official Market Date Collector
         required: false
         type: string
   schedule:
-    - cron: '30 23 * * 0-4' # 08:30 KST Mon-Fri, prior KRX session
-    - cron: '30 1 * * 1-5'  # 10:30 KST Mon-Fri, prior session retry
-    - cron: '40 8 * * 1-5'  # 17:40 KST Mon-Fri, final prior-session retry
+    - cron: '30 23 * * 0-4' # 08:30 KST, prior KRX session, calendar gated
 permissions:
   contents: read
   actions: read
@@ -135,6 +133,12 @@ jobs:
           try:
               manual=os.environ.get('TARGET_DATE','').strip()
               today=now.date()
+              # Real KST run-time gate: even an unexpectedly early queued Action
+              # must not call official APIs before 08:30 the following day.
+              if (now.hour,now.minute)<(8,30):
+                  report['state']='SKIPPED_BEFORE_0830_KST'
+                  report['reason']='Wait for next-business-day KRX API publication (08:00); policy earliest 08:30 KST'
+                  save();print(json.dumps(report,ensure_ascii=False));raise SystemExit(0)
               if not manual and not calendar.is_session(today.isoformat()):
                   report['state']='SKIPPED_KRX_CLOSED'
                   report['reason']='Not an exchange session (calendar-based check)'
@@ -159,6 +163,13 @@ jobs:
               report['existing_market_date']=old_date
               report['existing_market_rows']=old_rows
               report['previous_verified_artifact_date']=previous_verified()
+              # Automatic runs are idempotent for any date already validated.
+              # Manual dispatch intentionally retains historical audit ability.
+              if not manual and (target<=old_date or report['previous_verified_artifact_date']==target):
+                  report['state']='SKIPPED_ALREADY_VERIFIED_MARKET_DATE'
+                  report['market_date']=target
+                  report['reason']='Source date already in verified production or prior verified artifact; no API calls'
+                  save();print(json.dumps(report,ensure_ascii=False));raise SystemExit(0)
               key=os.environ.get('KRX_API_KEY','').strip()
               if not key:
                   raise ValueError('KRX_API_KEY_MISSING')
