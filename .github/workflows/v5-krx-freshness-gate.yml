@@ -1,8 +1,7 @@
 name: KRX v5 Official API Freshness Gate
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '40 0 * * 1-5' # 09:40 KST, weekdays; check latest completed session
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
@@ -108,4 +107,5 @@ jobs:
             git commit -m 'v5: report KRX source freshness separately from availability'
             git pull --rebase origin main
             git push origin HEAD:main
-           fi
+          fi
+
