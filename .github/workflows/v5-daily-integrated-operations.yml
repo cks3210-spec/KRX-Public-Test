@@ -1,8 +1,7 @@
 name: KRX v5 Daily Integrated Evidence and Performance
 'on':
   workflow_dispatch: {}
-  schedule:
-    - cron: '30 11 * * 1-5' # 20:30 KST, Mon-Fri; KRX source-date guard inside
+  # Manual-only legacy integration; canonical market promotion owns the price ledger.
 permissions:
   contents: write
   actions: write
