@@ -1,7 +1,7 @@
 {
   "progress": {
     "trading_date": "20261112",
-    "generated_at_utc": "2026-11-23T08:59:11.144888+00:00",
+    "generated_at_utc": "2026-11-24T03:16:57.652387+00:00",
     "phase": "COMPLETE",
     "eligible_count": 1255,
     "basic_cached": 1228,
@@ -30,7 +30,7 @@
       "WITHHELD": 595
     },
     "verified_ab_count": 0,
-    "elapsed_seconds": 182.6,
+    "elapsed_seconds": 0.4,
     "limits": {
       "max_seconds": 4500,
       "basic_batches": 0,
@@ -39,7 +39,7 @@
       "retry_days": 3
     },
     "events": [
-      "ANNUAL_ATTEMPTED_53_FETCHED_0",
+      "ANNUAL_ATTEMPTED_0_FETCHED_0",
       "STAGE15_REPORT_REFRESHED"
     ],
     "classification": "UNVERIFIED_RESEARCH_ONLY"
