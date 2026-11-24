@@ -1,8 +1,7 @@
 name: KRX v5 Primary and Naver Fallback Collector
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 10 * * 1-5' # 19:15 KST
+  # Legacy scheduled pykrx/Naver fallback retired; canonical KRX API runs 08:30 KST.
 permissions:
   contents: write
 concurrency:
