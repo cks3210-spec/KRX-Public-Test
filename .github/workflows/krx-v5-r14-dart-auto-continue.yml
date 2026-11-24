@@ -3,23 +3,267 @@ name: KRX v5 R14 OpenDART Auto Continue
   workflow_dispatch:
     inputs:
       mode:
-        description: 'inventory = read-only; repair_annual = bounded annual gap repair; collect = legacy manual collection'
+        description: 'inventory = read-only; refresh = new filing archive; repair_annual = manual gap repair; collect = legacy manual collection'
         type: choice
         required: true
         default: inventory
         options:
           - inventory
+          - refresh
           - repair_annual
           - collect
+  workflow_run:
+    workflows: ['KRX Official Promotion Readiness Gate (Controlled Integration)']
+    types: [completed]
+    branches: [main]
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: krx-v5-r14-dart-m
   cancel-in-progress: false
 jobs:
+  refresh:
+    name: Incremental official filing receipt and raw archive refresh
+    if: ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'refresh') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve exact upstream promotion evidence
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: krx-v5-official-promotion-evidence
+          path: /tmp/r14-promotion-evidence
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Archive only new or corrected periodic filings with receipt validation
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          PROMOTION_RUN_ID: ${{ github.event.workflow_run.id || '' }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_filing_refresh.py <<'PYTHON'
+          import csv, datetime as dt, gzip, hashlib, importlib.util, json, os, re, subprocess, sys, time
+          from pathlib import Path
+          from collections import Counter
+          
+          ROOT=Path.cwd()
+          F=ROOT/'data/v5_financial_m'
+          STORE=F/'filing_refresh'
+          STATE=STORE/'state.json'
+          OUT=Path('/tmp/r14-filing-refresh')
+          MAX_CALLS=30
+          MAX_SCAN_DAYS=7
+          BOOTSTRAP_DAYS=7
+          REPORTS={'annual':'11011','q1':'11013','half':'11012','q3':'11014'}
+          
+          def read(p):
+              d=json.loads(p.read_text(encoding='utf-8-sig'))
+              if not isinstance(d,dict): raise ValueError('INVALID_JSON_OBJECT '+str(p))
+              return d
+          
+          def atomic(p,content):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              t=p.with_name(p.name+'.tmp');t.write_bytes(content);t.replace(p)
+          
+          def dump(p,d): atomic(p,(json.dumps(d,ensure_ascii=False,indent=2,sort_keys=True)+'\n').encode())
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def ymd(d): return d.strftime('%Y%m%d')
+          def date(v): return dt.datetime.strptime(v,'%Y%m%d').date()
+          def now(): return dt.datetime.now(dt.timezone.utc)
+          def git(*a): return subprocess.run(['git',*a],check=True,text=True,stdout=subprocess.PIPE).stdout.strip()
+          
+          def filing_period(title):
+              m=re.search(r'(사업보고서|반기보고서|분기보고서)\s*\((\d{4})\.(\d{2})\)',str(title))
+              if not m: return None
+              kind={('사업보고서','12'):'annual',('분기보고서','03'):'q1',('반기보고서','06'):'half',('분기보고서','09'):'q3'}.get((m[1],m[3]))
+              return (int(m[2]),kind) if kind else None
+          
+          class API:
+              def __init__(self,m): self.m=m;self.calls=0
+              def call(self,endpoint,params):
+                  if self.calls>=MAX_CALLS: raise RuntimeError('API_BUDGET_EXHAUSTED')
+                  self.calls+=1
+                  result=self.m.get_json(endpoint,{'crtfc_key':self.m.KEY,**params})
+                  if not isinstance(result,dict): raise ValueError('BAD_API_RESPONSE')
+                  return result
+          
+          def scan(api,start,end):
+              out={};expected=None;total_count=None;page=1
+              while True:
+                  d=api.call('list.json',{'bgn_de':start,'end_de':end,'pblntf_ty':'A','last_reprt_at':'N','page_count':'100','page_no':str(page),'sort':'date','sort_mth':'asc'})
+                  status=str(d.get('status'))
+                  if status=='013' and page==1: return {}
+                  if status!='000': raise RuntimeError('LIST_API_STATUS_'+status)
+                  pages=int(d['total_page']);count=int(d['total_count']);rows=d['list']
+                  if pages<1 or count<1 or not isinstance(rows,list) or not rows or len(rows)>100 or pages!=(count+99)//100: raise ValueError('BAD_LIST_PAGINATION')
+                  if expected is not None and (pages!=expected or count!=total_count): raise ValueError('LIST_CHANGED_DURING_SCAN')
+                  expected,total_count=pages,count
+                  if api.calls+pages-page>MAX_CALLS-2: raise RuntimeError('LIST_BUDGET_EXHAUSTED')
+                  for r in rows:
+                      rec=str(r.get('rcept_no',''));day=str(r.get('rcept_dt',''))
+                      if not re.fullmatch(r'\d{14}',rec) or not re.fullmatch(r'\d{8}',day) or rec[:8]!=day or not start<=day<=end or rec in out: raise ValueError('INVALID_OR_DUPLICATE_FILING')
+                      out[rec]=r
+                  if page==pages: break
+                  page+=1
+              if len(out)!=total_count: raise ValueError('INCOMPLETE_FILING_LIST')
+              return out
+          
+          def add_events(state,events,codes,mapping):
+              for rec,r in sorted(events.items()):
+                  if rec in state['receipts']: continue
+                  code=str(r.get('stock_code','')).strip();corp=str(r.get('corp_code','')).strip()
+                  if code not in codes: continue
+                  title=str(r.get('report_nm',''));p=filing_period(title)
+                  event={'receipt':rec,'filing_date':r['rcept_dt'],'code':code,'corp_code':corp,'title':title,'corp_cls':r.get('corp_cls'),'remark':r.get('rm',''),'state':'PENDING','attempts':0}
+                  if not p or '철회' in title or '철' in str(r.get('rm','')): event['state']='UNSUPPORTED_REPORT_REVIEW'
+                  elif not re.fullmatch(r'\d{8}',corp) or r.get('corp_cls') not in ('Y','K') or mapping.get(code)!=corp: event['state']='IDENTITY_REVIEW'
+                  else: event.update(year=p[0],period=p[1])
+                  state['receipts'][rec]=event
+              # Only latest receipt of each corporate period needs the latest-value API.
+              latest={}
+              for rec,e in state['receipts'].items():
+                  if 'period' not in e: continue
+                  k=(e['corp_code'],e['year'],e['period']);latest[k]=max(rec,latest.get(k,''))
+              for rec,e in state['receipts'].items():
+                  if 'period' in e and e['state'] in ('PENDING','RETRY','RECEIPT_MISMATCH') and latest[(e['corp_code'],e['year'],e['period'])]!=rec:
+                      e['state']='SUPERSEDED_METADATA_ONLY'
+          
+          def checked_rows(d,e,basis):
+              rows=d.get('list')
+              if not isinstance(rows,list) or not rows or any(not isinstance(r,dict) for r in rows): return False
+              for k,want in [('corp_code',e['corp_code']),('bsns_year',str(e['year'])),('reprt_code',REPORTS[e['period']]),('rcept_no',e['receipt'])]:
+                  # All financial rows must refer to the requested receipt, not merely one row.
+                  if {str(r.get(k,'')) for r in rows}!={want}: return False
+              return not any(r.get('fs_div') not in (None,'',basis) or r.get('currency') not in (None,'','KRW') for r in rows)
+          
+          def normalize(m,d,e,basis):
+              # Official guide: interim IS/CIS thstrm_amount is 3-month, thstrm_add_amount is cumulative.
+              rows=[]
+              for r in d['list']:
+                  row=dict(r)
+                  if e['period']!='annual' and row.get('sj_div') in ('IS','CIS'):
+                      row['thstrm_amount']=row.get('thstrm_add_amount')
+                  rows.append(row)
+              parsed=m.parse({'status':'000','list':rows},e['period'],basis)
+              parsed.update(amount_basis='ANNUAL' if e['period']=='annual' else 'CUMULATIVE_INTERIM_IS_CIS',receipt=e['receipt'],corp_code=e['corp_code'],year=e['year'],point_in_time_verified=False)
+              return parsed
+          
+          def fetch_event(api,m,e,cache):
+              old=cache.get(f"{e['code']}:{e['year']}:{e['period']}",{})
+              b=old.get('fs_div') if isinstance(old,dict) else None
+              bases=[b] if b in ('CFS','OFS') else ['CFS','OFS']
+              for basis in bases:
+                  d=api.call('fnlttSinglAcntAll.json',{'corp_code':e['corp_code'],'bsns_year':str(e['year']),'reprt_code':REPORTS[e['period']],'fs_div':basis})
+                  status=str(d.get('status',''))
+                  if status in ('013','014'): continue
+                  if status!='000': raise RuntimeError('FINANCIAL_API_STATUS_'+status)
+                  if not checked_rows(d,e,basis): return 'RECEIPT_MISMATCH',None,None
+                  return 'ARCHIVED',d,normalize(m,d,e,basis)
+              return 'RETRY',None,None
+          
+          def archive(e,raw,parsed):
+              p=STORE/'raw'/f"{e['receipt']}_{parsed['fs_div']}.json.gz" if parsed.get('fs_div') in ('CFS','OFS') else None
+              # The parser may not recognize accounts, but an exact receipt is still valid raw evidence.
+              if p is None: raise ValueError('ARCHIVE_BASIS_MISSING')
+              payload={'receipt':e['receipt'],'corp_code':e['corp_code'],'year':e['year'],'period':e['period'],'source':'OpenDART fnlttSinglAcntAll','raw':raw,'normalized':parsed}
+              content=gzip.compress(json.dumps(payload,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode(),mtime=0)
+              if p.exists() and p.read_bytes()!=content: raise ValueError('IMMUTABLE_RECEIPT_ARCHIVE_CONFLICT')
+              if not p.exists(): atomic(p,content)
+              e.update(archive=str(p.relative_to(ROOT)),sha256=sha(p),normalized_status=parsed.get('status'),normalized_fields=sorted(parsed.get('accounts',{})),amount_basis=parsed['amount_basis'])
+          
+          def main():
+              OUT.mkdir(parents=True,exist_ok=True)
+              report={'state':'RUNNING','api_calls':0,'investment_decisions_authorized':False,'financial_disclosure_asof_verified':False,'final_buy_signals':0,'canonical_cache_modified':False}
+              def log(): dump(OUT/'status.json',report);print('R14_FILING_REFRESH',json.dumps(report,ensure_ascii=False))
+              spec=importlib.util.spec_from_file_location('r14_n',ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py');n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n);m=n.m
+              day,rows=n.official_market_snapshot();report.update(market_date=day,market_rows=rows)
+              if os.getenv('GITHUB_EVENT_NAME')=='workflow_run':
+                  p=read(Path('/tmp/r14-promotion-evidence/status.json'))
+                  if p.get('state')!='MARKET_AND_FINANCIAL_PERSISTED' or p.get('market_date')!=day or p.get('financial_date')!=day or not p.get('promoted_dates') or str(p.get('run_id'))!=os.environ.get('PROMOTION_RUN_ID'):
+                      report['state']='SKIPPED_NO_NEW_VERIFIED_PROMOTION';log();return
+              state=read(STATE) if STATE.exists() else {'schema':1,'receipts':{},'scanned_through':None,'last_attempt_market_date':None}
+              if state.get('schema')!=1 or not isinstance(state.get('receipts'),dict): raise ValueError('INVALID_REFRESH_STATE')
+              if state.get('last_attempt_market_date')==day:
+                  report['state']='SKIPPED_ALREADY_PROCESSED_MARKET_DATE';log();return
+              cutoff=date(day)
+              if state.get('scanned_through') and date(state['scanned_through'])>cutoff: raise ValueError('FILING_CURSOR_AHEAD_OF_MARKET')
+              if not m.KEY: raise ValueError('MISSING_DART_API_KEY')
+              cache=read(F/'dart_financial_cache.json');mapping=read(F/'corp_map.json')
+              with (ROOT/'data/latest.csv').open(encoding='utf-8-sig',newline='') as f: codes={r['ISU_CD'] for r in csv.DictReader(f)}
+              if len(codes)!=rows: raise ValueError('MARKET_CODE_DUPLICATION')
+              protected=[F/'dart_financial_cache.json',F/'corp_map.json',F/'status.json',F/'annual_financial_index_m.csv',F/'dart_disclosure_evidence.json'];before={str(p):sha(p) for p in protected}
+              financial=read(F/'status.json')
+              if financial.get('market_date')!=day or financial.get('cache_records')!=len(cache): raise ValueError('FINANCIAL_SNAPSHOT_NOT_SYNCHRONIZED')
+              api=API(m);error='';new=0;archived=0;start=None;end=None
+              try:
+                  start=date(state['scanned_through'])+dt.timedelta(days=1) if state.get('scanned_through') else cutoff-dt.timedelta(days=BOOTSTRAP_DAYS-1)
+                  end=min(cutoff,start+dt.timedelta(days=MAX_SCAN_DAYS-1))
+                  day_to_scan=start
+                  # Scan individual calendar days so a busy filing week cannot block the entire cursor.
+                  while day_to_scan<=end and api.calls<MAX_CALLS-2:
+                      count=len(state['receipts'])
+                      try: events=scan(api,ymd(day_to_scan),ymd(day_to_scan))
+                      except RuntimeError as exc:
+                          if str(exc)=='LIST_BUDGET_EXHAUSTED': break
+                          raise
+                      add_events(state,events,codes,mapping);new+=len(state['receipts'])-count
+                      state['scanned_through']=ymd(day_to_scan);day_to_scan+=dt.timedelta(days=1)
+                  for rec,e in sorted(state['receipts'].items()):
+                      if e['state'] not in ('PENDING','RETRY','RECEIPT_MISMATCH'): continue
+                      if api.calls>=MAX_CALLS-1: break
+                      if e.get('retry_after_market_date','')>day: continue
+                      e['attempts']+=1
+                      try:
+                          outcome,raw,parsed=fetch_event(api,m,e,cache)
+                          if outcome=='ARCHIVED': archive(e,raw,parsed);archived+=1
+                          e['state']=outcome;e['last_attempt_market_date']=day
+                          if outcome!='ARCHIVED': e['retry_after_market_date']=ymd(cutoff+dt.timedelta(days=7))
+                      except Exception as exc:
+                          e['last_attempt_market_date']=day;e['retry_after_market_date']=ymd(cutoff+dt.timedelta(days=1));error=type(exc).__name__+': '+str(exc)[:160];break
+                      time.sleep(.15)
+              except Exception as exc: error=type(exc).__name__+': '+str(exc)[:160]
+              # Never advance a failed list cursor; preserve completed archive and receipt checkpoint.
+              state['last_attempt_market_date']=day
+              state['updated_utc']=now().isoformat();state['last_error']=error
+              dump(STATE,state)
+              if before!={str(p):sha(p) for p in protected}: raise ValueError('CANONICAL_FINANCIAL_DATA_CHANGED')
+              report.update(state='FILING_REFRESH_CHECKPOINT' if not error else 'FILING_REFRESH_BLOCKED_CHECKPOINT',api_calls=api.calls,new_receipts=new,archived_receipts=archived,planned_scan_start=ymd(start) if start else None,planned_scan_end=ymd(end) if end else None,scanned_through=state['scanned_through'],receipt_states=dict(Counter(e['state'] for e in state['receipts'].values())),error=error,bootstrap_days=BOOTSTRAP_DAYS)
+              dump(OUT/'status.json',report);dump(OUT/'state.json',state)
+              git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+              git('add','--',str(STORE.relative_to(ROOT)))
+              paths=git('diff','--cached','--name-only').splitlines()
+              if any(not p.startswith('data/v5_financial_m/filing_refresh/') for p in paths): raise ValueError('UNEXPECTED_STAGED_FILES')
+              if paths:
+                  git('commit','-m','R14: persist incremental filing receipts and exact-source financial archives')
+                  # Rebase unrelated concurrent commits; do not force or resolve overlapping edits automatically.
+                  git('fetch','origin','main');git('rebase','origin/main');git('push','origin','HEAD:main')
+              report['checkpoint_persisted']=True;log()
+              if error: raise SystemExit('FILING_REFRESH_BLOCKED: '+error)
+          
+          if __name__=='__main__': main()
+          PYTHON
+          python -m py_compile /tmp/krx_filing_refresh.py
+          python /tmp/krx_filing_refresh.py
+      - name: Preserve refresh result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r14-filing-refresh-checkpoint
+          path: /tmp/r14-filing-refresh/
+          if-no-files-found: warn
+          retention-days: 30
   inventory:
     name: Read-only official market financial inventory
-    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'inventory' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'inventory' }}
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -151,7 +395,7 @@ jobs:
           retention-days: 30
   repair_annual:
     name: Bounded annual financial missing-field repair
-    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'repair_annual' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'repair_annual' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -365,7 +609,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
   collect:
-    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'collect' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'collect' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
