@@ -776,18 +776,324 @@ jobs:
           PYCODE
           python -m py_compile /tmp/krx_v5_fullmarket_regrade_audit.py
           python /tmp/krx_v5_fullmarket_regrade_audit.py
-      - name: Commit daily financial/growth, full-market coverage, and R14 provisional regrade
+      - name: Audit saved filing evidence and price-readiness for all current provisional A/B leads
+        shell: bash
+        run: |
+          cat > /tmp/krx_v5_r14_valuation_evidence_gate.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Read-only R14 evidence / price-readiness gate. No fetching or investment authorization.
+          
+          This step runs after R14 full-market regrade in the existing workflow. Older
+          request-bound KRX basic security and DART filing metadata never establish a
+          provider-attested as-of date or independent per-account point-in-time proof.
+          """
+          from collections import Counter
+          import csv
+          import hashlib
+          import io
+          import json
+          from pathlib import Path
+          import re
+          
+          ROOT = Path('.')
+          REVAL_ROOT = ROOT / 'v5_reports/r14_daily_market_regrade'
+          OUTPUT_ROOT = ROOT / 'v5_reports/r14_daily_valuation_readiness'
+          REVAL_STATUS = REVAL_ROOT / 'latest_status.json'
+          RATIO_PROOF = ROOT / 'v5_reports/stage28/r14_stage55_p2_provenance_gate_20261120.json'
+          P3_PROOF = ROOT / 'v5_reports/stage28/r14_stage54_p3_cached_evidence_20261120.json'
+          EXCLUSIONS = ROOT / 'v5_reports/stage28/r14_candidate_exclusion_gate.json'
+          R14_RECEIPT = ROOT / 'v5_reports/stage28/r14_filing_receipt_audit.json'
+          R14_ACCOUNT = ROOT / 'v5_reports/stage28/r14_financial_value_reconciliation_cache.json'
+          ANNUAL_META = ROOT / 'data/v5_financial_m/dart_disclosure_evidence.json'
+          BASIC = ROOT / 'data/v5_official_shareclass_archive/20261120.json'
+          MARKET_SUMMARY = ROOT / 'data/summary.json'
+          FIELDS = [
+              'official_market_date','stock_code','stock_name','market',
+              'research_grade_asof_market_date','provisional_grade','score','candidate_origin',
+              'current_official_close_krw','current_official_marketcap_krw',
+              'annual_financial_index_snapshot_date',
+              'r14_filing_receipt_metadata_state','r14_account_comparison_state',
+              'cached_2025_annual_filing_metadata_state','cached_annual_receipt_count',
+              'historic_basic_snapshot_date','historic_common_share_state','historic_cap_scope_state',
+              'basic_api_asof_independently_attested',
+              'point_in_time_account_values_verified',
+              'official_dated_provider_per_pbr_verified',
+              'sector_model_calibrated','price_adjustment_verified',
+              'valuation_eligibility','blocked_reasons','certified_fair_price_krw',
+              'actionable_buy_price_krw','final_grade','buy_signal','investment_authorized'
+          ]
+          
+          
+          def require(ok, tag):
+              if not ok:
+                  raise ValueError('R14_VALUATION_EVIDENCE_' + tag)
+          
+          
+          def document(path):
+              require(path.is_file(), 'MISSING_' + path.name)
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          
+          def records(path):
+              require(path.is_file(), 'MISSING_' + path.name)
+              with path.open(encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  require(bool(reader.fieldnames), 'NO_CSV_FIELDS_' + path.name)
+                  return list(reader)
+          
+          
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          
+          
+          def make_csv(rows):
+              buf = io.StringIO(newline='')
+              writer = csv.DictWriter(buf, fieldnames=FIELDS, extrasaction='raise')
+              writer.writeheader()
+              writer.writerows(rows)
+              return buf.getvalue().encode('utf-8-sig')
+          
+          
+          def immutable(path, body):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              if path.exists():
+                  require(path.read_bytes() == body, 'IMMUTABLE_HISTORY_CONFLICT_' + path.name)
+              else:
+                  path.write_bytes(body)
+          
+          
+          def main():
+              reval = document(REVAL_STATUS)
+              market_summary = document(MARKET_SUMMARY)
+              day = str(reval.get('official_market_date', ''))
+              require(re.fullmatch(r'20\d{6}', day) is not None, 'BAD_MARKET_DAY')
+              require(reval.get('state') == 'RESEARCH_ONLY_FULL_MARKET_GRADE_ENGINE_RECALCULATED', 'NOT_RESEARCH_GRADE_OUTPUT')
+              require(market_summary.get('latest_trading_date') == day, 'OPERATING_MARKET_DATE_STALE')
+              source = REVAL_ROOT / day / 'provisional_ab_full_market.csv'
+              source_status = document(REVAL_ROOT / day / 'status.json')
+              require(reval == source_status, 'DATE_AND_LATEST_REGRADING_STATUS_DIFFER')
+              all_rows = records(source)
+              require(len(all_rows) == reval['research_ab_after_historic_correction_exclusion'], 'COHORT_COUNT_INCONSISTENT')
+              require(reval.get('final_buy_signals') == 0 and reval.get('investment_decisions_authorized') is False,
+                      'UNSAFE_REGRADING_STATUS')
+          
+              ratio = document(RATIO_PROOF)
+              p3 = document(P3_PROOF)
+              excluded = document(EXCLUSIONS)
+              receipts = document(R14_RECEIPT)
+              reconciliation = document(R14_ACCOUNT)
+              annual_meta = document(ANNUAL_META)
+              basic = document(BASIC)
+              base_day = str(ratio.get('research_market_date', ''))
+              require(base_day == str(reval['frozen_research_grade_date']) == str(p3['research_market_date']),
+                      'OLDER_RESEARCH_COHORT_MISMATCH')
+              require(ratio['candidate_count'] == p3['candidate_count'] == 137, 'FROZEN_EVIDENCE_COHORT_COUNT')
+              require(int(ratio.get('p2_official_per_verified_count', 0)) == 0 and
+                      int(ratio.get('p2_official_pbr_verified_count', 0)) == 0 and
+                      not ratio.get('p3_historical_asof_verified', False), 'OFFICIAL_SOURCE_STATE_CHANGED_REVIEW_REQUIRED')
+              require(not basic.get('all_provider_rows_effective_date_attested', True),
+                      'BASIC_PROVIDER_EFFECTIVE_DATE_STATE_CHANGED_REVIEW_REQUIRED')
+              require(basic['market_date'] == p3['research_market_date'], 'HISTORICAL_BASIC_DATE_MISMATCH')
+              old_evidence = {x['code']: x for x in ratio['candidate_states']}
+              prior_share_evidence = {x['code']: x for x in p3['candidate_checks']}
+              require(len(old_evidence) == len(prior_share_evidence) == ratio['candidate_count'], 'REPEATED_FROZEN_EVIDENCE_CODE')
+              excluded_codes = set(excluded['excluded_codes'])
+              require(len(excluded_codes) == len(excluded['excluded_codes']), 'DUPLICATE_EXCLUSION_CODE')
+              require(isinstance(receipts.get('rows'), dict) and isinstance(reconciliation.get('rows'), dict),
+                      'MISSING_P1_CACHED_AUDIT')
+              require(isinstance(annual_meta, dict), 'ANNUAL_RECEIPTS_NOT_DICT')
+              basic_rows = {}
+              for entry in basic['rows']:
+                  key = (str(entry.get('market', '')), str(entry.get('ISU_SRT_CD', '')))
+                  require(key not in basic_rows, 'DUPLICATE_BASIC_SECURITY')
+                  basic_rows[key] = entry
+          
+              seen = set()
+              final = []
+              new = []
+              previous = []
+              missing_metadata_codes = []
+              for c in all_rows:
+                  code = c['stock_code']
+                  require(re.fullmatch(r'\d{6}', code) is not None, 'BAD_STOCK_CODE')
+                  require(code not in seen and code not in excluded_codes, 'DUPLICATE_OR_EXCLUDED_IN_FINAL_COHORT')
+                  seen.add(code)
+                  require(c['official_market_date'] == day, 'MIXED_RESEARCH_DATE')
+                  require(c['candidate_evidence_gate'] in (
+                      'EXISTING_FROZEN_COHORT_RESEARCH_ONLY',
+                      'NEW_RESEARCH_CANDIDATE_PENDING_FILING_AND_SHARECLASS_REVIEW'), 'INELIGIBLE_SOURCE_GATE')
+                  require(c['current_provisional_grade_research_only'] in ('A', 'B'), 'INVALID_GRADE')
+                  require(int(c['official_marketcap_krw']) >= 100_000_000_000, 'MARKETCAP_TOO_SMALL')
+                  require(c['final_grade'] == 'WITHHELD' and c['fair_value_verified'] == 'NO' and
+                          c['actionable_entry_price'] == 'NO' and c['buy_signal'] == 'NONE' and
+                          c['official_per_pbr_verified'] == 'NO' and c['financial_point_in_time_verified'] == 'NO' and
+                          c['investment_decisions_authorized'] == 'NO', 'SOURCE_UNSAFE_APPROVAL_FLAG')
+                  is_new = c['candidate_evidence_gate'].startswith('NEW_')
+                  if not is_new:
+                      require(code in old_evidence and code in prior_share_evidence, 'MISSING_OLD_COHORT_EVIDENCE')
+                      require(old_evidence[code]['p2'] == 'NO_INDEPENDENTLY_AUTHENTICATED_DATED_RATIO' and
+                              old_evidence[code]['buy_signal'] is False and
+                              prior_share_evidence[code]['p1_historical_financial_asof_verified'] is False,
+                              'FROZEN_EVIDENCE_APPROVAL_UNEXPECTED')
+                  else:
+                      require(code not in old_evidence, 'PREVIOUSLY_FROZEN_MARKED_NEW')
+                  official_type = basic_rows.get((c['market'], code), {})
+                  common = official_type.get('KIND_STKCERT_TP_NM', '')
+                  security_group = official_type.get('SECUGRP_NM', '')
+                  historic_type = ('PREVIOUS_REQUEST_BOUND_COMMON_NOT_DATE_ATTESTED' if
+                                   common == '보통주' and security_group == '주권' else
+                                   'PREVIOUS_NON_COMMON_OR_UNKNOWN_REQUIRES_REVIEW')
+                  historic_cap = official_type.get('market_cap_comparison_state', 'NO_HISTORIC_MATCH')
+                  filing = receipts['rows'].get(code, {})
+                  compare = reconciliation['rows'].get(code, {})
+                  annual = annual_meta.get(code + ':2025:annual', {})
+                  candidate_meta = annual.get('candidates', []) if annual.get('state') == 'FILING_CANDIDATES_FOUND' else []
+                  candidate_meta = candidate_meta if isinstance(candidate_meta, list) else []
+                  count = len(candidate_meta)
+                  receipt_meta_state = ('CACHED_ANNUAL_RECEIPT_METADATA_ONLY' if count else
+                                        'NO_CACHED_ANNUAL_RECEIPT_METADATA')
+                  if is_new and count == 0:
+                      missing_metadata_codes.append(code)
+                  p1_status = ('EXISTING_RECEIPT_AUDIT_NOT_POINT_IN_TIME_PROVED' if filing else
+                               'NO_R14_RECEIPT_VERSION_AUDIT')
+                  account_status = ('CURRENT_VALUE_COMPARISON_NOT_PIT' if compare else 'NO_R14_ACCOUNT_COMPARISON')
+                  blockers = [
+                      'P1_CACHED_VALUES_NOT_INDEPENDENTLY_MATCHED_TO_ASOF_FILING',
+                      'P2_AUTHORIZED_DATE_MATCHED_OFFICIAL_PER_PBR_UNAVAILABLE',
+                      'P3_BASIC_SECURITY_PROVIDER_ASOF_DATE_UNATTESTED',
+                      'SECTOR_VALUATION_MODEL_NOT_CALIBRATED',
+                      'CORPORATE_ACTION_ADJUSTED_PRICE_UNVERIFIED'
+                  ]
+                  if is_new:
+                      blockers.append('NEW_CANDIDATE_RECEIPT_VERSION_AUDIT_REQUIRED')
+                      if not candidate_meta:
+                          blockers.append('ANNUAL_RECEIPT_METADATA_NOT_IN_SAVED_CACHE')
+                  if historic_type != 'PREVIOUS_REQUEST_BOUND_COMMON_NOT_DATE_ATTESTED':
+                      blockers.append('NO_PREVIOUS_REQUEST_BOUND_COMMON_SECURITY_EVIDENCE')
+                  # A filing receipt or old KRX security type is research context, NOT the
+                  # proof needed to issue a valuation or price target. No fair-price math.
+                  record = {
+                      'official_market_date':day, 'stock_code':code,
+                      'stock_name':c['stock_name'], 'market':c['market'],
+                      'research_grade_asof_market_date':(base_day if not is_new else day),
+                      'provisional_grade':c['current_provisional_grade_research_only'],
+                      'score':c['current_research_score'],
+                      'candidate_origin':'NEW_PENDING_EVIDENCE' if is_new else 'FROZEN_RESEARCH_COHORT',
+                      'current_official_close_krw':c['official_close_krw'],
+                      'current_official_marketcap_krw':c['official_marketcap_krw'],
+                      'annual_financial_index_snapshot_date':c['annual_financial_index_snapshot_date'],
+                      'r14_filing_receipt_metadata_state':p1_status,
+                      'r14_account_comparison_state':account_status,
+                      'cached_2025_annual_filing_metadata_state':receipt_meta_state,
+                      'cached_annual_receipt_count':str(count),
+                      'historic_basic_snapshot_date':basic['market_date'],
+                      'historic_common_share_state':historic_type,
+                      'historic_cap_scope_state':historic_cap,
+                      'basic_api_asof_independently_attested':'NO',
+                      'point_in_time_account_values_verified':'NO',
+                      'official_dated_provider_per_pbr_verified':'NO',
+                      'sector_model_calibrated':'NO',
+                      'price_adjustment_verified':'NO',
+                      'valuation_eligibility':'DEFER_UNVERIFIED_EVIDENCE',
+                      'blocked_reasons':';'.join(blockers),
+                      'certified_fair_price_krw':'',
+                      'actionable_buy_price_krw':'',
+                      'final_grade':'WITHHELD', 'buy_signal':'NONE',
+                      'investment_authorized':'NO'
+                  }
+                  final.append(record)
+                  (new if is_new else previous).append(record)
+          
+              require(len(new) == reval['new_provisional_discoveries_pending_filing_and_shareclass_review'],
+                      'NEW_CANDIDATE_COUNT_MISMATCH')
+              require(len(previous) == reval['retained_prior_frozen_candidates'],
+                      'PRIOR_CANDIDATE_COUNT_MISMATCH')
+              require(len(final) == len(new) + len(previous), 'INVALID_JOIN_COUNTS')
+              require(len(seen) == len(all_rows), 'DUPLICATE_RESEARCH_RESULTS')
+          
+              common_old = sum(x['historic_common_share_state'] == 'PREVIOUS_REQUEST_BOUND_COMMON_NOT_DATE_ATTESTED'
+                               for x in new)
+              prior_cap_matched = sum(x['historic_cap_scope_state'] == 'KRX_OFFICIAL_COMMON_AND_CLASS_SPECIFIC_CAP_MATCHED'
+                                      for x in new)
+              new_receipt_metadata = sum(int(x['cached_annual_receipt_count']) > 0 for x in new)
+              status = {
+                  'version':'KRX_V5_R14_DAILY_VALUATION_EVIDENCE_READINESS_V1',
+                  'state':'RESEARCH_EVIDENCE_GATE_RECORDED_NO_APPROVAL',
+                  'official_market_date':day,
+                  'prior_cohort_research_date':base_day,
+                  'historic_basic_request_date':basic['market_date'],
+                  'annual_financial_index_snapshot_date':reval['source_financial_snapshot_date'],
+                  'assessed_research_candidates':len(final),
+                  'frozen_existing_candidates':len(previous),
+                  'new_candidates_pending_evidence':len(new),
+                  'excluded_missing_correction_evidence':len(excluded_codes),
+                  'new_with_cached_annual_receipt_metadata':new_receipt_metadata,
+                  'new_without_cached_annual_receipt_metadata':len(missing_metadata_codes),
+                  'new_missing_cached_annual_metadata_codes':sorted(missing_metadata_codes),
+                  'new_with_old_request_bound_common_type':common_old,
+                  'new_with_old_request_bound_common_and_cap_match':prior_cap_matched,
+                  'independently_verified_asof_financial_values':0,
+                  'approved_provider_dated_per_pbr_rows':0,
+                  'same_date_attested_common_share_rows':0,
+                  'sector_calibrated_research_models':0,
+                  'certified_fair_price_rows':0,
+                  'actionable_buy_price_rows':0,
+                  'final_buy_signals':0,
+                  'investment_decisions_authorized':False,
+                  'sources_read_only':True,
+                  'new_external_requests':0,
+                  'source_sha256':{str(p):digest(p) for p in (
+                      REVAL_STATUS, REVAL_ROOT/day/'status.json', source,
+                      RATIO_PROOF,P3_PROOF,EXCLUSIONS,R14_RECEIPT,R14_ACCOUNT,
+                      ANNUAL_META,BASIC,MARKET_SUMMARY)},
+                  'price_calculation_requirements':[
+                      'Independent point-in-time versioned financial values tied to each filing',
+                      'Authorized and date-attested official PER/PBR provider proof with permitted use',
+                      'Effective-date-attested common-share and share count evidence',
+                      'Sector-comparable, documented valuation assumptions',
+                      'Corporate-action aware current price and transparent reference calculation'
+                  ],
+                  'notes':[
+                      'Filing receipt metadata is an inventory only, never point-in-time proof.',
+                      'The 20261120 KRX basic-security response does not attest each record effective date; never certify 20261123 share class from it.',
+                      'Current preliminary A/B grades are research only and may change with verified financial and valuation evidence.',
+                      'No private KRX manual PER/PBR export is automatically collected or published.',
+                      'Older per/security calculations do not authorize actionable fair prices.'
+                  ]
+              }
+              final.sort(key=lambda x:(-int(x['score']),x['stock_code']))
+              new.sort(key=lambda x:(-int(x['score']),x['stock_code']))
+              target = OUTPUT_ROOT/day
+              immutable(target/'candidate_evidence_price_readiness.csv',make_csv(final))
+              immutable(target/'new_candidates_filing_review_queue.csv',make_csv(new))
+              payload = (json.dumps(status,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode('utf-8')
+              immutable(target/'status.json',payload)
+              OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
+              (OUTPUT_ROOT/'latest_status.json').write_bytes(payload)
+              print(json.dumps({k:status[k] for k in (
+                  'state','official_market_date','assessed_research_candidates',
+                  'new_candidates_pending_evidence','new_with_cached_annual_receipt_metadata',
+                  'new_with_old_request_bound_common_type','certified_fair_price_rows',
+                  'final_buy_signals')},ensure_ascii=False))
+          
+          
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/krx_v5_r14_valuation_evidence_gate.py
+          python /tmp/krx_v5_r14_valuation_evidence_gate.py
+      - name: Commit daily financial/growth, full-market coverage, and valuation-readiness evidence
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/ v5_reports/r14_daily_market_regrade/
+          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/ v5_reports/r14_daily_market_regrade/ v5_reports/r14_daily_valuation_readiness/
           if git diff --cached --quiet; then
             echo 'Identical daily research evidence already saved, no commit.'
             exit 0
           fi
-          git commit -m 'KRX v5: archive full-market R14 provisional regrade evidence'
+          git commit -m 'KRX v5: archive R14 provisional grades and valuation evidence gate'
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Preserve independently verified financial growth research artifact
@@ -799,5 +1105,6 @@ jobs:
             v5_reports/r14_daily_financial_join/
             v5_reports/r14_full_market_readiness/
             v5_reports/r14_daily_market_regrade/
+            v5_reports/r14_daily_valuation_readiness/
           if-no-files-found: warn
           retention-days: 45
