@@ -1,0 +1,83 @@
+{
+  "current_grade_finally_verified": false,
+  "engine_preliminary_ab": 163,
+  "engine_preliminary_ab_grade_counts": {
+    "A": 31,
+    "B": 132
+  },
+  "excluded_missing_correction_evidence_passed_raw_score": 5,
+  "excluded_raw_grade_codes": [
+    "015360",
+    "033500",
+    "054950",
+    "097230",
+    "215200"
+  ],
+  "final_buy_signals": 0,
+  "financial_point_in_time_verified": false,
+  "historical_provisional_grades_revised": false,
+  "investment_decisions_authorized": false,
+  "marketcap_100bn_rows": 1231,
+  "new_discovery_codes": [
+    "264660",
+    "241520",
+    "243070",
+    "240550",
+    "267980",
+    "298830",
+    "263860",
+    "264450",
+    "290550",
+    "300080",
+    "327260",
+    "368770",
+    "272110",
+    "033640",
+    "051360",
+    "114090",
+    "218410",
+    "264850",
+    "272290",
+    "297090",
+    "336570",
+    "356860"
+  ],
+  "new_provisional_discoveries_pending_filing_and_shareclass_review": 22,
+  "numeric_codes": 2675,
+  "official_market_date": "20261123",
+  "official_per_pbr_verified": false,
+  "previous_frozen_cohort_not_currently_passing": 1,
+  "previous_frozen_not_currently_passing_codes": [
+    "148150"
+  ],
+  "research_ab_after_historic_correction_exclusion": 158,
+  "retained_prior_frozen_candidates": 136,
+  "source_70_session_market_archive_preserved": true,
+  "source_annual_financial_years": [
+    "2025"
+  ],
+  "source_financial_rows": 2675,
+  "source_financial_snapshot_date": "20261116",
+  "source_market_rows": 2771,
+  "source_sha256": {
+    "data/latest.csv": "2ec10c7e46f4dd8f675bc0d87fb8b8e29658d36b90fb5a2a2dddf24b29e121ed",
+    "data/summary.json": "99e0875e3aa4a3db1b47063d6982b3c56427ce6ea4ca28df2329e99062086c3c",
+    "data/v5_financial_m/annual_financial_index_m.csv": "53adb6f13cc754c5930acea0f50722f4c1e1a4530d25cb9908be0cd8ad3b6129",
+    "data/v5_financial_m/dart_financial_cache.json": "e4b2b9f34bc1948394098878fb5b871d0e7b3cfedfb08738d56873baef471535",
+    "data/v5_financial_m/status.json": "521dfc3a0ef2ae150203a9b6b126381c0d5e9176f3ca0b03962ef0a963cf1469",
+    "scripts/krx_v5_r14_grade_engine.py": "d56d5c6ae152d085b34e51d1d417a59adce322f548cb75a8e8144aaf14bd3afa",
+    "v5_reports/r14_full_market_readiness/latest_status.json": "a14377ca76b0066062490035752081590d958a0549657ab62ea39cd1f27bd734",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
+    "v5_reports/stage28/r14_eligible_research_candidates.json": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee"
+  },
+  "state": "RESEARCH_ONLY_FULL_MARKET_GRADE_ENGINE_RECALCULATED",
+  "version": "KRX_V5_R14_FULL_MARKET_PROVISIONAL_REGRADING_V1",
+  "warnings": [
+    "Existing R14 financial score model reused; current inputs include earlier annual/TTM cached values.",
+    "New findings are PROVISIONAL research leads, not official final A/B investment grades.",
+    "Unreviewed security classes, prior filing versions and missing corrected documents block approval.",
+    "Derived PER/PBR must never be represented as official KRX multiples.",
+    "No fair-value prices or executable buy recommendations are published.",
+    "No API calls, live intraday prices, retries, or upstream cache modifications."
+  ]
+}
