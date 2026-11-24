@@ -553,18 +553,241 @@ jobs:
           PYCODE
           python -m py_compile /tmp/krx_v5_full_market_readiness.py
           python /tmp/krx_v5_full_market_readiness.py
-      - name: Commit daily financial/growth and whole-market research evidence
+      - name: Regrade entire market with existing R14 engine (provisional research only)
+        shell: bash
+        run: |
+          python scripts/krx_v5_r14_grade_engine.py --self-test
+          python scripts/krx_v5_r14_grade_engine.py \
+            --financial data/v5_financial_m/annual_financial_index_m.csv \
+            --market data/latest.csv \
+            --cache data/v5_financial_m/dart_financial_cache.json \
+            --output /tmp/krx_v5_fullmarket_regrade_engine.json
+          cat > /tmp/krx_v5_fullmarket_regrade_audit.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Audit existing R14 provisional full-market scoring on a new promoted market date.
+
+          Reads: cached OpenDART inputs and the existing R14 grade engine's preliminary report.
+          Emits: dated and immutable *research-only* candidate comparisons, not trade signals.
+          No requests, no revised DART records, no KRX ratio imports, no current final grades.
+          """
+          import csv
+          import hashlib
+          import io
+          import json
+          import re
+          from collections import Counter
+          from pathlib import Path
+
+          ROOT = Path('.')
+          REPORT = Path('/tmp/krx_v5_fullmarket_regrade_engine.json')
+          MARKET = ROOT / 'data/latest.csv'
+          SUMMARY = ROOT / 'data/summary.json'
+          COVERAGE = ROOT / 'v5_reports/r14_full_market_readiness/latest_status.json'
+          FIN_STATUS = ROOT / 'data/v5_financial_m/status.json'
+          FROZEN = ROOT / 'v5_reports/stage28/r14_eligible_research_candidates.json'
+          EXCLUDED = ROOT / 'v5_reports/stage28/r14_candidate_exclusion_gate.json'
+          GRADE_SCRIPT = ROOT / 'scripts/krx_v5_r14_grade_engine.py'
+          FIN_INDEX = ROOT / 'data/v5_financial_m/annual_financial_index_m.csv'
+          FIN_CACHE = ROOT / 'data/v5_financial_m/dart_financial_cache.json'
+          OUTROOT = ROOT / 'v5_reports/r14_daily_market_regrade'
+          FIELDS = [
+              'official_market_date', 'stock_code', 'stock_name', 'market', 'official_close_krw',
+              'official_marketcap_krw', 'current_provisional_grade_research_only',
+              'current_research_score', 'research_roe_pct', 'research_debt_pct',
+              'derived_ttm_per_not_official', 'derived_pbr_not_official',
+              'previous_frozen_grade_asof', 'previous_research_date', 'candidate_evidence_gate',
+              'annual_financial_index_snapshot_date', 'financial_point_in_time_verified',
+              'official_per_pbr_verified', 'final_grade', 'fair_value_verified',
+              'actionable_entry_price', 'buy_signal', 'investment_decisions_authorized'
+          ]
+
+
+          def require(condition, reason):
+              if not condition:
+                  raise ValueError('R14_FULL_MARKET_PROVISIONAL_REGRADING_' + reason)
+
+
+          def read_csv(path):
+              with path.open(encoding='utf-8-sig', newline='') as f:
+                  return list(csv.DictReader(f))
+
+
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+          def csv_bytes(rows, fields):
+              s = io.StringIO(newline='')
+              writer = csv.DictWriter(s, fieldnames=fields, extrasaction='raise')
+              writer.writeheader()
+              writer.writerows(rows)
+              return s.getvalue().encode('utf-8-sig')
+
+
+          def immutable_write(path, content):
+              path.parent.mkdir(parents=True, exist_ok=True)
+              if path.exists():
+                  require(path.read_bytes() == content, 'EXISTING_IMMUTABLE_SNAPSHOT_CONFLICT_' + path.name)
+                  return
+              path.write_bytes(content)
+
+
+          def main():
+              baseline = json.loads(REPORT.read_text(encoding='utf-8-sig'))
+              summary = json.loads(SUMMARY.read_text(encoding='utf-8-sig'))
+              coverage = json.loads(COVERAGE.read_text(encoding='utf-8-sig'))
+              fin = json.loads(FIN_STATUS.read_text(encoding='utf-8-sig'))
+              frozen = json.loads(FROZEN.read_text(encoding='utf-8-sig'))
+              excluded = json.loads(EXCLUDED.read_text(encoding='utf-8-sig'))
+              market = read_csv(MARKET)
+
+              date = str(summary.get('latest_trading_date', ''))
+              require(re.fullmatch(r'20\d{6}', date) is not None, 'BAD_OFFICIAL_DATE')
+              require({r['BAS_DD'] for r in market} == {date}, 'OFFICIAL_MARKET_DATE_MISMATCH')
+              require(len(market) >= 2600 and len(market) == summary['kospi_rows_latest'] + summary['kosdaq_rows_latest'], 'OFFICIAL_UNIVERSE_UNEXPECTED')
+              require(coverage['state'] == 'WHOLE_MARKET_SOURCE_COVERAGE_RECORDED' and coverage['official_market_date'] == date, 'UPSTREAM_FULLMARKET_NOT_VERIFIED')
+              require(coverage['source_market_rows'] == len(market), 'MARKET_ROW_COUNT_MISMATCH')
+              require(coverage['source_sha256']['data/latest.csv'] == sha(MARKET), 'UPSTREAM_MARKET_HASH_MISMATCH')
+              require(baseline.get('result') == 'PRELIMINARY_RESEARCH_ONLY', 'ENGINE_RESULT_NOT_RESEARCH')
+              require(baseline.get('market_date') == date, 'ENGINE_MARKET_DATE_MISMATCH')
+              require(baseline.get('financial_rows') == coverage['numeric_stock_codes'], 'ENGINE_FINANCIAL_COVERAGE_MISMATCH')
+              require(baseline.get('investment_decisions_authorized') is False and baseline.get('final_buy_signals') == 0, 'ENGINE_SIGNALS_UNEXPECTED')
+              require(baseline.get('financial_disclosure_asof_verified') is False, 'UNEXPECTED_FINANCIAL_CERTIFICATION')
+              require(len(baseline['candidates']) == baseline['candidate_count'] and baseline['candidate_count'] >= 30, 'ENGINE_CANDIDATE_COVERAGE_UNEXPECTED')
+              require(frozen.get('research_market_date') < date, 'FROZEN_DATE_NOT_OLDER_THAN_CURRENT_MARKET')
+              require(frozen['candidate_count'] == len(frozen['candidates']) == 137, 'FROZEN_COHORT_MODIFIED')
+              require(excluded['research_market_date'] == frozen['research_market_date'], 'EXCLUSION_DATE_MISMATCH')
+              require(excluded['excluded_candidate_count'] == len(excluded['excluded_codes']) == 5, 'EXCLUSION_GATE_COUNT_CHANGED')
+              require(fin.get('financial_disclosure_asof_verified') is False, 'PIT_SNAPSHOT_UNEXPECTED')
+              require(fin.get('point_in_time_financials_authorized') is False, 'PIT_APPROVAL_UNEXPECTED')
+              require(coverage['official_per_pbr_verified'] is False, 'RATIO_STATE_CHANGED')
+
+              marks = {}
+              for row in market:
+                  code = row['ISU_CD']
+                  if code.isdigit() and len(code) == 6:
+                      require(code not in marks, 'DUPLICATE_NUMERIC_CODE')
+                      marks[code] = row
+              require(len(marks) == coverage['numeric_stock_codes'], 'NUMERIC_MARKET_UNIVERSE_MISMATCH')
+              frozen_by_code = {r['code']: r for r in frozen['candidates']}
+              require(len(frozen_by_code) == 137, 'DUPLICATE_FROZEN_CANDIDATES')
+              exclusions = set(excluded['excluded_codes'])
+              require(len(exclusions) == 5, 'EXCLUDED_CODE_DUPLICATES')
+
+              result, newly_discovered, excluded_candidates = [], [], []
+              engine_seen = set()
+              for r in baseline['candidates']:
+                  code = str(r['code'])
+                  require(code in marks and code not in engine_seen, 'UNKNOWN_OR_DUPLICATE_ENGINE_CODE')
+                  engine_seen.add(code)
+                  market_row = marks[code]
+                  grade = r.get('grade')
+                  score = r.get('score')
+                  require(grade in ('A','B') and isinstance(score, int), 'UNKNOWN_RESEARCH_GRADE')
+                  require((grade == 'A' and score >= 85) or (grade == 'B' and score >= 65), 'ENGINE_GRADE_SCORE_MISMATCH')
+                  require(r.get('buy_signal') is False and r.get('actionable_entry_price') is not True, 'ENGINE_UNSAFE_ACTIONABLE_OUTPUT')
+                  require(int(market_row['MKTCAP']) >= 100_000_000_000, 'ENGINE_CAP_FILTER_MISMATCH')
+                  old = frozen_by_code.get(code)
+                  reason = ('EXCLUDED_MISSING_CORRECTION_EVIDENCE' if code in exclusions else
+                            'EXISTING_FROZEN_COHORT_RESEARCH_ONLY' if old else
+                            'NEW_RESEARCH_CANDIDATE_PENDING_FILING_AND_SHARECLASS_REVIEW')
+                  x = {
+                      'official_market_date':date, 'stock_code':code,
+                      'stock_name':market_row['ISU_NM'], 'market':market_row['MARKET'],
+                      'official_close_krw':market_row['TDD_CLSPRC'],
+                      'official_marketcap_krw':market_row['MKTCAP'],
+                      'current_provisional_grade_research_only':grade, 'current_research_score':score,
+                      'research_roe_pct':r.get('roe_pct'), 'research_debt_pct':r.get('debt_pct'),
+                      'derived_ttm_per_not_official':r.get('ttm_per_est'),
+                      'derived_pbr_not_official':r.get('pbr_est'),
+                      'previous_frozen_grade_asof':old['grade'] if old else '',
+                      'previous_research_date':frozen['research_market_date'] if old else '',
+                      'candidate_evidence_gate':reason,
+                      'annual_financial_index_snapshot_date':fin['market_date'],
+                      'financial_point_in_time_verified':'NO', 'official_per_pbr_verified':'NO',
+                      'final_grade':'WITHHELD', 'fair_value_verified':'NO',
+                      'actionable_entry_price':'NO', 'buy_signal':'NONE',
+                      'investment_decisions_authorized':'NO'
+                  }
+                  if code in exclusions:
+                      excluded_candidates.append(x)
+                  else:
+                      result.append(x)
+                      if old is None:
+                          newly_discovered.append(x)
+              result.sort(key=lambda r: (-int(r['current_research_score']), r['stock_code']))
+              newly_discovered.sort(key=lambda r: (-int(r['current_research_score']), r['stock_code']))
+              excluded_candidates.sort(key=lambda r: r['stock_code'])
+              retained = len([x for x in result if x['previous_frozen_grade_asof']])
+              no_longer_pass = sorted(code for code in frozen_by_code if code not in engine_seen)
+              require(len(result)+len(excluded_candidates)==baseline['candidate_count'], 'ENGINE_COHORT_RECONCILIATION_MISMATCH')
+              require(retained+len(newly_discovered)==len(result), 'NEW_DISCOVERY_COUNT_MISMATCH')
+
+              status={
+                  'version':'KRX_V5_R14_FULL_MARKET_PROVISIONAL_REGRADING_V1',
+                  'state':'RESEARCH_ONLY_FULL_MARKET_GRADE_ENGINE_RECALCULATED',
+                  'official_market_date':date,
+                  'source_market_rows':len(market),
+                  'numeric_codes':len(marks),
+                  'source_financial_rows':baseline['financial_rows'],
+                  'source_financial_snapshot_date':fin['market_date'],
+                  'source_annual_financial_years':sorted({row['year'] for row in read_csv(FIN_INDEX)}),
+                  'source_70_session_market_archive_preserved':True,
+                  'marketcap_100bn_rows':coverage['marketcap_100bn_rows'],
+                  'engine_preliminary_ab':baseline['candidate_count'],
+                  'engine_preliminary_ab_grade_counts':dict(Counter(x['grade'] for x in baseline['candidates'])),
+                  'research_ab_after_historic_correction_exclusion':len(result),
+                  'retained_prior_frozen_candidates':retained,
+                  'new_provisional_discoveries_pending_filing_and_shareclass_review':len(newly_discovered),
+                  'previous_frozen_cohort_not_currently_passing':len(no_longer_pass),
+                  'excluded_missing_correction_evidence_passed_raw_score':len(excluded_candidates),
+                  'new_discovery_codes':[x['stock_code'] for x in newly_discovered],
+                  'previous_frozen_not_currently_passing_codes':no_longer_pass,
+                  'excluded_raw_grade_codes':[x['stock_code'] for x in excluded_candidates],
+                  'historical_provisional_grades_revised':False,
+                  'current_grade_finally_verified':False,
+                  'official_per_pbr_verified':False,
+                  'financial_point_in_time_verified':False,
+                  'investment_decisions_authorized':False,
+                  'final_buy_signals':0,
+                  'source_sha256':{str(p):sha(p) for p in (MARKET,SUMMARY,COVERAGE,FIN_STATUS,FROZEN,EXCLUDED,GRADE_SCRIPT,FIN_INDEX,FIN_CACHE)},
+                  'warnings':[
+                      'Existing R14 financial score model reused; current inputs include earlier annual/TTM cached values.',
+                      'New findings are PROVISIONAL research leads, not official final A/B investment grades.',
+                      'Unreviewed security classes, prior filing versions and missing corrected documents block approval.',
+                      'Derived PER/PBR must never be represented as official KRX multiples.',
+                      'No fair-value prices or executable buy recommendations are published.',
+                      'No API calls, live intraday prices, retries, or upstream cache modifications.'
+                  ]
+              }
+              out = OUTROOT / date
+              immutable_write(out/'provisional_ab_full_market.csv',csv_bytes(result,FIELDS))
+              immutable_write(out/'new_provisional_candidates_review_queue.csv',csv_bytes(newly_discovered,FIELDS))
+              immutable_write(out/'excluded_preliminary_grades_audit.csv',csv_bytes(excluded_candidates,FIELDS))
+              text=(json.dumps(status,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode('utf-8')
+              immutable_write(out/'status.json',text)
+              OUTROOT.mkdir(parents=True,exist_ok=True)
+              (OUTROOT/'latest_status.json').write_bytes(text)
+              print(json.dumps({k:status[k] for k in ('state','official_market_date','source_market_rows','marketcap_100bn_rows','engine_preliminary_ab','research_ab_after_historic_correction_exclusion','retained_prior_frozen_candidates','new_provisional_discoveries_pending_filing_and_shareclass_review','excluded_missing_correction_evidence_passed_raw_score')},ensure_ascii=False))
+
+
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/krx_v5_fullmarket_regrade_audit.py
+          python /tmp/krx_v5_fullmarket_regrade_audit.py
+      - name: Commit daily financial/growth, full-market coverage, and R14 provisional regrade
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/
+          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/ v5_reports/r14_daily_market_regrade/
           if git diff --cached --quiet; then
             echo 'Identical daily research evidence already saved, no commit.'
             exit 0
           fi
-          git commit -m 'KRX v5: archive daily R14 financial and full-market research coverage'
+          git commit -m 'KRX v5: archive full-market R14 provisional regrade evidence'
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Preserve independently verified financial growth research artifact
@@ -575,5 +798,6 @@ jobs:
           path: |
             v5_reports/r14_daily_financial_join/
             v5_reports/r14_full_market_readiness/
+            v5_reports/r14_daily_market_regrade/
           if-no-files-found: warn
           retention-days: 45
