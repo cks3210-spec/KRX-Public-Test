@@ -79,6 +79,9 @@ jobs:
             fi
           done
           if [ "$found" != 1 ]; then
+            # No-op collector artifacts may contain only an unverified status.json.
+            # Remove unsuccessful candidate files so validation reports SKIPPED, not FAILED.
+            rm -f /tmp/krx_official_input/status.json /tmp/krx_official_input/official_daily_market.csv
             echo 'No verified official artifact; no operational update.'
             echo 'OFFICIAL_RUN_ID=NONE' >> "$GITHUB_ENV"
           fi
