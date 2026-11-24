@@ -1,13 +1,155 @@
 name: KRX v5 R14 OpenDART Auto Continue
-on:
-  workflow_dispatch:  # Manual only. 21:30 KST OpenDART collection disabled during Stage 1.
+'on':
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'inventory = read-only no API; collect = existing manual collection'
+        type: choice
+        required: true
+        default: inventory
+        options:
+          - inventory
+          - collect
 permissions:
   contents: write
 concurrency:
   group: krx-v5-r14-dart-m
   cancel-in-progress: false
 jobs:
+  inventory:
+    name: Read-only official market financial inventory
+    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'inventory' }}
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compare official market universe and existing financial cache without API
+        run: |
+          set -euo pipefail
+          python - <<'PYTHON'
+          import csv, datetime as dt, hashlib, json, re
+          from collections import Counter
+          from pathlib import Path
+
+          root=Path('.')
+          out=Path('/tmp/r14-financial-inventory')
+          paths=[root/'data/summary.json',root/'data/latest.csv',root/'data/v5_financial_m/dart_financial_cache.json',root/'data/v5_financial_m/corp_map.json']
+
+          def digest(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+
+          def read(p):
+              d=json.loads(p.read_text(encoding='utf-8-sig'))
+              if not isinstance(d,dict): raise ValueError('INVALID_OBJECT '+str(p))
+              return d
+
+          def inventory(paths,out):
+              before={str(p):digest(p) for p in paths}
+              summary,cache,mapping=map(read,(paths[0],paths[2],paths[3]))
+              if not cache or not mapping: raise ValueError('EMPTY_FINANCIAL_CACHE_OR_MAPPING')
+              day=str(summary['latest_trading_date'])
+              date=dt.datetime.strptime(day,'%Y%m%d').date()
+              year=date.year-1
+              md=(date.month,date.day)
+              period='q3' if md>=(11,15) else 'half' if md>=(8,14) else 'q1' if md>=(5,15) else ''
+              with paths[1].open(encoding='utf-8-sig',newline='') as f:
+                  rows=list(csv.DictReader(f))
+              markets=Counter(); ids=set(); codes=set()
+              for row in rows:
+                  market,code=row['MARKET'],row['ISU_CD']
+                  if row['BAS_DD']!=day or market not in ('KOSPI','KOSDAQ') or not re.fullmatch('[0-9A-Z]{6}',code): raise ValueError('INVALID_MARKET_ROW')
+                  if (market,code) in ids or code in codes: raise ValueError('DUPLICATE_MARKET_IDENTITY')
+                  ids.add((market,code));codes.add(code);markets[market]+=1
+              if markets['KOSPI']<500 or markets['KOSDAQ']<1000 or len(rows)<2000: raise ValueError('MARKET_COVERAGE_INSUFFICIENT')
+              if markets['KOSPI']!=summary['kospi_rows_latest'] or markets['KOSDAQ']!=summary['kosdaq_rows_latest']: raise ValueError('MARKET_COUNT_MISMATCH')
+              fields=('profit','equity','revenue','assets','liabilities')
+              counts=Counter({k:0 for k in ('numeric','non_numeric','mapped','unmapped_numeric','annual_any','annual_owner_pair','annual_partial_owner','annual_missing','annual_full5','quarter_pair','ttm_profit_inputs','mapping_conflict','ready_review','cooldown','missing_quarter_periods')})
+              def num(v): return type(v) is int
+              def accounts(rec):
+                  if not isinstance(rec,dict) or rec.get('status')!='000' or rec.get('fs_div') not in ('CFS','OFS') or not isinstance(rec.get('accounts'),dict): return {}
+                  return {k:v for k,v in rec['accounts'].items() if num(v)}
+              def rec(code,y,p): return cache.get(f'{code}:{y}:{p}',{})
+              now=dt.datetime.now(dt.timezone.utc)
+              def cooling(record):
+                  if not isinstance(record,dict): return False
+                  try:
+                      until=dt.datetime.fromisoformat(str(record.get('retry_after_utc','')))
+                      return until.tzinfo is not None and until>now
+                  except (ValueError,TypeError): return False
+              output=[]
+              for row in rows:
+                  code=row['ISU_CD']; numeric=code.isdigit()
+                  corp=str(mapping.get(code,'')); mapped=bool(re.fullmatch(r'\d{8}',corp))
+                  counts['numeric' if numeric else 'non_numeric']+=1
+                  if numeric: counts['mapped' if mapped else 'unmapped_numeric']+=1
+                  annual=rec(code,year,'annual'); ac=accounts(annual)
+                  present=bool(ac); missing=[k for k in fields if k not in ac]
+                  owner='profit' in ac and 'equity' in ac
+                  full5=not missing
+                  qcur=rec(code,date.year,period) if period else {}
+                  qprev=rec(code,year,period) if period else {}
+                  cc,pc=accounts(qcur),accounts(qprev)
+                  quarter_missing=[]
+                  if period:
+                      if 'profit' not in cc: quarter_missing.append(f'{date.year}:{period}:profit')
+                      if 'profit' not in pc: quarter_missing.append(f'{year}:{period}:profit')
+                  comparable=bool(period and 'profit' in ac and 'profit' in cc and 'profit' in pc and annual.get('fs_div')==qcur.get('fs_div')==qprev.get('fs_div'))
+                  conflict=any(isinstance(r,dict) and r.get('corp_code') and str(r['corp_code'])!=corp for r in (annual,qcur,qprev)) if mapped else False
+                  cooldown=any(cooling(r) for r in (annual,qcur,qprev))
+                  if numeric:
+                      counts['annual_any' if present else 'annual_missing']+=1
+                      counts['annual_owner_pair']+=owner
+                      counts['annual_partial_owner']+=present and not owner
+                      counts['annual_full5']+=full5
+                      counts['quarter_pair']+=bool(cc and pc)
+                      counts['ttm_profit_inputs']+=comparable
+                      counts['mapping_conflict']+=conflict
+                      counts['missing_quarter_periods']+=len(quarter_missing)
+                  need=bool(missing or quarter_missing or (period and not comparable))
+                  if not numeric: action='IDENTIFIER_REVIEW_NON_NUMERIC'
+                  elif not mapped: action='CORP_MAPPING_REVIEW'
+                  elif conflict: action='CORP_MAPPING_CONFLICT'
+                  elif not need: action='REUSE_EXISTING'
+                  elif cooldown: action='COOLDOWN_REVIEW';counts['cooldown']+=1
+                  else: action='REVIEW_MISSING_ONLY';counts['ready_review']+=1
+                  output.append({'market_date':day,'market':row['MARKET'],'code':code,'corp_code':corp if mapped else '',
+                    'annual_year':year,'annual_basis':annual.get('fs_div','') if isinstance(annual,dict) else '',
+                    'annual_state':'OWNER_PAIR_AVAILABLE' if owner else 'PARTIAL_ACCOUNTS' if present else 'NO_VALID_ACCOUNTS',
+                    'missing_annual_fields':'|'.join(missing),'quarter_period':period,'missing_quarter_profit':'|'.join(quarter_missing),
+                    'ttm_input_basis_match':comparable,'action':action,'share_class_verified':False})
+              assert counts['annual_any']+counts['annual_missing']==counts['numeric']
+              assert counts['annual_owner_pair']+counts['annual_partial_owner']==counts['annual_any']
+              assert counts['mapped']+counts['unmapped_numeric']==counts['numeric']
+              assert len(output)==len(rows)
+              after={str(p):digest(p) for p in paths}
+              if before!=after: raise ValueError('INPUT_CHANGED_DURING_AUDIT')
+              result={'state':'READ_ONLY_FINANCIAL_INVENTORY_COMPLETE','market_date':day,'market_rows':len(rows),'market_counts':dict(markets),'annual_year':year,'quarter_period':period,'cache_records':len(cache),'counts':dict(counts),'actions':dict(Counter(r['action'] for r in output)),'source_sha256':before,'api_calls':0,'production_data_modified':False,'share_class_verified':False,'ttm_cumulative_verified':False,'financial_disclosure_asof_verified':False,'official_per_pbr_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'notes':['Inventory only; not a collection approval. Numeric codes are the current M/N parser scope, not a common-share filter.','Owner pair means fields present, not verified current filing values. Missing fields may be legitimately absent.','TTM input basis match does not verify cumulative accounting amounts. Quarter follows current N period convention.','No source cache changes.']}
+              out.mkdir(parents=True,exist_ok=True)
+              with (out/'financial_inventory.csv').open('w',encoding='utf-8-sig',newline='') as f:
+                  w=csv.DictWriter(f,fieldnames=list(output[0]));w.writeheader();w.writerows(output)
+              (out/'status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print('R14_FINANCIAL_INVENTORY',json.dumps(result,ensure_ascii=False))
+              return result
+
+          if __name__=='__main__': inventory(paths,out)
+          PYTHON
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r14-financial-inventory
+          path: /tmp/r14-financial-inventory/
+          if-no-files-found: error
+          retention-days: 30
   collect:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'collect' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
