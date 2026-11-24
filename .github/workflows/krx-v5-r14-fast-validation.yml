@@ -1,6 +1,11 @@
 name: KRX v5 R14 Fast Validation
 on:
   workflow_dispatch:
+    inputs:
+      publish_snapshot:
+        description: Publish verified cache-only financial snapshot
+        type: boolean
+        default: true
   push:
     branches: [main]
     paths:
@@ -70,3 +75,61 @@ jobs:
           print('KRX_V5_STEP_1_1_ACTUAL_READ_ONLY_PASS')
           PY
           git diff --exit-code -- data scripts
+
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_snapshot && github.ref == 'refs/heads/main' }}
+    needs: validate
+    permissions:
+      contents: write
+    concurrency:
+      group: krx-v5-r14-dart-m
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild and publish without API or cache changes
+        env:
+          R14_REBUILD_ONLY: '1'
+          DART_API_KEY: ''
+          OPENDART_API_KEY: ''
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - <<'PYCODE'
+          import json, pathlib, hashlib, subprocess, sys, csv
+          p=pathlib.Path('data/v5_financial_m')
+          protected=[x for x in p.glob('*.json') if x.name!='status.json']
+          def hashes(): return {str(x):hashlib.sha256(x.read_bytes()).hexdigest() for x in protected}
+          before=hashes()
+          old=json.loads((p/'status.json').read_text())
+          subprocess.run([sys.executable,'scripts/krx_v5_r14_financial_pipeline_n.py'],check=True)
+          s=json.loads((p/'status.json').read_text())
+          market=json.loads(pathlib.Path('data/summary.json').read_text())
+          assert s['market_date']==s['official_market_date']==market['latest_trading_date']
+          assert s['official_market_source_rows']==market['kospi_rows_latest']+market['kosdaq_rows_latest']
+          assert s['financial_rebuild_only'] is True and s['final_buy_signals']==0
+          assert s['investment_decisions_authorized'] is False
+          assert before==hashes() and s['cache_records']==old['cache_records']
+          assert s['annual_verified_rows']>=old['annual_verified_rows']
+          with (p/'annual_financial_index_m.csv').open(encoding='utf-8-sig') as f: rows=list(csv.DictReader(f))
+          assert len(rows)==s['base_rows']==len({r['code'] for r in rows})
+          print('LIVE_REBUILD_VERIFIED',s['market_date'],s['cache_records'],len(rows))
+          PYCODE
+            git add data/v5_financial_m/status.json data/v5_financial_m/annual_financial_index_m.csv
+            git diff --exit-code
+            if git diff --cached --quiet; then echo 'LIVE_SNAPSHOT_ALREADY_CURRENT'; exit 0; fi
+            git commit -m 'R14: publish cache-only synchronized financial snapshot'
+            if git push origin HEAD:main; then echo 'KRX_V5_STEP_1_1_LIVE_PUBLISHED'; exit 0; fi
+            sleep 2
+          done
+          exit 1
