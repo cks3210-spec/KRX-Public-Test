@@ -3,12 +3,13 @@ name: KRX v5 R14 OpenDART Auto Continue
   workflow_dispatch:
     inputs:
       mode:
-        description: 'inventory = read-only no API; collect = existing manual collection'
+        description: 'inventory = read-only; repair_annual = bounded annual gap repair; collect = legacy manual collection'
         type: choice
         required: true
         default: inventory
         options:
           - inventory
+          - repair_annual
           - collect
 permissions:
   contents: write
@@ -147,6 +148,221 @@ jobs:
           name: r14-financial-inventory
           path: /tmp/r14-financial-inventory/
           if-no-files-found: error
+          retention-days: 30
+  repair_annual:
+    name: Bounded annual financial missing-field repair
+    if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'repair_annual' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Repair only missing annual data with protected checkpoint
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_annual_repair.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, importlib.util, json, os, re, subprocess, sys, time
+          from collections import Counter
+          from pathlib import Path
+          
+          ROOT=Path.cwd()
+          F=Path('data/v5_financial_m')
+          CACHE=F/'dart_financial_cache.json'
+          MAP=F/'corp_map.json'
+          ATTEMPTS=F/'annual_repair_attempts.json'
+          STATUS=F/'status.json'
+          INDEX=F/'annual_financial_index_m.csv'
+          OUT=Path('/tmp/r14-annual-repair')
+          FIELDS={'profit','equity','revenue','assets','liabilities'}
+          MAX_CALLS=30
+          UTC=dt.timezone.utc
+          
+          def read(p):
+              obj=json.loads(p.read_text(encoding='utf-8-sig'))
+              if not isinstance(obj,dict): raise ValueError('INVALID_OBJECT '+str(p))
+              return obj
+          
+          def save(p,obj):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');tmp.replace(p)
+          
+          def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def now(): return dt.datetime.now(UTC)
+          def parse_date(value):
+              try:
+                  d=dt.datetime.fromisoformat(str(value));return d if d.tzinfo is not None else None
+              except (TypeError,ValueError): return None
+          
+          def accounts(r):
+              if not isinstance(r,dict) or r.get('status')!='000' or r.get('fs_div') not in ('CFS','OFS') or not isinstance(r.get('accounts'),dict): return {}
+              return {k:v for k,v in r['accounts'].items() if type(v) is int}
+          
+          def eligible(cache,mapping,codes,year,attempts,t):
+              items=[];counts=Counter()
+              for code in sorted(codes):
+                  if not re.fullmatch(r'\d{6}',code): counts['identifier_review']+=1;continue
+                  corp=str(mapping.get(code,''))
+                  if not re.fullmatch(r'\d{8}',corp): counts['mapping_review']+=1;continue
+                  key=f'{code}:{year}:annual';old=cache.get(key,{});a=accounts(old)
+                  if not isinstance(old,dict): counts['invalid_record_review']+=1;continue
+                  if old.get('corp_code') and str(old['corp_code'])!=corp: counts['identity_conflict']+=1;continue
+                  if old.get('status')=='000' and (not a or old.get('corp_code')!=corp or str(old.get('year'))!=str(year) or old.get('report')!='annual' or len(a)!=len(old.get('accounts',{}))): counts['invalid_record_review']+=1;continue
+                  if FIELDS<=a.keys(): counts['complete_reuse']+=1;continue
+                  last=attempts.get(key,{})
+                  if not isinstance(last,dict): raise ValueError('INVALID_ATTEMPT_RECORD '+key)
+                  due=[parse_date(old.get('retry_after_utc')),parse_date(last.get('retry_after_utc'))]
+                  fetched=parse_date(old.get('fetched_utc'))
+                  if a and fetched: due.append(fetched+dt.timedelta(days=7))
+                  if any(d is not None and d>t for d in due): counts['cooldown']+=1;continue
+                  if a: counts['partial_eligible']+=1
+                  else: counts['missing_eligible']+=1
+                  items.append((bool(a),key,corp,old))
+              # Missing records first; partial records after cooldown. Deterministic order.
+              return sorted(items,key=lambda x:(x[0],x[1])),dict(counts)
+          
+          def improvement(old,new,corp,year):
+              a,b=accounts(old),accounts(new)
+              if not b or new.get('corp_code')!=corp or str(new.get('year'))!=str(year) or new.get('report')!='annual': return 'NO_VALID_RESPONSE'
+              if not a:
+                  return 'ACCEPTED_NEW' if FIELDS.intersection(b) else 'NO_IMPROVEMENT'
+              if old.get('corp_code')!=corp or old.get('fs_div')!=new.get('fs_div'): return 'BASIS_OR_IDENTITY_CONFLICT'
+              if any(k in b and b[k]!=v for k,v in a.items()): return 'VALUE_CONFLICT'
+              if not a.keys()<=b.keys(): return 'LOSS_OF_EXISTING_FIELDS'
+              if not (FIELDS.intersection(b)-FIELDS.intersection(a)): return 'NO_IMPROVEMENT'
+              return 'ACCEPTED_SUPERSET'
+          
+          def fetch(m,corp,year,old,budget):
+              # A partial record may only be improved using its original accounting basis.
+              bases=[old['fs_div']] if accounts(old) else ['CFS','OFS']
+              for basis in bases:
+                  if budget['calls']>=MAX_CALLS: return None,'BUDGET_EXHAUSTED'
+                  budget['calls']+=1
+                  data=m.get_json('fnlttSinglAcntAll.json',{'crtfc_key':m.KEY,'corp_code':corp,'bsns_year':str(year),'reprt_code':'11011','fs_div':basis})
+                  if not isinstance(data,dict): return None,'INVALID_RESPONSE'
+                  status=str(data.get('status',''))
+                  if status in ('010','011','012','013','014','020','021','100','101','800','900','901'):
+                      # 013=no data, 014=file unavailable. CFS may have no data; try OFS only then.
+                      if status in ('013','014'): continue
+                      return None,'STOP_API_'+status
+                  if status!='000': return None,'API_STATUS_'+status
+                  records=data.get('list')
+                  if not isinstance(records,list) or not records: return None,'INVALID_RESPONSE_ROWS'
+                  # Check response identity whenever returned. Require explicit company/year/report
+                  # evidence on at least one row, not merely the requested URL parameters.
+                  if any(not isinstance(r,dict) for r in records): return None,'INVALID_RESPONSE_ROWS'
+                  for key,value in [('corp_code',corp),('bsns_year',str(year)),('reprt_code','11011')]:
+                      seen={str(r[key]) for r in records if r.get(key) not in (None,'')}
+                      if seen!={value}: return None,'RESPONSE_IDENTITY_UNVERIFIED_'+key
+                  if any(r.get('currency') not in (None,'','KRW') for r in records): return None,'CURRENCY_UNSUPPORTED'
+                  if any(r.get('fs_div') not in (None,'',basis) for r in records): return None,'RESPONSE_BASIS_CONFLICT'
+                  parsed=m.parse(data,'annual',basis)
+                  if not accounts(parsed): return None,'NO_SUPPORTED_ACCOUNTS'
+                  parsed.update(corp_code=corp,year=year,fetched_utc=now().isoformat(),repair_source='R14_ANNUAL_MISSING_FIELDS',point_in_time_verified=False)
+                  return parsed,improvement(old,parsed,corp,year)
+              return None,'NO_DATA'
+          
+          def git(*args): return subprocess.run(['git',*args],check=True,text=True,stdout=subprocess.PIPE).stdout.strip()
+          
+          def main():
+              OUT.mkdir(parents=True,exist_ok=True)
+              spec=importlib.util.spec_from_file_location('r14_n',ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py')
+              n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n)
+              m=n.m
+              if not m.KEY: raise ValueError('MISSING_DART_API_KEY')
+              script_paths=[Path('scripts/krx_v5_r14_financial_pipeline_n.py'),Path('scripts/krx_v5_r14_dart_incremental_m.py')]
+              scripts_before={str(p):digest(p) for p in script_paths}
+              day,market_rows=n.official_market_snapshot();year=int(day[:4])-1
+              with Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f: codes={r['ISU_CD'] for r in csv.DictReader(f)}
+              if len(codes)!=market_rows: raise ValueError('MARKET_IDENTITY_NOT_UNIQUE')
+              before=read(STATUS);cache=read(CACHE);mapping=read(MAP)
+              if before.get('market_date')!=day or before.get('official_market_date')!=day or before.get('cache_records')!=len(cache): raise ValueError('MARKET_FINANCIAL_SNAPSHOT_NOT_SYNCHRONIZED')
+              attempts=read(ATTEMPTS) if ATTEMPTS.exists() else {}
+              items,counts=eligible(cache,mapping,codes,year,attempts,now())
+              budget={'calls':0};pending={};audit={};stop='';run_id=os.getenv('GITHUB_RUN_ID','')
+              report={'state':'RUNNING','market_date':day,'annual_year':year,'market_rows':market_rows,'eligible_counts':counts,'max_api_calls':MAX_CALLS,'api_calls':0,'cache_records_before':len(cache),'accepted':0,'production_data_modified':False,'investment_decisions_authorized':False,'financial_disclosure_asof_verified':False,'final_buy_signals':0,'run_id':run_id}
+              def checkpoint():
+                  report.update(api_calls=budget['calls'],attempted=len(audit),accepted=sum(v['result'].startswith('ACCEPTED_') for v in audit.values()),results=dict(Counter(v['result'] for v in audit.values())),stop_reason=stop)
+                  save(OUT/'status.json',report);save(OUT/'attempts.json',audit);save(OUT/'pending.json',pending)
+              checkpoint()
+              for partial,key,corp,old in items:
+                  if budget['calls']>=MAX_CALLS: break
+                  start=budget['calls'];t=now()
+                  try: new,result=fetch(m,corp,year,old,budget)
+                  except Exception as exc:
+                      new=None;result='FETCH_EXCEPTION_'+type(exc).__name__
+                  if result=='BUDGET_EXHAUSTED':
+                      # One CFS request may have consumed the last slot. Audit it.
+                      if budget['calls']==start: break
+                  if new is not None and result.startswith('ACCEPTED_'):
+                      pending[key]={'expected_old':old,'candidate':new,'corp_code':corp}
+                  delay=1 if result.startswith(('STOP_API_','FETCH_EXCEPTION_')) else 30 if result in ('NO_IMPROVEMENT','NO_SUPPORTED_ACCOUNTS','NO_DATA','LOSS_OF_EXISTING_FIELDS','VALUE_CONFLICT','BASIS_OR_IDENTITY_CONFLICT') else 7
+                  audit[key]={'result':result,'checked_utc':t.isoformat(),'retry_after_utc':(t+dt.timedelta(days=delay)).isoformat(),'api_calls':budget['calls']-start,'market_date':day,'run_id':run_id}
+                  if result.startswith(('STOP_API_','FETCH_EXCEPTION_','RESPONSE_IDENTITY_UNVERIFIED_','RESPONSE_BASIS_CONFLICT','CURRENCY_UNSUPPORTED','INVALID_RESPONSE')): stop=result
+                  checkpoint()
+                  if stop: break
+                  time.sleep(.2)
+              # Reapply only nonconflicting candidates on a fresh main. No API calls during commit retries.
+              git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+              for retry in range(3):
+                  git('fetch','origin','main');git('reset','--hard','origin/main')
+                  if scripts_before!={str(p):digest(p) for p in script_paths}: raise ValueError('COLLECTOR_CODE_CHANGED_DURING_REPAIR')
+                  live_day,live_rows=n.official_market_snapshot()
+                  if int(live_day[:4])-1!=year: raise ValueError('ANNUAL_TARGET_CHANGED')
+                  with Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f: live_codes={r['ISU_CD'] for r in csv.DictReader(f)}
+                  live=read(CACHE);live_map=read(MAP);live_status=read(STATUS)
+                  if live_status.get('market_date')!=live_day or live_status.get('official_market_date')!=live_day or live_status.get('cache_records')!=len(live): raise ValueError('LIVE_MARKET_FINANCIAL_SNAPSHOT_NOT_SYNCHRONIZED')
+                  current=read(ATTEMPTS) if ATTEMPTS.exists() else {};old_live=dict(live);written=0;conflicts=0
+                  for key,item in pending.items():
+                      code=key.split(':')[0];corp=item['corp_code'];candidate=item['candidate'];old=live.get(key,{})
+                      if code not in live_codes or live_map.get(code)!=corp or old!=item['expected_old'] or not improvement(old,candidate,corp,year).startswith('ACCEPTED_'):
+                          conflicts+=1;continue
+                      live[key]=candidate;written+=1
+                  for key,item in audit.items():
+                      old=current.get(key,{})
+                      if str(item['checked_utc'])>str(old.get('checked_utc','')): current[key]=item
+                  assert set(old_live)<=set(live)
+                  for key,record in old_live.items():
+                      if record!=live[key]: assert improvement(record,live[key],live[key]['corp_code'],year).startswith('ACCEPTED_')
+                  if written:
+                      save(CACHE,live)
+                      protected={str(p):digest(p) for p in F.glob('*.json') if p not in (CACHE,STATUS,ATTEMPTS)}
+                      env=dict(os.environ,R14_REBUILD_ONLY='1',DART_API_KEY='',OPENDART_API_KEY='')
+                      subprocess.run([sys.executable,'scripts/krx_v5_r14_financial_pipeline_n.py'],env=env,check=True)
+                      s=read(STATUS)
+                      assert s['market_date']==live_day and s['cache_records']==len(live) and s['annual_verified_rows']>=live_status['annual_verified_rows'] and s['ttm_calculated']>=live_status['ttm_calculated']
+                      assert s['investment_decisions_authorized'] is False and s['final_buy_signals']==0
+                      assert read(CACHE)==live and protected=={str(p):digest(p) for p in F.glob('*.json') if p not in (CACHE,STATUS,ATTEMPTS)}
+                  if audit: save(ATTEMPTS,current)
+                  files=[str(p) for p in (CACHE,STATUS,INDEX,ATTEMPTS) if p.exists()]
+                  git('add','--',*files)
+                  changed=git('diff','--cached','--name-only').splitlines()
+                  if any(p not in files for p in changed): raise ValueError('UNEXPECTED_STAGED_FILE')
+                  if changed:
+                      git('commit','-m','R14: checkpoint bounded annual missing-field repair')
+                      if subprocess.run(['git','push','origin','HEAD:main']).returncode: continue
+                  report.update(state='ANNUAL_REPAIR_PERSISTED' if not stop else 'ANNUAL_REPAIR_STOPPED_CHECKPOINT_PERSISTED',published_records=written,concurrent_conflicts=conflicts,cache_records_after=len(live),production_data_modified=bool(changed),published_market_date=live_day)
+                  checkpoint();print('R14_ANNUAL_REPAIR',json.dumps(report,ensure_ascii=False))
+                  if stop: raise SystemExit('API_OR_RESPONSE_BLOCKED: '+stop)
+                  return
+              raise ValueError('PERSISTENCE_CONFLICT: inspect pending artifact; no force push')
+          
+          if __name__=='__main__': main()
+          PYTHON
+          python -m py_compile /tmp/r14_annual_repair.py
+          python /tmp/r14_annual_repair.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r14-annual-repair-checkpoint
+          path: /tmp/r14-annual-repair/
+          if-no-files-found: warn
           retention-days: 30
   collect:
     if: ${{ github.ref == 'refs/heads/main' && inputs.mode == 'collect' }}
