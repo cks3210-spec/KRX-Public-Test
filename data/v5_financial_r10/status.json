@@ -1,44 +1,44 @@
 {
   "version": "R10",
-  "generated_kst": "2026-11-23T22:08:29.317889+09:00",
+  "generated_kst": "2026-11-24T22:55:12.848052+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
   "r9_cache_modified": false,
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "market_date": "20261120",
+  "market_date": "20261123",
   "market_snapshot_stale": false,
-  "r9_status_market_date": "20261120",
+  "r9_status_market_date": "20261123",
   "input_date_mismatch": false,
   "annual_year": 2025,
-  "eligible_rows": 1221,
-  "annual_cache_entries": 773,
-  "annual_fields_present": 483,
-  "provisional_ab_count": 307,
+  "eligible_rows": 1207,
+  "annual_cache_entries": 821,
+  "annual_fields_present": 508,
+  "provisional_ab_count": 322,
   "market_breakdown": {
     "KOSPI": {
-      "eligible": 601,
-      "annual_fields_present": 249,
-      "provisional_ab": 161
+      "eligible": 593,
+      "annual_fields_present": 262,
+      "provisional_ab": 170
     },
     "KOSDAQ": {
-      "eligible": 620,
-      "annual_fields_present": 234,
-      "provisional_ab": 146
+      "eligible": 614,
+      "annual_fields_present": 246,
+      "provisional_ab": 152
     }
   },
   "issue_counts": {
-    "BALANCE_SHEET_INCONSISTENT": 272,
-    "OWNER_ATTRIBUTION_UNVERIFIED": 1221,
-    "OFFICIAL_PER_PBR_UNVERIFIED": 1221,
-    "SECTOR_CLASSIFICATION_UNVERIFIED": 1221,
-    "SHARE_CLASS_UNVERIFIED": 1221,
-    "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 45,
-    "REFERENCE_PE_UNAVAILABLE": 632,
-    "NO_ANNUAL_RECORD": 464,
-    "REFERENCE_PB_UNAVAILABLE": 467,
+    "BALANCE_SHEET_INCONSISTENT": 289,
+    "OWNER_ATTRIBUTION_UNVERIFIED": 1207,
+    "OFFICIAL_PER_PBR_UNVERIFIED": 1207,
+    "SECTOR_CLASSIFICATION_UNVERIFIED": 1207,
+    "SHARE_CLASS_UNVERIFIED": 1207,
+    "FINANCIAL_SECTOR_REQUIRES_SPECIAL_MODEL": 44,
+    "REFERENCE_PE_UNAVAILABLE": 590,
+    "NO_ANNUAL_RECORD": 408,
+    "REFERENCE_PB_UNAVAILABLE": 411,
     "NONPOSITIVE_EQUITY": 3,
-    "POSSIBLE_PREFERRED_SHARE": 23
+    "POSSIBLE_PREFERRED_SHARE": 22
   },
   "ttm_computable": 0,
   "official_source_used": false,
