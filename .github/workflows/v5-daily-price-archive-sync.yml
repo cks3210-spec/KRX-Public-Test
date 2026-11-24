@@ -6,8 +6,7 @@ name: KRX v5 Three in One
         description: Audit days 7 to 45
         required: false
         default: '14'
-  schedule:
-  - cron: 40 10 * * 1-5
+  # Legacy scheduled API/price sync disabled; canonical official collector is 08:30 KST.
 permissions:
   contents: write
   actions: write
