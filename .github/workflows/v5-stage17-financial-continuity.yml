@@ -1,9 +1,7 @@
 name: V5 Stage17 Financial Continuity
 on:
   workflow_dispatch:
-  schedule:
-    # UTC: 17:10, 01:10, 07:10 => KST: 02:10, 10:10, 16:10 every day.
-    - cron: '10 17,1,7 * * *'
+  # Manual only: preserve legacy Stage17 data; canonical R14 collection is planned.
 permissions:
   contents: write
 concurrency:
