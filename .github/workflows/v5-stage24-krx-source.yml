@@ -1,8 +1,7 @@
 name: KRX v5 Stage24 Independent Source Collector
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '45 9 * * 1-5' # 18:45 KST, independent of existing pipelines
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
