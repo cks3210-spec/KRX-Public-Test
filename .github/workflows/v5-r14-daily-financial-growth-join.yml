@@ -1,0 +1,333 @@
+name: KRX v5 R14 Daily Financial and Growth Join (Research Only)
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 R14 Daily Official Price Join (Research Only)']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-daily-financial-growth-join
+  cancel-in-progress: false
+jobs:
+  financial-growth-join:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Join cached financial and growth evidence to official daily research prices
+        shell: bash
+        run: |
+          cat > /tmp/krx_v5_r14_financial_growth_join.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Join frozen R14 research cohort to existing annual/growth financial evidence.
+          
+          No API calls, scraping, credentials, private KRX exports, valuation certification,
+          current-grade recertification, target prices, or trade signals are created.
+          """
+          import csv
+          import hashlib
+          import io
+          import json
+          from collections import Counter
+          from pathlib import Path
+          import re
+          
+          ROOT = Path('.')
+          MARKET_STATUS = ROOT / 'v5_reports/r14_daily_market_join/latest_status.json'
+          GROWTH_CSV = ROOT / 'data/v5_investment_r14_fundamental/provisional_ab_enriched.csv'
+          GROWTH_STATUS = ROOT / 'data/v5_investment_r14_fundamental/status.json'
+          ANNUAL_CSV = ROOT / 'data/v5_financial_m/annual_financial_index_m.csv'
+          ANNUAL_STATUS = ROOT / 'data/v5_financial_m/status.json'
+          EVIDENCE_CSV = ROOT / 'v5_reports/stage28/r14_calculated_ratio_evidence_tiers.csv'
+          PROVENANCE_JSON = ROOT / 'v5_reports/stage28/r14_stage55_p2_provenance_gate_20261120.json'
+          OUTROOT = ROOT / 'v5_reports/r14_daily_financial_join'
+          
+          FIELDS = [
+              'official_market_date','research_market_date','stock_code','stock_name','market',
+              'frozen_research_grade','frozen_research_score','current_official_close_krw',
+              'unadjusted_close_change_pct','current_marketcap_krw','current_volume',
+              'current_marketcap_100bn_eligible','financial_enrichment_state',
+              'growth_market_date','growth_provenance','financial_report_year',
+              'annual_index_snapshot_date','annual_financial_source','annual_fs_div',
+              'annual_owner_profit_krw','ttm_owner_profit_krw','ttm_calculation_status',
+              'annual_roe_pct','revenue_yoy_pct','operating_profit_yoy_pct',
+              'owner_profit_yoy_pct','growth_coverage','derived_research_per_asof_cohort',
+              'derived_research_pbr_asof_cohort','derived_ratio_evidence_tier',
+              'ratio_provider_verified','financial_point_in_time_verified',
+              'current_grade_revalidated','actionable_fair_price_krw','final_buy_signal',
+              'investing_authorized'
+          ]
+          
+          
+          def require(cond, why):
+              if not cond:
+                  raise ValueError('R14_FINANCIAL_JOIN_' + why)
+          
+          
+          def jsonread(p):
+              return json.loads(p.read_text(encoding='utf-8-sig'))
+          
+          
+          def csvread(p):
+              with p.open(encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  require(reader.fieldnames is not None and len(reader.fieldnames) == len(set(reader.fieldnames)),
+                          'BAD_CSV_HEADER_' + p.name)
+                  return list(reader)
+          
+          
+          def index_unique(rows, key, label):
+              out = {}
+              for row in rows:
+                  keyval = key(row)
+                  require(keyval not in out, 'DUPLICATE_' + label + '_' + str(keyval))
+                  out[keyval] = row
+              return out
+          
+          
+          def digest(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+          
+          
+          def datelike(s):
+              return isinstance(s, str) and re.fullmatch(r'20\d{6}', s) is not None
+          
+          
+          def csvbytes(rows):
+              file = io.StringIO(newline='')
+              writer = csv.DictWriter(file, fieldnames=FIELDS, extrasaction='raise', lineterminator='\n')
+              writer.writeheader()
+              writer.writerows(rows)
+              return file.getvalue().encode('utf-8-sig')
+          
+          
+          def immutable_write(p, content):
+              if p.exists():
+                  require(p.read_bytes() == content, 'IMMUTABLE_SOURCE_CHANGED_' + p.name)
+                  return
+              p.write_bytes(content)
+          
+          
+          def main():
+              market_status = jsonread(MARKET_STATUS)
+              official_day = market_status.get('official_market_date', '')
+              cohort_day = market_status.get('research_market_date', '')
+              require(market_status.get('state') == 'RESEARCH_ONLY_FULL_JOIN_VERIFIED', 'MARKET_JOIN_NOT_VERIFIED')
+              require(datelike(official_day) and datelike(cohort_day) and cohort_day <= official_day,
+                      'MARKET_COHORT_DATE_MISMATCH')
+              require(market_status.get('investment_decisions_authorized') is False and
+                      market_status.get('official_per_pbr_verified') is False and
+                      market_status.get('current_grade_revalidated') is False, 'UNEXPECTED_MARKET_AUTHORIZATION')
+          
+              market_csv = ROOT / ('v5_reports/r14_daily_market_join/' + official_day +
+                                   '/r14_ab_official_price_join.csv')
+              market_rows = csvread(market_csv)
+              require(len(market_rows) == market_status.get('matched_candidates'), 'MARKET_JOIN_COUNTS_CHANGED')
+              require(len(market_rows) == market_status.get('research_candidates'), 'MARKET_JOIN_UNEXPECTED_MISSING')
+              require(len(market_rows) >= 1, 'EMPTY_MARKET_JOIN')
+          
+              growth_status = jsonread(GROWTH_STATUS)
+              annual_status = jsonread(ANNUAL_STATUS)
+              provenance = jsonread(PROVENANCE_JSON)
+              growth_date = growth_status.get('market_date', '')
+              annual_date = annual_status.get('market_date', '')
+              require(datelike(growth_date) and growth_date <= official_day, 'FUTURE_GROWTH_SNAPSHOT')
+              require(datelike(annual_date) and annual_date <= official_day, 'FUTURE_FINANCIAL_SNAPSHOT')
+              require(growth_status.get('final_buy_signals') == 0 and
+                      growth_status.get('official_per_pbr_verified') == 0, 'GROWTH_SOURCE_AUTHORIZATION_UNEXPECTED')
+              require(annual_status.get('investment_decisions_authorized') is False and
+                      annual_status.get('point_in_time_financials_authorized') is False,
+                      'FINANCIAL_SOURCE_AUTHORIZATION_UNEXPECTED')
+              require(provenance.get('research_market_date') == cohort_day and
+                      provenance.get('candidate_count') == len(market_rows) and
+                      provenance.get('authorized_trade_decisions') is False and
+                      provenance.get('p2_official_per_verified_count') == 0 and
+                      provenance.get('p2_official_pbr_verified_count') == 0,
+                      'PROVENANCE_GATE_MISMATCH')
+          
+              growth = index_unique(csvread(GROWTH_CSV),
+                                    lambda r: (r['ISU_CD'], r['MARKET']), 'GROWTH_SECURITY')
+              annual = index_unique(csvread(ANNUAL_CSV), lambda r: r['code'], 'ANNUAL_SECURITY')
+              evidence = index_unique(csvread(EVIDENCE_CSV), lambda r: r['code'], 'RATIO_EVIDENCE')
+              p2 = index_unique(provenance['candidate_states'], lambda r: r['code'], 'PROVENANCE_SECURITY')
+              market_codes = set()
+              result, eligible = [], []
+              metrics = Counter()
+              absent_growth = []
+              for mr in market_rows:
+                  code, market = mr['stock_code'], mr['market']
+                  require(re.fullmatch(r'[A-Z0-9]{6}', code) is not None and
+                          market in ('KOSPI', 'KOSDAQ'), 'BAD_MARKET_SECURITY_KEY')
+                  require(code not in market_codes, 'DUPLICATE_DAILY_MARKET_CODE')
+                  market_codes.add(code)
+                  require(mr['official_market_date'] == official_day and
+                          mr['research_market_date'] == cohort_day and
+                          mr['join_status'] == 'MATCHED_OFFICIAL_PRICE' and
+                          mr['research_grade_asof'] in ('A', 'B') and
+                          mr['official_per_pbr_verified'] == 'NO' and
+                          mr['investment_decisions_authorized'] == 'NO' and
+                          mr['buy_signal'] == 'NONE', 'INVALID_MARKET_JOIN_RECORD')
+                  require(mr['marketcap_100bn_eligible'] in ('YES', 'NO'), 'BAD_MARKETCAP_GATE')
+                  src_growth = growth.get((code, market))
+                  src_annual = annual.get(code)
+                  src_ev = evidence.get(code)
+                  src_p2 = p2.get(code)
+                  require(src_annual is not None, 'MISSING_ANNUAL_FINANCIAL_' + code)
+                  require(src_ev is not None and src_p2 is not None, 'MISSING_RATIO_PROVENANCE_' + code)
+                  require(src_ev['research_market_date'] == cohort_day and
+                          src_ev['grade_research_only'] == mr['research_grade_asof'] and
+                          src_ev['calculated_ratio_is_research_only'] == 'True' and
+                          src_ev['investment_decisions_authorized'] == 'False' and
+                          src_p2['grade_research_only'] == mr['research_grade_asof'] and
+                          src_p2['buy_signal'] is False and
+                          src_p2['p2'] == 'NO_INDEPENDENTLY_AUTHENTICATED_DATED_RATIO',
+                          'UNEXPECTED_RATIO_EVIDENCE_' + code)
+                  if src_growth:
+                      require(src_growth['BAS_DD'] == growth_date and
+                              src_growth['BAS_DD'] <= official_day and
+                              src_growth['eligible'] == '1', 'GROWTH_DATE_OR_ELIGIBILITY_' + code)
+                      metrics['growth_matched'] += 1
+                  else:
+                      absent_growth.append(code)
+                  report_year = src_annual['year']
+                  require(re.fullmatch(r'20\d{2}', report_year) is not None and
+                          int(report_year) <= int(cohort_day[:4]), 'ANNUAL_YEAR_INVALID')
+                  metrics['annual_financial_matched'] += 1
+                  def metric(k):
+                      v = src_growth[k].strip() if src_growth else ''
+                      if v:
+                          metrics[k + '_available'] += 1
+                      return v
+                  row = {
+                      'official_market_date': official_day,
+                      'research_market_date': cohort_day,
+                      'stock_code': code, 'stock_name': mr['stock_name'], 'market': market,
+                      'frozen_research_grade': mr['research_grade_asof'],
+                      'frozen_research_score': mr['research_score_asof'],
+                      'current_official_close_krw': mr['official_close_krw'],
+                      'unadjusted_close_change_pct': mr['unadjusted_close_change_pct'],
+                      'current_marketcap_krw': mr['official_marketcap_krw'],
+                      'current_volume': mr['official_volume'],
+                      'current_marketcap_100bn_eligible': mr['marketcap_100bn_eligible'],
+                      'financial_enrichment_state': 'GROWTH_ENRICHMENT_AVAILABLE' if src_growth
+                                                    else 'GROWTH_ENRICHMENT_NOT_FOUND',
+                      'growth_market_date': src_growth['BAS_DD'] if src_growth else '',
+                      'growth_provenance': src_growth['growth_source'] if src_growth else '',
+                      'financial_report_year': report_year,
+                      'annual_index_snapshot_date': annual_date,
+                      'annual_financial_source': src_annual['source'],
+                      'annual_fs_div': src_annual['fs_div'],
+                      'annual_owner_profit_krw': src_annual['annual_profit'],
+                      'ttm_owner_profit_krw': src_annual['ttm_profit'],
+                      'ttm_calculation_status': src_annual['ttm_status'],
+                      'annual_roe_pct': src_annual['annual_roe_pct'],
+                      'revenue_yoy_pct': metric('revenue_yoy_pct'),
+                      'operating_profit_yoy_pct': metric('operating_profit_yoy_pct'),
+                      'owner_profit_yoy_pct': metric('owner_profit_yoy_pct'),
+                      'growth_coverage': src_growth['growth_coverage'] if src_growth else '',
+                      'derived_research_per_asof_cohort': src_ev['per_calculated_research'],
+                      'derived_research_pbr_asof_cohort': src_ev['pbr_calculated_research'],
+                      'derived_ratio_evidence_tier': src_ev['evidence_tier'],
+                      'ratio_provider_verified': 'NO',
+                      'financial_point_in_time_verified': 'NO',
+                      'current_grade_revalidated': 'NO',
+                      'actionable_fair_price_krw': '',
+                      'final_buy_signal': 'NONE',
+                      'investing_authorized': 'NO'
+                  }
+                  for k in ('ttm_owner_profit_krw', 'annual_roe_pct', 'derived_research_per_asof_cohort',
+                            'derived_research_pbr_asof_cohort'):
+                      if row[k].strip():
+                          metrics[k + '_available'] += 1
+                  result.append(row)
+                  if mr['marketcap_100bn_eligible'] == 'YES':
+                      eligible.append(row)
+              require(len(result) == len(market_rows) == len(evidence) == len(p2), 'FINAL_UNIVERSE_MISMATCH')
+              require(len(eligible) == market_status.get('eligible_at_current_marketcap_100bn'),
+                      'ELIGIBLE_MARKETCAP_MISMATCH')
+              result.sort(key=lambda r: (r['frozen_research_grade'], r['stock_code']))
+              eligible.sort(key=lambda r: (r['frozen_research_grade'], r['stock_code']))
+          
+              status = {
+                  'version': 'KRX_V5_R14_DAILY_FINANCIAL_GROWTH_JOIN_V1',
+                  'state': 'RESEARCH_FINANCIAL_GROWTH_JOIN_VERIFIED',
+                  'official_market_date': official_day,
+                  'frozen_research_grade_date': cohort_day,
+                  'growth_snapshot_date': growth_date,
+                  'annual_financial_index_snapshot_date': annual_date,
+                  'annual_financial_years': sorted({r['financial_report_year'] for r in result}),
+                  'candidate_rows': len(result),
+                  'current_marketcap_eligible_rows': len(eligible),
+                  'growth_enrichment_rows': metrics['growth_matched'],
+                  'missing_growth_enrichment_codes': sorted(absent_growth),
+                  'annual_index_rows_matched': metrics['annual_financial_matched'],
+                  'coverage': dict(sorted(metrics.items())),
+                  'official_per_pbr_verified': False,
+                  'financial_point_in_time_verified': False,
+                  'current_research_grade_revalidated': False,
+                  'final_buy_signals': 0,
+                  'investment_decisions_authorized': False,
+                  'source_sha256': {
+                      'market_join_csv': digest(market_csv),
+                      'market_join_status': digest(MARKET_STATUS),
+                      'growth_csv': digest(GROWTH_CSV),
+                      'growth_status': digest(GROWTH_STATUS),
+                      'annual_financial_index': digest(ANNUAL_CSV),
+                      'annual_financial_status': digest(ANNUAL_STATUS),
+                      'calculated_research_ratios': digest(EVIDENCE_CSV),
+                      'stage55_provenance_gate': digest(PROVENANCE_JSON)
+                  },
+                  'warnings': [
+                      'Financial and growth values are preserved from earlier snapshots and are not fresh 1-day fundamentals.',
+                      'Annual index source does not prove point-in-time filing or corrected-filing applicability.',
+                      'PER/PBR values are derived research ratios as of the frozen cohort, not official daily provider ratios.',
+                      'Latest market closes are not corporate-action adjusted for the displayed price change.',
+                      'Frozen A/B are research cohorts, not current investment recommendations; fair price/buy signals withheld.'
+                  ]
+              }
+              text = (json.dumps(status, indent=2, ensure_ascii=False, sort_keys=True) + '\n').encode('utf-8')
+              out = OUTROOT / official_day
+              out.mkdir(parents=True, exist_ok=True)
+              immutable_write(out / 'all_ab_research_financial_join.csv', csvbytes(result))
+              immutable_write(out / 'marketcap_eligible_ab_financial_join.csv', csvbytes(eligible))
+              immutable_write(out / 'status.json', text)
+              OUTROOT.mkdir(parents=True, exist_ok=True)
+              (OUTROOT / 'latest_status.json').write_bytes(text)
+              print(json.dumps({k: status[k] for k in ('state', 'official_market_date', 'candidate_rows',
+                  'current_marketcap_eligible_rows', 'growth_enrichment_rows',
+                  'missing_growth_enrichment_codes', 'annual_index_rows_matched')}, ensure_ascii=False))
+          
+          
+          if __name__ == '__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/krx_v5_r14_financial_growth_join.py
+          python /tmp/krx_v5_r14_financial_growth_join.py
+      - name: Commit immutable daily financial and growth evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5_reports/r14_daily_financial_join/
+          if git diff --cached --quiet; then
+            echo 'Identical daily research evidence already saved, no commit.'
+            exit 0
+          fi
+          git commit -m 'KRX v5: archive daily R14 research financial growth evidence'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Preserve independently verified financial growth research artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-financial-growth-join
+          path: v5_reports/r14_daily_financial_join/
+          if-no-files-found: warn
+          retention-days: 45
