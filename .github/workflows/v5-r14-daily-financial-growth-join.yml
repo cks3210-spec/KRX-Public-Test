@@ -309,18 +309,262 @@ jobs:
           PYCODE
           python -m py_compile /tmp/krx_v5_r14_financial_growth_join.py
           python /tmp/krx_v5_r14_financial_growth_join.py
-      - name: Commit immutable daily financial and growth evidence only
+      - name: Audit entire official market against cached research evidence (no API, no regrade)
+        shell: bash
+        run: |
+          cat > /tmp/krx_v5_full_market_readiness.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """KRX v5: daily whole-market research coverage, never a trading screen.
+          
+          Use existing official close, frozen R14 evidence and cached financial data only.
+          No network, new official ratio requests, recalculated grades or buy signals.
+          """
+          from __future__ import annotations
+          import csv
+          import hashlib
+          import io
+          import json
+          import re
+          from collections import Counter
+          from pathlib import Path
+          
+          MARKET = Path('data/latest.csv')
+          SUMMARY = Path('data/summary.json')
+          ANNUAL = Path('data/v5_financial_m/annual_financial_index_m.csv')
+          ANNUAL_STATUS = Path('data/v5_financial_m/status.json')
+          GROWTH = Path('data/v5_investment_r14_fundamental/provisional_ab_enriched.csv')
+          GROWTH_STATUS = Path('data/v5_investment_r14_fundamental/status.json')
+          FIN_JOIN = Path('v5_reports/r14_daily_financial_join/latest_status.json')
+          PRICE_JOIN = Path('v5_reports/r14_daily_market_join/latest_status.json')
+          EXCLUSIONS = Path('v5_reports/stage28/r14_candidate_exclusion_gate.json')
+          ROOT = Path('v5_reports/r14_full_market_readiness')
+          COLS = [
+           'official_market_date', 'stock_code', 'market', 'stock_name', 'official_close_krw',
+           'official_volume', 'official_marketcap_krw', 'marketcap_100bn_eligible',
+           'six_digit_stock_code', 'annual_cache_present', 'annual_report_year',
+           'annual_financial_snapshot_date', 'annual_fs_div', 'annual_roe_pct_cached',
+           'annual_ttm_status', 'growth_cache_present', 'growth_snapshot_date',
+           'revenue_yoy_pct_cached', 'operating_profit_yoy_pct_cached',
+           'owner_profit_yoy_pct_cached', 'frozen_ab_research_grade',
+           'frozen_ab_research_date', 'historic_correction_evidence_excluded',
+           'research_coverage_state', 'official_per_pbr_verified',
+           'financial_point_in_time_verified', 'current_grade_revalidated',
+           'final_buy_signal', 'investment_decisions_authorized'
+          ]
+          
+          def guard(ok, name):
+              if not ok:
+                  raise ValueError('FULL_MARKET_READINESS_' + name)
+          
+          def js(path):
+              return json.loads(path.read_text(encoding='utf-8-sig'))
+          
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          
+          def table(path, cols):
+              with path.open(encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  guard(set(cols).issubset(reader.fieldnames or []), 'COLUMNS_' + path.name)
+                  return list(reader)
+          
+          def index(rows, keys, name):
+              result = {}
+              for row in rows:
+                  key = tuple(row[k].strip() for k in keys)
+                  guard(key not in result, 'DUPLICATE_' + name)
+                  result[key] = row
+              return result
+          
+          def immutable(path, data):
+              if path.exists():
+                  guard(path.read_bytes() == data, 'IMMUTABLE_CONFLICT_' + path.name)
+              else:
+                  path.write_bytes(data)
+          
+          def csv_bytes(rows):
+              b = io.StringIO(newline='')
+              w = csv.DictWriter(b, fieldnames=COLS, extrasaction='raise')
+              w.writeheader()
+              w.writerows(rows)
+              return b.getvalue().encode('utf-8-sig')
+          
+          def main():
+              required = [MARKET, SUMMARY, ANNUAL, ANNUAL_STATUS, GROWTH, GROWTH_STATUS, FIN_JOIN, PRICE_JOIN, EXCLUSIONS]
+              for p in required:
+                  guard(p.is_file(), 'INPUT_MISSING_' + p.name)
+              summary = js(SUMMARY)
+              join = js(FIN_JOIN)
+              price = js(PRICE_JOIN)
+              ann_status = js(ANNUAL_STATUS)
+              growth_status = js(GROWTH_STATUS)
+              exclusion = js(EXCLUSIONS)
+              day = str(summary['latest_trading_date'])
+              guard(re.fullmatch(r'20\d{6}', day) is not None, 'MARKET_DAY')
+              guard(join.get('state') == 'RESEARCH_FINANCIAL_GROWTH_JOIN_VERIFIED', 'JOIN_NOT_VERIFIED')
+              guard(join.get('official_market_date') == day, 'STALE_FINANCIAL_JOIN')
+              guard(price.get('state') == 'RESEARCH_ONLY_FULL_JOIN_VERIFIED' and price.get('official_market_date') == day,
+                    'PRICE_JOIN_STALE_OR_UNVERIFIED')
+              guard(sha(MARKET) == price.get('source_sha256',{}).get('latest_market'), 'OFFICIAL_PRICE_HASH_MISMATCH')
+              guard(join.get('investment_decisions_authorized') is False and join.get('final_buy_signals') == 0,
+                    'UPSTREAM_TRADING_AUTHORIZATION')
+              guard(join.get('official_per_pbr_verified') is False and join.get('financial_point_in_time_verified') is False,
+                    'INVALID_SOURCE_VALUATION_ASSERTION')
+              guard(ann_status.get('investment_decisions_authorized') is False and not ann_status.get('financial_disclosure_asof_verified'),
+                    'ANNUAL_PROVENANCE_GATE')
+              guard(growth_status.get('final_buy_signals') == 0 and growth_status.get('official_per_pbr_verified') == 0,
+                    'GROWTH_PROVENANCE_GATE')
+              guard(exclusion.get('investment_decisions_authorized') is False, 'EXCLUSION_PROVENANCE_GATE')
+              guard(exclusion.get('research_market_date') == join.get('frozen_research_grade_date'),
+                    'COHORT_EXCLUSION_DATE_MISMATCH')
+              hist_date = join.get('frozen_research_grade_date')
+              join_csv = Path(f'v5_reports/r14_daily_financial_join/{day}/all_ab_research_financial_join.csv')
+              guard(join_csv.is_file(), 'JOIN_CSV_MISSING')
+              market = table(MARKET, ['BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP','MARKET'])
+              annual = table(ANNUAL, ['code','year','fs_div','annual_roe_pct','ttm_status'])
+              growth = table(GROWTH, ['BAS_DD','MARKET','ISU_CD','revenue_yoy_pct','operating_profit_yoy_pct','owner_profit_yoy_pct'])
+              research = table(join_csv, ['stock_code','market','official_market_date','frozen_research_grade','current_marketcap_100bn_eligible'])
+              guard(len(market) >= 2000 and len(research) == join['candidate_rows'], 'SOURCE_COUNTS')
+              guard({x['BAS_DD'] for x in market} == {day}, 'MARKET_DATE_MISMATCH')
+              guard({x['official_market_date'] for x in research} == {day}, 'JOIN_DATE_MISMATCH')
+              annual_idx = index(annual, ['code'], 'ANNUAL')
+              growth_idx = index(growth, ['MARKET','ISU_CD'], 'GROWTH')
+              research_idx = index(research, ['market','stock_code'], 'RESEARCH')
+              market_idx = index(market, ['MARKET','ISU_CD'], 'MARKET')
+              excluded_codes = set(exclusion['excluded_codes'])
+              guard(excluded_codes.isdisjoint({x['stock_code'] for x in research}), 'EXCLUSION_LEAK')
+              guard({x['stock_code'] for x in research}.issubset({x['ISU_CD'] for x in market}), 'RESEARCH_NOT_IN_MARKET')
+              rows=[]
+              counters = Counter()
+              grades=Counter()
+              for x in market:
+                  code, mk = x['ISU_CD'], x['MARKET']
+                  guard(re.fullmatch(r'[0-9A-Z]{6}', code) is not None, 'BAD_SECURITY_CODE')
+                  guard(mk in ('KOSPI','KOSDAQ'), 'INVALID_MARKET')
+                  guard(x['TDD_CLSPRC'].replace(',','').isdigit() and int(x['TDD_CLSPRC'].replace(',',''))>0, 'BAD_CLOSE')
+                  guard(x['MKTCAP'].replace(',','').isdigit() and int(x['MKTCAP'].replace(',',''))>0, 'BAD_MARKETCAP')
+                  six = re.fullmatch(r'\d{6}', code) is not None
+                  cap = int(x['MKTCAP'].replace(',','')) >= 100_000_000_000
+                  a = annual_idx.get((code,))
+                  g = growth_idx.get((mk,code))
+                  c = research_idx.get((mk,code))
+                  if code in excluded_codes:
+                      state = 'EXCLUDED_MISSING_CORRECTION_EVIDENCE'
+                  elif not six:
+                      state = 'NOT_REEVALUATED_NON_NUMERIC_CODE'
+                  elif c and not cap:
+                      state = 'FROZEN_AB_BELOW_CURRENT_MARKETCAP'
+                  elif c and not a:
+                      state = 'FROZEN_AB_ANNUAL_CACHE_MISSING'
+                  elif c and not g:
+                      state = 'FROZEN_AB_GROWTH_CACHE_MISSING'
+                  elif c:
+                      state = 'FROZEN_AB_RESEARCH_WITH_CACHED_EVIDENCE'
+                  elif not cap:
+                      state = 'NOT_IN_FROZEN_AB_AND_BELOW_CAP'
+                  else:
+                      state = 'NOT_IN_FROZEN_AB_RESEARCH_COHORT'
+                  if c:
+                      guard(c['current_marketcap_100bn_eligible'] == ('YES' if cap else 'NO'), 'COHORT_MARKETCAP_CONFLICT')
+                      guard(c['frozen_research_grade'] in ('A','B'), 'INVALID_RESEARCH_GRADE')
+                      grades[c['frozen_research_grade']]+=1
+                  if a and six:
+                      counters['annual_cache_present']+=1
+                  if g:
+                      counters['growth_cache_present']+=1
+                  if cap:
+                      counters['marketcap_eligible']+=1
+                  if c and cap:
+                      counters['frozen_ab_current_cap_eligible']+=1
+                  if c and cap and a and g:
+                      counters['frozen_ab_cached_growth_present']+=1
+                  if not six:
+                      counters['nonnumeric_codes']+=1
+                  counters[state]+=1
+                  rows.append({
+                      'official_market_date':day, 'stock_code':code, 'market':mk, 'stock_name':x['ISU_NM'],
+                      'official_close_krw':x['TDD_CLSPRC'], 'official_volume':x['ACC_TRDVOL'],
+                      'official_marketcap_krw':x['MKTCAP'], 'marketcap_100bn_eligible':'YES' if cap else 'NO',
+                      'six_digit_stock_code':'YES' if six else 'NO',
+                      'annual_cache_present':'YES' if a else 'NO', 'annual_report_year':a['year'] if a else '',
+                      'annual_financial_snapshot_date':ann_status.get('market_date','') if a else '',
+                      'annual_fs_div':a['fs_div'] if a else '', 'annual_roe_pct_cached':a['annual_roe_pct'] if a else '',
+                      'annual_ttm_status':a['ttm_status'] if a else '',
+                      'growth_cache_present':'YES' if g else 'NO',
+                      'growth_snapshot_date':g['BAS_DD'] if g else '',
+                      'revenue_yoy_pct_cached':g['revenue_yoy_pct'] if g else '',
+                      'operating_profit_yoy_pct_cached':g['operating_profit_yoy_pct'] if g else '',
+                      'owner_profit_yoy_pct_cached':g['owner_profit_yoy_pct'] if g else '',
+                      'frozen_ab_research_grade':c['frozen_research_grade'] if c else '',
+                      'frozen_ab_research_date':hist_date if c else '',
+                      'historic_correction_evidence_excluded':'YES' if code in excluded_codes else 'NO',
+                      'research_coverage_state':state,
+                      'official_per_pbr_verified':'NO', 'financial_point_in_time_verified':'NO',
+                      'current_grade_revalidated':'NO', 'final_buy_signal':'NONE',
+                      'investment_decisions_authorized':'NO'
+                  })
+              guard(sum(grades.values()) == join['candidate_rows'], 'GRADE_COHORT_COUNT')
+              guard(counters['frozen_ab_current_cap_eligible'] == join['current_marketcap_eligible_rows'],
+                    'FROZEN_ELIGIBLE_COUNT')
+              guard(len(rows) == len(market_idx), 'UNIQUE_MARKET_ROWS')
+              rows.sort(key=lambda x:(x['market'],x['stock_code']))
+              status = {
+                  'version':'KRX_V5_FULL_MARKET_DAILY_RESEARCH_READINESS_V1',
+                  'state':'WHOLE_MARKET_SOURCE_COVERAGE_RECORDED',
+                  'official_market_date':day,
+                  'frozen_research_grade_date':hist_date,
+                  'source_market_rows':len(rows),
+                  'marketcap_100bn_rows':counters['marketcap_eligible'],
+                  'numeric_stock_codes':len(rows)-counters['nonnumeric_codes'],
+                  'annual_cache_rows_matched':counters['annual_cache_present'],
+                  'growth_cache_rows_matched':counters['growth_cache_present'],
+                  'frozen_ab_candidate_rows':join['candidate_rows'],
+                  'frozen_ab_grade_counts':dict(grades),
+                  'frozen_ab_current_cap_eligible':counters['frozen_ab_current_cap_eligible'],
+                  'frozen_ab_current_cap_with_growth_cache':counters['frozen_ab_cached_growth_present'],
+                  'source_states':dict(sorted((k,v) for k,v in counters.items() if k.startswith(('FROZEN_AB_','NOT_','EXCLUDED_')))),
+                  'official_per_pbr_verified':False,
+                  'financial_point_in_time_verified':False,
+                  'current_grade_revalidated':False,
+                  'investment_decisions_authorized':False,
+                  'final_buy_signals':0,
+                  'source_sha256':{str(p):sha(p) for p in required+[join_csv]},
+                  'notes':[
+                      'Whole-market coverage is not a full-market current A/B regrade.',
+                      'Non-numeric six-character codes are unreviewed, not assumed to be non-common shares.',
+                      'Annual and growth records are earlier cached snapshots, not current-date filings.',
+                      'The frozen R14 grades are research only; missing corrected filing evidence remains excluded.',
+                      'Official KRX PER/PBR and verified trade entry prices are not released.'
+                  ]
+              }
+              folder=ROOT/day
+              folder.mkdir(parents=True,exist_ok=True)
+              immutable(folder/'whole_market_coverage.csv',csv_bytes(rows))
+              official_candidates=[x for x in rows if x['frozen_ab_research_grade'] and x['marketcap_100bn_eligible']=='YES']
+              immutable(folder/'frozen_ab_current_cap.csv',csv_bytes(official_candidates))
+              body=(json.dumps(status,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode('utf-8')
+              immutable(folder/'status.json',body)
+              ROOT.mkdir(parents=True,exist_ok=True)
+              (ROOT/'latest_status.json').write_bytes(body)
+              print(json.dumps({k:status[k] for k in ('state','official_market_date','source_market_rows','marketcap_100bn_rows','annual_cache_rows_matched','growth_cache_rows_matched','frozen_ab_current_cap_eligible')},ensure_ascii=False))
+          
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python -m py_compile /tmp/krx_v5_full_market_readiness.py
+          python /tmp/krx_v5_full_market_readiness.py
+      - name: Commit daily financial/growth and whole-market research evidence
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v5_reports/r14_daily_financial_join/
+          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/
           if git diff --cached --quiet; then
             echo 'Identical daily research evidence already saved, no commit.'
             exit 0
           fi
-          git commit -m 'KRX v5: archive daily R14 research financial growth evidence'
+          git commit -m 'KRX v5: archive daily R14 financial and full-market research coverage'
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Preserve independently verified financial growth research artifact
@@ -328,6 +572,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: krx-v5-r14-financial-growth-join
-          path: v5_reports/r14_daily_financial_join/
+          path: |
+            v5_reports/r14_daily_financial_join/
+            v5_reports/r14_full_market_readiness/
           if-no-files-found: warn
           retention-days: 45
