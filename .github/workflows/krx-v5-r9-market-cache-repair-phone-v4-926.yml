@@ -1,8 +1,7 @@
 name: KRX v5 R9 Auto Financial Accumulation
 'on':
   workflow_dispatch:
-  schedule:
-    - cron: '30 2 * * 1-5' # 11:30 KST; after Stage60/R4; XKRX session verified in Python
+  # Manual only. R14 M/N is the planned canonical financial collector.
 permissions:
   contents: write
   actions: write
