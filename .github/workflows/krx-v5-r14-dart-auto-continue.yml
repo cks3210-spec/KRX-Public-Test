@@ -465,6 +465,134 @@ jobs:
           PYTHON
           python -m py_compile /tmp/r14_link_20261125.py
           python /tmp/r14_link_20261125.py
+      - name: Connect cached annual growth and financial health metrics
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_metrics_20261125.py <<'PYTHON'
+          import csv, datetime as dt, gzip, hashlib, importlib.util, io, json, os, re, subprocess
+          from collections import Counter
+          from pathlib import Path
+          ROOT=Path.cwd()
+          F=ROOT/'data/v5_financial_m'; STORE=F/'filing_refresh'; OUT=Path('/tmp/r14-filing-refresh')
+          CACHE=F/'dart_financial_cache.json'; MAP=F/'corp_map.json'; STATUS=F/'status.json'; LINK=STORE/'analysis_link.json'; STATE=STORE/'state.json'
+          GROWTH=ROOT/'data/v5_investment_r14_fundamental/dart_annual_comparatives.json'
+          SCRIPT=ROOT/'scripts/krx_v5_r14_fundamental_growth_no_cross_20261117_c.py'
+          FIELDS=['market_date','code','market','corp_code','year','fs_div','annual_source','annual_receipt','annual_state','revenue_yoy_pct','owner_profit_yoy_pct','operating_profit_yoy_pct','operating_profit_source','annual_owner_roe_pct','operating_margin_pct','liabilities_to_owner_equity_pct','liabilities_to_total_equity_pct','ttm_owner_profit_krw','ttm_state','financial_disclosure_asof_verified','investment_authorized']
+          OP_IDS={'dart_OperatingIncomeLoss','ifrs-full_ProfitLossFromOperatingActivities','ifrs_ProfitLossFromOperatingActivities'}
+          EQ_IDS={'ifrs-full_Equity','ifrs_Equity'}
+
+          def read(p):
+              d=json.loads(p.read_text(encoding='utf-8-sig'))
+              if not isinstance(d,dict): raise ValueError('INVALID_JSON '+str(p))
+              return d
+
+          def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def payload(d): return (json.dumps(d,ensure_ascii=False,indent=2,sort_keys=True)+'\n').encode()
+          def write(p,b):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              if p.exists() and p.read_bytes()==b:return
+              t=p.with_suffix(p.suffix+'.tmp');t.write_bytes(b);t.replace(p)
+          def immutable(p,b):
+              if p.exists() and p.read_bytes()!=b:raise ValueError('METRICS_HISTORY_CONFLICT '+str(p))
+              write(p,b)
+          def git(*args): return subprocess.run(['git',*args],check=True,text=True,stdout=subprocess.PIPE).stdout.strip()
+          def loadmod(name,p):
+              spec=importlib.util.spec_from_file_location(name,p);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+
+          def num(v): return v if type(v) is int else None
+          def acc(r):
+              if not isinstance(r,dict) or r.get('status')!='000' or r.get('fs_div') not in ('CFS','OFS') or not isinstance(r.get('accounts'),dict):return {}
+              return {k:v for k,v in r['accounts'].items() if type(v) is int}
+          def rate(a,b): return round(100*a/b,3) if a is not None and b is not None and b>0 else ''
+          def unique_amount(rows,ids,statements,field,m):
+              vs={m.number(r.get(field)) for r in rows if r.get('account_id') in ids and r.get('sj_div') in statements};vs.discard(None)
+              return next(iter(vs)) if len(vs)==1 else None
+
+          def get_raw(entry,key,corp,year,day,refresh,m):
+              rec=entry.get('receipt','');basis=entry.get('fs_div');p=STORE/'raw'/f'{rec}_{basis}.json.gz'
+              if not re.fullmatch(r'\d{14}',rec) or rec[:8]>day or basis not in ('CFS','OFS') or entry.get('corp_code')!=corp or entry.get('year')!=year or entry.get('period')!='annual' or entry.get('amount_basis')!='ANNUAL':raise ValueError('BAD_LINKED_ANNUAL '+key)
+              if entry.get('archive')!=str(p.relative_to(ROOT)) or digest(p)!=entry.get('sha256'):raise ValueError('BAD_ARCHIVE_HASH '+key)
+              with gzip.open(p,'rt',encoding='utf-8') as f: obj=json.load(f)
+              e={'receipt':rec,'corp_code':corp,'year':year,'period':'annual'}
+              if any(obj.get(k)!=v for k,v in e.items()) or obj.get('source')!='OpenDART fnlttSinglAcntAll' or obj.get('raw',{}).get('status')!='000' or not refresh.checked_rows(obj['raw'],e,basis):raise ValueError('BAD_ARCHIVE_IDENTITY '+key)
+              normalized=refresh.normalize(m,obj['raw'],e,basis)
+              if normalized!=obj.get('normalized') or normalized.get('accounts',{})!=entry.get('accounts'):raise ValueError('BAD_ARCHIVE_NORMALIZATION '+key)
+              return obj['raw']['list']
+
+          def metrics(day,rows,cache,mapping,link,state,legacy,growth,m,refresh,linker):
+              year=int(day[:4])-1; latest=linker.latest_events(state); inputs=link['inputs'];strict=linker.strict_ttm(inputs,day)
+              if strict!=link['strict_ttm']:raise ValueError('STRICT_TTM_LINK_MISMATCH')
+              result=[];counts=Counter()
+              for market in sorted(rows,key=lambda r:(r['MARKET'],r['ISU_CD'])):
+                  code=market['ISU_CD'];corp=mapping.get(code,'');key=f'{code}:{year}:annual';old=cache.get(key,{});a=acc(old);basis=old.get('fs_div','') if isinstance(old,dict) else '';event=latest.get(key);entry=inputs.get(key);source='LEGACY_CACHE_RESEARCH_ONLY';receipt='';raw=None
+                  r={k:'' for k in FIELDS};r.update(market_date=day,code=code,market=market['MARKET'],corp_code=corp,year=year,financial_disclosure_asof_verified='NO',investment_authorized='NO',ttm_state='WITHHELD_UNVERIFIED_CUMULATIVE')
+                  if not re.fullmatch(r'\d{6}',code) or not re.fullmatch(r'\d{8}',str(corp)):
+                      r['annual_state']='IDENTITY_REVIEW';a={}
+                  elif event and (not entry or entry.get('receipt')!=event.get('receipt') or event.get('state')!='ARCHIVED'):
+                      r['annual_state']='LATEST_FILING_PENDING';a={}
+                  elif entry:
+                      raw=get_raw(entry,key,corp,year,day,refresh,m);a=entry['accounts'];basis=entry['fs_div'];receipt=entry['receipt'];source='RECEIPT_BOUND_ARCHIVE_RESEARCH_ONLY'
+                  elif not a or old.get('corp_code')!=corp or str(old.get('year'))!=str(year) or old.get('report')!='annual':
+                      r['annual_state']='MISSING_OR_UNVERIFIED_ANNUAL';a={}
+                  if a:
+                      p,e,pe,rev,liab=[num(a.get(k)) for k in ('profit','equity','previous_equity','revenue','liabilities')]
+                      r.update(annual_source=source,annual_receipt=receipt,fs_div=basis,annual_state='OWNER_PAIR_PRESENT' if p is not None and e is not None else 'PARTIAL_ANNUAL',revenue_yoy_pct=growth.growth(rev,a.get('previous_revenue')),owner_profit_yoy_pct=growth.growth(p,a.get('previous_profit')),annual_owner_roe_pct=m.ratio(None,p,e,pe)['roe_pct'],liabilities_to_owner_equity_pct=rate(liab,e))
+                      if r['annual_owner_roe_pct'] is None:r['annual_owner_roe_pct']=''
+                      if raw is not None:
+                          op=unique_amount(raw,OP_IDS,('IS','CIS'),'thstrm_amount',m);prior=unique_amount(raw,OP_IDS,('IS','CIS'),'frmtrm_amount',m);total_eq=unique_amount(raw,EQ_IDS,('BS',),'thstrm_amount',m)
+                          r.update(operating_profit_yoy_pct=growth.growth(op,prior),operating_margin_pct=rate(op,rev),liabilities_to_total_equity_pct=rate(liab,total_eq),operating_profit_source='RECEIPT_BOUND_ANNUAL' if op is not None else '')
+                      elif not event:
+                          # Historical growth cache only when its comparable revenue and owner-profit pairs both match this annual record. Never label this as receipt-bound.
+                          c=legacy.get(f'{code}:{year}',{});pairs=[('revenue_current','revenue'),('revenue_prior','previous_revenue'),('owner_profit_current','profit'),('owner_profit_prior','previous_profit')]
+                          if c.get('state')=='OK' and str(c.get('year'))==str(year) and c.get('fs_div')==basis and c.get('report')=='11011' and all(num(a.get(y)) is not None and growth.num(c.get(x))==a[y] for x,y in pairs):
+                              op=c.get('operating_profit_current');prior=c.get('operating_profit_prior');r['operating_profit_yoy_pct']=growth.growth(op,prior);r['operating_profit_source']='MATCHED_LEGACY_COMPARATIVE_RESEARCH_ONLY' if growth.num(op) is not None else '';r['operating_margin_pct']=rate(growth.num(op),rev)
+                      t=strict.get(code)
+                      if t and receipt and t.get('receipts',[None])[0]==receipt and t.get('fs_div')==basis:
+                          r.update(ttm_owner_profit_krw=t['ttm_profit'],ttm_state='RECEIPT_BOUND_CUMULATIVE_RESEARCH_ONLY')
+                  counts[r['annual_state']]+=1
+                  for f in ('revenue_yoy_pct','owner_profit_yoy_pct','operating_profit_yoy_pct','annual_owner_roe_pct','operating_margin_pct','liabilities_to_owner_equity_pct','liabilities_to_total_equity_pct','ttm_owner_profit_krw'):
+                      if r[f]!='':counts[f+'_available']+=1
+                  result.append(r)
+              return result,dict(counts)
+
+          def main():
+              OUT.mkdir(parents=True,exist_ok=True)
+              log=OUT/'analysis_link_status.json'
+              if not log.exists():print('R14_METRICS_SKIPPED_NO_ANALYSIS_LINK');return
+              prior=read(log)
+              if prior.get('state')!='ANALYSIS_LINK_PERSISTED' or prior.get('checkpoint_persisted') is not True:raise ValueError('ANALYSIS_LINK_NOT_PERSISTED')
+              growth=loadmod('r14_existing_growth',SCRIPT);n=loadmod('r14_existing_n',ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py');m=n.m
+              refresh=loadmod('r14_refresh','/tmp/krx_filing_refresh.py');linker=loadmod('r14_link','/tmp/r14_link_20261125.py')
+              protected=[ROOT/'data/latest.csv',ROOT/'data/summary.json',CACHE,MAP,STATUS,LINK,STATE,GROWTH,SCRIPT,ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py',ROOT/'scripts/krx_v5_r14_dart_incremental_m.py']
+              code_paths=protected[-3:];code_hashes={str(p):digest(p) for p in code_paths}
+              for attempt in range(3):
+                  git('fetch','origin','main');git('reset','--hard','origin/main')
+                  if code_hashes!={str(p):digest(p) for p in code_paths}:raise ValueError('ANALYSIS_CODE_CHANGED')
+                  before={str(p.relative_to(ROOT)):digest(p) for p in protected};day,nrows=n.official_market_snapshot();cache=read(CACHE);s=read(STATUS);link=read(LINK);state=read(STATE)
+                  if day!=prior.get('market_date') or day!=s.get('market_date') or day!=link.get('market_date') or s.get('cache_records')!=len(cache) or link.get('schema')!=1:raise ValueError('METRICS_INPUT_DATE_MISMATCH')
+                  if link.get('investment_decisions_authorized') is not False or link.get('final_buy_signals')!=0:raise ValueError('UNEXPECTED_AUTHORIZATION')
+                  with protected[0].open(encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+                  if len(rows)!=nrows or len({r['ISU_CD'] for r in rows})!=nrows:raise ValueError('MARKET_UNIVERSE_MISMATCH')
+                  data,counts=metrics(day,rows,cache,read(MAP),link,state,read(GROWTH),growth,m,refresh,linker)
+                  assert len(data)==nrows and all(r['investment_authorized']=='NO' for r in data)
+                  buff=io.StringIO(newline='');w=csv.DictWriter(buff,fieldnames=FIELDS,lineterminator='\n');w.writeheader();w.writerows(data);csvdata=buff.getvalue().encode('utf-8-sig');h=hashlib.sha256(csvdata).hexdigest()
+                  # Use content-addressed versions, never rewrite prior market-date evidence.
+                  report={'state':'FINANCIAL_METRICS_PERSISTED','market_date':day,'market_rows':nrows,'cache_records':len(cache),'api_calls':0,'counts':counts,'source_sha256':before,'csv_sha256':h,'legacy_ttm_used':False,'financial_disclosure_asof_verified':False,'official_per_pbr_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'notes':['Owner-equity leverage is not total-equity debt ratio. Total-equity debt ratio requires receipt-bound source.','Legacy values are research-only; missing fields withheld. Only receipt-bound cumulative TTM is used.','Operating-profit legacy comparison requires matching revenue and owner-profit pairs.']}
+                  version=hashlib.sha256(payload(report)).hexdigest();folder=STORE/'metrics'/day/version
+                  report['csv_path']=str((folder/'financial_metrics.csv').relative_to(ROOT));immutable(folder/'financial_metrics.csv',csvdata);immutable(folder/'status.json',payload(report));write(STORE/'metrics'/'latest_status.json',payload(report))
+                  if before!={str(p.relative_to(ROOT)):digest(p) for p in protected}:raise ValueError('SOURCE_DATA_CHANGED')
+                  git('add','--',str((STORE/'metrics').relative_to(ROOT)));changed=git('diff','--cached','--name-only').splitlines()
+                  if any(not p.startswith('data/v5_financial_m/filing_refresh/metrics/') for p in changed):raise ValueError('UNEXPECTED_STAGED_FILE')
+                  if changed:
+                      git('commit','-m','R14: connect existing growth and financial health metrics without new API requests')
+                      if subprocess.run(['git','push','origin','HEAD:main']).returncode:continue
+                  write(OUT/'financial_metrics_status.json',payload(report));print('R14_FINANCIAL_METRICS',json.dumps(report,ensure_ascii=False));return
+              raise ValueError('METRICS_PERSISTENCE_CONFLICT')
+
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/r14_metrics_20261125.py
+          python /tmp/r14_metrics_20261125.py
       - name: Preserve refresh result
         if: always()
         uses: actions/upload-artifact@v4
