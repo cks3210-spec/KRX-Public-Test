@@ -885,7 +885,7 @@ jobs:
               annual_meta = document(ANNUAL_META)
               basic = document(BASIC)
               base_day = str(ratio.get('research_market_date', ''))
-              require(base_day == str(reval['frozen_research_grade_date']) == str(p3['research_market_date']),
+              require(base_day == str(p3['research_market_date']) == str(excluded['research_market_date']),
                       'OLDER_RESEARCH_COHORT_MISMATCH')
               require(ratio['candidate_count'] == p3['candidate_count'] == 137, 'FROZEN_EVIDENCE_COHORT_COUNT')
               require(int(ratio.get('p2_official_per_verified_count', 0)) == 0 and
@@ -930,12 +930,14 @@ jobs:
                           c['investment_decisions_authorized'] == 'NO', 'SOURCE_UNSAFE_APPROVAL_FLAG')
                   is_new = c['candidate_evidence_gate'].startswith('NEW_')
                   if not is_new:
+                      require(c['previous_research_date'] == base_day, 'FROZEN_RESEARCH_DATE_MISMATCH')
                       require(code in old_evidence and code in prior_share_evidence, 'MISSING_OLD_COHORT_EVIDENCE')
                       require(old_evidence[code]['p2'] == 'NO_INDEPENDENTLY_AUTHENTICATED_DATED_RATIO' and
                               old_evidence[code]['buy_signal'] is False and
                               prior_share_evidence[code]['p1_historical_financial_asof_verified'] is False,
                               'FROZEN_EVIDENCE_APPROVAL_UNEXPECTED')
                   else:
+                      require(not c['previous_research_date'], 'NEW_CANDIDATE_HAS_PRIOR_DATE')
                       require(code not in old_evidence, 'PREVIOUSLY_FROZEN_MARKED_NEW')
                   official_type = basic_rows.get((c['market'], code), {})
                   common = official_type.get('KIND_STKCERT_TP_NM', '')
