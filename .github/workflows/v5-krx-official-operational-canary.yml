@@ -1,8 +1,7 @@
 name: KRX Official API Operational Canary (No Production Writes)
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '47 9 * * 1-5' # 18:47 KST; GitHub may delay scheduled runs
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
