@@ -1,8 +1,7 @@
 name: KRX v5 R14 0800 Official Market Bridge E
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 23 * * 0-4' # 08:00 KST Monday-Friday; preceding KRX session
+  # Manual-only legacy bridge. Canonical official collection: 08:30 KST.
 permissions:
   contents: write
 concurrency:
