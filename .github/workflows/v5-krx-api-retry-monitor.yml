@@ -1,8 +1,7 @@
 name: KRX v5 Official API Retry Monitor
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '40 0,4,9 * * 1-5' # 09:40, 13:40, 18:40 KST
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
