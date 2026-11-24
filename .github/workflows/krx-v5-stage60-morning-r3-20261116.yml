@@ -1,8 +1,7 @@
 name: V5 Stage60 Morning Collection R3
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 23 * * 0-4' # 08:30 KST Monday-Friday, previous UTC day
+  # Manual-only legacy collector. Canonical official collection: 08:30 KST.
 permissions:
   contents: write
 concurrency:
