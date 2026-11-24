@@ -18,12 +18,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Compile and test financial logic without API or cache writes
+      - name: Validate and rebuild actual financial snapshot in isolation
         run: |
+          set -euo pipefail
           python -m py_compile scripts/krx_v5_r14_dart_incremental_m.py scripts/krx_v5_r14_financial_pipeline_n.py
           python - <<'PY'
-          import importlib.util, json, pathlib, csv, datetime as dt
-          root=pathlib.Path('.')
+          import importlib.util, json, pathlib, csv, tempfile, shutil, hashlib, os, subprocess, sys
+          root=pathlib.Path('.').resolve()
           spec=importlib.util.spec_from_file_location('r14_n',root/'scripts/krx_v5_r14_financial_pipeline_n.py')
           n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n)
           def rec(profit,basis='CFS'):
@@ -37,15 +38,35 @@ jobs:
           assert n.qkind('20260820')=='half'
           assert n.qkind('20260520')=='q1'
           assert n.qkind('20260320') is None
-          p=root/'data/v5_financial_m/status.json'
-          if p.exists():
-              status=json.loads(p.read_text(encoding='utf-8-sig'))
-              print('READ_ONLY_CACHE_STATUS',json.dumps({k:status.get(k) for k in ('cache_records','annual_verified_rows','ttm_calculated','market_date')},ensure_ascii=False))
-          index=root/'data/v5_financial_m/annual_financial_index_m.csv'
-          if index.exists():
-              with index.open(encoding='utf-8-sig',newline='') as f:
+          date,count=n.official_market_snapshot()
+          paths=['scripts/krx_v5_r14_dart_incremental_m.py','scripts/krx_v5_r14_financial_pipeline_n.py','data/summary.json','data/latest.csv','data/v5_financial_foundation_l/unified_financial_index.csv','data/v5_financial_m/dart_financial_cache.json','data/v5_financial_m/dart_disclosure_evidence.json','data/v5_financial_m/status.json','data/v5_financial_m/annual_financial_index_m.csv']
+          optional='data/v5_investment_r14_research_k/full_market_ratios_k.csv'
+          if (root/optional).exists(): paths.append(optional)
+          def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          before={p:digest(root/p) for p in paths}
+          with tempfile.TemporaryDirectory() as tmp:
+              work=pathlib.Path(tmp)
+              for p in paths:
+                  dst=work/p;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(root/p,dst)
+              env=dict(os.environ,GITHUB_WORKSPACE=str(work),R14_REBUILD_ONLY='1',DART_API_KEY='',OPENDART_API_KEY='')
+              subprocess.run([sys.executable,str(work/'scripts/krx_v5_r14_financial_pipeline_n.py')],env=env,cwd=work,check=True)
+              out=work/'data/v5_financial_m'
+              s=json.loads((out/'status.json').read_text())
+              old=json.loads((root/'data/v5_financial_m/status.json').read_text())
+              assert s['market_date']==s['official_market_date']==date
+              assert s['official_market_source_rows']==count
+              assert s['cache_records']==len(json.loads((out/'dart_financial_cache.json').read_text()))
+              assert s['financial_rebuild_only'] is True
+              assert not s['investment_decisions_authorized'] and s['final_buy_signals']==0
+              for p in ('dart_financial_cache.json','dart_disclosure_evidence.json'):
+                  assert digest(out/p)==before['data/v5_financial_m/'+p]
+              with (out/'annual_financial_index_m.csv').open(encoding='utf-8-sig',newline='') as f:
                   rows=list(csv.DictReader(f))
-              assert rows and {'code','annual_profit','ttm_profit','ttm_status'}.issubset(rows[0])
-              print('INDEX_ROWS',len(rows))
-          print('FAST_VALIDATION_PASS: syntax, TTM, basis mismatch, period selection, read-only index')
+              assert rows and len(rows)==s['base_rows']
+              assert {'code','annual_profit','ttm_profit','ttm_status'}.issubset(rows[0])
+              assert len({r['code'] for r in rows})==len(rows)
+              print('REBUILD_AUDIT',json.dumps({'prior_market_date':old['market_date'],'rebuilt_market_date':date,'market_rows':count,'financial_index_rows':len(rows),'cache_records':s['cache_records'],'annual_verified_rows':s['annual_verified_rows'],'persistent_status_changed':False}))
+          assert before=={p:digest(root/p) for p in paths}
+          print('KRX_V5_STEP_1_1_ACTUAL_READ_ONLY_PASS')
           PY
+          git diff --exit-code -- data scripts
