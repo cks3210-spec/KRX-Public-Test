@@ -1,0 +1,51 @@
+{
+  "annual_cache_rows_matched": 2672,
+  "current_grade_revalidated": false,
+  "final_buy_signals": 0,
+  "financial_point_in_time_verified": false,
+  "frozen_ab_candidate_rows": 137,
+  "frozen_ab_current_cap_eligible": 136,
+  "frozen_ab_current_cap_with_growth_cache": 133,
+  "frozen_ab_grade_counts": {
+    "A": 24,
+    "B": 113
+  },
+  "frozen_research_grade_date": "20261120",
+  "growth_cache_rows_matched": 539,
+  "investment_decisions_authorized": false,
+  "marketcap_100bn_rows": 1231,
+  "notes": [
+    "Whole-market coverage is not a full-market current A/B regrade.",
+    "Non-numeric six-character codes are unreviewed, not assumed to be non-common shares.",
+    "Annual and growth records are earlier cached snapshots, not current-date filings.",
+    "The frozen R14 grades are research only; missing corrected filing evidence remains excluded.",
+    "Official KRX PER/PBR and verified trade entry prices are not released."
+  ],
+  "numeric_stock_codes": 2675,
+  "official_market_date": "20261123",
+  "official_per_pbr_verified": false,
+  "source_market_rows": 2771,
+  "source_sha256": {
+    "data/latest.csv": "2ec10c7e46f4dd8f675bc0d87fb8b8e29658d36b90fb5a2a2dddf24b29e121ed",
+    "data/summary.json": "99e0875e3aa4a3db1b47063d6982b3c56427ce6ea4ca28df2329e99062086c3c",
+    "data/v5_financial_m/annual_financial_index_m.csv": "53adb6f13cc754c5930acea0f50722f4c1e1a4530d25cb9908be0cd8ad3b6129",
+    "data/v5_financial_m/status.json": "521dfc3a0ef2ae150203a9b6b126381c0d5e9176f3ca0b03962ef0a963cf1469",
+    "data/v5_investment_r14_fundamental/provisional_ab_enriched.csv": "de0348facff7f5a0b809b02cc8256888214bdb4edae3b30030364c8903cf1a2f",
+    "data/v5_investment_r14_fundamental/status.json": "5bcc1193c5b2fa28a331e4fe82c038ecaab43eed15a8a06b42dde124a0420dcb",
+    "v5_reports/r14_daily_financial_join/20261123/all_ab_research_financial_join.csv": "c26598c70b451e42e236a3137eb941b3e790bed7182734592c77ea6e772981ff",
+    "v5_reports/r14_daily_financial_join/latest_status.json": "d87c8ce8e482421858df797854d9f68e902715c28150d0d117854622255906d4",
+    "v5_reports/r14_daily_market_join/latest_status.json": "a2d56f9abec78716aaddc5241a9dc5db1670b8390b73b4c20759632bae9bb674",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b"
+  },
+  "source_states": {
+    "EXCLUDED_MISSING_CORRECTION_EVIDENCE": 5,
+    "FROZEN_AB_BELOW_CURRENT_MARKETCAP": 1,
+    "FROZEN_AB_GROWTH_CACHE_MISSING": 3,
+    "FROZEN_AB_RESEARCH_WITH_CACHED_EVIDENCE": 133,
+    "NOT_IN_FROZEN_AB_AND_BELOW_CAP": 1467,
+    "NOT_IN_FROZEN_AB_RESEARCH_COHORT": 1066,
+    "NOT_REEVALUATED_NON_NUMERIC_CODE": 96
+  },
+  "state": "WHOLE_MARKET_SOURCE_COVERAGE_RECORDED",
+  "version": "KRX_V5_FULL_MARKET_DAILY_RESEARCH_READINESS_V1"
+}
