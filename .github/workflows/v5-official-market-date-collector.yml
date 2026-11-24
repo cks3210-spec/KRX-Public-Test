@@ -3,7 +3,7 @@ name: KRX v5 Official Market Date Collector
   workflow_dispatch:
     inputs:
       target_date:
-        description: 'KRX trading date YYYYMMDD; blank = latest completed KST session'
+        description: 'KRX trading date YYYYMMDD; blank = prior KRX session; reuse verified artifacts'
         required: false
         type: string
   schedule:
@@ -27,34 +27,6 @@ jobs:
           python-version: '3.11'
       - name: Install exchange calendar
         run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
-      - name: Retrieve prior verified snapshot metadata for fallback visibility
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/krx_last
-          for id in $(gh run list --repo "$GH_REPO" --workflow v5-official-market-date-collector.yml --status success --limit 12 --json databaseId --jq '.[].databaseId' 2>/dev/null || true); do
-            if gh run download "$id" --repo "$GH_REPO" --name krx-v5-official-market-snapshot --dir /tmp/krx_last >/dev/null 2>&1; then
-              if python - <<'PY'
-          import csv,json,pathlib
-          root=pathlib.Path('/tmp/krx_last')
-          try:
-              s=json.loads((root/'status.json').read_text(encoding='utf-8-sig'))
-              with (root/'official_daily_market.csv').open(encoding='utf-8-sig',newline='') as f:
-                  r=csv.DictReader(f);sample=next(r,None)
-              assert s['state']=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT'
-              assert sample and sample['BAS_DD']==s['market_date']
-          except (OSError,ValueError,KeyError,AssertionError,StopIteration):raise SystemExit(1)
-          PY
-              then
-                echo 'Verified previous official snapshot found'
-                break
-              fi
-            fi
-            rm -f /tmp/krx_last/*
-          done
       - name: Collect exact-session official KRX market snapshot
         env:
           KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
@@ -63,6 +35,8 @@ jobs:
           GH_RUN_ID: ${{ github.run_id }}
           GH_RUN_NUMBER: ${{ github.run_number }}
           GH_SHA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
@@ -75,6 +49,10 @@ jobs:
           import pathlib
           import re
           import time
+          import subprocess
+          import tempfile
+          import shutil
+          from collections import Counter
           import urllib.error
           import urllib.parse
           import urllib.request
@@ -98,7 +76,8 @@ jobs:
                   'official_per_pbr_verified':False,
                   'investment_decisions_authorized':False,'final_buy_signals':0,
                   'endpoint_errors':{},'response_sha256':{},
-                  'request_attempts':{},'transient_request_errors':{}}
+                  'request_attempts':{},'transient_request_errors':{},
+                  'api_calls':0,'reused_verified_artifact':False,'collector_policy':'STEP_1_4A'}
 
           def save():
               (OUT/'status.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -120,15 +99,67 @@ jobs:
                   raise ValueError('EXISTING_MARKET_DUPLICATE')
               return next(iter(dates)),len(rows)
 
-          def previous_verified():
-              root=pathlib.Path('/tmp/krx_last')
-              try:
-                  s=json.loads((root/'status.json').read_text(encoding='utf-8-sig'))
-                  if s.get('state')=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT':
-                      return s.get('market_date')
-              except (OSError,ValueError):
-                  pass
-              return None
+          def canonical_rows(path, day, evidence=None):
+              fields={'BAS_DD','MARKET','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP'}
+              if evidence is not None: fields|={'source','source_sha256'}
+              result={}
+              with path.open(encoding='utf-8-sig',newline='') as f:
+                  reader=csv.DictReader(f)
+                  if not fields<=set(reader.fieldnames or []): raise ValueError('MISSING_SNAPSHOT_COLUMNS')
+                  for r in reader:
+                      market,code=r['MARKET'],r['ISU_CD'];key=(market,code)
+                      if r['BAS_DD']!=day or market not in ('KOSPI','KOSDAQ') or not re.fullmatch('[0-9A-Z]{6}',code) or key in result:
+                          raise ValueError('INVALID_OR_DUPLICATE_SNAPSHOT_ROW')
+                      vals=[]
+                      for col in ('TDD_CLSPRC','ACC_TRDVOL','MKTCAP'):
+                          v=r[col].replace(',','').strip()
+                          if not re.fullmatch(r'\d+',v):raise ValueError('INVALID_SNAPSHOT_NUMERIC')
+                          vals.append(int(v))
+                      if vals[0]<=0 or vals[2]<=0:raise ValueError('INVALID_SNAPSHOT_PRICE_CAP')
+                      if evidence is not None and (r['source']!='KRX_OPEN_API' or r['source_sha256']!=evidence[market]):
+                          raise ValueError('ARTIFACT_ROW_PROVENANCE_MISMATCH')
+                      result[key]=(r['ISU_NM'].strip(),*vals)
+              c=Counter(k[0] for k in result)
+              if c['KOSPI']<500 or c['KOSDAQ']<1000 or len(result)<2000:raise ValueError('INCOMPLETE_SNAPSHOT')
+              return result,dict(c)
+
+          def permanent_snapshot_matches(day):
+              archive=pathlib.Path('data/v5_official_market_archive')/(day+'.csv')
+              if not archive.is_file():return False
+              left,_=canonical_rows(archive,day)
+              right,_=canonical_rows(pathlib.Path('data/latest.csv'),day)
+              if left!=right:raise ValueError('PERMANENT_ARCHIVE_LATEST_CONFLICT')
+              return True
+
+          def reuse_verified(target,old_date,old_rows):
+              # Recover the exact date from a successful run on main, not just the newest date.
+              # The fresh artifact carries this run ID for the existing promotion gate, while
+              # retaining the actual source run, timestamp, commit and original row hashes.
+              repo=os.environ['GH_REPO']
+              runs=json.loads(subprocess.check_output(['gh','run','list','--repo',repo,'--workflow','v5-official-market-date-collector.yml','--branch','main','--status','success','--limit','20','--json','databaseId'],text=True,timeout=60))
+              with tempfile.TemporaryDirectory(prefix='krx_reuse_') as tmp:
+                  for run in runs:
+                      rid=str(run['databaseId'])
+                      if rid==report['github_run_id']:continue
+                      root=pathlib.Path(tmp)/rid;root.mkdir()
+                      proc=subprocess.run(['gh','run','download',rid,'--repo',repo,'--name','krx-v5-official-market-snapshot','--dir',str(root)],capture_output=True,text=True,timeout=60)
+                      if proc.returncode:
+                          msg=(proc.stderr or '').lower()
+                          if 'no valid artifacts' in msg or 'no artifacts' in msg or 'not found' in msg or 'expired' in msg:continue
+                          raise RuntimeError('PRIOR_ARTIFACT_DOWNLOAD_FAILED_'+rid)
+                      s=json.loads((root/'status.json').read_text(encoding='utf-8-sig'))
+                      if s.get('market_date')!=target or s.get('state') not in ('VERIFIED_OFFICIAL_MARKET_SNAPSHOT','VERIFIED_HISTORICAL_SNAPSHOT'):continue
+                      if str(s.get('github_run_id'))!=rid or s.get('target_market_date')!=target or s.get('source')!='KRX_OPEN_API' or s.get('investment_decisions_authorized') is not False or s.get('final_buy_signals')!=0:
+                          raise ValueError('PRIOR_ARTIFACT_STATUS_INVALID')
+                      hashes=s.get('response_sha256',{})
+                      if any(not re.fullmatch('[0-9a-f]{64}',str(hashes.get(m,''))) for m in ('KOSPI','KOSDAQ')):raise ValueError('PRIOR_ARTIFACT_HASH_INVALID')
+                      path=root/'official_daily_market.csv';rows,counts=canonical_rows(path,target,hashes)
+                      if counts!=s.get('market_counts') or len(rows)!=s.get('records_fetched') or (target>old_date and len(rows)<old_rows*.8):raise ValueError('PRIOR_ARTIFACT_COUNT_MISMATCH')
+                      if target==old_date and rows!=canonical_rows(pathlib.Path('data/latest.csv'),target)[0]:raise ValueError('PRIOR_ARTIFACT_LATEST_CONFLICT')
+                      shutil.copyfile(path,OUT/'official_daily_market.csv')
+                      report.update(state='VERIFIED_HISTORICAL_SNAPSHOT' if target<old_date else 'VERIFIED_OFFICIAL_MARKET_SNAPSHOT',market_date=target,market_counts=counts,records_fetched=len(rows),response_sha256=hashes,source_endpoints=s.get('source_endpoints',[]),verified_at_kst=s.get('verified_at_kst'),reused_verified_artifact=True,reused_from_run_id=rid,original_source_run_id=s.get('original_source_run_id',rid),original_source_commit_sha=s.get('original_source_commit_sha',s.get('source_commit_sha')),original_verified_at_kst=s.get('original_verified_at_kst',s.get('verified_at_kst')),previous_verified_artifact_date=target,newer_than_production=target>old_date,matching_production_date=target==old_date,ready_for_production_promotion=target>=old_date)
+                      return True
+              return False
 
           try:
               manual=os.environ.get('TARGET_DATE','').strip()
@@ -147,8 +178,8 @@ jobs:
                   if not re.fullmatch(r'\d{8}',manual):
                       raise ValueError('INVALID_MANUAL_DATE')
                   day=dt.datetime.strptime(manual,'%Y%m%d').date()
-                  if day>today or not calendar.is_session(day.isoformat()):
-                      raise ValueError('NOT_PAST_OR_CURRENT_KRX_SESSION')
+                  if day>=today or not calendar.is_session(day.isoformat()):
+                      raise ValueError('NOT_PAST_KRX_SESSION')
               else:
                   # KRX FAQ: daily API data are published from 08:00 KST on
                   # the NEXT business day. Always request the prior completed
@@ -162,61 +193,57 @@ jobs:
               old_date,old_rows=old_snapshot_date()
               report['existing_market_date']=old_date
               report['existing_market_rows']=old_rows
-              report['previous_verified_artifact_date']=previous_verified()
-              # Automatic runs are idempotent for any date already validated.
-              # Manual dispatch intentionally retains historical audit ability.
-              if not manual and (target<=old_date or report['previous_verified_artifact_date']==target):
-                  report['state']='SKIPPED_ALREADY_VERIFIED_MARKET_DATE'
-                  report['market_date']=target
-                  report['reason']='Source date already in verified production or prior verified artifact; no API calls'
+              report['previous_verified_artifact_date']=None
+              # Same-day committed archive is authoritative; allow the downstream gate
+              # to repair its ledger/financial link without any KRX call.
+              if target==old_date and permanent_snapshot_matches(target):
+                  report.update(state='SKIPPED_ALREADY_VERIFIED_MARKET_DATE',market_date=target,reason='Permanent archive matches production; no API calls')
+                  save();print(json.dumps(report,ensure_ascii=False));raise SystemExit(0)
+              if target<old_date and not manual:
+                  report.update(state='SKIPPED_ALREADY_VERIFIED_MARKET_DATE',market_date=target,reason='Production already advanced; no API calls')
+                  save();print(json.dumps(report,ensure_ascii=False));raise SystemExit(0)
+              if reuse_verified(target,old_date,old_rows):
                   save();print(json.dumps(report,ensure_ascii=False));raise SystemExit(0)
               key=os.environ.get('KRX_API_KEY','').strip()
               if not key:
                   raise ValueError('KRX_API_KEY_MISSING')
               endpoints={'KOSPI':'stk_bydd_trd','KOSDAQ':'ksq_bydd_trd'}
 
-              def fetch_raw_with_retry(url, market):
-                  # Retry NETWORK failures only. Never retry schema, valuation,
-                  # or trading-date validation errors as though data were valid.
-                  retryable_http={429,500,502,503,504}
-                  failures=[]
+              def fetch_entries(url, market):
+                  # A single budget for empty responses AND transient network errors.
+                  # Never retry malformed schema, invalid dates or authentication errors.
+                  retryable_http={429,500,502,503,504};failures=[]
                   for attempt in range(1,4):
                       report['request_attempts'][market]=attempt
-                      req=urllib.request.Request(
-                          url+'?'+urllib.parse.urlencode({'basDd':target}),
-                          headers={'AUTH_KEY':key,'Accept':'application/json',
-                                   'User-Agent':'KRX-v5-official-research/1.2'})
+                      report['api_calls']+=1
+                      req=urllib.request.Request(url+'?'+urllib.parse.urlencode({'basDd':target}),headers={'AUTH_KEY':key,'Accept':'application/json','User-Agent':'KRX-v5-official-research/1.4'})
                       try:
-                          with urllib.request.urlopen(req,timeout=30) as response:
-                              raw=response.read()
-                          if failures: report['transient_request_errors'][market]=failures
-                          return raw
+                          with urllib.request.urlopen(req,timeout=30) as response:raw=response.read()
                       except urllib.error.HTTPError as exc:
-                          if exc.code not in retryable_http:
-                              raise ValueError('KRX_HTTP_NONRETRYABLE_'+str(exc.code)) from exc
+                          if exc.code not in retryable_http:raise ValueError('KRX_HTTP_NONRETRYABLE_'+str(exc.code)) from exc
                           failures.append('HTTP_'+str(exc.code))
-                      except (TimeoutError, urllib.error.URLError, ConnectionError, OSError) as exc:
+                      except (TimeoutError,urllib.error.URLError,ConnectionError,OSError) as exc:
                           failures.append(type(exc).__name__)
-                      if attempt<3: time.sleep(2*attempt)
-                  report['transient_request_errors'][market]=failures
+                      else:
+                          payload=json.loads(raw)
+                          entries=payload.get('OutBlock_1') if isinstance(payload,dict) else None
+                          if not isinstance(entries,list):raise ValueError('INVALID_OUTBLOCK')
+                          report.setdefault('publication_attempts',{})[market]=report.get('publication_attempts',{}).get(market,0)+1
+                          if entries or attempt==3:
+                              if failures:report['transient_request_errors'][market]=failures
+                              return raw,entries
+                          failures.append('EMPTY_DATE')
+                      report['transient_request_errors'][market]=failures.copy()
+                      if attempt<3:
+                          print('KRX_RETRY',market,target,attempt,failures[-1],flush=True)
+                          time.sleep(60)
                   raise RuntimeError('KRX_NETWORK_RETRIES_EXHAUSTED_'+market)
 
               all_rows=[];counts={};seen=set()
               for market,endpoint in endpoints.items():
                   url='https://data-dbg.krx.co.kr/svc/apis/sto/'+endpoint
                   try:
-                      for publication_attempt in range(1,4):
-                          raw=fetch_raw_with_retry(url,market)
-                          payload=json.loads(raw)
-                          entries=payload.get('OutBlock_1') if isinstance(payload,dict) else None
-                          report.setdefault('publication_attempts',{})[market]=publication_attempt
-                          if entries != []:
-                              break
-                          if publication_attempt < 3:
-                              print('KRX_DATA_PENDING',market,target,publication_attempt,flush=True)
-                              time.sleep(60)
-                      if not isinstance(entries,list):
-                          raise ValueError('INVALID_OUTBLOCK')
+                      raw,entries=fetch_entries(url,market)
                       if not entries:
                           report['endpoint_errors'][market]='EMPTY_DATE'
                           continue
@@ -284,7 +311,10 @@ jobs:
                   w.writeheader();w.writerows(all_rows)
               # A newer verified official market artifact is a candidate for a separate
               # controlled promotion; never silently overwrite operational data/latest.csv.
-              report['ready_for_production_promotion']=bool(target>old_date)
+              report['ready_for_production_promotion']=bool(target>=old_date)
+              report['original_source_run_id']=report['github_run_id']
+              report['original_source_commit_sha']=report['source_commit_sha']
+              report['original_verified_at_kst']=report['verified_at_kst']
               report['production_data_modified']=False
               save();print(json.dumps(report,ensure_ascii=False))
           except Exception as exc:
