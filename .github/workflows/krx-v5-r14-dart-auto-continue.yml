@@ -253,6 +253,218 @@ jobs:
           PYTHON
           python -m py_compile /tmp/krx_filing_refresh.py
           python /tmp/krx_filing_refresh.py
+      - name: Link validated filing archives to protected financial analysis
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_link_20261125.py <<'PYTHON'
+          import csv, datetime as dt, gzip, hashlib, importlib.util, json, os, re, subprocess, sys
+          from collections import Counter
+          from pathlib import Path
+          
+          ROOT=Path.cwd()
+          F=ROOT/'data/v5_financial_m'
+          STORE=F/'filing_refresh'
+          OUT=Path('/tmp/r14-filing-refresh')
+          CACHE=F/'dart_financial_cache.json'
+          STATUS=F/'status.json'
+          INDEX=F/'annual_financial_index_m.csv'
+          MAP=F/'corp_map.json'
+          EVIDENCE=F/'dart_disclosure_evidence.json'
+          LINK=STORE/'analysis_link.json'
+          KST=dt.timezone(dt.timedelta(hours=9))
+          
+          def read(p):
+              obj=json.loads(p.read_text(encoding='utf-8-sig'))
+              if not isinstance(obj,dict): raise ValueError('INVALID_OBJECT '+str(p))
+              return obj
+          
+          def jsonbytes(obj):
+              return (json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+          
+          def atomic(p,b):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              if p.exists() and p.read_bytes()==b: return
+              t=p.with_name(p.name+'.tmp');t.write_bytes(b);t.replace(p)
+          
+          def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          
+          def git(*a): return subprocess.run(['git',*a],check=True,text=True,stdout=subprocess.PIPE).stdout.strip()
+          
+          def accounts(record):
+              if not isinstance(record,dict) or record.get('status')!='000' or record.get('fs_div') not in ('CFS','OFS'): return {}
+              a=record.get('accounts')
+              return a if isinstance(a,dict) and a and all(type(v) is int for v in a.values()) else {}
+          
+          def owner_pair(a): return type(a.get('profit')) is int and type(a.get('equity')) is int
+          
+          def valid_receipt(v): return isinstance(v,str) and re.fullmatch(r'\d{14}',v) is not None
+          
+          def checked_date(s):
+              try:
+                  d=dt.datetime.fromisoformat(s)
+                  return d.astimezone(KST).strftime('%Y%m%d') if d.tzinfo is not None else ''
+              except (ValueError,TypeError): return ''
+          
+          def latest_events(state):
+              latest={}
+              for rec,e in state['receipts'].items():
+                  if not isinstance(e,dict) or not valid_receipt(rec) or e.get('receipt')!=rec: raise ValueError('INVALID_RECEIPT_STATE')
+                  if 'period' not in e: continue
+                  code,corp,year,period=e.get('code'),e.get('corp_code'),e.get('year'),e.get('period')
+                  if not re.fullmatch(r'\d{6}',str(code)) or not re.fullmatch(r'\d{8}',str(corp)) or type(year) is not int or period not in ('annual','q1','half','q3') or e.get('filing_date')!=rec[:8]: raise ValueError('INVALID_EVENT_IDENTITY')
+                  key=f'{code}:{year}:{period}'
+                  if key not in latest or rec>latest[key]['receipt']: latest[key]=e
+              return latest
+          
+          def archived(e,m,refresh,day):
+              rec=e['receipt']
+              if rec[:8]>day: return None,'FILING_AFTER_MARKET_DATE'
+              if e.get('state')!='ARCHIVED': return None,'LATEST_RECEIPT_NOT_ARCHIVED'
+              rel=e.get('archive','')
+              allowed={str((STORE/'raw'/f'{rec}_{b}.json.gz').relative_to(ROOT)):b for b in ('CFS','OFS')}
+              if rel not in allowed: raise ValueError('UNEXPECTED_ARCHIVE_PATH '+rec)
+              p=ROOT/rel;basis=allowed[rel]
+              if not p.is_file() or digest(p)!=e.get('sha256'): raise ValueError('ARCHIVE_HASH_MISMATCH '+rec)
+              with gzip.open(p,'rt',encoding='utf-8') as fp: obj=json.load(fp)
+              if not isinstance(obj,dict) or any(obj.get(k)!=e[k] for k in ('receipt','corp_code','year','period')) or obj.get('source')!='OpenDART fnlttSinglAcntAll': raise ValueError('ARCHIVE_IDENTITY_MISMATCH '+rec)
+              raw=obj.get('raw')
+              if not isinstance(raw,dict) or raw.get('status')!='000' or not refresh.checked_rows(raw,e,basis): raise ValueError('RAW_RECEIPT_MISMATCH '+rec)
+              recalc=refresh.normalize(m,raw,e,basis)
+              if recalc!=obj.get('normalized'): raise ValueError('NORMALIZED_ARCHIVE_MISMATCH '+rec)
+              if not accounts(recalc): return None,'NO_SUPPORTED_ACCOUNTS'
+              return recalc,'VERIFIED_ARCHIVE'
+          
+          def annual_decision(old,new,e):
+              a,b=accounts(old),accounts(new)
+              if not owner_pair(b): return 'HOLD_MISSING_OWNER_PAIR'
+              if not isinstance(old,dict): return 'HOLD_INVALID_OLD_RECORD'
+              if old.get('corp_code') and old['corp_code']!=e['corp_code']: return 'HOLD_IDENTITY_CONFLICT'
+              if not a:
+                  if old.get('status')=='000': return 'HOLD_INVALID_OLD_RECORD'
+                  return 'APPLY_NEW'
+              if old.get('corp_code')!=e['corp_code'] or str(old.get('year'))!=str(e['year']) or old.get('report')!='annual': return 'HOLD_IDENTITY_CONFLICT'
+              if old.get('fs_div')!=new.get('fs_div'): return 'HOLD_BASIS_CONFLICT'
+              if not a.keys()<=b.keys(): return 'HOLD_FIELD_LOSS'
+              previous=old.get('receipt','')
+              if previous:
+                  if not valid_receipt(previous): return 'HOLD_INVALID_OLD_RECEIPT'
+                  if previous>e['receipt']: return 'HOLD_OLDER_RECEIPT'
+                  if previous==e['receipt']:
+                      return 'ALREADY_LINKED' if a==b else 'HOLD_SAME_RECEIPT_CONFLICT'
+              unchanged=all(b[k]==v for k,v in a.items())
+              if unchanged: return 'APPLY_MATCHED_OR_ENRICHED'
+              # For legacy values without receipt provenance, a conflicting older filing is ambiguous.
+              if previous and previous<e['receipt']: return 'APPLY_NEWER_RECEIPT'
+              old_day=checked_date(old.get('fetched_utc'))
+              if old_day and e['filing_date']>old_day: return 'APPLY_NEWER_THAN_LEGACY_FETCH'
+              return 'HOLD_AMBIGUOUS_LEGACY_CONFLICT'
+          
+          def plan(cache,state,mapping,codes,day,m,refresh):
+              proposed=dict(cache);decisions={};inputs={};revisions={}
+              for key,e in sorted(latest_events(state).items()):
+                  code,corp,year,period=e['code'],e['corp_code'],e['year'],e['period']
+                  meta={'receipt':e['receipt'],'corp_code':corp,'year':year,'period':period}
+                  if code not in codes or mapping.get(code)!=corp:
+                      decisions[key]={**meta,'result':'HOLD_MARKET_OR_MAPPING'};continue
+                  new,result=archived(e,m,refresh,day)
+                  if new is None:
+                      decisions[key]={**meta,'result':result};continue
+                  basis='ANNUAL' if period=='annual' else 'CUMULATIVE_INTERIM_IS_CIS'
+                  if new.get('amount_basis')!=basis: raise ValueError('AMOUNT_BASIS_MISMATCH '+key)
+                  inputs[key]={**meta,'fs_div':new['fs_div'],'accounts':accounts(new),'amount_basis':basis,'archive':e['archive'],'sha256':e['sha256'],'point_in_time_verified':False}
+                  if period!='annual': result='LINK_CUMULATIVE_ONLY'
+                  elif year!=int(day[:4])-1: result='LINK_HISTORICAL_ANNUAL_ONLY'
+                  else:
+                      old=cache.get(key,{})
+                      result=annual_decision(old,new,e)
+                      if result.startswith('APPLY_'):
+                          if key in cache: revisions[key]=old
+                          proposed[key]={**new,
+                              'source_receipt_date':e['filing_date'],'source_archive':e['archive'],'source_archive_sha256':e['sha256'],
+                              'point_in_time_verified':False,'repair_source':'EXACT_RECEIPT_ARCHIVE'}
+                          # The archive state carries the observed retrieval market date, not an exact filing-time value.
+                          proposed[key]['archive_observed_market_date']=e.get('last_attempt_market_date','')
+                  decisions[key]={**meta,'result':result}
+              return proposed,decisions,inputs,revisions
+          
+          def strict_ttm(inputs,day):
+              year=int(day[:4]);md=day[4:]
+              period='q3' if md>='1115' else 'half' if md>='0814' else 'q1' if md>='0515' else ''
+              result={}
+              if not period: return result
+              for key in sorted(inputs):
+                  code=key.split(':')[0]
+                  if key!=f'{code}:{year-1}:annual': continue
+                  vals=[inputs.get(k,{}) for k in (key,f'{code}:{year}:{period}',f'{code}:{year-1}:{period}')]
+                  if any(not v for v in vals): continue
+                  if len({v['corp_code'] for v in vals})!=1 or len({v['fs_div'] for v in vals})!=1: continue
+                  if [v['amount_basis'] for v in vals]!=['ANNUAL','CUMULATIVE_INTERIM_IS_CIS','CUMULATIVE_INTERIM_IS_CIS']: continue
+                  p=[v['accounts'].get('profit') for v in vals]
+                  if any(type(v) is not int for v in p): continue
+                  result[code]={'ttm_profit':p[0]+p[1]-p[2],'receipts':[v['receipt'] for v in vals],'fs_div':vals[0]['fs_div'],'point_in_time_verified':False}
+              return result
+          
+          def main():
+              OUT.mkdir(parents=True,exist_ok=True)
+              previous=read(OUT/'status.json')
+              if previous.get('state') not in ('FILING_REFRESH_CHECKPOINT','SKIPPED_ALREADY_PROCESSED_MARKET_DATE'):
+                  print('R14_ANALYSIS_LINK_SKIPPED',previous.get('state'));return
+              spec=importlib.util.spec_from_file_location('refresh_existing','/tmp/krx_filing_refresh.py');r=importlib.util.module_from_spec(spec);spec.loader.exec_module(r)
+              spec=importlib.util.spec_from_file_location('r14_n',ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py');n=importlib.util.module_from_spec(spec);spec.loader.exec_module(n);m=n.m
+              scripts=[ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py',ROOT/'scripts/krx_v5_r14_dart_incremental_m.py']
+              script_hashes={str(p):digest(p) for p in scripts}
+              git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+              for _ in range(3):
+                  git('fetch','origin','main');git('reset','--hard','origin/main')
+                  if script_hashes!={str(p):digest(p) for p in scripts}: raise ValueError('FINANCIAL_PARSER_CHANGED')
+                  day,rows=n.official_market_snapshot();old_status=read(STATUS);cache=read(CACHE);mapping=read(MAP)
+                  if old_status.get('market_date')!=day or old_status.get('cache_records')!=len(cache): raise ValueError('MARKET_FINANCIAL_SNAPSHOT_NOT_SYNCHRONIZED')
+                  if day!=previous.get('market_date'): raise ValueError('MARKET_CHANGED_AFTER_REFRESH')
+                  with (ROOT/'data/latest.csv').open(encoding='utf-8-sig',newline='') as fp: codes={v['ISU_CD'] for v in csv.DictReader(fp)}
+                  if len(codes)!=rows: raise ValueError('DUPLICATE_MARKET_CODE')
+                  state=read(STORE/'state.json')
+                  if state.get('schema')!=1 or not isinstance(state.get('receipts'),dict): raise ValueError('INVALID_REFRESH_STATE')
+                  protected={str(p):digest(p) for p in (MAP,EVIDENCE,STORE/'state.json')}
+                  proposed,decisions,inputs,revisions=plan(cache,state,mapping,codes,day,m,r)
+                  changed=[k for k,v in proposed.items() if k not in cache or cache[k]!=v]
+                  assert set(cache)<=set(proposed)
+                  assert all(k.endswith(':annual') for k in changed)
+                  for k,old in revisions.items():
+                      b=jsonbytes(old);h=hashlib.sha256(b).hexdigest();p=STORE/'previous_annual'/k.replace(':','_')/(h+'.json.gz')
+                      payload=gzip.compress(b,mtime=0)
+                      if p.exists() and p.read_bytes()!=payload: raise ValueError('IMMUTABLE_PREVIOUS_VERSION_CONFLICT')
+                      atomic(p,payload)
+                  if changed:
+                      atomic(CACHE,jsonbytes(proposed))
+                      subprocess.run([sys.executable,str(scripts[0])],check=True,env=dict(os.environ,R14_REBUILD_ONLY='1',DART_API_KEY='',OPENDART_API_KEY=''))
+                      s=read(STATUS)
+                      assert s['market_date']==day and s['cache_records']==len(proposed) and s['annual_verified_rows']>=old_status['annual_verified_rows'] and s['ttm_calculated']>=old_status['ttm_calculated']
+                      assert s['investment_decisions_authorized'] is False and s['final_buy_signals']==0
+                      assert read(CACHE)==proposed
+                  assert protected=={str(p):digest(p) for p in (MAP,EVIDENCE,STORE/'state.json')}
+                  # This is an independent receipt-bound input view, not permission to mix quarterly amounts in legacy TTM.
+                  ttm=strict_ttm(inputs,day)
+                  view={'schema':1,'market_date':day,'inputs':inputs,'strict_ttm':ttm,'decisions':decisions,'financial_disclosure_asof_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'legacy_ttm_cumulative_verified':False}
+                  atomic(LINK,jsonbytes(view))
+                  report={'state':'ANALYSIS_LINK_PERSISTED','market_date':day,'api_calls':0,'annual_cache_records_changed':len(changed),'previous_annual_versions_preserved':len(revisions),'receipt_bound_inputs':len(inputs),'strict_ttm_rows':len(ttm),'decisions':dict(Counter(v['result'] for v in decisions.values())),'cache_records_before':len(cache),'cache_records_after':len(proposed),'legacy_quarter_cache_modified':False,'financial_disclosure_asof_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
+                  atomic(OUT/'analysis_link_status.json',jsonbytes(report))
+                  files=[str(p.relative_to(ROOT)) for p in (CACHE,STATUS,INDEX,LINK)]
+                  history=STORE/'previous_annual'
+                  if history.exists(): files.append(str(history.relative_to(ROOT)))
+                  git('add','--',*files)
+                  staged=git('diff','--cached','--name-only').splitlines()
+                  if any(p not in files and not p.startswith('data/v5_financial_m/filing_refresh/previous_annual/') for p in staged): raise ValueError('UNEXPECTED_STAGED_FILE')
+                  if staged:
+                      git('commit','-m','R14: link validated receipt archives to protected annual financial analysis')
+                      if subprocess.run(['git','push','origin','HEAD:main']).returncode: continue
+                  report['checkpoint_persisted']=True
+                  atomic(OUT/'analysis_link_status.json',jsonbytes(report));print('R14_ANALYSIS_LINK',json.dumps(report,ensure_ascii=False));return
+              raise ValueError('ANALYSIS_LINK_PERSISTENCE_CONFLICT')
+          
+          if __name__=='__main__': main()
+          PYTHON
+          python -m py_compile /tmp/r14_link_20261125.py
+          python /tmp/r14_link_20261125.py
       - name: Preserve refresh result
         if: always()
         uses: actions/upload-artifact@v4
