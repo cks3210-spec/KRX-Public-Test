@@ -1,8 +1,7 @@
 name: KRX Official Primary Source Staging (No Production Writes)
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '10 10 * * 1-5' # 19:10 KST; UTC schedule
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: read
 concurrency:
