@@ -1,8 +1,7 @@
 name: KRX v5 Official API Daily Source Gate
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '20 0 * * 1-5' # 09:20 KST, previous trading day
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
