@@ -1,8 +1,6 @@
 name: KRX v5 R14 OpenDART Auto Continue
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '30 12 * * *' # 21:30 KST
+  workflow_dispatch:  # Manual only. 21:30 KST OpenDART collection disabled during Stage 1.
 permissions:
   contents: write
 concurrency:
