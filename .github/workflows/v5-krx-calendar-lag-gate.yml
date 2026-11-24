@@ -1,8 +1,7 @@
 name: KRX v5 Calendar and Data Lag Gate
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '10 1 * * 1-5' # 10:10 KST
+  # Legacy scheduled source/API collection disabled: canonical KRX Open API collector runs at 08:30 KST.
 permissions:
   contents: write
 concurrency:
