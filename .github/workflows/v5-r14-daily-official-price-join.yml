@@ -1,0 +1,227 @@
+name: KRX v5 R14 Daily Official Price Join (Research Only)
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX Official Promotion Readiness Gate (Controlled Integration)']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: krx-v5-r14-daily-price-join
+  cancel-in-progress: false
+jobs:
+  research-price-join:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Join frozen R14 grades with latest promoted KRX official close
+        shell: bash
+        run: |
+          cat > /tmp/v5_r14_daily_price_join.py <<'PY'
+          #!/usr/bin/env python3
+          """KRX v5: frozen R14 A/B cohort -> promoted official market closes.
+          
+          Input repository files are read-only. This produces a non-trading research join
+          and does not retrieve, publish, or certify private PER/PBR data.
+          """
+          import csv
+          import hashlib
+          import io
+          import json
+          import re
+          from collections import Counter
+          from decimal import Decimal, ROUND_HALF_UP
+          from pathlib import Path
+          
+          RESEARCH = Path('v5_reports/stage28/r14_eligible_research_candidates.json')
+          MARKET = Path('data/latest.csv')
+          SUMMARY = Path('data/summary.json')
+          OUT = Path('v5_reports/r14_daily_market_join')
+          FIELDS = [
+              'research_market_date','official_market_date','stock_code','stock_name',
+              'research_grade_asof','research_score_asof','market','research_close_krw',
+              'official_close_krw','unadjusted_close_change_pct','official_volume',
+              'official_marketcap_krw','marketcap_100bn_eligible','join_status',
+              'official_per_pbr_verified','investment_decisions_authorized','buy_signal'
+          ]
+          
+          
+          def require(valid, message):
+              if not valid:
+                  raise ValueError('R14_PRICE_JOIN_' + message)
+          
+          
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          
+          
+          def date_ok(x):
+              return bool(re.fullmatch(r'20\d{6}', str(x or '')))
+          
+          
+          def main():
+              research = json.loads(RESEARCH.read_text(encoding='utf-8-sig'))
+              summary = json.loads(SUMMARY.read_text(encoding='utf-8-sig'))
+              cohort_day = str(research.get('research_market_date', ''))
+              source_day = str(summary.get('latest_trading_date', ''))
+              require(date_ok(cohort_day) and date_ok(source_day), 'INVALID_DATE')
+              require(source_day >= cohort_day, 'MARKET_DATA_OLDER_THAN_COHORT')
+              require(summary.get('sessions_stored') == 70, 'UNVERIFIED_MARKET_HISTORY')
+              require(str(summary.get('note', '')).startswith('Official KRX price source updated.'),
+                      'MARKET_SOURCE_NOT_MARKED_OFFICIAL')
+              candidates = research.get('candidates')
+              require(isinstance(candidates, list) and len(candidates) >= 1, 'EMPTY_COHORT')
+              require(len(candidates) == research.get('candidate_count'), 'COHORT_COUNT_MISMATCH')
+              grade_counts = Counter(c.get('grade') for c in candidates)
+              require(set(grade_counts) <= {'A', 'B'}, 'NON_AB_RESEARCH_COHORT')
+              require(dict(grade_counts) == research.get('candidate_grades'), 'COHORT_GRADES_MISMATCH')
+              by_code = {}
+              market_counts = Counter()
+              market_rows = 0
+              with MARKET.open('r', encoding='utf-8-sig', newline='') as fh:
+                  reader = csv.DictReader(fh)
+                  needed = {'BAS_DD', 'ISU_CD', 'ISU_NM', 'TDD_CLSPRC', 'ACC_TRDVOL', 'MKTCAP', 'MARKET'}
+                  require(needed <= set(reader.fieldnames or ()), 'MARKET_COLUMNS_MISSING')
+                  seen = set()
+                  for r in reader:
+                      require(r['BAS_DD'] == source_day, 'MARKET_DATE_MISMATCH')
+                      market = r['MARKET']
+                      code = r['ISU_CD']
+                      require(market in ('KOSPI', 'KOSDAQ') and re.fullmatch(r'[A-Z0-9]{6}', code),
+                              'MARKET_SECURITY_KEY_INVALID')
+                      key = (market, code)
+                      require(key not in seen, 'DUPLICATE_MARKET_SECURITY_KEY')
+                      seen.add(key)
+                      price = int(r['TDD_CLSPRC'].replace(',', ''))
+                      volume = int(r['ACC_TRDVOL'].replace(',', ''))
+                      cap = int(r['MKTCAP'].replace(',', ''))
+                      require(price > 0 and volume >= 0 and cap > 0, 'INVALID_MARKET_VALUE')
+                      by_code.setdefault(code, []).append((r, price, volume, cap))
+                      market_counts[market] += 1
+                      market_rows += 1
+              require(market_counts['KOSPI'] >= 500 and market_counts['KOSDAQ'] >= 1000,
+                      'OFFICIAL_MARKET_COVERAGE_TOO_LOW')
+              require(market_rows == summary.get('kospi_rows_latest', -1) + summary.get('kosdaq_rows_latest', -1),
+                      'SUMMARY_MARKET_ROW_COUNT_MISMATCH')
+              seen_cohort = set()
+              result = []
+              excluded = []
+              direction = Counter()
+              for c in sorted(candidates, key=lambda item: item['code']):
+                  code = str(c.get('code', '')).strip()
+                  require(re.fullmatch(r'\d{6}', code), 'COHORT_CODE_INVALID')
+                  require(code not in seen_cohort, 'DUPLICATE_RESEARCH_COHORT_CODE')
+                  seen_cohort.add(code)
+                  require(c.get('market_date') == cohort_day, 'RESEARCH_COHORT_DATE_MISMATCH')
+                  matches = by_code.get(code, [])
+                  require(len(matches) == 1, 'MISSING_OR_AMBIGUOUS_CODE_' + code)
+                  row, price, volume, cap = matches[0]
+                  old_price = int(str(c.get('close_krw', '')).replace(',', ''))
+                  require(old_price > 0, 'INVALID_RESEARCH_CLOSE_' + code)
+                  change = (Decimal(price - old_price) * 100 / Decimal(old_price)).quantize(
+                      Decimal('0.01'), rounding=ROUND_HALF_UP)
+                  eligible = cap >= 100_000_000_000
+                  if not eligible:
+                      excluded.append({'code': code, 'name': c['name'], 'marketcap_krw': cap,
+                                       'reason': 'CURRENT_MARKETCAP_BELOW_100BN_KRW'})
+                  direction['up' if price > old_price else 'down' if price < old_price else 'flat'] += 1
+                  result.append({
+                      'research_market_date': cohort_day,
+                      'official_market_date': source_day,
+                      'stock_code': code,
+                      'stock_name': c['name'],
+                      'research_grade_asof': c['grade'],
+                      'research_score_asof': c.get('score', ''),
+                      'market': row['MARKET'],
+                      'research_close_krw': old_price,
+                      'official_close_krw': price,
+                      'unadjusted_close_change_pct': str(change),
+                      'official_volume': volume,
+                      'official_marketcap_krw': cap,
+                      'marketcap_100bn_eligible': 'YES' if eligible else 'NO',
+                      'join_status': 'MATCHED_OFFICIAL_PRICE',
+                      'official_per_pbr_verified': 'NO',
+                      'investment_decisions_authorized': 'NO',
+                      'buy_signal': 'NONE',
+                  })
+              require(len(result) == len(candidates), 'INCOMPLETE_COHORT_MATCH')
+              status = {
+                  'version': 'KRX_V5_R14_DAILY_OFFICIAL_PRICE_JOIN_V1',
+                  'state': 'RESEARCH_ONLY_FULL_JOIN_VERIFIED',
+                  'research_market_date': cohort_day,
+                  'official_market_date': source_day,
+                  'total_official_market_rows': market_rows,
+                  'research_candidates': len(candidates),
+                  'matched_candidates': len(result),
+                  'missing_or_ambiguous_candidates': 0,
+                  'research_grade_counts_asof_cohort': dict(sorted(grade_counts.items())),
+                  'eligible_at_current_marketcap_100bn': len(result) - len(excluded),
+                  'excluded_current_marketcap': excluded,
+                  'unadjusted_price_direction': dict(sorted(direction.items())),
+                  'source_sha256': {'research_candidates': sha(RESEARCH),
+                                    'latest_market': sha(MARKET),
+                                    'market_summary': sha(SUMMARY)},
+                  'current_grade_revalidated': False,
+                  'official_per_pbr_verified': False,
+                  'technical_indicators_asof': summary.get('technical_indicators_asof'),
+                  'investment_decisions_authorized': False,
+                  'final_buy_signals': 0,
+                  'warnings': [
+                      'Research grades/scores are frozen to research_market_date; no daily grade recertification.',
+                      'Price change compares raw closes and is not corporate-action adjusted.',
+                      'Official PER/PBR is not certified and no executable entry prices are released.',
+                      'Marketcap eligibility uses current official close-date marketcap.'
+                  ]
+              }
+              csvbuf = io.StringIO(newline='')
+              writer = csv.DictWriter(csvbuf, fieldnames=FIELDS, extrasaction='raise')
+              writer.writeheader()
+              writer.writerows(result)
+              csvdata = csvbuf.getvalue().encode('utf-8-sig')
+              jsondata = (json.dumps(status, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode('utf-8')
+              daydir = OUT / source_day
+              daydir.mkdir(parents=True, exist_ok=True)
+              for path, body in ((daydir / 'r14_ab_official_price_join.csv', csvdata),
+                                 (daydir / 'status.json', jsondata)):
+                  if path.exists():
+                      require(path.read_bytes() == body, 'IMMUTABLE_SNAPSHOT_CONFLICT_' + path.name)
+                  else:
+                      path.write_bytes(body)
+              (OUT / 'latest_status.json').write_bytes(jsondata)
+              print(json.dumps({key: status[key] for key in ('state', 'research_market_date', 'official_market_date',
+                        'matched_candidates', 'eligible_at_current_marketcap_100bn', 'excluded_current_marketcap',
+                        'unadjusted_price_direction')}, ensure_ascii=False))
+          
+          
+          if __name__ == '__main__':
+              main()
+          PY
+          python /tmp/v5_r14_daily_price_join.py
+      - name: Commit immutable research-only snapshot and latest join status
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add v5_reports/r14_daily_market_join/
+          if git diff --cached --quiet; then
+            echo "Identical verified research snapshot already saved; no duplicate commit."
+            exit 0
+          fi
+          git commit -m "KRX v5: archive R14 research cohort daily official close join"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Upload research-only join evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-r14-official-price-join
+          path: v5_reports/r14_daily_market_join/
+          retention-days: 30
+          if-no-files-found: warn
