@@ -96,10 +96,12 @@ jobs:
                   if not isinstance(result,dict): raise ValueError('BAD_API_RESPONSE')
                   return result
           
-          def scan(api,start,end):
+          def scan(api,start,end,corp=None):
               out={};expected=None;total_count=None;page=1
               while True:
-                  d=api.call('list.json',{'bgn_de':start,'end_de':end,'pblntf_ty':'A','last_reprt_at':'N','page_count':'100','page_no':str(page),'sort':'date','sort_mth':'asc'})
+                  params={'bgn_de':start,'end_de':end,'pblntf_ty':'A','last_reprt_at':'N','page_count':'100','page_no':str(page),'sort':'date','sort_mth':'asc'}
+                  if corp: params['corp_code']=corp
+                  d=api.call('list.json',params)
                   status=str(d.get('status'))
                   if status=='013' and page==1: return {}
                   if status!='000': raise RuntimeError('LIST_API_STATUS_'+status)
@@ -111,6 +113,7 @@ jobs:
                   for r in rows:
                       rec=str(r.get('rcept_no',''));day=str(r.get('rcept_dt',''))
                       if not re.fullmatch(r'\d{14}',rec) or not re.fullmatch(r'\d{8}',day) or rec[:8]!=day or not start<=day<=end or rec in out: raise ValueError('INVALID_OR_DUPLICATE_FILING')
+                      if corp and str(r.get('corp_code',''))!=corp: raise ValueError('CANDIDATE_LIST_IDENTITY_MISMATCH')
                       out[rec]=r
                   if page==pages: break
                   page+=1
@@ -180,6 +183,75 @@ jobs:
               if not p.exists(): atomic(p,content)
               e.update(archive=str(p.relative_to(ROOT)),sha256=sha(p),normalized_status=parsed.get('status'),normalized_fields=sorted(parsed.get('accounts',{})),amount_basis=parsed['amount_basis'])
           
+          
+          def needed_periods(day):
+              y=int(day[:4]);md=day[4:]
+              period='q3' if md>='1115' else 'half' if md>='0814' else 'q1' if md>='0515' else ''
+              return {(y-1,'annual')} | ({(y,period),(y-1,period)} if period else set())
+          
+          def candidate_queue(engine,market_rows,annual_rows,cache,mapping,frozen,excluded):
+              # The legacy engine may use unverified TTM. Its A/B output is a retrieval lead only.
+              markets,day=engine.market_index(market_rows)
+              queue=[];seen=set()
+              for fin in annual_rows:
+                  code=engine.normalize_code(fin.get('code'))
+                  if not code: continue
+                  if code in seen: raise ValueError('DUPLICATE_ANNUAL_INDEX_CODE')
+                  seen.add(code)
+                  if code in frozen or code in excluded or code not in markets: continue
+                  corp=mapping.get(code,'')
+                  if not re.fullmatch(r'\d{8}',str(corp)): continue
+                  year=str(fin.get('year',''))
+                  if year!=str(int(day[:4])-1): continue
+                  record=cache.get(f'{code}:{year}:annual',{})
+                  if not isinstance(record,dict) or record.get('corp_code')!=corp: continue
+                  market=dict(markets[code]);market.update(engine.balance_sheet_from_cache(cache,code,year))
+                  result,_=engine.grade(fin,market)
+                  if result: queue.append({'code':code,'corp_code':corp,'score':result['score']})
+              return sorted(queue,key=lambda x:(-x['score'],x['code']))
+          
+          def candidate_latest(state,code,corp,day):
+              latest={}
+              for receipt,e in state['receipts'].items():
+                  if e.get('code')!=code or e.get('corp_code')!=corp or 'period' not in e or e.get('filing_date','')>day: continue
+                  k=(e['year'],e['period'])
+                  if k not in latest or receipt>latest[k]['receipt']:latest[k]=e
+              return latest
+          
+          def candidate_ready(state,c,day):
+              latest=candidate_latest(state,c['code'],c['corp_code'],day)
+              return all(latest.get(k,{}).get('state')=='ARCHIVED' for k in needed_periods(day))
+          
+          def candidate_priority(state,queue,day):
+              priority={}
+              for rank,c in enumerate(queue):
+                  latest=candidate_latest(state,c['code'],c['corp_code'],day)
+                  for k in needed_periods(day):
+                      e=latest.get(k)
+                      if e:priority[e['receipt']]=rank
+              return priority
+          
+          def discover_candidates(api,state,queue,day,codes,mapping):
+              # Keep independent cooldown metadata; never re-query a complete receipt inventory.
+              attempts=state.setdefault('candidate_list_attempts',{})
+              if not isinstance(attempts,dict):raise ValueError('INVALID_CANDIDATE_SCAN_STATE')
+              queried=0;new=0
+              for c in queue:
+                  if queried>=3 or api.calls>=MAX_CALLS-4:break
+                  latest=candidate_latest(state,c['code'],c['corp_code'],day)
+                  if needed_periods(day)<=set(latest):continue
+                  key=c['code']+':'+c['corp_code']+':'+str(sorted(needed_periods(day)))
+                  prev=attempts.get(key,{})
+                  if prev.get('retry_after_market_date','')>day:continue
+                  try:events=scan(api,str(int(day[:4])-1)+'0101',day,corp=c['corp_code'])
+                  except RuntimeError as exc:
+                      if str(exc)=='LIST_BUDGET_EXHAUSTED':break
+                      raise
+                  queried+=1
+                  before=len(state['receipts']);add_events(state,events,codes,mapping);new+=len(state['receipts'])-before
+                  attempts[key]={'checked_market_date':day,'retry_after_market_date':ymd(date(day)+dt.timedelta(days=30)),'receipt_count':len(events)}
+              return queried,new
+          
           def main():
               OUT.mkdir(parents=True,exist_ok=True)
               report={'state':'RUNNING','api_calls':0,'investment_decisions_authorized':False,'financial_disclosure_asof_verified':False,'final_buy_signals':0,'canonical_cache_modified':False}
@@ -203,13 +275,21 @@ jobs:
               protected=[F/'dart_financial_cache.json',F/'corp_map.json',F/'status.json',F/'annual_financial_index_m.csv',F/'dart_disclosure_evidence.json'];before={str(p):sha(p) for p in protected}
               financial=read(F/'status.json')
               if financial.get('market_date')!=day or financial.get('cache_records')!=len(cache): raise ValueError('FINANCIAL_SNAPSHOT_NOT_SYNCHRONIZED')
-              api=API(m);error='';new=0;archived=0;start=None;end=None
+              api=API(m);error='';new=0;archived=0;start=None;end=None;candidate_queries=0;candidate_new=0;queue=[]
+              # Use only the existing engine, frozen cohort, and explicit exclusion policy.
+              spec=importlib.util.spec_from_file_location('r14_grade',ROOT/'scripts/krx_v5_r14_grade_engine.py');engine=importlib.util.module_from_spec(spec);spec.loader.exec_module(engine)
+              frozen_doc=read(ROOT/'v5_reports/stage28/r14_stage55_p2_provenance_gate_20261120.json')
+              exclusion_doc=read(ROOT/'v5_reports/stage28/r14_candidate_exclusion_gate.json')
+              if frozen_doc.get('authorized_trade_decisions') is not False or exclusion_doc.get('investment_decisions_authorized') is not False:raise ValueError('UNEXPECTED_CANDIDATE_AUTHORIZATION')
+              frozen={e['code'] for e in frozen_doc['candidate_states']};excluded=set(exclusion_doc['excluded_codes'])
+              if len(frozen)!=frozen_doc['candidate_count'] or len(excluded)!=exclusion_doc['excluded_candidate_count']:raise ValueError('CANDIDATE_POLICY_COUNT_MISMATCH')
+              queue=candidate_queue(engine,engine.read_csv(ROOT/'data/latest.csv'),engine.read_csv(F/'annual_financial_index_m.csv'),cache,mapping,frozen,excluded)
               try:
                   start=date(state['scanned_through'])+dt.timedelta(days=1) if state.get('scanned_through') else cutoff-dt.timedelta(days=BOOTSTRAP_DAYS-1)
                   end=min(cutoff,start+dt.timedelta(days=MAX_SCAN_DAYS-1))
                   day_to_scan=start
                   # Scan individual calendar days so a busy filing week cannot block the entire cursor.
-                  while day_to_scan<=end and api.calls<MAX_CALLS-2:
+                  while day_to_scan<=end and api.calls<(MAX_CALLS-10 if queue else MAX_CALLS-2):
                       count=len(state['receipts'])
                       try: events=scan(api,ymd(day_to_scan),ymd(day_to_scan))
                       except RuntimeError as exc:
@@ -217,7 +297,9 @@ jobs:
                           raise
                       add_events(state,events,codes,mapping);new+=len(state['receipts'])-count
                       state['scanned_through']=ymd(day_to_scan);day_to_scan+=dt.timedelta(days=1)
-                  for rec,e in sorted(state['receipts'].items()):
+                  candidate_queries,candidate_new=discover_candidates(api,state,queue,day,codes,mapping)
+                  priority=candidate_priority(state,queue,day)
+                  for rec,e in sorted(state['receipts'].items(),key=lambda kv:(priority.get(kv[0],len(queue)),kv[0])):
                       if e['state'] not in ('PENDING','RETRY','RECEIPT_MISMATCH'): continue
                       if api.calls>=MAX_CALLS-1: break
                       if e.get('retry_after_market_date','')>day: continue
@@ -236,8 +318,9 @@ jobs:
               state['updated_utc']=now().isoformat();state['last_error']=error
               dump(STATE,state)
               if before!={str(p):sha(p) for p in protected}: raise ValueError('CANONICAL_FINANCIAL_DATA_CHANGED')
-              report.update(state='FILING_REFRESH_CHECKPOINT' if not error else 'FILING_REFRESH_BLOCKED_CHECKPOINT',api_calls=api.calls,new_receipts=new,archived_receipts=archived,planned_scan_start=ymd(start) if start else None,planned_scan_end=ymd(end) if end else None,scanned_through=state['scanned_through'],receipt_states=dict(Counter(e['state'] for e in state['receipts'].values())),error=error,bootstrap_days=BOOTSTRAP_DAYS)
+              report.update(candidate_leads=len(queue),candidate_list_queries=candidate_queries,candidate_new_receipts=candidate_new,candidate_archive_ready=sum(candidate_ready(state,c,day) for c in queue),candidate_grade_authorized=False,candidate_priority_basis='LEGACY_RESEARCH_LEADS_ONLY',candidate_missing_evidence_policy='HOLD',state='FILING_REFRESH_CHECKPOINT' if not error else 'FILING_REFRESH_BLOCKED_CHECKPOINT',api_calls=api.calls,new_receipts=new,archived_receipts=archived,planned_scan_start=ymd(start) if start else None,planned_scan_end=ymd(end) if end else None,scanned_through=state['scanned_through'],receipt_states=dict(Counter(e['state'] for e in state['receipts'].values())),error=error,bootstrap_days=BOOTSTRAP_DAYS)
               dump(OUT/'status.json',report);dump(OUT/'state.json',state)
+              dump(OUT/'candidate_receipt_review.json',{'market_date':day,'investment_decisions_authorized':False,'leads':[{'code':c['code'],'state':'ARCHIVE_INPUTS_PRESENT_REVIEW_ONLY' if candidate_ready(state,c,day) else 'HOLD_MISSING_RECEIPT_ARCHIVE'} for c in queue]})
               git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
               git('add','--',str(STORE.relative_to(ROOT)))
               paths=git('diff','--cached','--name-only').splitlines()
