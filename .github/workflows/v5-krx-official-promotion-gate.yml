@@ -119,11 +119,11 @@ jobs:
               if not staged:return False
               git('commit','-m',message);git('push','origin','HEAD:main');return True
 
-          def validate_artifact(root):
+          def validate_artifact(root, run_id=None):
               s=loadj(root/'status.json');day=s.get('market_date','')
               need(s.get('state')=='VERIFIED_OFFICIAL_MARKET_SNAPSHOT' and s.get('source')=='KRX_OPEN_API','UNVERIFIED_ARTIFACT')
               need(s.get('investment_decisions_authorized') is False and s.get('final_buy_signals')==0,'BAD_INVESTMENT_GATE')
-              need(str(s.get('github_run_id'))==root.name,'SOURCE_RUN_ID_MISMATCH')
+              need(str(s.get('github_run_id'))==(run_id or root.name),'SOURCE_RUN_ID_MISMATCH')
               need(s.get('target_market_date')==day and CAL.is_session(session(day)),'INVALID_ARTIFACT_DATE')
               need(day<now.strftime('%Y%m%d') and (now.hour,now.minute)>=(8,30),'UNPUBLISHED_SESSION_OR_EARLY_RUN')
               raw=read(root/'official_daily_market.csv',COLS+['source','source_sha256']);rows=canonical(raw);c=complete(rows,day)
@@ -150,30 +150,59 @@ jobs:
                       if s.get('state') in ('SKIPPED_BEFORE_0830_KST','SKIPPED_KRX_CLOSED','SKIPPED_ALREADY_VERIFIED_MARKET_DATE'):
                           if source==root.name:skip=s
                           continue
-                      day,rows,s=validate_artifact(root)
-                      if not requested or requested==day:candidates.append((day,rows,s))
+                      if s.get('state')=='VERIFIED_OFFICIAL_MARKET_BATCH':
+                          need(str(s.get('github_run_id'))==root.name and s.get('source')=='KRX_OPEN_API' and s.get('investment_decisions_authorized') is False and s.get('final_buy_signals')==0,'INVALID_BATCH_MANIFEST')
+                          days=s.get('batch_dates',[])
+                          need(isinstance(days,list) and 1<=len(days)<=5 and days==sorted(set(days)),'INVALID_BATCH_DATES')
+                          need(days==[x.strftime('%Y%m%d') for x in CAL.sessions_in_range(session(days[0]),session(days[-1]))],'BATCH_DATE_GAP')
+                          need(s.get('market_date')==days[-1] and days[-1]<now.strftime('%Y%m%d') and (now.hour,now.minute)>=(8,30),'INVALID_BATCH_END')
+                          verified=[]
+                          for d in days:
+                              child=root/'sessions'/d; cs=loadj(child/'status.json')
+                              if cs.get('state')=='VERIFIED_PERMANENT_ARCHIVE':
+                                  need(cs.get('market_date')==d and str(cs.get('github_run_id'))==root.name,'INVALID_ARCHIVE_MANIFEST')
+                                  p=A/(d+'.csv');rows=canonical(read(p,COLS));complete(rows,d)
+                                  need(cs.get('archive_sha256')==digest(p),'ARCHIVE_CHANGED_AFTER_COLLECTION')
+                                  verified.append((d,rows,cs))
+                              else:
+                                  found=validate_artifact(child,root.name);need(found[0]==d,'BATCH_CHILD_DATE_MISMATCH');verified.append(found)
+                          candidates.extend(verified)
+                      else:
+                          candidates.append(validate_artifact(root))
                   except Exception as e:
                       if source==root.name:raise
                       print('MANUAL_ARTIFACT_REJECTED',root.name,str(e),flush=True)
               if source and not candidates:
                   need(skip is not None,'TRIGGER_ARTIFACT_NOT_VERIFIED')
                   if skip.get('state')!='SKIPPED_ALREADY_VERIFIED_MARKET_DATE' or skip.get('market_date')!=old:
-                      # If collector skipped because an artifact exists but production lags, fail visibly.
                       need(skip.get('state')!='SKIPPED_ALREADY_VERIFIED_MARKET_DATE' or str(skip.get('market_date',''))<=old,'VERIFIED_ARTIFACT_NOT_PROMOTED_MANUAL_RECOVERY_REQUIRED')
                       save('SKIPPED_COLLECTOR_NOOP',collector_state=skip['state'],market_date=old);return None
-              choice=max(candidates,key=lambda x:(x[0],int(x[2]['github_run_id']))) if candidates else None
+              eligible=[x for x in candidates if not requested or x[0]<=requested]
+              choice=max(eligible,key=lambda x:(x[0],int(x[2]['github_run_id']))) if eligible else None
               if requested and requested!=old and (not choice or choice[0]!=requested):raise ValueError('REQUESTED_ARTIFACT_NOT_FOUND')
               if choice and choice[0]<old:
                   if requested or source:save('SKIPPED_OLDER_SOURCE',market_date=old,source_date=choice[0]);return None
                   choice=None
               day=choice[0] if choice else old;rows=choice[1] if choice else current
               if choice:
-                  need(len(rows)>=.8*len(current),'MARKET_UNIVERSE_SHRINKAGE');report['source_run_id']=choice[2]['github_run_id'];report['source_mode']='VERIFIED_COLLECTOR_ARTIFACT'
+                  report['source_run_id']=choice[2]['github_run_id'];report['source_mode']='VERIFIED_COLLECTOR_ARTIFACT_OR_ARCHIVE'
               else:
-                  # Recovery from an existing permanent archive, never label as new API data.
                   ap=A/(old+'.csv');need(ap.is_file() and canonical(read(ap,COLS))==current,'CURRENT_OFFICIAL_ARCHIVE_NOT_MATCHED');report['source_mode']='EXISTING_ARCHIVE_MATCHED_LATEST_AND_HISTORY'
               if day==old:need(rows==current,'SAME_DATE_OFFICIAL_CONFLICT')
-              else:need(CAL.next_session(session(old)).strftime('%Y%m%d')==day,'GAP_OR_NONTRADING_DATE')
+              # Every intermediate session must have a verified collector artifact or permanent archive.
+              advances=[x.strftime('%Y%m%d') for x in CAL.sessions_in_range(session(old),session(day)) if x.strftime('%Y%m%d')>old]
+              advance_sources={}
+              previous=current
+              for d in advances:
+                  options=[x[1] for x in candidates if x[0]==d]
+                  p=A/(d+'.csv')
+                  if p.exists():options.append(canonical(read(p,COLS)))
+                  need(bool(options),'MISSING_OFFICIAL_MARKET_SESSION '+d)
+                  x=options[0];complete(x,d)
+                  need(all(y==x for y in options),'CONFLICTING_OFFICIAL_SOURCES '+d)
+                  need(len(x)>=.8*len(previous),'MARKET_UNIVERSE_SHRINKAGE '+d)
+                  advance_sources[d]=x;previous=x
+              if advances:need(advance_sources[day]==rows,'FINAL_SOURCE_CONFLICT')
               # Ledger is append-only. Do not rewrite conflicting old observations.
               ledger={};ledgerrows=read(price,PCOLS)
               for r in ledgerrows:
@@ -184,7 +213,7 @@ jobs:
               need(max(k[0] for k in ledger)<=day and oldmarker<=day,'LEDGER_DATE_REGRESSION')
               marker_counts=Counter(k[1] for k in ledger if k[0]==oldmarker)
               need(marker_counts['KOSPI']>=500 and marker_counts['KOSDAQ']>=1000,'LEDGER_MARKER_INCOMPLETE')
-              sources={day:rows}
+              sources={**advance_sources,day:rows}
               # Recover known official archives between ledger marker and target, without API.
               for p in sorted(A.glob('*.csv')):
                   if oldmarker<p.stem<=day:
@@ -204,11 +233,16 @@ jobs:
                       else:ledger[k]=v;added+=1
                   need({k for k in ledger if k[0]==d}==set(x),'LEDGER_UNIVERSE_CONFLICT '+d)
               ap=A/(day+'.csv');paths=[]
-              if ap.exists():need(canonical(read(ap,COLS))==rows,'PERMANENT_ARCHIVE_CONFLICT')
-              else:
-                  ap.write_bytes(csvbytes([rows[k] for k in sorted(rows)],COLS));paths.append(ap)
+              for d,x in sorted({**advance_sources,day:rows}.items()):
+                  p=A/(d+'.csv')
+                  if p.exists():need(canonical(read(p,COLS))==x,'PERMANENT_ARCHIVE_CONFLICT '+d)
+                  else:
+                      p.write_bytes(csvbytes([x[k] for k in sorted(x)],COLS));paths.append(p)
               if day>old:
-                  newhist={k:r for k,r in hist.items() if k[0]!=sessions[0]};newhist.update(rows)
+                  newhist=dict(hist)
+                  for x in advance_sources.values():newhist.update(x)
+                  keep=set(sorted({k[0] for k in newhist})[-70:])
+                  newhist={k:r for k,r in newhist.items() if k[0] in keep}
                   need(len({k[0] for k in newhist})==70,'ROLLING_SESSION_COUNT')
                   c=complete(rows,day);latest.write_bytes(csvbytes([rows[k] for k in sorted(rows)],COLS))
                   history.write_bytes(gzip.compress(csvbytes([newhist[k] for k in sorted(newhist)],COLS),compresslevel=6,mtime=0))
@@ -217,7 +251,7 @@ jobs:
               if added:
                   price.write_bytes(csvbytes([dict(zip(PCOLS,(*k,ledger[k]))) for k in sorted(ledger)],PCOLS));paths.append(price)
               if oldmarker!=day:marker.write_text(day+'\n');paths.append(marker)
-              report.update(market_date=day,previous_market_date=old,previous_ledger_date=oldmarker,ledger_date=day,ledger_rows_added=added,official_archive=str(ap),market_rows=len(rows),technical_indicators_asof=oldsum.get('technical_indicators_asof',old))
+              report.update(promoted_dates=advances,market_date=day,previous_market_date=old,previous_ledger_date=oldmarker,ledger_date=day,ledger_rows_added=added,official_archive=str(ap),market_rows=len(rows),technical_indicators_asof=oldsum.get('technical_indicators_asof',old))
               save('MARKET_READY_TO_COMMIT');report['market_committed']=commit(paths,'KRX v5: promote official session and append permanent price ledger') if paths else False
               report['market_persisted']=True;save('MARKET_PERSISTED_FINANCIAL_PENDING');return day
 
