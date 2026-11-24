@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   research-price-join:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -31,6 +31,9 @@ jobs:
           and does not retrieve, publish, or certify private PER/PBR data.
           """
           import csv
+          import gzip
+          import datetime as dt
+          import os
           import hashlib
           import io
           import json
@@ -43,6 +46,8 @@ jobs:
           MARKET = Path('data/latest.csv')
           SUMMARY = Path('data/summary.json')
           OUT = Path('v5_reports/r14_daily_market_join')
+          EVIDENCE = Path('price_join_evidence')
+          EVIDENCE.mkdir(exist_ok=True)
           FIELDS = [
               'research_market_date','official_market_date','stock_code','stock_name',
               'research_grade_asof','research_score_asof','market','research_close_krw',
@@ -65,6 +70,56 @@ jobs:
               return bool(re.fullmatch(r'20\d{6}', str(x or '')))
           
           
+          def market_key_rows(path, day, historical=False):
+              cols = ('BAS_DD','MARKET','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP')
+              rows, dates, total = {}, set(), 0
+              opener = gzip.open if historical else open
+              with opener(path, 'rt', encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  require(set(cols) <= set(reader.fieldnames or ()), 'PROOF_COLUMNS_MISSING')
+                  for r in reader:
+                      total += 1
+                      d = r['BAS_DD']
+                      require(date_ok(d), 'PROOF_DATE_INVALID')
+                      dt.datetime.strptime(d, '%Y%m%d')
+                      dates.add(d)
+                      if historical and d != day:
+                          continue
+                      require(d == day, 'PROOF_DATE_MISMATCH')
+                      k = (r['MARKET'], r['ISU_CD'])
+                      require(k[0] in ('KOSPI','KOSDAQ') and re.fullmatch('[A-Z0-9]{6}', k[1]) and k not in rows, 'PROOF_INVALID_OR_DUPLICATE_KEY')
+                      values = tuple(int(r[c].replace(',', '')) for c in cols[4:])
+                      require(values[0] > 0 and values[1] >= 0 and values[2] > 0, 'PROOF_INVALID_NUMERIC')
+                      rows[k] = (r['ISU_NM'].strip(), *values)
+              return rows, dates, total
+
+
+          def verify_official_snapshot(day, summary):
+              archive = Path('data/v5_official_market_archive') / (day + '.csv')
+              history = Path('data/daily_70d.csv.gz')
+              require(archive.is_file(), 'PERMANENT_OFFICIAL_ARCHIVE_MISSING')
+              latest, _, _ = market_key_rows(MARKET, day)
+              official, _, _ = market_key_rows(archive, day)
+              tail, dates, total = market_key_rows(history, day, historical=True)
+              require(latest == official == tail and bool(latest), 'OFFICIAL_ARCHIVE_OR_HISTORY_CONFLICT')
+              require(len(dates) == 70 and max(dates) == day and total == summary.get('total_rows_stored'), 'HISTORY_SUMMARY_CONFLICT')
+              counts = Counter(k[0] for k in latest)
+              require(counts['KOSPI'] >= 500 and counts['KOSDAQ'] >= 1000 and counts['KOSPI'] == summary.get('kospi_rows_latest') and counts['KOSDAQ'] == summary.get('kosdaq_rows_latest'), 'PROOF_MARKET_COUNTS_CONFLICT')
+              marker = Path('data/v5_integrated/last_market_date.txt')
+              finance = Path('data/v5_financial_m/status.json')
+              require(marker.read_text().strip() == day, 'PRICE_LEDGER_DATE_NOT_SYNCHRONIZED')
+              financial = json.loads(finance.read_text(encoding='utf-8-sig'))
+              require(financial.get('market_date') == financial.get('official_market_date') == day and financial.get('official_market_source_rows') == len(latest), 'FINANCIAL_DATE_NOT_SYNCHRONIZED')
+              require(financial.get('investment_decisions_authorized') is False and financial.get('final_buy_signals') == 0, 'FINANCIAL_GATE_INVALID')
+              return {'archive_sha256':sha(archive), 'market_sha256':sha(MARKET), 'history_sha256':sha(history), 'summary_sha256':sha(SUMMARY), 'market_rows':len(latest), 'market_date':day}
+
+
+          def write_evidence(state, **details):
+              payload = {'state':state, 'api_calls':0, 'investment_decisions_authorized':False, 'final_buy_signals':0, **details}
+              (EVIDENCE/'status.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+              print(json.dumps(payload, ensure_ascii=False), flush=True)
+
+
           def main():
               research = json.loads(RESEARCH.read_text(encoding='utf-8-sig'))
               summary = json.loads(SUMMARY.read_text(encoding='utf-8-sig'))
@@ -73,8 +128,8 @@ jobs:
               require(date_ok(cohort_day) and date_ok(source_day), 'INVALID_DATE')
               require(source_day >= cohort_day, 'MARKET_DATA_OLDER_THAN_COHORT')
               require(summary.get('sessions_stored') == 70, 'UNVERIFIED_MARKET_HISTORY')
-              require(str(summary.get('note', '')).startswith('Official KRX price source updated.'),
-                      'MARKET_SOURCE_NOT_MARKED_OFFICIAL')
+              # Validate data against the permanent archive, not editable summary prose.
+              proof = verify_official_snapshot(source_day, summary)
               candidates = research.get('candidates')
               require(isinstance(candidates, list) and len(candidates) >= 1, 'EMPTY_COHORT')
               require(len(candidates) == research.get('candidate_count'), 'COHORT_COUNT_MISMATCH')
@@ -186,22 +241,46 @@ jobs:
               csvdata = csvbuf.getvalue().encode('utf-8-sig')
               jsondata = (json.dumps(status, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode('utf-8')
               daydir = OUT / source_day
-              daydir.mkdir(parents=True, exist_ok=True)
-              for path, body in ((daydir / 'r14_ab_official_price_join.csv', csvdata),
-                                 (daydir / 'status.json', jsondata)):
-                  if path.exists():
-                      require(path.read_bytes() == body, 'IMMUTABLE_SNAPSHOT_CONFLICT_' + path.name)
+              cp = daydir / 'r14_ab_official_price_join.csv'
+              sp = daydir / 'status.json'
+              lp = OUT / 'latest_status.json'
+              if lp.exists():
+                  previous = json.loads(lp.read_text(encoding='utf-8-sig'))
+                  require(date_ok(previous.get('official_market_date')) and previous['official_market_date'] <= source_day, 'LATEST_DATE_REGRESSION')
+              if cp.exists() or sp.exists():
+                  # A frozen result may predate a summary-note or technical-indicator update.
+                  # Revalidate every research row and all substantive status fields, never
+                  # rewrite its original provenance or timestamp merely to match current metadata.
+                  require(cp.is_file() and sp.is_file(), 'PARTIAL_FROZEN_SNAPSHOT')
+                  with cp.open(encoding='utf-8-sig', newline='') as f:
+                      reader = csv.DictReader(f)
+                      require(reader.fieldnames == FIELDS and list(reader) == [{k:str(v) for k,v in r.items()} for r in result], 'FROZEN_PRICE_ROWS_CONFLICT')
+                  saved = json.loads(sp.read_text(encoding='utf-8-sig'))
+                  stable = set(status) - {'source_sha256','technical_indicators_asof'}
+                  require(all(saved.get(k) == status[k] for k in stable), 'FROZEN_STATUS_CONFLICT')
+                  hashes = saved.get('source_sha256', {})
+                  require(hashes.get('research_candidates') == sha(RESEARCH) and all(re.fullmatch('[0-9a-f]{64}',str(hashes.get(k,''))) for k in ('latest_market','market_summary','research_candidates')), 'FROZEN_PROVENANCE_CONFLICT')
+                  if lp.exists() and previous['official_market_date'] == source_day:
+                      require(lp.read_bytes() == sp.read_bytes(), 'FROZEN_LATEST_STATUS_CONFLICT')
                   else:
-                      path.write_bytes(body)
-              (OUT / 'latest_status.json').write_bytes(jsondata)
-              print(json.dumps({key: status[key] for key in ('state', 'research_market_date', 'official_market_date',
-                        'matched_candidates', 'eligible_at_current_marketcap_100bn', 'excluded_current_marketcap',
-                        'unadjusted_price_direction')}, ensure_ascii=False))
+                      lp.write_bytes(sp.read_bytes())
+                  write_evidence('REUSED_VALIDATED_FROZEN_PRICE_JOIN', **proof, matched_candidates=len(result), frozen_status_sha256=sha(sp), frozen_csv_sha256=sha(cp))
+                  return
+              daydir.mkdir(parents=True, exist_ok=True)
+              cp.write_bytes(csvdata)
+              sp.write_bytes(jsondata)
+              lp.write_bytes(jsondata)
+              write_evidence('NEW_VALIDATED_PRICE_JOIN', **proof, matched_candidates=len(result), frozen_status_sha256=sha(sp), frozen_csv_sha256=sha(cp))
           
           
           if __name__ == '__main__':
-              main()
+              try:
+                  main()
+              except Exception as exc:
+                  write_evidence('BLOCKED_PRICE_JOIN', error=type(exc).__name__+': '+str(exc)[:400])
+                  raise
           PY
+          python -m py_compile /tmp/v5_r14_daily_price_join.py
           python /tmp/v5_r14_daily_price_join.py
       - name: Commit immutable research-only snapshot and latest join status
         shell: bash
@@ -214,14 +293,17 @@ jobs:
             echo "Identical verified research snapshot already saved; no duplicate commit."
             exit 0
           fi
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" || { echo "Concurrent change detected; refusing stale research commit"; exit 1; }
           git commit -m "KRX v5: archive R14 research cohort daily official close join"
-          git pull --rebase origin main
           git push origin HEAD:main
       - name: Upload research-only join evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: krx-v5-r14-official-price-join
-          path: v5_reports/r14_daily_market_join/
+          path: |
+            v5_reports/r14_daily_market_join/
+            price_join_evidence/
           retention-days: 30
           if-no-files-found: warn
