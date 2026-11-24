@@ -1,0 +1,53 @@
+{
+  "annual_financial_index_snapshot_date": "20261116",
+  "annual_financial_years": [
+    "2025"
+  ],
+  "annual_index_rows_matched": 137,
+  "candidate_rows": 137,
+  "coverage": {
+    "annual_financial_matched": 137,
+    "annual_roe_pct_available": 137,
+    "derived_research_pbr_asof_cohort_available": 137,
+    "derived_research_per_asof_cohort_available": 137,
+    "growth_matched": 134,
+    "operating_profit_yoy_pct_available": 128,
+    "owner_profit_yoy_pct_available": 124,
+    "revenue_yoy_pct_available": 129,
+    "ttm_owner_profit_krw_available": 137
+  },
+  "current_marketcap_eligible_rows": 136,
+  "current_research_grade_revalidated": false,
+  "final_buy_signals": 0,
+  "financial_point_in_time_verified": false,
+  "frozen_research_grade_date": "20261120",
+  "growth_enrichment_rows": 134,
+  "growth_snapshot_date": "20261120",
+  "investment_decisions_authorized": false,
+  "missing_growth_enrichment_codes": [
+    "084370",
+    "093320",
+    "131290"
+  ],
+  "official_market_date": "20261123",
+  "official_per_pbr_verified": false,
+  "source_sha256": {
+    "annual_financial_index": "53adb6f13cc754c5930acea0f50722f4c1e1a4530d25cb9908be0cd8ad3b6129",
+    "annual_financial_status": "521dfc3a0ef2ae150203a9b6b126381c0d5e9176f3ca0b03962ef0a963cf1469",
+    "calculated_research_ratios": "57480b062837c91e4fb2d6b2d199335f1d436b26698a385cdb23d97353fd7721",
+    "growth_csv": "de0348facff7f5a0b809b02cc8256888214bdb4edae3b30030364c8903cf1a2f",
+    "growth_status": "5bcc1193c5b2fa28a331e4fe82c038ecaab43eed15a8a06b42dde124a0420dcb",
+    "market_join_csv": "431453e5b1b6f76b5f292f5573278737ab656eef45047eed23540c23d78c3408",
+    "market_join_status": "a2d56f9abec78716aaddc5241a9dc5db1670b8390b73b4c20759632bae9bb674",
+    "stage55_provenance_gate": "1817d5de737756c515df83ac40164277da3cc245002563ae444812e63efc1ed7"
+  },
+  "state": "RESEARCH_FINANCIAL_GROWTH_JOIN_VERIFIED",
+  "version": "KRX_V5_R14_DAILY_FINANCIAL_GROWTH_JOIN_V1",
+  "warnings": [
+    "Financial and growth values are preserved from earlier snapshots and are not fresh 1-day fundamentals.",
+    "Annual index source does not prove point-in-time filing or corrected-filing applicability.",
+    "PER/PBR values are derived research ratios as of the frozen cohort, not official daily provider ratios.",
+    "Latest market closes are not corporate-action adjusted for the displayed price change.",
+    "Frozen A/B are research cohorts, not current investment recommendations; fair price/buy signals withheld."
+  ]
+}
