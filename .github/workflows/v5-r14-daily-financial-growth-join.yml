@@ -1084,13 +1084,233 @@ jobs:
           PYCODE
           python -m py_compile /tmp/krx_v5_r14_valuation_evidence_gate.py
           python /tmp/krx_v5_r14_valuation_evidence_gate.py
-      - name: Commit daily financial/growth, full-market coverage, and valuation-readiness evidence
+      - name: Triage verified cached evidence into prior observation, new review and deferred queues
+        shell: bash
+        run: |
+          cat > /tmp/krx_v5_candidate_triage.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """R14 daily research cohort handling: observe, review, defer. No new data collection.
+
+          This is a research workflow gate, not a verification of filing, provider ratios,
+          security class as-of dates, fair price, or an authorization to invest.
+          """
+          import csv
+          import hashlib
+          import io
+          import json
+          import re
+          from collections import Counter
+          from pathlib import Path
+
+          ROOT=Path('.')
+          VAL=ROOT/'v5_reports/r14_daily_valuation_readiness'
+          REVAL=ROOT/'v5_reports/r14_daily_market_regrade'
+          OUT=ROOT/'v5_reports/r14_daily_candidate_triage'
+          EXCL=ROOT/'v5_reports/stage28/r14_candidate_exclusion_gate.json'
+          SUMMARY=ROOT/'data/summary.json'
+          FIELDS=['official_market_date','stock_code','stock_name','market',
+                  'provisional_grade_research_only','research_score','research_cohort',
+                  'current_official_close_krw','current_official_marketcap_krw',
+                  'annual_receipt_metadata_state','historic_basic_cap_scope',
+                  'research_handling','evidence_actions_needed',
+                  'financial_point_in_time_verified','official_per_pbr_verified',
+                  'final_grade','fair_price_krw','buy_signal','investment_authorized']
+
+
+          def guard(condition,label):
+              if not condition: raise ValueError('R14_CANDIDATE_TRIAGE_'+label)
+
+
+          def read_json(p):
+              guard(p.is_file(),'MISSING_'+p.name)
+              return json.loads(p.read_text(encoding='utf-8-sig'))
+
+
+          def read_csv(p):
+              guard(p.is_file(),'MISSING_'+p.name)
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  r=csv.DictReader(f)
+                  guard(bool(r.fieldnames),'INVALID_CSV_HEADER_'+p.name)
+                  return list(r)
+
+
+          def csv_bytes(rows):
+              buff=io.StringIO(newline='')
+              writer=csv.DictWriter(buff,fieldnames=FIELDS,extrasaction='raise')
+              writer.writeheader()
+              writer.writerows(rows)
+              return buff.getvalue().encode('utf-8-sig')
+
+
+          def sha(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+          def frozen_write(p,b):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              if p.exists(): guard(p.read_bytes()==b,'IMMUTABLE_HISTORY_CONFLICT_'+p.name)
+              else: p.write_bytes(b)
+
+
+          def main():
+              market=read_json(SUMMARY)
+              vs=read_json(VAL/'latest_status.json')
+              rs=read_json(REVAL/'latest_status.json')
+              gate=read_json(EXCL)
+              day=market.get('latest_trading_date')
+              guard(isinstance(day,str) and re.fullmatch(r'20\d{6}',day),'INVALID_MARKET_DATE')
+              guard(vs.get('official_market_date')==rs.get('official_market_date')==day,'MIXED_MARKET_DATES')
+              guard(vs.get('state')=='RESEARCH_EVIDENCE_GATE_RECORDED_NO_APPROVAL','VALUATION_INPUT_NOT_VERIFIED_RESEARCH_GATE')
+              guard(rs.get('state')=='RESEARCH_ONLY_FULL_MARKET_GRADE_ENGINE_RECALCULATED','REGRADING_INPUT_NOT_VERIFIED')
+              guard(vs.get('final_buy_signals')==rs.get('final_buy_signals')==0 and
+                    vs.get('investment_decisions_authorized') is False and
+                    rs.get('investment_decisions_authorized') is False and
+                    vs.get('certified_fair_price_rows')==0,'UPSTREAM_UNEXPECTED_APPROVAL')
+              guard(vs.get('prior_cohort_research_date')==gate.get('research_market_date'),
+                    'FROZEN_COHORT_MISMATCH')
+              vsp=VAL/day/'status.json'
+              rsp=REVAL/day/'status.json'
+              vcp=VAL/day/'candidate_evidence_price_readiness.csv'
+              rcp=REVAL/day/'provisional_ab_full_market.csv'
+              guard(read_json(vsp)==vs and read_json(rsp)==rs,'DATE_STATUS_AND_LATEST_MISMATCH')
+              guard(vs.get('source_sha256',{}).get(str(rcp))==sha(rcp),'SOURCE_REGRADE_CSV_MUTATED')
+              guard(vs.get('source_sha256',{}).get(str(rsp))==sha(rsp),'SOURCE_REGRADE_STATUS_MUTATED')
+              vals=read_csv(vcp)
+              regrades=read_csv(rcp)
+              reg={x['stock_code']:x for x in regrades}
+              guard(len(reg)==len(regrades)==rs.get('research_ab_after_historic_correction_exclusion'),
+                    'REGRADING_COUNT_OR_DUPLICATE')
+              guard(len(vals)==vs.get('assessed_research_candidates')==len(regrades),
+                    'READINESS_COUNT_MISMATCH')
+              excluded=set(gate['excluded_codes'])
+              guard(len(excluded)==len(gate['excluded_codes']),'EXCLUSION_LIST_DUPLICATE')
+              all_rows=[];obs=[];review=[];deferred=[];seen=set();new_codes=set()
+              for v in vals:
+                  code=v.get('stock_code','')
+                  guard(bool(re.fullmatch(r'\d{6}',code)) and code not in seen and code not in excluded,
+                        'INVALID_DUPLICATE_OR_EXCLUDED_CODE')
+                  seen.add(code)
+                  r=reg.get(code)
+                  guard(r is not None and v.get('official_market_date')==day and r['official_market_date']==day,
+                        'ROW_MISSING_OR_MIXED_DATE')
+                  guard(r['current_provisional_grade_research_only']==v['provisional_grade'] and
+                        r['current_research_score']==v['score'] and
+                        r['official_close_krw']==v['current_official_close_krw'] and
+                        r['official_marketcap_krw']==v['current_official_marketcap_krw'],
+                        'SOURCE_RESEARCH_FIELDS_CONFLICT')
+                  guard(v['provisional_grade'] in ('A','B') and int(v['current_official_marketcap_krw'])>=100000000000,
+                        'UNQUALIFIED_RESEARCH_ROW')
+                  guard(v['valuation_eligibility']=='DEFER_UNVERIFIED_EVIDENCE' and
+                        v['point_in_time_account_values_verified']=='NO' and
+                        v['official_dated_provider_per_pbr_verified']=='NO' and
+                        v['certified_fair_price_krw']=='' and
+                        v['actionable_buy_price_krw']=='' and
+                        v['final_grade']=='WITHHELD' and v['buy_signal']=='NONE' and
+                        v['investment_authorized']=='NO','UNEXPECTED_TRADE_APPROVAL')
+                  origin=v['candidate_origin']
+                  cache=v['cached_2025_annual_filing_metadata_state']
+                  old_scope=v['historic_cap_scope_state']
+                  if origin=='FROZEN_RESEARCH_COHORT':
+                      guard(r['candidate_evidence_gate']=='EXISTING_FROZEN_COHORT_RESEARCH_ONLY',
+                            'PRIOR_RESEARCH_CLASSIFICATION_CONFLICT')
+                      how='OBSERVE_PRIOR_RESEARCH_ONLY'
+                      needed='P1_FILING_VALUE_ASOF;P2_AUTHORIZED_DATED_PER_PBR;P3_DATE_ATTESTED_COMMON_SHARE;SECTOR_MODEL'
+                      bucket=obs
+                  elif origin=='NEW_PENDING_EVIDENCE':
+                      new_codes.add(code)
+                      guard(r['candidate_evidence_gate']=='NEW_RESEARCH_CANDIDATE_PENDING_FILING_AND_SHARECLASS_REVIEW',
+                            'NEW_RESEARCH_CLASSIFICATION_CONFLICT')
+                      if cache=='NO_CACHED_ANNUAL_RECEIPT_METADATA':
+                          how='DEFER_FROM_CURRENT_RESEARCH_SHORTLIST_MISSING_CACHED_ANNUAL_RECEIPT'
+                          needed='ANNUAL_RECEIPT_METADATA_IN_EXISTING_CACHE_OR_PERMITTED_SOURCE;P1_P2_P3_VERIFICATION'
+                          bucket=deferred
+                      else:
+                          guard(cache=='CACHED_ANNUAL_RECEIPT_METADATA_ONLY','UNKNOWN_ANNUAL_META_STATE')
+                          how='REVIEW_NEW_LEAD_CACHED_RECEIPT_ONLY'
+                          needed='VERIFY_RECEIPT_VERSION_VALUES_AND_ASOF;P2_AUTHORIZED_PER_PBR;P3_DATE_ATTESTED_COMMON_SHARE'
+                          if old_scope!='KRX_OFFICIAL_COMMON_AND_CLASS_SPECIFIC_CAP_MATCHED':
+                              needed+=';RECHECK_PRIOR_REQUEST_BOUND_CAP_SCOPE'
+                          bucket=review
+                  else:
+                      raise ValueError('R14_CANDIDATE_TRIAGE_UNKNOWN_ORIGIN')
+                  row={'official_market_date':day,'stock_code':code,'stock_name':v['stock_name'],
+                       'market':v['market'],'provisional_grade_research_only':v['provisional_grade'],
+                       'research_score':v['score'],'research_cohort':origin,
+                       'current_official_close_krw':v['current_official_close_krw'],
+                       'current_official_marketcap_krw':v['current_official_marketcap_krw'],
+                       'annual_receipt_metadata_state':cache,'historic_basic_cap_scope':old_scope,
+                       'research_handling':how,'evidence_actions_needed':needed,
+                       'financial_point_in_time_verified':'NO','official_per_pbr_verified':'NO',
+                       'final_grade':'WITHHELD','fair_price_krw':'','buy_signal':'NONE',
+                       'investment_authorized':'NO'}
+                  all_rows.append(row);bucket.append(row)
+              guard(seen==set(reg),'REGRADE_AND_READINESS_CODE_SET_MISMATCH')
+              guard(len(obs)==vs['frozen_existing_candidates'] and
+                    len(review)+len(deferred)==vs['new_candidates_pending_evidence'] and
+                    len(deferred)==vs['new_without_cached_annual_receipt_metadata'] and
+                    len(review)==vs['new_with_cached_annual_receipt_metadata'] and
+                    new_codes==set(rs['new_discovery_codes']),
+                    'CLASSIFICATION_COUNTS_MISMATCH')
+              guard(len(obs)+len(review)+len(deferred)==len(vals),'PARTITION_COUNT_MISMATCH')
+              def order(x):return (-int(x['research_score']),x['stock_code'])
+              for seq in (all_rows,obs,review,deferred):seq.sort(key=order)
+              summary={
+                  'version':'KRX_V5_DAILY_R14_CANDIDATE_EVIDENCE_TRIAGE_V1',
+                  'state':'RESEARCH_OBSERVATION_AND_UNVERIFIED_NEW_LEADS_SEPARATED',
+                  'official_market_date':day,
+                  'research_cohort_date':vs['prior_cohort_research_date'],
+                  'total_preliminary_ab':len(all_rows),
+                  'prior_cohort_research_observation_rows':len(obs),
+                  'new_filing_review_queue_rows':len(review),
+                  'new_deferred_missing_cached_annual_receipt_rows':len(deferred),
+                  'excluded_missing_corrected_filing_evidence_codes':sorted(excluded),
+                  'new_review_historic_cap_scope_mismatch_codes':sorted(
+                      x['stock_code'] for x in review
+                      if x['historic_basic_cap_scope']!='KRX_OFFICIAL_COMMON_AND_CLASS_SPECIFIC_CAP_MATCHED'),
+                  'new_metadata_absence_does_not_prove_non_filing':True,
+                  'automated_external_requests':0,
+                  'upstream_cache_modified':False,
+                  'official_per_pbr_verified':False,
+                  'financial_point_in_time_verified':False,
+                  'final_buy_signals':0,
+                  'certified_fair_price_rows':0,
+                  'investment_decisions_authorized':False,
+                  'source_sha256':{str(p):sha(p) for p in (SUMMARY,EXCL,vsp,rsp,vcp,rcp)},
+                  'notes':[
+                     'Prior research cohort remains observation-only; it has not been revalidated for investment.',
+                     'New leads with only cached receipt metadata remain evidence-review queue, not approved A/B recommendations.',
+                     'New leads absent from cached annual filing metadata are deferred from the research shortlist without asserting that a filing does not exist.',
+                     'Missing corrected filings remain excluded per prior R14 policy.',
+                     'No ratio export, live price, filing retrieval or additional APIs are accessed.'
+                  ]
+              }
+              folder=OUT/day
+              for name,values in (
+                  ('all_158_provisional_disposition.csv',all_rows),
+                  ('prior_cohort_research_observation.csv',obs),
+                  ('new_cached_filing_review_queue.csv',review),
+                  ('new_missing_cached_receipt_deferred.csv',deferred)):
+                  frozen_write(folder/name,csv_bytes(values))
+              payload=(json.dumps(summary,sort_keys=True,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
+              frozen_write(folder/'status.json',payload)
+              OUT.mkdir(parents=True,exist_ok=True)
+              (OUT/'latest_status.json').write_bytes(payload)
+              print(json.dumps({k:summary[k] for k in (
+                  'state','official_market_date','total_preliminary_ab',
+                  'prior_cohort_research_observation_rows','new_filing_review_queue_rows',
+                  'new_deferred_missing_cached_annual_receipt_rows','final_buy_signals')},ensure_ascii=False))
+
+          if __name__=='__main__':main()
+          PYCODE
+          python -m py_compile /tmp/krx_v5_candidate_triage.py
+          python /tmp/krx_v5_candidate_triage.py
+      - name: Commit daily financial/growth, full-market grades, valuation and evidence-triage records
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/ v5_reports/r14_daily_market_regrade/ v5_reports/r14_daily_valuation_readiness/
+          git add v5_reports/r14_daily_financial_join/ v5_reports/r14_full_market_readiness/ v5_reports/r14_daily_market_regrade/ v5_reports/r14_daily_valuation_readiness/ v5_reports/r14_daily_candidate_triage/
           if git diff --cached --quiet; then
             echo 'Identical daily research evidence already saved, no commit.'
             exit 0
@@ -1108,5 +1328,6 @@ jobs:
             v5_reports/r14_full_market_readiness/
             v5_reports/r14_daily_market_regrade/
             v5_reports/r14_daily_valuation_readiness/
+            v5_reports/r14_daily_candidate_triage/
           if-no-files-found: warn
           retention-days: 45
