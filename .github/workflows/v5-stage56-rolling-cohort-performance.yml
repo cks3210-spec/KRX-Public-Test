@@ -1,8 +1,7 @@
 name: KRX v5 Stage56 Rolling Cohort Performance
 'on':
   workflow_dispatch: {}
-  schedule:
-  - cron: 55 9 * * 1-5
+  # Manual only: reuse canonical 08:30 market collection; no scheduled duplicate API calls.
 permissions:
   contents: write
   actions: read
