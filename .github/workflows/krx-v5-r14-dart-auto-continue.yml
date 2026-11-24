@@ -676,6 +676,126 @@ jobs:
           PYTHON
           python -m py_compile /tmp/r14_metrics_20261125.py
           python /tmp/r14_metrics_20261125.py
+      - name: Regrade receipt-bound candidates and prepare official ratio review queue
+        run: |
+          set -euo pipefail
+          cat > /tmp/r14_candidate_final.py <<'PYTHON'
+          import csv, hashlib, importlib.util, io, json, os, re, subprocess
+          from collections import Counter
+          from pathlib import Path
+          ROOT=Path.cwd(); F=ROOT/'data/v5_financial_m'; STORE=F/'filing_refresh'; OUT=Path('/tmp/r14-filing-refresh')
+          TARGET=STORE/'candidate_regrade'; METRICS=STORE/'metrics'/'latest_status.json'
+          ENGINE=ROOT/'scripts/krx_v5_r14_grade_engine.py'
+          FROZEN=ROOT/'v5_reports/stage28/r14_stage55_p2_provenance_gate_20261120.json'; EXCL=ROOT/'v5_reports/stage28/r14_candidate_exclusion_gate.json'
+          FIELDS=['market_date','code','name','market','market_cap_krw','close_krw','corp_code','origin','grade_research_only','score','annual_year','fs_div','annual_receipt','current_period_receipt','prior_period_receipt','annual_profit','ttm_profit','owner_equity','prior_owner_equity','assets','liabilities','roe_pct','liabilities_to_owner_equity_pct','derived_per_research_only','derived_pbr_research_only','official_per_pbr_verified','financial_disclosure_asof_verified','share_class_verified','investment_authorized','buy_signal']
+          
+          def require(ok,why):
+              if not ok: raise ValueError(why)
+          def read(p):
+              d=json.loads(p.read_text(encoding='utf-8-sig'));require(isinstance(d,dict),'INVALID_JSON '+str(p));return d
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def payload(d): return (json.dumps(d,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+          def write(p,b,immutable=False):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              if p.exists():
+                  if p.read_bytes()==b:return
+                  require(not immutable,'IMMUTABLE_CANDIDATE_HISTORY_CONFLICT '+str(p))
+              t=p.with_suffix(p.suffix+'.tmp');t.write_bytes(b);t.replace(p)
+          def load(name,p):
+              s=importlib.util.spec_from_file_location(name,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+          def git(*a):return subprocess.run(['git',*a],check=True,text=True,stdout=subprocess.PIPE).stdout.strip()
+          
+          def regrade(day,market_rows,mapping,state,link,engine,refresh,linker,m,frozen,excluded):
+              markets,market_day=engine.market_index(market_rows);require(market_day==day,'MARKET_DATE_MISMATCH')
+              latest=linker.latest_events(state); inputs=link['inputs']; strict=linker.strict_ttm(inputs,day)
+              require(strict==link['strict_ttm'],'STRICT_TTM_LINK_MISMATCH')
+              year=int(day[:4])-1; periods=refresh.needed_periods(day)
+              other=sorted(periods-{(year,'annual')});ready=[]; reasons=Counter(); holds=[]
+              for code,market in sorted(markets.items()):
+                  corp=mapping.get(code,'');origin='PRIOR_RESEARCH' if code in frozen else 'NEW_RESEARCH'
+                  def hold(reason):
+                      reasons[reason]+=1;holds.append({'code':code,'reason':reason,'origin':origin})
+                  cap=engine.num(market.get('market_cap_krw'))
+                  if cap is None or cap<engine.MIN_CAP:hold('MARKET_CAP_GATE');continue
+                  if code in excluded:hold('EXISTING_CORRECTION_EXCLUSION');continue
+                  if not re.fullmatch(r'\d{8}',str(corp)):hold('IDENTITY_REVIEW');continue
+                  if len(other)!=2 or code not in strict:hold('MISSING_RECEIPT_BOUND_CUMULATIVE_TTM');continue
+                  # Every selected input must be the latest known exact receipt for its period.
+                  keys=[f'{code}:{year}:annual']+[f'{code}:{y}:{p}' for y,p in reversed(other)]
+                  vals=[]; reason=None
+                  for key in keys:
+                      e=latest.get(key);v=inputs.get(key)
+                      if not e or not v or e.get('corp_code')!=corp or e.get('receipt')!=v.get('receipt') or v.get('corp_code')!=corp:
+                          reason='MISSING_OR_SUPERSEDED_RECEIPT';break
+                      fresh,why=linker.archived(e,m,refresh,day)
+                      if fresh is None:reason=why;break
+                      if any(fresh.get(k)!=v.get(k) for k in ('receipt','corp_code','year','fs_div','amount_basis','accounts')) or e.get('archive')!=v.get('archive') or e.get('sha256')!=v.get('sha256'):
+                          raise ValueError('LINKED_RECEIPT_CONTENT_MISMATCH '+key)
+                      vals.append(v)
+                  if reason:hold(reason);continue
+                  a,c,p=vals
+                  if [v['amount_basis'] for v in vals]!=['ANNUAL','CUMULATIVE_INTERIM_IS_CIS','CUMULATIVE_INTERIM_IS_CIS'] or {v['fs_div'] for v in vals}!={'CFS'}:
+                      hold('OWNER_ACCOUNT_BASIS_NOT_COMPARABLE');continue
+                  ac=a['accounts'];profits=[v['accounts'].get('profit') for v in vals]
+                  fields=[ac.get(k) for k in ('profit','equity','previous_equity','assets','liabilities')]
+                  if any(type(v) is not int for v in fields+profits):hold('MISSING_REQUIRED_ACCOUNTS');continue
+                  t=profits[0]+profits[1]-profits[2]
+                  if strict[code]['ttm_profit']!=t or strict[code]['receipts']!=[v['receipt'] for v in vals]:raise ValueError('TTM_RECEIPT_CONFLICT '+code)
+                  fin={'source':'OpenDART fnlttSinglAcntAll','ttm_status':'VERIFIED_CUMULATIVE','annual_profit':fields[0],'ttm_profit':t,'equity':fields[1],'prior_equity':fields[2]}
+                  mk={**market,'assets_krw':fields[3],'liabilities_krw':fields[4]}
+                  result,why=engine.grade(fin,mk)
+                  if not result:hold(why);continue
+                  require(result['grade'] in ('A','B'),'INVALID_RESEARCH_GRADE')
+                  ready.append(dict(market_date=day,code=code,name=market.get('name',''),market=market.get('market',''),market_cap_krw=market['market_cap_krw'],close_krw=market['close_krw'],corp_code=corp,origin=origin,grade_research_only=result['grade'],score=result['score'],annual_year=year,fs_div='CFS',annual_receipt=a['receipt'],current_period_receipt=c['receipt'],prior_period_receipt=p['receipt'],annual_profit=fields[0],ttm_profit=t,owner_equity=fields[1],prior_owner_equity=fields[2],assets=fields[3],liabilities=fields[4],roe_pct=result['roe_pct'],liabilities_to_owner_equity_pct=result['debt_pct'],derived_per_research_only=result['ttm_per_est'],derived_pbr_research_only=result['pbr_est'],official_per_pbr_verified='NO',financial_disclosure_asof_verified='NO',share_class_verified='NO',investment_authorized='NO',buy_signal='NONE'))
+              ready.sort(key=lambda r:(-r['score'],r['code']))
+              require(len(ready)+sum(reasons.values())==len(markets),'CANDIDATE_PARTITION_MISMATCH')
+              return ready,holds,dict(reasons),len(markets)
+          
+          def csvbytes(rows):
+              b=io.StringIO(newline='');w=csv.DictWriter(b,fieldnames=FIELDS,lineterminator='\n');w.writeheader();w.writerows(rows);return b.getvalue().encode('utf-8-sig')
+          
+          def main():
+              marker=OUT/'financial_metrics_status.json'
+              if not marker.exists():print('R14_CANDIDATE_REGRADE_SKIPPED_NO_METRICS');return
+              upstream=read(marker);require(upstream.get('state')=='FINANCIAL_METRICS_PERSISTED','METRICS_NOT_READY')
+              engine=load('candidate_existing_grade',ENGINE);refresh=load('candidate_refresh','/tmp/krx_filing_refresh.py');linker=load('candidate_linker','/tmp/r14_link_20261125.py');n=load('candidate_n',ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py')
+              require(engine.self_test()>0,'GRADE_SELF_TEST_FAILED')
+              protected=[ROOT/'data/latest.csv',ROOT/'data/summary.json',F/'status.json',F/'dart_financial_cache.json',F/'corp_map.json',STORE/'state.json',STORE/'analysis_link.json',METRICS,FROZEN,EXCL,ENGINE,ROOT/'scripts/krx_v5_r14_financial_pipeline_n.py',ROOT/'scripts/krx_v5_r14_dart_incremental_m.py']
+              code_hash={str(p):sha(p) for p in protected[-3:]}
+              git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+              for _ in range(3):
+                  git('fetch','origin','main');git('reset','--hard','origin/main')
+                  require(code_hash=={str(p):sha(p) for p in protected[-3:]},'GRADE_OR_PARSER_CHANGED')
+                  day,rows=n.official_market_snapshot();metric=read(METRICS);link=read(STORE/'analysis_link.json');state=read(STORE/'state.json')
+                  require(metric==upstream and metric['market_date']==link['market_date']==day and metric['market_rows']==rows and metric.get('legacy_ttm_used') is False,'METRICS_SNAPSHOT_CHANGED')
+                  require(link.get('schema')==1 and state.get('schema')==1 and state.get('last_attempt_market_date')==day,'LINK_OR_REFRESH_STATE_MISMATCH')
+                  require(all(x.get('investment_decisions_authorized') is False and x.get('final_buy_signals')==0 for x in (metric,link)),'UNEXPECTED_AUTHORIZATION')
+                  require(state.get('last_error')=='','FILING_REFRESH_BLOCKED')
+                  for p in (ROOT/'data/latest.csv',ROOT/'data/summary.json',F/'status.json',F/'dart_financial_cache.json',STORE/'analysis_link.json',STORE/'state.json',F/'corp_map.json'):
+                      # Existing metrics record uses absolute paths or relative paths depending on runtime.
+                      sh=metric.get('source_sha256',{});expected=sh.get(str(p),sh.get(str(p.relative_to(ROOT))))
+                      require(expected==sha(p),'METRIC_SOURCE_CHANGED '+str(p))
+                  metric_csv=ROOT/metric['csv_path'];require(metric_csv.is_relative_to(STORE/'metrics') and sha(metric_csv)==metric['csv_sha256'],'METRIC_CSV_MISMATCH')
+                  before={str(p.relative_to(ROOT)):sha(p) for p in protected+[metric_csv]}
+                  f=read(FROZEN);e=read(EXCL);frozen={x['code'] for x in f['candidate_states']};excluded=set(e['excluded_codes'])
+                  require(len(frozen)==f['candidate_count'] and len(excluded)==e['excluded_candidate_count'] and f['authorized_trade_decisions'] is False and e['investment_decisions_authorized'] is False,'CANDIDATE_POLICY_MISMATCH')
+                  market_rows=engine.read_csv(ROOT/'data/latest.csv');require(len(market_rows)==rows and len({x['ISU_CD'] for x in market_rows})==rows,'MARKET_UNIVERSE_MISMATCH')
+                  ready,holds,reasons,numeric=regrade(day,market_rows,read(F/'corp_map.json'),state,link,engine,refresh,linker,n.m,frozen,excluded)
+                  data=csvbytes(ready);hold_data=payload({'market_date':day,'holds':holds});report={'state':'CANDIDATE_RESEARCH_REGRADE_PERSISTED','market_date':day,'market_rows':rows,'numeric_market_rows':numeric,'unassessed_identifier_rows':rows-numeric,'research_ab_rows':len(ready),'new_research_ab_rows':sum(x['origin']=='NEW_RESEARCH' for x in ready),'grade_counts':dict(Counter(x['grade_research_only'] for x in ready)),'held_by_reason':reasons,'api_calls':0,'source_sha256':before,'queue_sha256':hashlib.sha256(data).hexdigest(),'hold_sha256':hashlib.sha256(hold_data).hexdigest(),'official_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'notes':['A/B research only, latest known receipt-bound values, not independently verified point-in-time filing values.','No legacy TTM, no official ratios, no buy prices. Existing grade engine owner-equity leverage is not total-equity debt ratio.','Empty queue is valid when no candidates satisfy evidence requirements.']}
+                  folder=TARGET/day/hashlib.sha256(payload(report)).hexdigest();report['queue_path']=str((folder/'official_ratio_review_queue.csv').relative_to(ROOT));report['hold_path']=str((folder/'held_reasons.json').relative_to(ROOT))
+                  require(before=={str(p.relative_to(ROOT)):sha(p) for p in protected+[metric_csv]},'SOURCE_MUTATED')
+                  write(folder/'official_ratio_review_queue.csv',data,True);write(folder/'held_reasons.json',hold_data,True);write(folder/'status.json',payload(report),True);write(TARGET/'latest_status.json',payload(report))
+                  git('add','--',str(TARGET.relative_to(ROOT)));paths=git('diff','--cached','--name-only').splitlines();require(all(p.startswith(str(TARGET.relative_to(ROOT))+'/') for p in paths),'UNEXPECTED_STAGED_FILES')
+                  if paths:
+                      git('commit','-m','R14: regrade receipt-bound research candidates and prepare official ratio queue')
+                      if subprocess.run(['git','push','origin','HEAD:main']).returncode:continue
+                  write(OUT/'candidate_regrade_status.json',payload(report));print('R14_CANDIDATE_REGRADE',json.dumps(report,ensure_ascii=False));return
+              raise ValueError('CANDIDATE_QUEUE_PERSISTENCE_CONFLICT')
+          
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/r14_candidate_final.py
+          python /tmp/r14_candidate_final.py
       - name: Preserve refresh result
         if: always()
         uses: actions/upload-artifact@v4
