@@ -1,160 +1,223 @@
-name: KRX v5 KIS Five Stock Valuation Pilot
+name: KRX v5 KIS Daily Valuation
 'on':
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'audit (no API), compare (no API), collect (post-close only)'
+        type: choice
+        options: [audit, compare, collect]
+        default: audit
+        required: true
+  schedule:
+    - cron: '50 7 * * 1-5' # 16:50 KST
+  workflow_run:
+    workflows: ['KRX v5 R14 OpenDART Auto Continue']
+    types: [completed]
+    branches: [main]
 permissions:
-  contents: read
+  contents: write
 concurrency:
-  group: krx-v5-kis-valuation-pilot
+  group: krx-v5-kis-single-token-issuer
   cancel-in-progress: false
 jobs:
-  pilot:
-    if: ${{ github.ref == 'refs/heads/main' }}
+  valuation:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name != 'workflow_run' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          persist-credentials: false
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Read-only KIS authentication and five stock quotation checks
+      - name: Install exchange session calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Collect broker ratios or compare saved observations (read-only API)
         env:
+          MODE: ${{ github.event_name == 'schedule' && 'collect' || github.event_name == 'workflow_run' && 'compare' || inputs.mode }}
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
         shell: bash
         run: |
           set -euo pipefail
-          cat > /tmp/kis_pilot.py <<'PY'
-          import csv, datetime as dt, json, os, re, sys, time
+          cat > /tmp/kis_daily.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, json, os, re, subprocess, sys, time
+          from collections import Counter
           from decimal import Decimal, InvalidOperation
           from pathlib import Path
           from urllib import request, parse, error
           from zoneinfo import ZoneInfo
+          import exchange_calendars as xc
 
-          BASE = 'https://openapi.koreainvestment.com:9443'
-          CODES = ('005930', '000660', '005380', '247540', '086520')
-          FIELDS = ('per', 'pbr', 'eps', 'bps')
-          KST = ZoneInfo('Asia/Seoul')
+          KST=ZoneInfo('Asia/Seoul'); UTC=dt.timezone.utc
+          BASE='https://openapi.koreainvestment.com:9443'
+          ROOT=Path.cwd(); STORE=ROOT/'data/v5_kis_valuation'; LEDGER=STORE/'token_attempt.json'
+          UP=ROOT; FIELDS=('per','pbr','eps','bps')
+          # Existing successful pilot issued a token at approximately 2026-11-25 16:40 KST.
+          # Conservative lower bound for any subsequent token request with the same credentials.
+          BOOT=dt.datetime(2026,11,25,7,41,tzinfo=UTC)
+          MIN_INTERVAL=1.1; MAX_CODES=3500
           class SafeError(Exception): pass
           class NoRedirect(request.HTTPRedirectHandler):
-              def redirect_request(self, req, fp, code, msg, headers, newurl):
-                  return None
-          OPENER = request.build_opener(NoRedirect())
+              def redirect_request(self, req, fp, code, msg, headers, newurl): return None
+          OPENER=request.build_opener(NoRedirect(),request.ProxyHandler({}))
 
-          def number(value):
-              if value is None or isinstance(value, bool): return None
+          def require(test,label):
+              if not test: raise SafeError(label)
+          def num(v):
+              if isinstance(v,bool) or v is None: return None
               try:
-                  n = Decimal(str(value).strip())
+                  n=Decimal(str(v).strip().replace(',',''))
                   return n if n.is_finite() else None
-              except (InvalidOperation, ValueError): return None
+              except (InvalidOperation,ValueError): return None
 
-          def api(path, headers, params=None, body=None):
-              # Exactly two allowlisted read-only/authentication routes. No redirects or retries.
-              if path not in ('/oauth2/tokenP', '/uapi/domestic-stock/v1/quotations/inquire-price'):
-                  raise SafeError('ROUTE_NOT_ALLOWED')
-              url = BASE + path
-              if params: url += '?' + parse.urlencode(params)
-              data = json.dumps(body).encode() if body is not None else None
-              req = request.Request(url, data=data, headers=headers, method='POST' if data is not None else 'GET')
+          def jsonread(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def payload(obj): return (json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+          def write(p,obj,immutable=False):
+              p.parent.mkdir(parents=True,exist_ok=True); b=payload(obj)
+              if immutable and p.exists():
+                  require(p.read_bytes()==b,'IMMUTABLE_SNAPSHOT_CONFLICT'); return
+              t=p.with_name(p.name+'.tmp');t.write_bytes(b);t.replace(p)
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def git(*args):
+              r=subprocess.run(['git',*args],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+              require(r.returncode==0,'GIT_OPERATION_FAILED');return r.stdout.strip()
+          def persist(paths,message):
+              git('add','--',*[str(p.relative_to(ROOT)) for p in paths]);
+              changed=git('diff','--cached','--name-only').splitlines()
+              require(all(p.startswith('data/v5_kis_valuation/') for p in changed),'UNEXPECTED_STAGED_FILES')
+              if changed:
+                  git('commit','-m',message)
+                  # Rebase unrelated commits; conflicts fail closed. Never force-push.
+                  git('fetch','origin','main');git('rebase','origin/main');git('push','origin','HEAD:main')
+
+          def api(path,headers,params=None,body=None):
+              require(path in ('/oauth2/tokenP','/uapi/domestic-stock/v1/quotations/inquire-price'),'ROUTE_NOT_ALLOWED')
+              url=BASE+path+('?' + parse.urlencode(params) if params else '')
+              req=request.Request(url,data=json.dumps(body).encode() if body is not None else None,headers=headers,method='POST' if body is not None else 'GET')
               try:
-                  with OPENER.open(req, timeout=20) as response:
-                      obj = json.loads(response.read(2_000_001))
-              except error.HTTPError as exc:
-                  raise SafeError('HTTP_' + str(exc.code)) from None
-              except Exception:
-                  raise SafeError('NETWORK_OR_JSON_ERROR') from None
-              if not isinstance(obj, dict): raise SafeError('INVALID_RESPONSE_OBJECT')
-              return obj
+                  with OPENER.open(req,timeout=15) as r: obj=json.loads(r.read(2_000_001))
+              except error.HTTPError as e: raise SafeError('HTTP_'+str(e.code)) from None
+              except Exception: raise SafeError('NETWORK_OR_JSON_ERROR') from None
+              require(isinstance(obj,dict),'INVALID_RESPONSE_OBJECT');return obj
 
-          def reference():
-              summary = json.loads(Path('data/summary.json').read_text(encoding='utf-8-sig'))
-              day = summary['latest_trading_date']
-              if not isinstance(day,str) or not re.fullmatch(r'20\d{6}',day): raise SafeError('INVALID_KRX_DATE')
-              dt.datetime.strptime(day,'%Y%m%d')
-              with Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f:
-                  rows = list(csv.DictReader(f))
-              if not rows or {r['BAS_DD'] for r in rows} != {day}: raise SafeError('MIXED_KRX_REFERENCE_DATE')
-              idx = {r['ISU_CD']:r for r in rows}
-              if len(idx) != len(rows): raise SafeError('DUPLICATE_KRX_CODE')
-              out = {c:number(idx[c]['TDD_CLSPRC']) for c in CODES if c in idx}
-              if len(out)!=5 or any(v is None or v<=0 for v in out.values()): raise SafeError('MISSING_KRX_REFERENCE')
-              return day,out
-
-          def inspect(obj, code, ref):
-              if obj.get('rt_cd') != '0' or not isinstance(obj.get('output'),dict):
-                  raise SafeError('KIS_QUOTE_REJECTED')
-              out = obj['output']
-              identity = str(out.get('stck_shrn_iscd','')).strip() == code
-              if not identity: raise SafeError('KIS_CODE_MISMATCH_OR_ABSENT')
-              vals = {k:number(out.get(k)) for k in FIELDS}
-              price = number(out.get('stck_prpr'))
-              diff = number(out.get('prdy_vrss'))
-              sign = str(out.get('prdy_vrss_sign',''))
-              prior = None
+          def inspect(obj,code,ref):
+              require(obj.get('rt_cd')=='0' and isinstance(obj.get('output'),dict),'KIS_QUOTE_REJECTED')
+              o=obj['output'];require(str(o.get('stck_shrn_iscd','')).strip()==code,'CODE_MISMATCH')
+              vals={k:num(o.get(k)) for k in FIELDS};price=num(o.get('stck_prpr'));diff=num(o.get('prdy_vrss'));sign=str(o.get('prdy_vrss_sign',''))
+              prior=None
               if price is not None and price>0 and diff is not None:
-                  if sign in ('1','2'): prior=price-abs(diff)
-                  elif sign in ('4','5'): prior=price+abs(diff)
-                  elif sign=='3' and diff==0: prior=price
-              # Numeric comparisons only. The quote has no attested PER/PBR effective date.
-              # stck_sdpr is a base price, not necessarily a previous close; do not substitute it.
-              return {'identity_match':identity,
-                      'fields_numeric':{k:v is not None for k,v in vals.items()},
-                      'positive_per_pbr':all(vals[k] is not None and vals[k]>0 for k in ('per','pbr')),
-                      'price_numeric':price is not None and price>0,
-                      'current_price_equals_archived_close':price==ref if price is not None and price>0 else None,
-                      'implied_previous_price_equals_archived_close':prior==ref if prior is not None and prior>0 else None}
+                  if sign in ('1','2'):prior=price-abs(diff)
+                  elif sign in ('4','5'):prior=price+abs(diff)
+                  elif sign=='3' and diff==0:prior=price
+              return {**{k:str(v) if v is not None else None for k,v in vals.items()},'observed_price':str(price) if price is not None else None,'implied_previous_close':str(prior) if prior is not None and prior>0 else None,'previous_close_match':prior==ref if prior is not None and ref is not None else None,'observed_at_kst':dt.datetime.now(KST).isoformat(),'ratio_effective_date_verified':False,'official_krx_per_pbr_verified':False}
+
+          def due(last,now):
+              d=max(BOOT,last)
+              # No duplicate issue attempt on same Korean date, even if request failed or timed out.
+              return now>=d+dt.timedelta(hours=24) and now.astimezone(KST).date()>d.astimezone(KST).date()
+
+          def market(day,previous):
+              summary=jsonread(UP/'data/summary.json');ref=summary.get('latest_trading_date')
+              require(ref in (previous,day),'UPSTREAM_MARKET_DATE_NOT_CURRENT_OR_PREVIOUS')
+              p=UP/'data/latest.csv'
+              with p.open(encoding='utf-8-sig',newline='') as f: rows=list(csv.DictReader(f))
+              require(rows and {r['BAS_DD'] for r in rows}=={ref},'MIXED_MARKET_DATE')
+              idx={r['ISU_CD']:r for r in rows};require(len(idx)==len(rows),'DUPLICATE_MARKET_CODES')
+              require(len(rows)==int(summary['kospi_rows_latest'])+int(summary['kosdaq_rows_latest']),'MARKET_COUNTS_MISMATCH')
+              targets={c:r for c,r in idx.items() if re.fullmatch(r'\d{6}',c) and r['MARKET'] in ('KOSPI','KOSDAQ')}
+              require(0<len(targets)<=MAX_CODES,'MARKET_SCOPE_INVALID')
+              return ref,targets,len(rows)
+
+          def candidate_queue(ref):
+              base=UP/'data/v5_financial_m/filing_refresh/candidate_regrade';p=base/'latest_status.json'
+              if not p.exists():return {},'NO_CANDIDATE_QUEUE'
+              s=jsonread(p)
+              if s.get('market_date')!=ref:return {},'CANDIDATE_DATE_MISMATCH'
+              require(s.get('state')=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and s.get('investment_decisions_authorized') is False and s.get('final_buy_signals')==0,'INVALID_CANDIDATE_STATE')
+              q=(UP/s['queue_path']).resolve();require(q.is_relative_to(base.resolve()) and q.is_file() and sha(q)==s['queue_sha256'],'CANDIDATE_QUEUE_INTEGRITY')
+              with q.open(encoding='utf-8-sig',newline='') as f:rows=list(csv.DictReader(f))
+              idx={r['code']:r for r in rows};require(len(idx)==len(rows)==s['research_ab_rows'],'CANDIDATE_COUNT_MISMATCH')
+              return idx,'RESEARCH_QUEUE_ONLY'
+
+          def verify_saved(ref,market_rows,candidates,candidate_state):
+              p=STORE/'sessions'/ref/'observations.json'
+              if not p.exists():return 'NO_SAVED_SESSION'
+              data=jsonread(p);require(data['observation_session']==ref,'SNAPSHOT_DATE_MISMATCH')
+              out=[];counts=Counter()
+              for code,r in data['observations'].items():
+                  m=market_rows.get(code);close=num(m['TDD_CLSPRC']) if m else None
+                  equal=close is not None and close>0 and num(r['observed_price'])==close
+                  counts['price_equals_krx_close' if equal else 'price_unmatched']+=1
+                  if code in candidates:
+                      vals={k:r[k] for k in FIELDS};positive=all(num(vals[k]) is not None and num(vals[k])>0 for k in ('per','pbr'))
+                      # Price agreement is NOT independent attestation of the ratio's accounting/effective date.
+                      out.append({'code':code,**vals,'observed_at_kst':r['observed_at_kst'],'price_matches_krx':equal,'state':'KIS_RESEARCH_REFERENCE_ONLY' if equal and positive else 'HOLD','official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_authorized':False})
+              path=STORE/'comparison'/ref/(sha(p)[:16]+'_'+sha(UP/'data/latest.csv')[:16]+'_'+hashlib.sha256(payload(candidates)).hexdigest()[:16]+'.json')
+              result={'state':'KIS_BROKER_COMPARISON','krx_reference_date':ref,'observation_session':ref,'observations':len(data['observations']),'candidate_state':candidate_state,'candidate_count':len(candidates),'candidate_matches':len(out),'counts':dict(counts),'candidates':out,'official_krx_per_pbr_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
+              write(path,result,immutable=True);persist([path],'KIS: archive broker close comparison');return 'COMPARED'
 
           def main():
-              started=dt.datetime.now(KST)
-              report={'state':'STARTED','requested_stocks':5,'auth_requests':0,'quote_requests':0,
-                      'auth_success':False,'successful_quotes':0,'numeric_all_four':0,'positive_per_pbr':0,
-                      'current_price_matches_archive':0,'implied_previous_price_matches_archive':0,
-                      'previous_price_comparable':0,'field_numeric_counts':{k:0 for k in FIELDS},
-                      'error_counts':{},'observed_kst':started.isoformat(),
-                      'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,
-                      'investment_decisions_authorized':False,'order_requests':0,
-                      'raw_values_published':False,'production_files_modified':False}
-              def emit():
-                  report['elapsed_seconds']=round((dt.datetime.now(KST)-started).total_seconds(),2)
-                  print('KIS_VALUATION_PILOT '+json.dumps(report,ensure_ascii=True,sort_keys=True),flush=True)
-              try:
-                  day,refs=reference();report['krx_reference_date']=day
-                  key=os.environ.get('KIS_APP_KEY','').strip();secret=os.environ.get('KIS_APP_SECRET','').strip()
-                  if not key or not secret: raise SafeError('MISSING_REPOSITORY_SECRETS')
-                  report['auth_requests']=1
-                  t=api('/oauth2/tokenP',{'Content-Type':'application/json'},body={'grant_type':'client_credentials','appkey':key,'appsecret':secret})
-                  token=t.get('access_token')
-                  if not isinstance(token,str) or not token.strip() or '\n' in token or '\r' in token: raise SafeError('TOKEN_NOT_ISSUED')
-                  # Mask the token before any quote call; never print the API body or exception details.
-                  print('::add-mask::'+token,flush=True)
-                  report['auth_success']=True
-                  headers={'Content-Type':'application/json','authorization':'Bearer '+token,'appkey':key,'appsecret':secret,'tr_id':'FHKST01010100','custtype':'P'}
-                  for code in CODES:
-                      time.sleep(1.1)
-                      report['quote_requests']+=1
-                      try:
-                          obj=api('/uapi/domestic-stock/v1/quotations/inquire-price',headers,params={'FID_COND_MRKT_DIV_CODE':'J','FID_INPUT_ISCD':code})
-                          r=inspect(obj,code,refs[code]);report['successful_quotes']+=1
-                          for k,v in r['fields_numeric'].items(): report['field_numeric_counts'][k]+=int(v)
-                          report['numeric_all_four']+=int(all(r['fields_numeric'].values()))
-                          report['positive_per_pbr']+=int(r['positive_per_pbr'])
-                          report['current_price_matches_archive']+=int(r['current_price_equals_archived_close'] is True)
-                          report['implied_previous_price_matches_archive']+=int(r['implied_previous_price_equals_archived_close'] is True)
-                          report['previous_price_comparable']+=int(r['implied_previous_price_equals_archived_close'] is not None)
-                      except SafeError as e:
-                          reason=str(e);report['error_counts'][reason]=report['error_counts'].get(reason,0)+1
-                          if reason in ('HTTP_401','HTTP_403','HTTP_429','KIS_QUOTE_REJECTED'): break
-                  passed=report['successful_quotes']==5 and report['numeric_all_four']==5
-                  report['state']='FIVE_STOCK_FIELD_TEST_PASSED' if passed else 'FIVE_STOCK_FIELD_TEST_INCOMPLETE'
-                  emit();return 0 if passed else 1
-              except SafeError as e:
-                  report['state']='BLOCKED';report['error_counts'][str(e)]=1;emit();return 1
-              except Exception:
-                  report['state']='BLOCKED';report['error_counts']['LOCAL_VALIDATION_ERROR']=1;emit();return 1
+              mode=os.environ.get('MODE','audit');now=dt.datetime.now(UTC);local=now.astimezone(KST);day=local.strftime('%Y%m%d')
+              require(os.environ.get('GITHUB_REPOSITORY')=='cks3210-spec/KRX-Public-Test','UNEXPECTED_REPOSITORY')
+              cal=xc.get_calendar('XKRX',start=str(local.date()-dt.timedelta(days=370)),end=str(local.date()+dt.timedelta(days=370)))
+              if not cal.is_session(str(local.date())):print('KIS_SKIP_NON_TRADING_DAY');return
+              previous=cal.previous_session(str(local.date())).strftime('%Y%m%d');ref,rows,total=market(day,previous)
+              candidates,candidate_state=candidate_queue(ref)
+              source_commit=git('rev-parse','HEAD')
+              git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+              compare='NOT_RUN'
+              if mode=='audit':
+                  print(json.dumps({'state':'CONFIGURATION_AUDIT_ONLY','market_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'candidate_count':len(candidates),'api_calls':0}));return
+              require(mode in ('collect','compare'),'INVALID_MODE')
+              compare=verify_saved(ref,rows,candidates,candidate_state)
+              if mode=='compare':
+                  print('KIS_COMPARE '+json.dumps({'state':compare,'market_date':ref,'api_calls':0}));return
+              if not (dt.time(16,45)<=local.time()<dt.time(18,0)) or now<cal.session_close(str(local.date())).to_pydatetime():print('KIS_SKIP_OUTSIDE_POST_CLOSE_WINDOW');return
+              now=dt.datetime.now(UTC);local=now.astimezone(KST)
+              last=BOOT
+              if LEDGER.exists():
+                  old=jsonread(LEDGER);last=dt.datetime.fromisoformat(old['attempted_utc']);require(last.tzinfo is not None and last<=now+dt.timedelta(minutes=2),'INVALID_TOKEN_LEDGER')
+              if not due(last,now):
+                  wait=(max(BOOT,last)+dt.timedelta(hours=24,seconds=2)-now).total_seconds()
+                  if 0<wait<=900 and (now+dt.timedelta(seconds=wait)).astimezone(KST).time()<dt.time(18):
+                      time.sleep(wait);now=dt.datetime.now(UTC)
+                  if not due(last,now):print('KIS_SKIP_TOKEN_INTERVAL');return
+              out=STORE/'sessions'/day/'observations.json'
+              if out.exists():print('KIS_SKIP_ALREADY_ARCHIVED');return
+              key=os.environ.get('KIS_APP_KEY','').strip();secret=os.environ.get('KIS_APP_SECRET','').strip();require(key and secret,'MISSING_KIS_SECRETS')
+              # Persist the attempt BEFORE contacting the broker. Even an ambiguous timeout blocks retries.
+              # No token, secret, or token fingerprint is written to the repository, cache or artifact.
+              bound=dt.datetime.now(UTC)+dt.timedelta(minutes=2)
+              ledger={'attempted_utc':bound.isoformat(),'session':day,'run_id':os.environ.get('GITHUB_RUN_ID',''),'state':'AUTH_ATTEMPT_RESERVED'}
+              write(LEDGER,ledger);persist([LEDGER],'KIS: reserve one daily authentication attempt')
+              require(dt.datetime.now(UTC)<bound-dt.timedelta(seconds=20),'AUTH_RESERVATION_EXPIRED')
+              token=api('/oauth2/tokenP',{'Content-Type':'application/json'},body={'grant_type':'client_credentials','appkey':key,'appsecret':secret}).get('access_token')
+              require(isinstance(token,str) and re.fullmatch(r'[A-Za-z0-9._~+/-]+={0,2}',token) is not None,'TOKEN_NOT_ISSUED');print('::add-mask::'+token,flush=True)
+              ledger.update(attempted_utc=dt.datetime.now(UTC).isoformat(),state='AUTH_SUCCEEDED');write(LEDGER,ledger)
+              headers={'Content-Type':'application/json','authorization':'Bearer '+token,'appkey':key,'appsecret':secret,'tr_id':'FHKST01010100','custtype':'P'}
+              observations={};errors=Counter();requests=0;stop='';start=time.monotonic()
+              # Previous research candidates first; all remaining market securities once, no retries.
+              for code in sorted(rows,key=lambda c:(c not in candidates,c)):
+                  if time.monotonic()-start>6600:stop='TIME_BUDGET';break
+                  time.sleep(MIN_INTERVAL);requests+=1
+                  try:
+                      o=api('/uapi/domestic-stock/v1/quotations/inquire-price',headers,params={'FID_COND_MRKT_DIV_CODE':'J','FID_INPUT_ISCD':code})
+                      observations[code]=inspect(o,code,num(rows[code]['TDD_CLSPRC']) if ref==previous else None)
+                  except SafeError as exc:
+                      reason=str(exc);errors[reason]+=1
+                      if reason in ('HTTP_401','HTTP_403','HTTP_429','HTTP_500','KIS_QUOTE_REJECTED','NETWORK_OR_JSON_ERROR'):stop=reason;break
+              report={'state':'KIS_BROKER_COLLECTION_COMPLETE' if requests==len(rows) and len(observations)==len(rows) else 'KIS_BROKER_PARTIAL_CHECKPOINT','observation_session':day,'universe_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'unassessed_identifier_rows':total-len(rows),'requested':requests,'successful_quotes':len(observations),'numeric_all_four':sum(all(v[k] is not None for k in FIELDS) for v in observations.values()),'source':'KIS_OPEN_API_INQUIRE_PRICE','public_storage_selected_fields_only':True,'auth_requests':1,'errors':dict(errors),'stop_reason':stop,'previous_comparison':compare,'source_commit':source_commit,'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
+              write(out,{**report,'observations':observations},immutable=True);persist([out,LEDGER],'KIS: archive broker daily observation checkpoint')
+              # Public dataset contains selected numeric fields only, never credentials or raw API responses. Logs contain aggregate counts only.
+              print('KIS_COLLECTION '+json.dumps(report,ensure_ascii=True));require(not stop and len(observations)==len(rows),'PARTIAL_COLLECTION_RETAINED')
 
-          if __name__=='__main__': sys.exit(main())
-          PY
-          python -m py_compile /tmp/kis_pilot.py
-          python /tmp/kis_pilot.py
+          if __name__=='__main__':
+              try:main()
+              except SafeError as e:print('KIS_BLOCKED '+str(e));sys.exit(1)
+              except Exception:print('KIS_BLOCKED LOCAL_VALIDATION_ERROR');sys.exit(1)
+          PYTHON
+          python -m py_compile /tmp/kis_daily.py
+          python /tmp/kis_daily.py
