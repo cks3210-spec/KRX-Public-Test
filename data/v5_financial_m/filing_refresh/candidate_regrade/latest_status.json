@@ -1,0 +1,49 @@
+{
+  "api_calls": 0,
+  "final_buy_signals": 0,
+  "financial_disclosure_asof_verified": false,
+  "grade_counts": {
+    "A": 3
+  },
+  "held_by_reason": {
+    "EXISTING_CORRECTION_EXCLUSION": 5,
+    "IDENTITY_REVIEW": 24,
+    "MARKET_CAP_GATE": 1449,
+    "MISSING_RECEIPT_BOUND_CUMULATIVE_TTM": 1195
+  },
+  "hold_path": "data/v5_financial_m/filing_refresh/candidate_regrade/20261124/322d3bf55fc0550fdfe2dd3173ec65e90d4f5f54c698758694b830a06d916595/held_reasons.json",
+  "hold_sha256": "cae94c7d45a7721840f6636a0a1cf2a83150538883f15cbfb6edd80687e20a45",
+  "investment_decisions_authorized": false,
+  "market_date": "20261124",
+  "market_rows": 2772,
+  "new_research_ab_rows": 3,
+  "notes": [
+    "A/B research only, latest known receipt-bound values, not independently verified point-in-time filing values.",
+    "No legacy TTM, no official ratios, no buy prices. Existing grade engine owner-equity leverage is not total-equity debt ratio.",
+    "Empty queue is valid when no candidates satisfy evidence requirements."
+  ],
+  "numeric_market_rows": 2676,
+  "official_per_pbr_verified": false,
+  "queue_path": "data/v5_financial_m/filing_refresh/candidate_regrade/20261124/322d3bf55fc0550fdfe2dd3173ec65e90d4f5f54c698758694b830a06d916595/official_ratio_review_queue.csv",
+  "queue_sha256": "2d608d619e94d4e1b7371142b67171ddc9130eae7e8825c695ace4d27b9b8b18",
+  "research_ab_rows": 3,
+  "share_class_verified": false,
+  "source_sha256": {
+    "data/latest.csv": "1a1022414047a6bffc4b9a136eab1dc256a1a98002e22345981cbbb0ca067adb",
+    "data/summary.json": "e0218ce9f789a0369da66f7235e6f44a07ce3cee030e6ced0c44cf320d1da46b",
+    "data/v5_financial_m/corp_map.json": "22840d53a466c66e1f2e978ee4698b3e941f2d913632ff81bc562b902221c22d",
+    "data/v5_financial_m/dart_financial_cache.json": "5a044a5353e95ebce0cdc2a754a7b8e72b7e6fa7312c0c576a2608aec6fc16e4",
+    "data/v5_financial_m/filing_refresh/analysis_link.json": "08fbad59ed85a41fb436f89006a01aed5e67ace5c82330211e627d944f211a20",
+    "data/v5_financial_m/filing_refresh/metrics/20261124/3b84c73a371963b8f70b7dbdd3a11fe4cf4960ad895539d3c6d9346ed6bc4fcc/financial_metrics.csv": "83819001cb9911bdf71c6ac700d1f8003d0e5d61cac34fcd2fbe8b40b1d5381f",
+    "data/v5_financial_m/filing_refresh/metrics/latest_status.json": "fae38b79c2db5bb911af093ddb9a4c129aa187bd1691c42c40b77ab895f4e73c",
+    "data/v5_financial_m/filing_refresh/state.json": "8af65871d7c2e931a43f306771d98fc9228735d808cfbe6f0675168d250479a5",
+    "data/v5_financial_m/status.json": "343808b4d922fe48461c030aa58ef4bd206c5c44a9479fb2fb719d9ad13b1c0c",
+    "scripts/krx_v5_r14_dart_incremental_m.py": "96fdc4e3f86627e05e1e3245f7b01860f278544dd23d9bf79269a8a0db199f97",
+    "scripts/krx_v5_r14_financial_pipeline_n.py": "1d7676710c61afc4a2e4b26c70a7691aaf5f751df9481099fe7f424d6dc74c50",
+    "scripts/krx_v5_r14_grade_engine.py": "d56d5c6ae152d085b34e51d1d417a59adce322f548cb75a8e8144aaf14bd3afa",
+    "v5_reports/stage28/r14_candidate_exclusion_gate.json": "e925611badffa5fca7dda93b128848541ce478c8a4bf5e6cc3cc3ac6c348689b",
+    "v5_reports/stage28/r14_stage55_p2_provenance_gate_20261120.json": "1817d5de737756c515df83ac40164277da3cc245002563ae444812e63efc1ed7"
+  },
+  "state": "CANDIDATE_RESEARCH_REGRADE_PERSISTED",
+  "unassessed_identifier_rows": 96
+}
