@@ -1,0 +1,160 @@
+name: KRX v5 KIS Five Stock Valuation Pilot
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-kis-valuation-pilot
+  cancel-in-progress: false
+jobs:
+  pilot:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read-only KIS authentication and five stock quotation checks
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/kis_pilot.py <<'PY'
+          import csv, datetime as dt, json, os, re, sys, time
+          from decimal import Decimal, InvalidOperation
+          from pathlib import Path
+          from urllib import request, parse, error
+          from zoneinfo import ZoneInfo
+
+          BASE = 'https://openapi.koreainvestment.com:9443'
+          CODES = ('005930', '000660', '005380', '247540', '086520')
+          FIELDS = ('per', 'pbr', 'eps', 'bps')
+          KST = ZoneInfo('Asia/Seoul')
+          class SafeError(Exception): pass
+          class NoRedirect(request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          OPENER = request.build_opener(NoRedirect())
+
+          def number(value):
+              if value is None or isinstance(value, bool): return None
+              try:
+                  n = Decimal(str(value).strip())
+                  return n if n.is_finite() else None
+              except (InvalidOperation, ValueError): return None
+
+          def api(path, headers, params=None, body=None):
+              # Exactly two allowlisted read-only/authentication routes. No redirects or retries.
+              if path not in ('/oauth2/tokenP', '/uapi/domestic-stock/v1/quotations/inquire-price'):
+                  raise SafeError('ROUTE_NOT_ALLOWED')
+              url = BASE + path
+              if params: url += '?' + parse.urlencode(params)
+              data = json.dumps(body).encode() if body is not None else None
+              req = request.Request(url, data=data, headers=headers, method='POST' if data is not None else 'GET')
+              try:
+                  with OPENER.open(req, timeout=20) as response:
+                      obj = json.loads(response.read(2_000_001))
+              except error.HTTPError as exc:
+                  raise SafeError('HTTP_' + str(exc.code)) from None
+              except Exception:
+                  raise SafeError('NETWORK_OR_JSON_ERROR') from None
+              if not isinstance(obj, dict): raise SafeError('INVALID_RESPONSE_OBJECT')
+              return obj
+
+          def reference():
+              summary = json.loads(Path('data/summary.json').read_text(encoding='utf-8-sig'))
+              day = summary['latest_trading_date']
+              if not isinstance(day,str) or not re.fullmatch(r'20\d{6}',day): raise SafeError('INVALID_KRX_DATE')
+              dt.datetime.strptime(day,'%Y%m%d')
+              with Path('data/latest.csv').open(encoding='utf-8-sig',newline='') as f:
+                  rows = list(csv.DictReader(f))
+              if not rows or {r['BAS_DD'] for r in rows} != {day}: raise SafeError('MIXED_KRX_REFERENCE_DATE')
+              idx = {r['ISU_CD']:r for r in rows}
+              if len(idx) != len(rows): raise SafeError('DUPLICATE_KRX_CODE')
+              out = {c:number(idx[c]['TDD_CLSPRC']) for c in CODES if c in idx}
+              if len(out)!=5 or any(v is None or v<=0 for v in out.values()): raise SafeError('MISSING_KRX_REFERENCE')
+              return day,out
+
+          def inspect(obj, code, ref):
+              if obj.get('rt_cd') != '0' or not isinstance(obj.get('output'),dict):
+                  raise SafeError('KIS_QUOTE_REJECTED')
+              out = obj['output']
+              identity = str(out.get('stck_shrn_iscd','')).strip() == code
+              if not identity: raise SafeError('KIS_CODE_MISMATCH_OR_ABSENT')
+              vals = {k:number(out.get(k)) for k in FIELDS}
+              price = number(out.get('stck_prpr'))
+              diff = number(out.get('prdy_vrss'))
+              sign = str(out.get('prdy_vrss_sign',''))
+              prior = None
+              if price is not None and price>0 and diff is not None:
+                  if sign in ('1','2'): prior=price-abs(diff)
+                  elif sign in ('4','5'): prior=price+abs(diff)
+                  elif sign=='3' and diff==0: prior=price
+              # Numeric comparisons only. The quote has no attested PER/PBR effective date.
+              # stck_sdpr is a base price, not necessarily a previous close; do not substitute it.
+              return {'identity_match':identity,
+                      'fields_numeric':{k:v is not None for k,v in vals.items()},
+                      'positive_per_pbr':all(vals[k] is not None and vals[k]>0 for k in ('per','pbr')),
+                      'price_numeric':price is not None and price>0,
+                      'current_price_equals_archived_close':price==ref if price is not None and price>0 else None,
+                      'implied_previous_price_equals_archived_close':prior==ref if prior is not None and prior>0 else None}
+
+          def main():
+              started=dt.datetime.now(KST)
+              report={'state':'STARTED','requested_stocks':5,'auth_requests':0,'quote_requests':0,
+                      'auth_success':False,'successful_quotes':0,'numeric_all_four':0,'positive_per_pbr':0,
+                      'current_price_matches_archive':0,'implied_previous_price_matches_archive':0,
+                      'previous_price_comparable':0,'field_numeric_counts':{k:0 for k in FIELDS},
+                      'error_counts':{},'observed_kst':started.isoformat(),
+                      'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,
+                      'investment_decisions_authorized':False,'order_requests':0,
+                      'raw_values_published':False,'production_files_modified':False}
+              def emit():
+                  report['elapsed_seconds']=round((dt.datetime.now(KST)-started).total_seconds(),2)
+                  print('KIS_VALUATION_PILOT '+json.dumps(report,ensure_ascii=True,sort_keys=True),flush=True)
+              try:
+                  day,refs=reference();report['krx_reference_date']=day
+                  key=os.environ.get('KIS_APP_KEY','').strip();secret=os.environ.get('KIS_APP_SECRET','').strip()
+                  if not key or not secret: raise SafeError('MISSING_REPOSITORY_SECRETS')
+                  report['auth_requests']=1
+                  t=api('/oauth2/tokenP',{'Content-Type':'application/json'},body={'grant_type':'client_credentials','appkey':key,'appsecret':secret})
+                  token=t.get('access_token')
+                  if not isinstance(token,str) or not token.strip() or '\n' in token or '\r' in token: raise SafeError('TOKEN_NOT_ISSUED')
+                  # Mask the token before any quote call; never print the API body or exception details.
+                  print('::add-mask::'+token,flush=True)
+                  report['auth_success']=True
+                  headers={'Content-Type':'application/json','authorization':'Bearer '+token,'appkey':key,'appsecret':secret,'tr_id':'FHKST01010100','custtype':'P'}
+                  for code in CODES:
+                      time.sleep(1.1)
+                      report['quote_requests']+=1
+                      try:
+                          obj=api('/uapi/domestic-stock/v1/quotations/inquire-price',headers,params={'FID_COND_MRKT_DIV_CODE':'J','FID_INPUT_ISCD':code})
+                          r=inspect(obj,code,refs[code]);report['successful_quotes']+=1
+                          for k,v in r['fields_numeric'].items(): report['field_numeric_counts'][k]+=int(v)
+                          report['numeric_all_four']+=int(all(r['fields_numeric'].values()))
+                          report['positive_per_pbr']+=int(r['positive_per_pbr'])
+                          report['current_price_matches_archive']+=int(r['current_price_equals_archived_close'] is True)
+                          report['implied_previous_price_matches_archive']+=int(r['implied_previous_price_equals_archived_close'] is True)
+                          report['previous_price_comparable']+=int(r['implied_previous_price_equals_archived_close'] is not None)
+                      except SafeError as e:
+                          reason=str(e);report['error_counts'][reason]=report['error_counts'].get(reason,0)+1
+                          if reason in ('HTTP_401','HTTP_403','HTTP_429','KIS_QUOTE_REJECTED'): break
+                  passed=report['successful_quotes']==5 and report['numeric_all_four']==5
+                  report['state']='FIVE_STOCK_FIELD_TEST_PASSED' if passed else 'FIVE_STOCK_FIELD_TEST_INCOMPLETE'
+                  emit();return 0 if passed else 1
+              except SafeError as e:
+                  report['state']='BLOCKED';report['error_counts'][str(e)]=1;emit();return 1
+              except Exception:
+                  report['state']='BLOCKED';report['error_counts']['LOCAL_VALIDATION_ERROR']=1;emit();return 1
+
+          if __name__=='__main__': sys.exit(main())
+          PY
+          python -m py_compile /tmp/kis_pilot.py
+          python /tmp/kis_pilot.py
