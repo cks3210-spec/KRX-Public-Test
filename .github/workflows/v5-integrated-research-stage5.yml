@@ -93,14 +93,25 @@ jobs:
               rows=csvrows(p);require(rows and {r['BAS_DD'] for r in rows}=={day},'MARKET_DATE_MISMATCH');return index(rows,'ISU_CD')
           def source_path(base,relative,expected):
               p=(ROOT/relative).resolve();require(p.is_relative_to(base.resolve()) and p.is_file() and sha(p)==expected,'SOURCE_INTEGRITY');return p
+          def market_provenance(status,day,markets):
+              expected=status.get('source_sha256',{}).get('data/latest.csv')
+              require(isinstance(expected,str) and re.fullmatch(r'[0-9a-f]{64}',expected),'CANDIDATE_MARKET_HASH_MISSING')
+              latest=DATA/'latest.csv'; archive=ARCH/f'{day}.csv'
+              if sha(latest)==expected:
+                  return latest,'EXACT_LATEST_HASH'
+              # Git may normalize CRLF to LF in latest.csv. Never waive the recorded hash:
+              # the immutable official archive must match it and ALL parsed rows must agree.
+              require(archive.is_file() and sha(archive)==expected,'CANDIDATE_MARKET_HASH_MISMATCH')
+              require(market(archive,day)==markets,'CANDIDATE_ARCHIVE_CONTENT_MISMATCH')
+              return archive,'EXACT_ARCHIVE_HASH_AND_ALL_ROWS_EQUAL'
           def check_queue(status,day,markets):
               require(status.get('state')=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and status.get('market_date')==day and status.get('investment_decisions_authorized') is False and status.get('final_buy_signals')==0 and status.get('official_per_pbr_verified') is False,'CANDIDATE_SOURCE_INVALID')
               q=source_path(BASE,status['queue_path'],status['queue_sha256']); rows=index(csvrows(q),'code');require(len(rows)==status['research_ab_rows'],'CANDIDATE_COUNT_MISMATCH')
-              require(status.get('source_sha256',{}).get('data/latest.csv')==sha(DATA/'latest.csv'),'CANDIDATE_MARKET_HASH_MISMATCH')
+              evidence,provenance=market_provenance(status,day,markets)
               for c,r in rows.items():
                   m=markets.get(c);require(m is not None and re.fullmatch(r'\d{6}',c) and r['market_date']==day and r['grade_research_only'] in ('A','B') and r['market']==m['MARKET'] and positive(r['close_krw']) and num(r['close_krw'])==num(m['TDD_CLSPRC']) and num(r['market_cap_krw'])==num(m['MKTCAP']) and num(m['MKTCAP'])>=100_000_000_000,'CANDIDATE_MARKET_MISMATCH')
                   require(r['fs_div']=='CFS' and all(re.fullmatch(r'\d{14}',r[k]) and r[k][:8]<=day for k in ('annual_receipt','current_period_receipt','prior_period_receipt')),'CANDIDATE_RECEIPT_MISMATCH')
-              return q,rows
+              return q,rows,evidence,provenance
           
           def broker_snapshot(day):
               p=KIS/day/'observations.json'
@@ -157,8 +168,8 @@ jobs:
               if os.environ.get('GITHUB_EVENT_NAME')=='workflow_run':
                   if not marker.is_file():print('STAGE5_SKIP_NO_REGRADE_RESULT');return
                   require(read(marker)==s,'UPSTREAM_RESULT_CHANGED')
-              q,rows=check_queue(s,day,markets); bp,brows=broker_snapshot(day)
-              source={str(p.relative_to(ROOT)):sha(p) for p in (DATA/'summary.json',DATA/'latest.csv',BASE/'latest_status.json',q,ROOT/'scripts/krx_v5_r14_grade_engine.py')}
+              q,rows,evidence,provenance=check_queue(s,day,markets); bp,brows=broker_snapshot(day)
+              source={str(p.relative_to(ROOT)):sha(p) for p in (DATA/'summary.json',DATA/'latest.csv',BASE/'latest_status.json',q,evidence,ROOT/'scripts/krx_v5_r14_grade_engine.py')}
               if bp:source[str(bp.relative_to(ROOT))]=sha(bp)
               results=[evaluate(r,brows.get(c),day,engine) for c,r in sorted(rows.items())];ready=[r for r in results if r['state']=='KIS_CLOSE_MATCH_RESEARCH_ONLY']
               # Freeze only live, new previous-session cohorts; never create historical recommendations.
@@ -173,7 +184,7 @@ jobs:
               tracks=[]
               for p in sorted((OUT/'cohorts').glob('*.json')):
                   c=read(p);require(c.get('research_only') is True and c.get('investment_decisions_authorized') is False,'INVALID_COHORT');tracks+=performance(c,day,cal,prices)
-              report={'state':'STAGE5_RESEARCH_INTEGRATED','market_date':day,'market_rows':len(markets),'candidate_rows':len(results),'research_reference_rows':len(ready),'candidate_states':dict(Counter(r['state'] for r in results)),'source_sha256':source,'cohort_exists':cohort_path.exists(),'tracked_rows':len(tracks),'official_krx_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'external_financial_api_calls':0,'notes':['KIS observation and KRX official valuation are distinct. Matching close does not prove PER/PBR effective date.','Illustrative reference uses existing R14 model, not a certified fair price or buy instruction.','Performance uses unadjusted closes, first session strictly after publication as baseline; not total return or executed trades. Missing exact session remains missing.']}
+              report={'state':'STAGE5_RESEARCH_INTEGRATED','market_date':day,'market_rows':len(markets),'candidate_rows':len(results),'market_provenance':provenance,'candidate_market_source':str(evidence.relative_to(ROOT)),'research_reference_rows':len(ready),'candidate_states':dict(Counter(r['state'] for r in results)),'source_sha256':source,'cohort_exists':cohort_path.exists(),'tracked_rows':len(tracks),'official_krx_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'external_financial_api_calls':0,'notes':['KIS observation and KRX official valuation are distinct. Matching close does not prove PER/PBR effective date.','Illustrative reference uses existing R14 model, not a certified fair price or buy instruction.','Performance uses unadjusted closes, first session strictly after publication as baseline; not total return or executed trades. Missing exact session remains missing.']}
               snapshot={**report,'candidates':results,'performance':tracks}; b=payload(snapshot);version=hashlib.sha256(b).hexdigest();path=OUT/'sessions'/day/version/'research.json';write(path,b,immutable=True)
               report['snapshot_path']=str(path.relative_to(ROOT));report['snapshot_sha256']=sha(path);write(OUT/'latest_status.json',payload(report))
               require(all(sha(ROOT/p)==h for p,h in source.items()),'SOURCE_MUTATED')
