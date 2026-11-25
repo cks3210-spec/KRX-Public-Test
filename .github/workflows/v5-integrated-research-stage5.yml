@@ -1,0 +1,207 @@
+name: KRX v5 Integrated Research Stage 5
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 R14 OpenDART Auto Continue']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: krx-v5-integrated-research-stage5
+  cancel-in-progress: false
+jobs:
+  integrated:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Check exact upstream refresh job and retrieve its checkpoint
+        id: upstream
+        if: ${{ github.event_name == 'workflow_run' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jobs=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" --jq '.jobs[] | select(.name == "Incremental official filing receipt and raw archive refresh" and .conclusion == "success") | .id')
+          if [ -z "$jobs" ]; then
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p /tmp/stage5-upstream
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name r14-filing-refresh-checkpoint --dir /tmp/stage5-upstream
+          if [ -f /tmp/stage5-upstream/candidate_regrade_status.json ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.upstream.outputs.ready == 'true' }}
+        with:
+          python-version: '3.11'
+      - name: Install exchange session calendar
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.upstream.outputs.ready == 'true' }}
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Integrate receipt-bound A/B research, KIS observations and forward returns
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.upstream.outputs.ready == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_v5_stage5.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, io, json, os, re, subprocess, sys
+          from collections import Counter
+          from decimal import Decimal, InvalidOperation
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as xc
+          
+          ROOT=Path.cwd(); DATA=ROOT/'data'; BASE=DATA/'v5_financial_m/filing_refresh/candidate_regrade'; KIS=DATA/'v5_kis_valuation/sessions'; ARCH=DATA/'v5_official_market_archive'; OUT=ROOT/'v5_reports/v5_integrated_research'; KST=ZoneInfo('Asia/Seoul')
+          HORIZONS=(5,10,20)
+          
+          def require(ok,label):
+              if not ok: raise ValueError(label)
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def payload(v): return (json.dumps(v,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+          def write(p,b,immutable=False):
+              p.parent.mkdir(parents=True,exist_ok=True)
+              if p.exists() and immutable:
+                  require(p.read_bytes()==b,'IMMUTABLE_CONFLICT '+str(p));return
+              tmp=p.with_name(p.name+'.tmp');tmp.write_bytes(b);tmp.replace(p)
+          def num(v):
+              try:
+                  if v is None or isinstance(v,bool): return None
+                  x=Decimal(str(v).replace(',','').strip());return x if x.is_finite() else None
+              except (InvalidOperation,ValueError): return None
+          def positive(v):
+              x=num(v);return x is not None and x>0
+          def csvrows(p):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  r=csv.DictReader(f);require(r.fieldnames and len(r.fieldnames)==len(set(r.fieldnames)),'BAD_CSV_HEADER');return list(r)
+          def index(rows,key):
+              d={r[key]:r for r in rows};require(len(d)==len(rows),'DUPLICATE_'+key);return d
+          def valid_day(day):
+              require(isinstance(day,str) and re.fullmatch(r'20\d{6}',day),'INVALID_DATE');return dt.datetime.strptime(day,'%Y%m%d').date()
+          def market(p,day):
+              rows=csvrows(p);require(rows and {r['BAS_DD'] for r in rows}=={day},'MARKET_DATE_MISMATCH');return index(rows,'ISU_CD')
+          def source_path(base,relative,expected):
+              p=(ROOT/relative).resolve();require(p.is_relative_to(base.resolve()) and p.is_file() and sha(p)==expected,'SOURCE_INTEGRITY');return p
+          def check_queue(status,day,markets):
+              require(status.get('state')=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and status.get('market_date')==day and status.get('investment_decisions_authorized') is False and status.get('final_buy_signals')==0 and status.get('official_per_pbr_verified') is False,'CANDIDATE_SOURCE_INVALID')
+              q=source_path(BASE,status['queue_path'],status['queue_sha256']); rows=index(csvrows(q),'code');require(len(rows)==status['research_ab_rows'],'CANDIDATE_COUNT_MISMATCH')
+              require(status.get('source_sha256',{}).get('data/latest.csv')==sha(DATA/'latest.csv'),'CANDIDATE_MARKET_HASH_MISMATCH')
+              for c,r in rows.items():
+                  m=markets.get(c);require(m is not None and re.fullmatch(r'\d{6}',c) and r['market_date']==day and r['grade_research_only'] in ('A','B') and r['market']==m['MARKET'] and positive(r['close_krw']) and num(r['close_krw'])==num(m['TDD_CLSPRC']) and num(r['market_cap_krw'])==num(m['MKTCAP']) and num(m['MKTCAP'])>=100_000_000_000,'CANDIDATE_MARKET_MISMATCH')
+                  require(r['fs_div']=='CFS' and all(re.fullmatch(r'\d{14}',r[k]) and r[k][:8]<=day for k in ('annual_receipt','current_period_receipt','prior_period_receipt')),'CANDIDATE_RECEIPT_MISMATCH')
+              return q,rows
+          
+          def broker_snapshot(day):
+              p=KIS/day/'observations.json'
+              if not p.is_file():return None,{}
+              s=read(p);require(s.get('observation_session')==day and s.get('source')=='KIS_OPEN_API_INQUIRE_PRICE' and s.get('state') in ('KIS_BROKER_COLLECTION_COMPLETE','KIS_BROKER_PARTIAL_CHECKPOINT') and s.get('official_krx_per_pbr_verified') is False and s.get('ratio_effective_date_verified') is False,'KIS_SOURCE_INVALID')
+              rows=s.get('observations');require(isinstance(rows,dict) and len(rows)==s['successful_quotes'],'KIS_COUNT_MISMATCH');return p,rows
+          
+          def evaluate(r,b,day,engine):
+              c=r['code']; close=num(r['close_krw']);grade=r['grade_research_only']
+              result={'code':c,'name':r['name'],'market':r['market'],'market_date':day,'research_grade':grade,'score':r['score'],'reference_close_krw':str(close),'receipt_ids':[r[k] for k in ('annual_receipt','current_period_receipt','prior_period_receipt')],'derived_per_research_only':r['derived_per_research_only'],'derived_pbr_research_only':r['derived_pbr_research_only'],'state':'HOLD_NO_KIS_SNAPSHOT','kis_per':None,'kis_pbr':None,'kis_eps':None,'kis_bps':None,'broker_observed_at_kst':None,'illustrative_prices':{},'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'final_grade':None,'actionable_buy_price':None,'buy_signal':False}
+              if b is None:return result
+              if b.get('official_krx_per_pbr_verified') is not False or b.get('ratio_effective_date_verified') is not False:raise ValueError('KIS_ROW_UNEXPECTED_APPROVAL')
+              try: obs=dt.datetime.fromisoformat(b['observed_at_kst']);valid=obs.tzinfo is not None and obs.astimezone(KST).strftime('%Y%m%d')==day and obs.astimezone(KST).time()>=dt.time(15,30)
+              except (KeyError,ValueError,TypeError):valid=False
+              if not valid or num(b.get('observed_price'))!=close:
+                  result['state']='HOLD_KIS_DATE_OR_CLOSE_MISMATCH';return result
+              for k in ('per','pbr','eps','bps'):result['kis_'+k]=b.get(k)
+              result['broker_observed_at_kst']=b['observed_at_kst']
+              if not all(positive(b.get(k)) for k in ('per','pbr','eps','bps')):
+                  result['state']='HOLD_KIS_NONPOSITIVE_OR_MISSING';return result
+              # Existing R14 price-scenario function, with broker multiples as explicit assumptions.
+              # A/B remains the Stage3 research grade, not a broker- or KRX-certified regrade.
+              v=engine.illustrative_prices({'grade':grade,'ttm_per_est':str(b['per']),'pbr_est':str(b['pbr'])},{'close_krw':str(close)})
+              require(v and v.get('actionable_entry_price') is False and v.get('buy_signal') is False,'PRICE_MODEL_UNEXPECTED_APPROVAL')
+              result.update(state='KIS_CLOSE_MATCH_RESEARCH_ONLY',illustrative_prices=v,price_model_input='KIS_OBSERVED_MULTIPLES_NOT_KRX_OFFICIAL')
+              return result
+          
+          def performance(cohort,day,calendar,load_market):
+              # First exchange session strictly after the cohort publication date is the baseline.
+              published=valid_day(cohort['published_kst_date']); anchor=calendar.date_to_session(str(published+dt.timedelta(days=1)),direction='next');anchor_day=anchor.strftime('%Y%m%d')
+              out=[]
+              for row in cohort['candidates']:
+                  code=row['code'];r={'code':code,'cohort_market_date':cohort['market_date'],'published_kst_date':cohort['published_kst_date'],'baseline_session':anchor_day,'baseline_close':None,'horizons':{}}
+                  a=load_market(anchor_day) if anchor_day<=day else {}; av=num(a.get(code,{}).get('TDD_CLSPRC')); r['baseline_close']=str(av) if positive(av) else None
+                  for n in HORIZONS:
+                      end=calendar.session_offset(anchor,n).strftime('%Y%m%d');v={'session':end,'close':None,'return_pct':None,'state':'PENDING_FUTURE_SESSION' if end>day else 'MISSING_OFFICIAL_CLOSE'}
+                      if end<=day:
+                          m=load_market(end);p=num(m.get(code,{}).get('TDD_CLSPRC'))
+                          if positive(av) and positive(p):v.update(close=str(p),return_pct=str(((p/av-1)*100).quantize(Decimal('0.01'))),state='OBSERVED_UNADJUSTED_CLOSE_RETURN')
+                      r['horizons'][str(n)]=v
+                  out.append(r)
+              return out
+          
+          def main():
+              sys.path.insert(0,str(ROOT/'scripts'));import krx_v5_r14_grade_engine as engine
+              engine.self_test();now=dt.datetime.now(KST); today=now.date();cal=xc.get_calendar('XKRX',start=str(today-dt.timedelta(days=730)),end=str(today+dt.timedelta(days=370)))
+              if not cal.is_session(str(today)):print('STAGE5_SKIP_NON_TRADING_DAY');return
+              day=read(DATA/'summary.json')['latest_trading_date'];valid_day(day);markets=market(DATA/'latest.csv',day)
+              require(day<=cal.previous_session(str(today)).strftime('%Y%m%d'),'MARKET_DATE_AHEAD_OF_PREVIOUS_SESSION')
+              summary=read(DATA/'summary.json');require(len(markets)==int(summary['kospi_rows_latest'])+int(summary['kosdaq_rows_latest']),'MARKET_COUNT_MISMATCH')
+              s=read(BASE/'latest_status.json')
+              if s.get('market_date')!=day:print('STAGE5_SKIP_CANDIDATE_DATE_MISMATCH');return
+              marker=Path('/tmp/stage5-upstream/candidate_regrade_status.json')
+              if os.environ.get('GITHUB_EVENT_NAME')=='workflow_run':
+                  if not marker.is_file():print('STAGE5_SKIP_NO_REGRADE_RESULT');return
+                  require(read(marker)==s,'UPSTREAM_RESULT_CHANGED')
+              q,rows=check_queue(s,day,markets); bp,brows=broker_snapshot(day)
+              source={str(p.relative_to(ROOT)):sha(p) for p in (DATA/'summary.json',DATA/'latest.csv',BASE/'latest_status.json',q,ROOT/'scripts/krx_v5_r14_grade_engine.py')}
+              if bp:source[str(bp.relative_to(ROOT))]=sha(bp)
+              results=[evaluate(r,brows.get(c),day,engine) for c,r in sorted(rows.items())];ready=[r for r in results if r['state']=='KIS_CLOSE_MATCH_RESEARCH_ONLY']
+              # Freeze only live, new previous-session cohorts; never create historical recommendations.
+              cohort_path=OUT/'cohorts'/f'{day}.json';fresh=day==cal.previous_session(str(today)).strftime('%Y%m%d')
+              if ready and fresh and not cohort_path.exists():
+                  write(cohort_path,payload({'market_date':day,'published_kst_date':today.strftime('%Y%m%d'),'source_sha256':source,'candidates':ready,'research_only':True,'investment_decisions_authorized':False}),immutable=True)
+              loaded={}
+              def prices(d):
+                  if d not in loaded:
+                      p=ARCH/f'{d}.csv';loaded[d]=market(p,d) if p.is_file() else {}
+                  return loaded[d]
+              tracks=[]
+              for p in sorted((OUT/'cohorts').glob('*.json')):
+                  c=read(p);require(c.get('research_only') is True and c.get('investment_decisions_authorized') is False,'INVALID_COHORT');tracks+=performance(c,day,cal,prices)
+              report={'state':'STAGE5_RESEARCH_INTEGRATED','market_date':day,'market_rows':len(markets),'candidate_rows':len(results),'research_reference_rows':len(ready),'candidate_states':dict(Counter(r['state'] for r in results)),'source_sha256':source,'cohort_exists':cohort_path.exists(),'tracked_rows':len(tracks),'official_krx_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0,'external_financial_api_calls':0,'notes':['KIS observation and KRX official valuation are distinct. Matching close does not prove PER/PBR effective date.','Illustrative reference uses existing R14 model, not a certified fair price or buy instruction.','Performance uses unadjusted closes, first session strictly after publication as baseline; not total return or executed trades. Missing exact session remains missing.']}
+              snapshot={**report,'candidates':results,'performance':tracks}; b=payload(snapshot);version=hashlib.sha256(b).hexdigest();path=OUT/'sessions'/day/version/'research.json';write(path,b,immutable=True)
+              report['snapshot_path']=str(path.relative_to(ROOT));report['snapshot_sha256']=sha(path);write(OUT/'latest_status.json',payload(report))
+              require(all(sha(ROOT/p)==h for p,h in source.items()),'SOURCE_MUTATED')
+              print('STAGE5_INTEGRATED '+json.dumps(report,ensure_ascii=False))
+          
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_v5_stage5.py
+          python /tmp/krx_v5_stage5.py
+      - name: Persist only the new integrated research outputs
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.upstream.outputs.ready == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d v5_reports/v5_integrated_research ]; then exit 0; fi
+          git add -- v5_reports/v5_integrated_research/
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git diff --quiet HEAD origin/main -- data/latest.csv data/summary.json data/v5_official_market_archive data/v5_financial_m/filing_refresh/candidate_regrade data/v5_kis_valuation/sessions scripts/krx_v5_r14_grade_engine.py v5_reports/v5_integrated_research || { echo 'Upstream inputs changed during execution; no publication.'; exit 1; }
+          git commit -m 'KRX v5: archive integrated research and forward observations'
+          git rebase origin/main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && (github.event_name == 'workflow_dispatch' || steps.upstream.outputs.ready == 'true') }}
+        with:
+          name: krx-v5-stage5-integrated-research
+          path: v5_reports/v5_integrated_research/
+          if-no-files-found: ignore
+          retention-days: 30
