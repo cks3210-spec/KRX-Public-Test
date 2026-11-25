@@ -1,0 +1,35 @@
+{
+  "candidate_market_source": "data/v5_official_market_archive/20261124.csv",
+  "candidate_rows": 3,
+  "candidate_states": {
+    "HOLD_NO_KIS_SNAPSHOT": 3
+  },
+  "cohort_exists": false,
+  "external_financial_api_calls": 0,
+  "final_buy_signals": 0,
+  "financial_disclosure_asof_verified": false,
+  "investment_decisions_authorized": false,
+  "market_date": "20261124",
+  "market_provenance": "EXACT_ARCHIVE_HASH_AND_ALL_ROWS_EQUAL",
+  "market_rows": 2772,
+  "notes": [
+    "KIS observation and KRX official valuation are distinct. Matching close does not prove PER/PBR effective date.",
+    "Illustrative reference uses existing R14 model, not a certified fair price or buy instruction.",
+    "Performance uses unadjusted closes, first session strictly after publication as baseline; not total return or executed trades. Missing exact session remains missing."
+  ],
+  "official_krx_per_pbr_verified": false,
+  "research_reference_rows": 0,
+  "share_class_verified": false,
+  "snapshot_path": "v5_reports/v5_integrated_research/sessions/20261124/6ad8a8a5d9f127c6d2fff4d2036c9b8ac69d7fb42937830beb19e6fa542649cb/research.json",
+  "snapshot_sha256": "6ad8a8a5d9f127c6d2fff4d2036c9b8ac69d7fb42937830beb19e6fa542649cb",
+  "source_sha256": {
+    "data/latest.csv": "09f2c0e1ade5b7fb033ed787dc990d0a486529b0f27d0418c1016eb510775495",
+    "data/summary.json": "e476206a3b0ade6994240c701825d8ce3ba061730695440a83118a9e131d644d",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/20261124/322d3bf55fc0550fdfe2dd3173ec65e90d4f5f54c698758694b830a06d916595/official_ratio_review_queue.csv": "2d608d619e94d4e1b7371142b67171ddc9130eae7e8825c695ace4d27b9b8b18",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json": "71746773cc18d43e4c2ebc778933d66c9111990a24c123d79022199000617199",
+    "data/v5_official_market_archive/20261124.csv": "1a1022414047a6bffc4b9a136eab1dc256a1a98002e22345981cbbb0ca067adb",
+    "scripts/krx_v5_r14_grade_engine.py": "d56d5c6ae152d085b34e51d1d417a59adce322f548cb75a8e8144aaf14bd3afa"
+  },
+  "state": "STAGE5_RESEARCH_INTEGRATED",
+  "tracked_rows": 0
+}
