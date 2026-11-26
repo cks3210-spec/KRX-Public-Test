@@ -1,16 +1,16 @@
 {
-  "candidate_market_source": "data/v5_official_market_archive/20261124.csv",
-  "candidate_rows": 3,
+  "candidate_market_source": "data/latest.csv",
+  "candidate_rows": 4,
   "candidate_states": {
-    "HOLD_NO_KIS_SNAPSHOT": 3
+    "HOLD_NO_KIS_SNAPSHOT": 4
   },
   "cohort_exists": false,
   "external_financial_api_calls": 0,
   "final_buy_signals": 0,
   "financial_disclosure_asof_verified": false,
   "investment_decisions_authorized": false,
-  "market_date": "20261124",
-  "market_provenance": "EXACT_ARCHIVE_HASH_AND_ALL_ROWS_EQUAL",
+  "market_date": "20261125",
+  "market_provenance": "EXACT_LATEST_HASH",
   "market_rows": 2772,
   "notes": [
     "KIS observation and KRX official valuation are distinct. Matching close does not prove PER/PBR effective date.",
@@ -20,14 +20,13 @@
   "official_krx_per_pbr_verified": false,
   "research_reference_rows": 0,
   "share_class_verified": false,
-  "snapshot_path": "v5_reports/v5_integrated_research/sessions/20261124/6ad8a8a5d9f127c6d2fff4d2036c9b8ac69d7fb42937830beb19e6fa542649cb/research.json",
-  "snapshot_sha256": "6ad8a8a5d9f127c6d2fff4d2036c9b8ac69d7fb42937830beb19e6fa542649cb",
+  "snapshot_path": "v5_reports/v5_integrated_research/sessions/20261125/70dc42eedc9c3ef1c9b48c2eff2eba4a01db6eef3b60ec7d8d79d72e8ee24e49/research.json",
+  "snapshot_sha256": "70dc42eedc9c3ef1c9b48c2eff2eba4a01db6eef3b60ec7d8d79d72e8ee24e49",
   "source_sha256": {
-    "data/latest.csv": "09f2c0e1ade5b7fb033ed787dc990d0a486529b0f27d0418c1016eb510775495",
-    "data/summary.json": "e476206a3b0ade6994240c701825d8ce3ba061730695440a83118a9e131d644d",
-    "data/v5_financial_m/filing_refresh/candidate_regrade/20261124/322d3bf55fc0550fdfe2dd3173ec65e90d4f5f54c698758694b830a06d916595/official_ratio_review_queue.csv": "2d608d619e94d4e1b7371142b67171ddc9130eae7e8825c695ace4d27b9b8b18",
-    "data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json": "71746773cc18d43e4c2ebc778933d66c9111990a24c123d79022199000617199",
-    "data/v5_official_market_archive/20261124.csv": "1a1022414047a6bffc4b9a136eab1dc256a1a98002e22345981cbbb0ca067adb",
+    "data/latest.csv": "07240805c220754b149461f9146520088c3a44d07874291fa26e9f98f0996003",
+    "data/summary.json": "f95f6db7cb327e449a24c64dbffb956776f9084f8abb00399b92c6be5badfe29",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/20261125/81d7eebd93bf882343f4c25a49055febd9a422fce708be0744e56b2e24121e61/official_ratio_review_queue.csv": "7d8d969f2643ccb887acf1ec0bd4d21bd915a3fde1b00b01323f0c2930c8f8a1",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json": "2919c0c01b693b2cb30e2b2a0410fe4c0b73de8d4fa71ad7e36430b1c4c7aaa0",
     "scripts/krx_v5_r14_grade_engine.py": "d56d5c6ae152d085b34e51d1d417a59adce322f548cb75a8e8144aaf14bd3afa"
   },
   "state": "STAGE5_RESEARCH_INTEGRATED",
