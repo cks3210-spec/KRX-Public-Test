@@ -1,12 +1,19 @@
 {
   "current_grade_revalidated": false,
-  "eligible_at_current_marketcap_100bn": 137,
-  "excluded_current_marketcap": [],
+  "eligible_at_current_marketcap_100bn": 136,
+  "excluded_current_marketcap": [
+    {
+      "code": "148150",
+      "marketcap_krw": 98098177680,
+      "name": "세경하이테크",
+      "reason": "CURRENT_MARKETCAP_BELOW_100BN_KRW"
+    }
+  ],
   "final_buy_signals": 0,
   "investment_decisions_authorized": false,
   "matched_candidates": 137,
   "missing_or_ambiguous_candidates": 0,
-  "official_market_date": "20261124",
+  "official_market_date": "20261125",
   "official_per_pbr_verified": false,
   "research_candidates": 137,
   "research_grade_counts_asof_cohort": {
@@ -15,17 +22,17 @@
   },
   "research_market_date": "20261120",
   "source_sha256": {
-    "latest_market": "1a1022414047a6bffc4b9a136eab1dc256a1a98002e22345981cbbb0ca067adb",
-    "market_summary": "e0218ce9f789a0369da66f7235e6f44a07ce3cee030e6ced0c44cf320d1da46b",
+    "latest_market": "07240805c220754b149461f9146520088c3a44d07874291fa26e9f98f0996003",
+    "market_summary": "f95f6db7cb327e449a24c64dbffb956776f9084f8abb00399b92c6be5badfe29",
     "research_candidates": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee"
   },
   "state": "RESEARCH_ONLY_FULL_JOIN_VERIFIED",
-  "technical_indicators_asof": "20261123",
+  "technical_indicators_asof": "20261124",
   "total_official_market_rows": 2772,
   "unadjusted_price_direction": {
-    "down": 58,
-    "flat": 5,
-    "up": 74
+    "down": 84,
+    "flat": 3,
+    "up": 50
   },
   "version": "KRX_V5_R14_DAILY_OFFICIAL_PRICE_JOIN_V1",
   "warnings": [
