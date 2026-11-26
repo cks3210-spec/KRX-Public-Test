@@ -1,0 +1,47 @@
+{
+  "api_calls": 0,
+  "cache_records": 5920,
+  "counts": {
+    "IDENTITY_REVIEW": 185,
+    "LATEST_FILING_PENDING": 5,
+    "MISSING_OR_UNVERIFIED_ANNUAL": 26,
+    "OWNER_PAIR_PRESENT": 1867,
+    "PARTIAL_ANNUAL": 689,
+    "annual_owner_roe_pct_available": 1853,
+    "liabilities_to_owner_equity_pct_available": 2026,
+    "liabilities_to_total_equity_pct_available": 6,
+    "operating_margin_pct_available": 788,
+    "operating_profit_yoy_pct_available": 658,
+    "owner_profit_yoy_pct_available": 1236,
+    "revenue_yoy_pct_available": 2452,
+    "ttm_owner_profit_krw_available": 6
+  },
+  "csv_path": "data/v5_financial_m/filing_refresh/metrics/20261125/806ff23d1b9e3076b2ff6edd494ca4eebae7b076bda5c7d3dbdc2a27f0094fba/financial_metrics.csv",
+  "csv_sha256": "763ea1a0a22e3a937f07591ea2f0ec614631bca1007f17d95cf489695b784288",
+  "final_buy_signals": 0,
+  "financial_disclosure_asof_verified": false,
+  "investment_decisions_authorized": false,
+  "legacy_ttm_used": false,
+  "market_date": "20261125",
+  "market_rows": 2772,
+  "notes": [
+    "Owner-equity leverage is not total-equity debt ratio. Total-equity debt ratio requires receipt-bound source.",
+    "Legacy values are research-only; missing fields withheld. Only receipt-bound cumulative TTM is used.",
+    "Operating-profit legacy comparison requires matching revenue and owner-profit pairs."
+  ],
+  "official_per_pbr_verified": false,
+  "source_sha256": {
+    "data/latest.csv": "07240805c220754b149461f9146520088c3a44d07874291fa26e9f98f0996003",
+    "data/summary.json": "f95f6db7cb327e449a24c64dbffb956776f9084f8abb00399b92c6be5badfe29",
+    "data/v5_financial_m/corp_map.json": "22840d53a466c66e1f2e978ee4698b3e941f2d913632ff81bc562b902221c22d",
+    "data/v5_financial_m/dart_financial_cache.json": "993dcf805b5bf438c0e0c284dc9a1f7a2410014c8a4225d99e6e9ba60b6db9d0",
+    "data/v5_financial_m/filing_refresh/analysis_link.json": "f6b60e376fd37409d2a9642d01dea9249557c8552fa714117831ca4dd3ed2c59",
+    "data/v5_financial_m/filing_refresh/state.json": "a8b5db850c41d515541bdedb37ea05f9430e04a8f1c27371e2ac65701b2ca358",
+    "data/v5_financial_m/status.json": "cb66a5934779c173d578c439046827febab0595191e18678b05cdc8548bc8d6f",
+    "data/v5_investment_r14_fundamental/dart_annual_comparatives.json": "0a52352b562c3966c0ecc8d3ebb95e62926d903becb2bf7e61908f3c83cd11d2",
+    "scripts/krx_v5_r14_dart_incremental_m.py": "96fdc4e3f86627e05e1e3245f7b01860f278544dd23d9bf79269a8a0db199f97",
+    "scripts/krx_v5_r14_financial_pipeline_n.py": "1d7676710c61afc4a2e4b26c70a7691aaf5f751df9481099fe7f424d6dc74c50",
+    "scripts/krx_v5_r14_fundamental_growth_no_cross_20261117_c.py": "e149076fa3eb8c9d3306a723d6a1e1fc5f37982d8d72e4bff5d8e24c8eb3baca"
+  },
+  "state": "FINANCIAL_METRICS_PERSISTED"
+}
