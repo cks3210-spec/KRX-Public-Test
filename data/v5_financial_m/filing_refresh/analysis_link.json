@@ -63,6 +63,62 @@
       "result": "LATEST_RECEIPT_NOT_ARCHIVED",
       "year": 2025
     },
+    "033560:2024:annual": {
+      "corp_code": "00238001",
+      "period": "annual",
+      "receipt": "20250313001159",
+      "result": "LINK_HISTORICAL_ANNUAL_ONLY",
+      "year": 2024
+    },
+    "033560:2025:annual": {
+      "corp_code": "00238001",
+      "period": "annual",
+      "receipt": "20260708000255",
+      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "year": 2025
+    },
+    "033560:2025:half": {
+      "corp_code": "00238001",
+      "period": "half",
+      "receipt": "20250814001877",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "033560:2025:q1": {
+      "corp_code": "00238001",
+      "period": "q1",
+      "receipt": "20250515002014",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "033560:2025:q3": {
+      "corp_code": "00238001",
+      "period": "q3",
+      "receipt": "20251114000909",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "033560:2026:half": {
+      "corp_code": "00238001",
+      "period": "half",
+      "receipt": "20260814002219",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2026
+    },
+    "033560:2026:q1": {
+      "corp_code": "00238001",
+      "period": "q1",
+      "receipt": "20260515001767",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
+    "033560:2026:q3": {
+      "corp_code": "00238001",
+      "period": "q3",
+      "receipt": "20261116000987",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
     "044820:2026:half": {
       "corp_code": "00219574",
       "period": "half",
@@ -95,7 +151,7 @@
       "corp_code": "00476036",
       "period": "annual",
       "receipt": "20260317000021",
-      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "result": "ALREADY_LINKED",
       "year": 2025
     },
     "083500:2025:half": {
@@ -123,7 +179,7 @@
       "corp_code": "00476036",
       "period": "half",
       "receipt": "20260812000237",
-      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "result": "LINK_CUMULATIVE_ONLY",
       "year": 2026
     },
     "083500:2026:q1": {
@@ -168,6 +224,69 @@
       "result": "LATEST_RECEIPT_NOT_ARCHIVED",
       "year": 2026
     },
+    "235980:2025:annual": {
+      "corp_code": "01336373",
+      "period": "annual",
+      "receipt": "20261125000675",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2025
+    },
+    "240550:2024:annual": {
+      "corp_code": "01073261",
+      "period": "annual",
+      "receipt": "20250320001252",
+      "result": "LINK_HISTORICAL_ANNUAL_ONLY",
+      "year": 2024
+    },
+    "240550:2025:annual": {
+      "corp_code": "01073261",
+      "period": "annual",
+      "receipt": "20260618000383",
+      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "year": 2025
+    },
+    "240550:2025:half": {
+      "corp_code": "01073261",
+      "period": "half",
+      "receipt": "20250827000578",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "240550:2025:q1": {
+      "corp_code": "01073261",
+      "period": "q1",
+      "receipt": "20250527000563",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "240550:2025:q3": {
+      "corp_code": "01073261",
+      "period": "q3",
+      "receipt": "20251125000378",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "240550:2026:half": {
+      "corp_code": "01073261",
+      "period": "half",
+      "receipt": "20260814000719",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
+    "240550:2026:q1": {
+      "corp_code": "01073261",
+      "period": "q1",
+      "receipt": "20260814000820",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2026
+    },
+    "240550:2026:q3": {
+      "corp_code": "01073261",
+      "period": "q3",
+      "receipt": "20261116000256",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
     "241520:2024:annual": {
       "corp_code": "01109715",
       "period": "annual",
@@ -179,7 +298,7 @@
       "corp_code": "01109715",
       "period": "annual",
       "receipt": "20260319001307",
-      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "result": "ALREADY_LINKED",
       "year": 2025
     },
     "241520:2025:half": {
@@ -214,13 +333,69 @@
       "corp_code": "01109715",
       "period": "q1",
       "receipt": "20260515002234",
-      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "result": "LINK_CUMULATIVE_ONLY",
       "year": 2026
     },
     "241520:2026:q3": {
       "corp_code": "01109715",
       "period": "q3",
       "receipt": "20261113001187",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
+    "243070:2024:annual": {
+      "corp_code": "01159853",
+      "period": "annual",
+      "receipt": "20250318000815",
+      "result": "LINK_HISTORICAL_ANNUAL_ONLY",
+      "year": 2024
+    },
+    "243070:2025:annual": {
+      "corp_code": "01159853",
+      "period": "annual",
+      "receipt": "20260323001636",
+      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "year": 2025
+    },
+    "243070:2025:half": {
+      "corp_code": "01159853",
+      "period": "half",
+      "receipt": "20250814003610",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "243070:2025:q1": {
+      "corp_code": "01159853",
+      "period": "q1",
+      "receipt": "20250515003027",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "243070:2025:q3": {
+      "corp_code": "01159853",
+      "period": "q3",
+      "receipt": "20251114002901",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2025
+    },
+    "243070:2026:half": {
+      "corp_code": "01159853",
+      "period": "half",
+      "receipt": "20260814003902",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2026
+    },
+    "243070:2026:q1": {
+      "corp_code": "01159853",
+      "period": "q1",
+      "receipt": "20260515003052",
+      "result": "LINK_CUMULATIVE_ONLY",
+      "year": 2026
+    },
+    "243070:2026:q3": {
+      "corp_code": "01159853",
+      "period": "q3",
+      "receipt": "20261116002197",
       "result": "LINK_CUMULATIVE_ONLY",
       "year": 2026
     },
@@ -235,7 +410,7 @@
       "corp_code": "00605328",
       "period": "annual",
       "receipt": "20260706000269",
-      "result": "APPLY_MATCHED_OR_ENRICHED",
+      "result": "ALREADY_LINKED",
       "year": 2025
     },
     "264660:2025:half": {
@@ -263,14 +438,14 @@
       "corp_code": "00605328",
       "period": "half",
       "receipt": "20260813000962",
-      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "result": "LINK_CUMULATIVE_ONLY",
       "year": 2026
     },
     "264660:2026:q1": {
       "corp_code": "00605328",
       "period": "q1",
       "receipt": "20260515002503",
-      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "result": "LINK_CUMULATIVE_ONLY",
       "year": 2026
     },
     "264660:2026:q3": {
@@ -321,11 +496,161 @@
       "receipt": "20261120000004",
       "result": "LATEST_RECEIPT_NOT_ARCHIVED",
       "year": 2026
+    },
+    "495910:2026:q3": {
+      "corp_code": "01378005",
+      "period": "q3",
+      "receipt": "20261125000493",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2026
+    },
+    "950210:2026:q3": {
+      "corp_code": "01510489",
+      "period": "q3",
+      "receipt": "20261125000219",
+      "result": "LATEST_RECEIPT_NOT_ARCHIVED",
+      "year": 2026
     }
   },
   "final_buy_signals": 0,
   "financial_disclosure_asof_verified": false,
   "inputs": {
+    "033560:2024:annual": {
+      "accounts": {
+        "assets": 201507128401,
+        "equity": 159950750116,
+        "liabilities": 41556378285,
+        "previous_assets": 174456307322,
+        "previous_equity": 157472383038,
+        "previous_liabilities": 16983924284,
+        "previous_profit": -2745537561,
+        "previous_revenue": 32770353181,
+        "profit": 2375536109,
+        "revenue": 18312232736
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250313001159_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20250313001159",
+      "sha256": "ac749831c7ef6a54749ff2e4554df7c361b2ab158db3e61bbad85ad018624cf3",
+      "year": 2024
+    },
+    "033560:2025:annual": {
+      "accounts": {
+        "assets": 200886404518,
+        "equity": 170150120680,
+        "liabilities": 30736283838,
+        "previous_assets": 201507128401,
+        "previous_equity": 159950750116,
+        "previous_liabilities": 41556378285,
+        "previous_profit": 2375536109,
+        "previous_revenue": 5090080785,
+        "profit": 16367706695,
+        "revenue": 5807047814
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260708000255_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20260708000255",
+      "sha256": "35458a4c4828a20c9487a499b4dce8c28cb1f7e5b81f5ff94cf8002c7c14f397",
+      "year": 2025
+    },
+    "033560:2025:half": {
+      "accounts": {
+        "assets": 198921075810,
+        "equity": 169259141261,
+        "liabilities": 29661934549,
+        "profit": 10773299823,
+        "revenue": 3479889621
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250814001877_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20250814001877",
+      "sha256": "2252e0a774ba07f89871e47a9d0c86d1c5137a100bdc46dec6a26a7577e48943",
+      "year": 2025
+    },
+    "033560:2025:q1": {
+      "accounts": {
+        "assets": 204682510334,
+        "equity": 173120644594,
+        "liabilities": 31561865740,
+        "profit": 13464982486,
+        "revenue": 581442746
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250515002014_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20250515002014",
+      "sha256": "46576d90b063f723419376f646d8b90fca1e36fb0e0c4a010146e37828c38d73",
+      "year": 2025
+    },
+    "033560:2025:q3": {
+      "accounts": {
+        "assets": 200925695020,
+        "equity": 169470026404,
+        "liabilities": 31455668616,
+        "profit": 14352814234,
+        "revenue": 5164866575
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251114000909_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20251114000909",
+      "sha256": "c0ce5423deef7aee83440a4cc94a3a5f18444ffa9cc3acadefd2050ed633cae5",
+      "year": 2025
+    },
+    "033560:2026:q1": {
+      "accounts": {
+        "assets": 199649899212,
+        "equity": 170002612378,
+        "liabilities": 29647286834,
+        "profit": 1549972742,
+        "revenue": 1824423176
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515001767_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20260515001767",
+      "sha256": "efd6971339c9f52c47e13d2f70a393270af8427ac906ce0c2f2e1d3abb5bf34f",
+      "year": 2026
+    },
+    "033560:2026:q3": {
+      "accounts": {
+        "assets": 195297212038,
+        "equity": 171103114252,
+        "liabilities": 24194097786,
+        "profit": 4752003367,
+        "revenue": 5709761708
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261116000987_CFS.json.gz",
+      "corp_code": "00238001",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20261116000987",
+      "sha256": "1b7b4035b67724aa725a1ab6a1dacdabe9a3efd936ff2425c41efbe35493eef7",
+      "year": 2026
+    },
     "083500:2024:annual": {
       "accounts": {
         "assets": 128914258277,
@@ -426,6 +751,24 @@
       "sha256": "6da5c3cf64f931a6cd337d7fbe940bc99a0e349f20d560d6503c9031a9910df8",
       "year": 2025
     },
+    "083500:2026:half": {
+      "accounts": {
+        "assets": 130271644822,
+        "equity": 89486927317,
+        "liabilities": 35997987354,
+        "profit": 5607488002,
+        "revenue": 26989540302
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260812000237_CFS.json.gz",
+      "corp_code": "00476036",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20260812000237",
+      "sha256": "a5eefb63c4acd75b28101793bd0232deacf6f68b089f90515b5bd5c835bec96c",
+      "year": 2026
+    },
     "083500:2026:q1": {
       "accounts": {
         "assets": 123621304952,
@@ -460,6 +803,142 @@
       "point_in_time_verified": false,
       "receipt": "20261111000034",
       "sha256": "d7a5eb350d8a02e076e52a0909d1ba543e7712c8b0d8f4a831a044162b6658d6",
+      "year": 2026
+    },
+    "240550:2024:annual": {
+      "accounts": {
+        "assets": 150351285544,
+        "equity": 79909356630,
+        "liabilities": 69646790500,
+        "previous_assets": 117001067304,
+        "previous_equity": 46789970431,
+        "previous_liabilities": 69882462365,
+        "previous_profit": 9774572434,
+        "previous_revenue": 90875105107,
+        "profit": 2914226734,
+        "revenue": 105113645139
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250320001252_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20250320001252",
+      "sha256": "c0f208658f7a7cada921b6e1c2c7dc184679a3d685c31e0d5c95b57d1839a107",
+      "year": 2024
+    },
+    "240550:2025:annual": {
+      "accounts": {
+        "assets": 186529397919,
+        "equity": 122888399459,
+        "liabilities": 61212954533,
+        "previous_assets": 150351285544,
+        "previous_equity": 79909356630,
+        "previous_liabilities": 69646790500,
+        "previous_profit": 2914226734,
+        "previous_revenue": 105113645139,
+        "profit": 11702964743,
+        "revenue": 113536899863
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260618000383_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20260618000383",
+      "sha256": "3feb504e825004da24078c3529144ad7d9362d9a49e460d8858b38eae55bcac7",
+      "year": 2025
+    },
+    "240550:2025:half": {
+      "accounts": {
+        "assets": 169408967149,
+        "equity": 114990937697,
+        "liabilities": 52994152602,
+        "profit": 5130607768,
+        "revenue": 53763798727
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250827000578_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20250827000578",
+      "sha256": "ac2420ed3ed1f07676eced5d8ba7a9f6d582efaeaca0ebeedc1f0992e9cff89d",
+      "year": 2025
+    },
+    "240550:2025:q1": {
+      "accounts": {
+        "assets": 172472798366,
+        "equity": 114718422567,
+        "liabilities": 56552483470,
+        "profit": 3165731835,
+        "revenue": 27571260334
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250527000563_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20250527000563",
+      "sha256": "a1283143f80adf4e790de3169506ee0cbf7d433cdd7a285031a68ae960654e72",
+      "year": 2025
+    },
+    "240550:2025:q3": {
+      "accounts": {
+        "assets": 186034144449,
+        "equity": 119047114994,
+        "liabilities": 65089105155,
+        "profit": 8099593021,
+        "revenue": 83751752526
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251125000378_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20251125000378",
+      "sha256": "6c7d54fd13105d0397aa13baf18340bc573173001040b76a015de05607f58015",
+      "year": 2025
+    },
+    "240550:2026:half": {
+      "accounts": {
+        "assets": 206440566579,
+        "equity": 134511648751,
+        "liabilities": 69044335861,
+        "profit": 9546289971,
+        "revenue": 65344130379
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260814000719_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20260814000719",
+      "sha256": "45beb9d7488b9c471492330215ad510b2b7c8d92d1285366fbec728e85fb2acc",
+      "year": 2026
+    },
+    "240550:2026:q3": {
+      "accounts": {
+        "assets": 201118763370,
+        "equity": 133468328046,
+        "liabilities": 65031993231,
+        "profit": 11949359308,
+        "revenue": 94613168994
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261116000256_CFS.json.gz",
+      "corp_code": "01073261",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20261116000256",
+      "sha256": "a55a59819adfcd1b051f04f471bc3c2351c761396e183f0405361063c9df58c6",
       "year": 2026
     },
     "241520:2024:annual": {
@@ -562,6 +1041,24 @@
       "sha256": "2738e2c746181c86eee88649eb917bc02e2e2a345299d71035e9bb8b051d1f09",
       "year": 2025
     },
+    "241520:2026:q1": {
+      "accounts": {
+        "assets": 194423662650,
+        "equity": 128461231571,
+        "liabilities": 61591757737,
+        "profit": 3646725761,
+        "revenue": 12401037355
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515002234_CFS.json.gz",
+      "corp_code": "01109715",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20260515002234",
+      "sha256": "b959308087b7377c241c1a6cd02d70344d835e284b30ded3a1b0c5ea33f28846",
+      "year": 2026
+    },
     "241520:2026:q3": {
       "accounts": {
         "assets": 205774609138,
@@ -578,6 +1075,142 @@
       "point_in_time_verified": false,
       "receipt": "20261113001187",
       "sha256": "cb8073037522d7fb03485ac610dd00d95ab364c6588d30d4f5861edeceac02f2",
+      "year": 2026
+    },
+    "243070:2024:annual": {
+      "accounts": {
+        "assets": 606285225935,
+        "equity": 345970845836,
+        "liabilities": 255690371372,
+        "previous_assets": 537285589026,
+        "previous_equity": 325404470470,
+        "previous_liabilities": 206873327848,
+        "previous_profit": 50472994765,
+        "previous_revenue": 552006502264,
+        "profit": 29453533833,
+        "revenue": 590231059719
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250318000815_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20250318000815",
+      "sha256": "ebf630dbd80d1a86a1e01ace83fef5a0ea397c7e6dcf8b3092914a775f23515e",
+      "year": 2024
+    },
+    "243070:2025:annual": {
+      "accounts": {
+        "assets": 680281789538,
+        "equity": 373905688755,
+        "liabilities": 265420454725,
+        "previous_assets": 606285225935,
+        "previous_equity": 345970845836,
+        "previous_liabilities": 255690371372,
+        "previous_profit": 29453533833,
+        "previous_revenue": 590231059719,
+        "profit": 42660591067,
+        "revenue": 620768254716
+      },
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260323001636_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "annual",
+      "point_in_time_verified": false,
+      "receipt": "20260323001636",
+      "sha256": "579381126cbee53147a7c24b523b05c55de91ff402d8e0331839b575535cba8e",
+      "year": 2025
+    },
+    "243070:2025:half": {
+      "accounts": {
+        "assets": 635532356041,
+        "equity": 361601666038,
+        "liabilities": 247159296742,
+        "profit": 23889808124,
+        "revenue": 301866155757
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250814003610_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20250814003610",
+      "sha256": "87fbbd845ca2f17134f386f080383e7f6650b19c0cb57a9ee41c7f53afe3c374",
+      "year": 2025
+    },
+    "243070:2025:q1": {
+      "accounts": {
+        "assets": 604863655022,
+        "equity": 351518856016,
+        "liabilities": 248675985485,
+        "profit": 12306120817,
+        "revenue": 145835893952
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250515003027_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20250515003027",
+      "sha256": "a62ec36d5dfe95c77d17b059d838e76f8336abecc876bcdffcebec5bab28573b",
+      "year": 2025
+    },
+    "243070:2025:q3": {
+      "accounts": {
+        "assets": 644233138427,
+        "equity": 368180935216,
+        "liabilities": 248978841915,
+        "profit": 31813087810,
+        "revenue": 455583214687
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251114002901_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20251114002901",
+      "sha256": "c7359b33967eb1a3136e080ca76b83b903808272357ebadd842094a0e43fd608",
+      "year": 2025
+    },
+    "243070:2026:q1": {
+      "accounts": {
+        "assets": 661341447182,
+        "equity": 370531723424,
+        "liabilities": 253315145255,
+        "profit": 339332228,
+        "revenue": 141870889170
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515003052_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20260515003052",
+      "sha256": "214598dd80be76b2e3379d5ad468f960f0a18ca90b32eb3919e01b5e148c805a",
+      "year": 2026
+    },
+    "243070:2026:q3": {
+      "accounts": {
+        "assets": 661033808801,
+        "equity": 386157808738,
+        "liabilities": 239182899940,
+        "profit": 16235832886,
+        "revenue": 432869003822
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261116002197_CFS.json.gz",
+      "corp_code": "01159853",
+      "fs_div": "CFS",
+      "period": "q3",
+      "point_in_time_verified": false,
+      "receipt": "20261116002197",
+      "sha256": "abd135c81760e0d7cb3d2bcaf33ce4bd8cc13e718db1e1923ee5744e73ea456d",
       "year": 2026
     },
     "264660:2024:annual": {
@@ -680,6 +1313,42 @@
       "sha256": "4b74123b0264ba329c57454a0258588f9b7b467fed6b92f0f60e60861fc5d7b8",
       "year": 2025
     },
+    "264660:2026:half": {
+      "accounts": {
+        "assets": 180744762686,
+        "equity": 146886954765,
+        "liabilities": 33857807921,
+        "profit": 6645052110,
+        "revenue": 89406801141
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260813000962_CFS.json.gz",
+      "corp_code": "00605328",
+      "fs_div": "CFS",
+      "period": "half",
+      "point_in_time_verified": false,
+      "receipt": "20260813000962",
+      "sha256": "74078e70f2cb8db2c2609442f8e9307ccfc27bac65151c4e778aeabb544024d1",
+      "year": 2026
+    },
+    "264660:2026:q1": {
+      "accounts": {
+        "assets": 191654329212,
+        "equity": 139018000684,
+        "liabilities": 52636328528,
+        "profit": 956293759,
+        "revenue": 17105788446
+      },
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515002503_CFS.json.gz",
+      "corp_code": "00605328",
+      "fs_div": "CFS",
+      "period": "q1",
+      "point_in_time_verified": false,
+      "receipt": "20260515002503",
+      "sha256": "e4314a6bb10d8ad90dc99df751341c0ad1cc42b42c306d1d4d0779accbacf87a",
+      "year": 2026
+    },
     "264660:2026:q3": {
       "accounts": {
         "assets": 197868489676,
@@ -701,9 +1370,19 @@
   },
   "investment_decisions_authorized": false,
   "legacy_ttm_cumulative_verified": false,
-  "market_date": "20261124",
+  "market_date": "20261125",
   "schema": 1,
   "strict_ttm": {
+    "033560": {
+      "fs_div": "CFS",
+      "point_in_time_verified": false,
+      "receipts": [
+        "20260708000255",
+        "20261116000987",
+        "20251114000909"
+      ],
+      "ttm_profit": 6766895828
+    },
     "083500": {
       "fs_div": "CFS",
       "point_in_time_verified": false,
@@ -714,6 +1393,16 @@
       ],
       "ttm_profit": 12826847378
     },
+    "240550": {
+      "fs_div": "CFS",
+      "point_in_time_verified": false,
+      "receipts": [
+        "20260618000383",
+        "20261116000256",
+        "20251125000378"
+      ],
+      "ttm_profit": 15552731030
+    },
     "241520": {
       "fs_div": "CFS",
       "point_in_time_verified": false,
@@ -723,6 +1412,16 @@
         "20251114002513"
       ],
       "ttm_profit": 24091702593
+    },
+    "243070": {
+      "fs_div": "CFS",
+      "point_in_time_verified": false,
+      "receipts": [
+        "20260323001636",
+        "20261116002197",
+        "20251114002901"
+      ],
+      "ttm_profit": 27083336143
     },
     "264660": {
       "fs_div": "CFS",
