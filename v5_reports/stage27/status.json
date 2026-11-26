@@ -1,10 +1,10 @@
 {
   "stage": 27,
   "status": "TRACKING",
-  "generated_utc": "2026-11-25T23:19:12.948904+00:00",
-  "market_date": "20261124",
-  "evaluation_date_kst": "20261126",
-  "r14_price_source_market_date": "20261124",
+  "generated_utc": "2026-11-26T23:18:38.413324+00:00",
+  "market_date": "20261125",
+  "evaluation_date_kst": "20261127",
+  "r14_price_source_market_date": "20261125",
   "triggered_by": "schedule",
   "source_r14_run_id": "",
   "new_signals": 0,
@@ -15,14 +15,14 @@
   "legacy_v_g_vg_events_total": 25,
   "ledger_events": 302,
   "prior_ledger_events": 302,
-  "matured_horizon_observations": 43,
+  "matured_horizon_observations": 46,
   "horizon_status_counts": {
-    "MATURED": 43,
-    "PENDING_HISTORY": 863
+    "MATURED": 46,
+    "PENDING_HISTORY": 860
   },
   "historical_tickers": 2801,
   "historical_market_sessions": 70,
-  "r14_frozen_entry_prices": 114,
+  "r14_frozen_entry_prices": 277,
   "research_only": true,
   "investment_decisions_authorized": false,
   "final_buy_signals": 0,
