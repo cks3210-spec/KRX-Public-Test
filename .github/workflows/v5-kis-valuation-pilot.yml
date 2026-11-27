@@ -34,16 +34,17 @@ jobs:
           python-version: '3.11'
       - name: Install exchange session calendar
         run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
-      - name: Collect broker ratios or compare saved observations (read-only API)
+      - name: Collect broker ratios and sector coverage or compare saved observations (read-only API)
         env:
           MODE: ${{ github.event_name == 'schedule' && 'collect' || github.event_name == 'workflow_run' && 'compare' || inputs.mode }}
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
         shell: bash
         run: |
           set -euo pipefail
           cat > /tmp/kis_daily.py <<'PYTHON'
-          import csv, datetime as dt, hashlib, json, os, re, subprocess, sys, time
+          import csv, datetime as dt, hashlib, json, os, re, subprocess, sys, time, tempfile, unicodedata
           from collections import Counter
           from decimal import Decimal, InvalidOperation
           from pathlib import Path
@@ -55,8 +56,6 @@ jobs:
           BASE='https://openapi.koreainvestment.com:9443'
           ROOT=Path.cwd(); STORE=ROOT/'data/v5_kis_valuation'; LEDGER=STORE/'token_attempt.json'
           UP=ROOT; FIELDS=('per','pbr','eps','bps')
-          # Existing successful pilot issued a token at approximately 2026-11-25 16:40 KST.
-          # Conservative lower bound for any subsequent token request with the same credentials.
           BOOT=dt.datetime(2026,11,25,7,41,tzinfo=UTC)
           MIN_INTERVAL=1.1; MAX_CODES=3500
           class SafeError(Exception): pass
@@ -72,6 +71,13 @@ jobs:
                   n=Decimal(str(v).strip().replace(',',''))
                   return n if n.is_finite() else None
               except (InvalidOperation,ValueError): return None
+
+          def sector_name(v):
+              if not isinstance(v,str): return None
+              v=unicodedata.normalize('NFC',v).strip()
+              if not v or v.upper() in ('-','--','N/A','NA','NONE','NULL','0','미분류','기타미분류'): return None
+              if len(v)>120 or any(unicodedata.category(c).startswith('C') for c in v): return None
+              return v
 
           def jsonread(p): return json.loads(p.read_text(encoding='utf-8-sig'))
           def payload(obj): return (json.dumps(obj,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
@@ -90,8 +96,25 @@ jobs:
               require(all(p.startswith('data/v5_kis_valuation/') for p in changed),'UNEXPECTED_STAGED_FILES')
               if changed:
                   git('commit','-m',message)
-                  # Rebase unrelated commits; conflicts fail closed. Never force-push.
                   git('fetch','origin','main');git('rebase','origin/main');git('push','origin','HEAD:main')
+
+          def archive_key():
+              # Existing app secret is never reused as an archive encryption key.
+              k=os.environ.get('KIS_DATA_ARCHIVE_KEY','').strip()
+              require(re.fullmatch(r'[0-9a-fA-F]{64}',k) is not None,'MISSING_OR_INVALID_ARCHIVE_KEY')
+              return bytes.fromhex(k)
+          def seal(p,obj,key):
+              # Authenticated encryption before writing ANY per-security data in a public repository.
+              from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+              require(not p.exists(),'IMMUTABLE_ENCRYPTED_SNAPSHOT_EXISTS')
+              p.parent.mkdir(parents=True,exist_ok=True);nonce=os.urandom(12)
+              aad=str(p.relative_to(ROOT)).encode(); data=AESGCM(key).encrypt(nonce,payload(obj),aad)
+              tmp=p.with_name(p.name+'.tmp');tmp.write_bytes(b'KISV2\x00'+nonce+data);tmp.replace(p)
+          def unseal(p,key):
+              from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+              b=p.read_bytes();require(b.startswith(b'KISV2\x00') and len(b)>34,'INVALID_ENCRYPTED_ARCHIVE')
+              try: return json.loads(AESGCM(key).decrypt(b[6:18],b[18:],str(p.relative_to(ROOT)).encode()))
+              except Exception: raise SafeError('ARCHIVE_AUTHENTICATION_FAILED') from None
 
           def api(path,headers,params=None,body=None):
               require(path in ('/oauth2/tokenP','/uapi/domestic-stock/v1/quotations/inquire-price'),'ROUTE_NOT_ALLOWED')
@@ -112,11 +135,10 @@ jobs:
                   if sign in ('1','2'):prior=price-abs(diff)
                   elif sign in ('4','5'):prior=price+abs(diff)
                   elif sign=='3' and diff==0:prior=price
-              return {**{k:str(v) if v is not None else None for k,v in vals.items()},'observed_price':str(price) if price is not None else None,'implied_previous_close':str(prior) if prior is not None and prior>0 else None,'previous_close_match':prior==ref if prior is not None and ref is not None else None,'observed_at_kst':dt.datetime.now(KST).isoformat(),'ratio_effective_date_verified':False,'official_krx_per_pbr_verified':False}
+              return {**{k:str(v) if v is not None else None for k,v in vals.items()},'sector_name_kis':sector_name(o.get('bstp_kor_isnm')),'observed_price':str(price) if price is not None else None,'implied_previous_close':str(prior) if prior is not None and prior>0 else None,'previous_close_match':prior==ref if prior is not None and ref is not None else None,'observed_at_kst':dt.datetime.now(KST).isoformat(),'ratio_effective_date_verified':False,'official_krx_per_pbr_verified':False}
 
           def due(last,now):
               d=max(BOOT,last)
-              # No duplicate issue attempt on same Korean date, even if request failed or timed out.
               return now>=d+dt.timedelta(hours=24) and now.astimezone(KST).date()>d.astimezone(KST).date()
 
           def market(day,previous):
@@ -143,23 +165,42 @@ jobs:
               return idx,'RESEARCH_QUEUE_ONLY'
 
           def verify_saved(ref,market_rows,candidates,candidate_state):
-              p=STORE/'sessions'/ref/'observations.json'
-              if not p.exists():return 'NO_SAVED_SESSION'
-              data=jsonread(p);require(data['observation_session']==ref,'SNAPSHOT_DATE_MISMATCH')
-              out=[];counts=Counter()
+              p=STORE/'sessions'/ref/'observations.aes';legacy=p.with_name('observations.json')
+              if not p.exists() and not legacy.exists():return 'NO_SAVED_SESSION'
+              if p.exists(): data=unseal(p,archive_key());source=p
+              else: data=jsonread(legacy);source=legacy
+              require(data['observation_session']==ref,'SNAPSHOT_DATE_MISMATCH')
+              out=[];counts=Counter();sector_counts=Counter()
               for code,r in data['observations'].items():
                   m=market_rows.get(code);close=num(m['TDD_CLSPRC']) if m else None
                   equal=close is not None and close>0 and num(r['observed_price'])==close
                   counts['price_equals_krx_close' if equal else 'price_unmatched']+=1
+                  sector=sector_name(r.get('sector_name_kis'))
+                  if sector: sector_counts[sector]+=1
                   if code in candidates:
-                      vals={k:r[k] for k in FIELDS};positive=all(num(vals[k]) is not None and num(vals[k])>0 for k in ('per','pbr'))
-                      # Price agreement is NOT independent attestation of the ratio's accounting/effective date.
-                      out.append({'code':code,**vals,'observed_at_kst':r['observed_at_kst'],'price_matches_krx':equal,'state':'KIS_RESEARCH_REFERENCE_ONLY' if equal and positive else 'HOLD','official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_authorized':False})
-              path=STORE/'comparison'/ref/(sha(p)[:16]+'_'+sha(UP/'data/latest.csv')[:16]+'_'+hashlib.sha256(payload(candidates)).hexdigest()[:16]+'.json')
-              result={'state':'KIS_BROKER_COMPARISON','krx_reference_date':ref,'observation_session':ref,'observations':len(data['observations']),'candidate_state':candidate_state,'candidate_count':len(candidates),'candidate_matches':len(out),'counts':dict(counts),'candidates':out,'official_krx_per_pbr_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
-              write(path,result,immutable=True);persist([path],'KIS: archive broker close comparison');return 'COMPARED'
+                      vals={k:r[k] for k in FIELDS};positive=all(num(vals[k]) is not None and num(vals[k])>0 for k in FIELDS)
+                      out.append({'code':code,**vals,'sector_name_kis':sector,'observed_at_kst':r['observed_at_kst'],'price_matches_krx':equal,'state':'KIS_RESEARCH_REFERENCE_ONLY' if equal and positive else 'HOLD','official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_authorized':False})
+              path=STORE/'comparison'/ref/(sha(source)[:16]+'_'+sha(UP/'data/latest.csv')[:16]+'_'+hashlib.sha256(payload(candidates)).hexdigest()[:16]+'_sector_v2.json')
+              result={'state':'KIS_BROKER_COMPARISON','krx_reference_date':ref,'observation_session':ref,'observations':len(data['observations']),'candidate_state':candidate_state,'candidate_count':len(candidates),'candidate_matches':len(out),'counts':dict(counts),'sector_rows':sum(sector_counts.values()),'sector_groups':len(sector_counts),'sector_source':'KIS_BROKER_BSTP_KOR_ISNM','official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'sector_date_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
+              # Public metadata only. Detailed comparison values are not included in the public JSON.
+              # The encrypted session itself preserves all per-security inputs for a later reviewed adapter.
+              write(path,result,immutable=True);persist([path],'KIS: archive broker close and sector coverage comparison');return 'COMPARED'
+
+          def self_test():
+              assert sector_name('  전기전자  ')=='전기전자'
+              assert sector_name(None) is None and sector_name('') is None
+              assert sector_name('미분류') is None and sector_name('N/A') is None
+              assert sector_name('A\nB') is None and sector_name('A'*121) is None
+              fixture={'rt_cd':'0','output':{'stck_shrn_iscd':'005930','per':'10','pbr':'1','eps':'100','bps':'1000','stck_prpr':'1000','prdy_vrss':'0','prdy_vrss_sign':'3','bstp_kor_isnm':'전기전자'}}
+              r=inspect(fixture,'005930',Decimal('1000'));assert r['sector_name_kis']=='전기전자' and r['previous_close_match'] is True
+              assert r['official_krx_per_pbr_verified'] is False and r['ratio_effective_date_verified'] is False
+              fixture['output'].pop('bstp_kor_isnm');assert inspect(fixture,'005930',None)['sector_name_kis'] is None
+              assert not due(BOOT,BOOT+dt.timedelta(hours=23)) and due(BOOT,BOOT+dt.timedelta(hours=25))
+              print('KIS_SECTOR_SELF_TEST_PASS')
 
           def main():
+              self_test()
+              if '--self-test' in sys.argv:return
               mode=os.environ.get('MODE','audit');now=dt.datetime.now(UTC);local=now.astimezone(KST);day=local.strftime('%Y%m%d')
               require(os.environ.get('GITHUB_REPOSITORY')=='cks3210-spec/KRX-Public-Test','UNEXPECTED_REPOSITORY')
               cal=xc.get_calendar('XKRX',start=str(local.date()-dt.timedelta(days=370)),end=str(local.date()+dt.timedelta(days=370)))
@@ -170,13 +211,20 @@ jobs:
               git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
               compare='NOT_RUN'
               if mode=='audit':
-                  print(json.dumps({'state':'CONFIGURATION_AUDIT_ONLY','market_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'candidate_count':len(candidates),'api_calls':0}));return
+                  key_ready=re.fullmatch(r'[0-9a-fA-F]{64}',os.environ.get('KIS_DATA_ARCHIVE_KEY','').strip()) is not None
+                  print(json.dumps({'state':'CONFIGURATION_AUDIT_ONLY','market_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'candidate_count':len(candidates),'sector_field':'bstp_kor_isnm','archive_key_configured':key_ready,'api_calls':0}));return
               require(mode in ('collect','compare'),'INVALID_MODE')
               compare=verify_saved(ref,rows,candidates,candidate_state)
               if mode=='compare':
                   print('KIS_COMPARE '+json.dumps({'state':compare,'market_date':ref,'api_calls':0}));return
               if not (dt.time(16,45)<=local.time()<dt.time(18,0)) or now<cal.session_close(str(local.date())).to_pydatetime():print('KIS_SKIP_OUTSIDE_POST_CLOSE_WINDOW');return
               now=dt.datetime.now(UTC);local=now.astimezone(KST)
+              out=STORE/'sessions'/day/'observations.aes';legacy=out.with_name('observations.json')
+              if out.exists() or legacy.exists():print('KIS_SKIP_ALREADY_ARCHIVED');return
+              # Fail before authentication if encrypted persistence is not configured.
+              akey=archive_key()
+              from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+              AESGCM(akey)
               last=BOOT
               if LEDGER.exists():
                   old=jsonread(LEDGER);last=dt.datetime.fromisoformat(old['attempted_utc']);require(last.tzinfo is not None and last<=now+dt.timedelta(minutes=2),'INVALID_TOKEN_LEDGER')
@@ -185,11 +233,7 @@ jobs:
                   if 0<wait<=900 and (now+dt.timedelta(seconds=wait)).astimezone(KST).time()<dt.time(18):
                       time.sleep(wait);now=dt.datetime.now(UTC)
                   if not due(last,now):print('KIS_SKIP_TOKEN_INTERVAL');return
-              out=STORE/'sessions'/day/'observations.json'
-              if out.exists():print('KIS_SKIP_ALREADY_ARCHIVED');return
               key=os.environ.get('KIS_APP_KEY','').strip();secret=os.environ.get('KIS_APP_SECRET','').strip();require(key and secret,'MISSING_KIS_SECRETS')
-              # Persist the attempt BEFORE contacting the broker. Even an ambiguous timeout blocks retries.
-              # No token, secret, or token fingerprint is written to the repository, cache or artifact.
               bound=dt.datetime.now(UTC)+dt.timedelta(minutes=2)
               ledger={'attempted_utc':bound.isoformat(),'session':day,'run_id':os.environ.get('GITHUB_RUN_ID',''),'state':'AUTH_ATTEMPT_RESERVED'}
               write(LEDGER,ledger);persist([LEDGER],'KIS: reserve one daily authentication attempt')
@@ -199,7 +243,6 @@ jobs:
               ledger.update(attempted_utc=dt.datetime.now(UTC).isoformat(),state='AUTH_SUCCEEDED');write(LEDGER,ledger)
               headers={'Content-Type':'application/json','authorization':'Bearer '+token,'appkey':key,'appsecret':secret,'tr_id':'FHKST01010100','custtype':'P'}
               observations={};errors=Counter();requests=0;stop='';start=time.monotonic()
-              # Previous research candidates first; all remaining market securities once, no retries.
               for code in sorted(rows,key=lambda c:(c not in candidates,c)):
                   if time.monotonic()-start>6600:stop='TIME_BUDGET';break
                   time.sleep(MIN_INTERVAL);requests+=1
@@ -209,9 +252,11 @@ jobs:
                   except SafeError as exc:
                       reason=str(exc);errors[reason]+=1
                       if reason in ('HTTP_401','HTTP_403','HTTP_429','HTTP_500','KIS_QUOTE_REJECTED','NETWORK_OR_JSON_ERROR'):stop=reason;break
-              report={'state':'KIS_BROKER_COLLECTION_COMPLETE' if requests==len(rows) and len(observations)==len(rows) else 'KIS_BROKER_PARTIAL_CHECKPOINT','observation_session':day,'universe_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'unassessed_identifier_rows':total-len(rows),'requested':requests,'successful_quotes':len(observations),'numeric_all_four':sum(all(v[k] is not None for k in FIELDS) for v in observations.values()),'source':'KIS_OPEN_API_INQUIRE_PRICE','public_storage_selected_fields_only':True,'auth_requests':1,'errors':dict(errors),'stop_reason':stop,'previous_comparison':compare,'source_commit':source_commit,'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
-              write(out,{**report,'observations':observations},immutable=True);persist([out,LEDGER],'KIS: archive broker daily observation checkpoint')
-              # Public dataset contains selected numeric fields only, never credentials or raw API responses. Logs contain aggregate counts only.
+              sector_counts=Counter(v['sector_name_kis'] for v in observations.values() if v['sector_name_kis'])
+              report={'state':'KIS_BROKER_COLLECTION_COMPLETE' if requests==len(rows) and len(observations)==len(rows) else 'KIS_BROKER_PARTIAL_CHECKPOINT','observation_session':day,'universe_reference_date':ref,'market_rows':total,'eligible_code_rows':len(rows),'unassessed_identifier_rows':total-len(rows),'requested':requests,'successful_quotes':len(observations),'numeric_all_four':sum(all(v[k] is not None for k in FIELDS) for v in observations.values()),'sector_rows':sum(sector_counts.values()),'sector_missing_rows':len(observations)-sum(sector_counts.values()),'sector_groups':len(sector_counts),'sector_source':'KIS_BROKER_BSTP_KOR_ISNM','sector_date_verified':False,'source':'KIS_OPEN_API_INQUIRE_PRICE','public_redistribution_permission_verified':False,'archive_format':'AES_256_GCM_V2','auth_requests':1,'errors':dict(errors),'stop_reason':stop,'previous_comparison':compare,'source_commit':source_commit,'official_krx_per_pbr_verified':False,'ratio_effective_date_verified':False,'investment_decisions_authorized':False,'final_buy_signals':0}
+              seal(out,{**report,'observations':observations},akey)
+              status=out.with_name('status.json');write(status,{**report,'encrypted_observation_sha256':sha(out)},immutable=True)
+              persist([out,status,LEDGER],'KIS: archive encrypted broker valuation and sector observation checkpoint')
               print('KIS_COLLECTION '+json.dumps(report,ensure_ascii=True));require(not stop and len(observations)==len(rows),'PARTIAL_COLLECTION_RETAINED')
 
           if __name__=='__main__':
@@ -219,5 +264,6 @@ jobs:
               except SafeError as e:print('KIS_BLOCKED '+str(e));sys.exit(1)
               except Exception:print('KIS_BLOCKED LOCAL_VALIDATION_ERROR');sys.exit(1)
           PYTHON
+          python -m pip install --disable-pip-version-check 'cryptography>=42,<47'
           python -m py_compile /tmp/kis_daily.py
           python /tmp/kis_daily.py
