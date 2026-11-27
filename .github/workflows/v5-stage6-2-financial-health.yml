@@ -1,0 +1,187 @@
+name: KRX v5 Stage 6-2 Financial Health and Growth Research
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-stage6-quality-research
+  cancel-in-progress: false
+jobs:
+  quality:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse existing Stage 6-1 growth evaluation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYTHON'
+          from pathlib import Path
+          from textwrap import dedent
+          import subprocess, sys
+          source = Path('.github/workflows/v5-stage6-1-growth-quality.yml').read_text(encoding='utf-8').splitlines()
+          starts = [i for i,line in enumerate(source) if line.strip() == "cat > /tmp/krx_stage6_1.py <<'PYTHON'"]
+          if len(starts) != 1: raise ValueError('STAGE6_1_SOURCE_LAYOUT_CHANGED')
+          start = starts[0] + 1
+          end = next(i for i in range(start,len(source)) if source[i].strip() == 'PYTHON')
+          p = Path('/tmp/krx_stage6_1.py')
+          p.write_text(dedent('\n'.join(source[start:end]))+'\n',encoding='utf-8')
+          subprocess.run([sys.executable,str(p)],check=True)
+          PYTHON
+      - name: Evaluate financial health and combine research flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage6_2.py <<'PYTHON'
+          import csv, hashlib, json, sys
+          from collections import Counter
+          from decimal import Decimal, InvalidOperation
+          from pathlib import Path
+
+          ROOT=Path.cwd().resolve()
+          BASE=ROOT/'data/v5_financial_m/filing_refresh'
+          OUT=Path('/tmp/krx-stage6-quality')
+          D=Decimal
+          # Provisional, sector-neutral review triggers, not calibrated buy rules.
+          DEBT_REVIEW=D('200')
+          ROE_REVIEW=D('5')
+          RATIO_TOL=D('0.10')
+
+          def require(ok,msg):
+              if not ok: raise ValueError(msg)
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def dec(x):
+              try:
+                  v=D(str(x).strip())
+                  return v if v.is_finite() else None
+              except (InvalidOperation,ValueError): return None
+          def val(v): return None if v is None else str(v)
+          def rows(p):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  rd=csv.DictReader(f); out={}
+                  require(rd.fieldnames and len(set(rd.fieldnames))==len(rd.fieldnames),'INVALID_HEADER')
+                  for r in rd:
+                      require(None not in r and r.get('code') and r['code'] not in out,'INVALID_OR_DUPLICATE_CODE')
+                      out[r['code']]=r
+                  return out
+          def checked_path(p,h):
+              p=(ROOT/p).resolve()
+              require(p.is_relative_to(ROOT) and p.is_file() and sha(p)==h,'SOURCE_HASH_MISMATCH '+str(p))
+              return p
+
+          def assess(q,m,g):
+              require(q['code']==m['code']==g['code'] and q['market_date']==m['market_date']==g['market_date'],'JOIN_MISMATCH')
+              require(q['annual_receipt']==m['annual_receipt']==g['annual_receipt'] and q['corp_code']==m['corp_code'] and q['annual_year']==m['year'] and q['fs_div']==m['fs_div']=='CFS','RECEIPT_MISMATCH')
+              require(q['grade_research_only']==g['existing_research_grade'] and q['score']==g['existing_score'],'GRADE_MISMATCH')
+              require(m['annual_source']=='RECEIPT_BOUND_ARCHIVE_RESEARCH_ONLY' and m['ttm_state']=='RECEIPT_BOUND_CUMULATIVE_RESEARCH_ONLY','SOURCE_BASIS_MISMATCH')
+              require(all(q[k]=='NO' for k in ('official_per_pbr_verified','financial_disclosure_asof_verified','share_class_verified','investment_authorized')) and q['buy_signal']=='NONE' and m['investment_authorized']=='NO' and m['financial_disclosure_asof_verified']=='NO' and g['investment_authorized'] is False and g['buy_signal'] is False and g['final_grade'] is None,'UNEXPECTED_APPROVAL')
+              assets,liab,owner,prior,annual,ttm=[dec(q.get(k)) for k in ('assets','liabilities','owner_equity','prior_owner_equity','annual_profit','ttm_profit')]
+              debt,roe,margin,owner_debt=[dec(m.get(k)) for k in ('liabilities_to_total_equity_pct','annual_owner_roe_pct','operating_margin_pct','liabilities_to_owner_equity_pct')]
+              require(ttm==dec(m.get('ttm_owner_profit_krw')),'TTM_MISMATCH')
+              risk=[]; missing=[]; conflict=[]; warnings=[]; decline=[]
+              for k,v in [('assets',assets),('liabilities',liab),('owner_equity',owner),('prior_owner_equity',prior),('annual_profit',annual),('ttm_profit',ttm),('total_equity_debt_ratio',debt),('owner_roe',roe),('operating_margin',margin)]:
+                  if v is None: missing.append(k)
+              total=assets-liab if assets is not None and liab is not None else None
+              calculated=None
+              if assets is not None and assets<=0: conflict.append('NONPOSITIVE_ASSETS')
+              if liab is not None and liab<0: conflict.append('NEGATIVE_LIABILITIES')
+              if total is not None:
+                  if total<=0: risk.append('NONPOSITIVE_TOTAL_EQUITY')
+                  elif liab>=0:
+                      calculated=liab/total*100
+                      if debt is not None and abs(calculated-debt)>RATIO_TOL: conflict.append('TOTAL_EQUITY_DEBT_RATIO_MISMATCH')
+              if debt is not None:
+                  if debt<0: conflict.append('NEGATIVE_DEBT_RATIO')
+                  elif debt>=DEBT_REVIEW: risk.append('HIGH_TOTAL_EQUITY_DEBT_RATIO')
+              if owner is not None and owner<=0: risk.append('NONPOSITIVE_OWNER_EQUITY')
+              if owner is not None and prior is not None and prior>0 and owner<prior: risk.append('OWNER_EQUITY_DECLINE')
+              if roe is not None:
+                  if roe<=0: risk.append('NONPOSITIVE_OWNER_ROE')
+                  elif roe<ROE_REVIEW: warnings.append('LOW_OWNER_ROE_REVIEW')
+              if margin is not None and margin<=0: risk.append('NONPOSITIVE_OPERATING_MARGIN')
+              for k,v in [('ANNUAL',annual),('TTM',ttm)]:
+                  if v is not None and v<=0: risk.append(k+'_NONPOSITIVE_PROFIT')
+              if annual is not None and annual>0 and ttm is not None and ttm<annual: decline.append('TTM_BELOW_ANNUAL_NOT_YOY')
+              for k in ('revenue_yoy_pct','owner_profit_yoy_pct','operating_profit_yoy_pct'):
+                  if k=='operating_profit_yoy_pct' and m.get('operating_profit_source')!='RECEIPT_BOUND_ANNUAL': continue
+                  v=dec(m.get(k))
+                  if v is not None and v<0: decline.append(k.upper()+'_NEGATIVE')
+              if conflict: health='HOLD_FINANCIAL_EVIDENCE_CONFLICT'
+              elif risk: health='REVIEW_FINANCIAL_HEALTH_RISK'
+              elif missing: health='REVIEW_MISSING_HEALTH_EVIDENCE'
+              elif warnings: health='REVIEW_FINANCIAL_HEALTH_WARNING'
+              else: health='HEALTH_CRITERIA_MET_RESEARCH_ONLY'
+              growth=g['quality_state']
+              if growth.startswith('HOLD_') or conflict: combined='HOLD_EVIDENCE_REVIEW'
+              elif risk or decline or growth=='REVIEW_GROWTH_RISK': combined='REVIEW_GROWTH_OR_HEALTH_RISK'
+              elif missing or warnings or growth!='CONSISTENT_GROWTH_RESEARCH_ONLY': combined='REVIEW_INCOMPLETE_OR_WEAK_QUALITY'
+              else: combined='GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY'
+              return {'code':q['code'],'name':q['name'],'market_date':q['market_date'],'annual_receipt':q['annual_receipt'],'existing_research_grade':q['grade_research_only'],'existing_score':q['score'],'growth_state':growth,'growth_risk_flags':g['growth_risk_flags'],'health_state':health,'combined_state':combined,'health_risk_flags':risk,'health_warning_flags':warnings,'performance_decline_flags':decline,'missing_metrics':missing,'evidence_conflicts':conflict,'metrics':{'assets_krw':val(assets),'liabilities_krw':val(liab),'total_equity_derived_krw':val(total),'owner_equity_krw':val(owner),'prior_owner_equity_krw':val(prior),'liabilities_to_total_equity_pct_receipt_bound':val(debt),'liabilities_to_total_equity_pct_recomputed_check_only':val(calculated),'liabilities_to_owner_equity_pct_not_debt_ratio':val(owner_debt),'annual_owner_roe_pct':val(roe),'operating_margin_pct':val(margin),'annual_profit_krw':val(annual),'ttm_profit_krw':val(ttm)},'sector_adjusted':False,'official_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'final_grade':None,'investment_authorized':False,'buy_signal':False}
+
+          def self_test():
+              q={'code':'123456','name':'fixture','market_date':'20261126','annual_receipt':'20260319000001','annual_year':'2025','corp_code':'12345678','fs_div':'CFS','grade_research_only':'A','score':'100','assets':'150','liabilities':'50','owner_equity':'95','prior_owner_equity':'90','annual_profit':'10','ttm_profit':'12','official_per_pbr_verified':'NO','financial_disclosure_asof_verified':'NO','share_class_verified':'NO','investment_authorized':'NO','buy_signal':'NONE'}
+              m={'code':q['code'],'market_date':q['market_date'],'annual_receipt':q['annual_receipt'],'year':'2025','corp_code':q['corp_code'],'fs_div':'CFS','annual_source':'RECEIPT_BOUND_ARCHIVE_RESEARCH_ONLY','ttm_state':'RECEIPT_BOUND_CUMULATIVE_RESEARCH_ONLY','ttm_owner_profit_krw':'12','investment_authorized':'NO','financial_disclosure_asof_verified':'NO','liabilities_to_total_equity_pct':'50','liabilities_to_owner_equity_pct':'52.63','annual_owner_roe_pct':'11','operating_margin_pct':'9','revenue_yoy_pct':'10','owner_profit_yoy_pct':'10','operating_profit_yoy_pct':'10','operating_profit_source':'RECEIPT_BOUND_ANNUAL'}
+              g={'code':q['code'],'market_date':q['market_date'],'annual_receipt':q['annual_receipt'],'existing_research_grade':'A','existing_score':'100','quality_state':'CONSISTENT_GROWTH_RESEARCH_ONLY','growth_risk_flags':[],'investment_authorized':False,'buy_signal':False,'final_grade':None}
+              def a(q=q,m=m,g=g): return assess(q,m,g)
+              assert a()['combined_state']=='GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY'
+              assert a(m={**m,'liabilities_to_total_equity_pct':''})['health_state']=='REVIEW_MISSING_HEALTH_EVIDENCE'
+              assert a(m={**m,'liabilities_to_total_equity_pct':'52.63'})['health_state']=='HOLD_FINANCIAL_EVIDENCE_CONFLICT'
+              assert a(q={**q,'assets':'75'},m={**m,'liabilities_to_total_equity_pct':'200'})['health_state']=='REVIEW_FINANCIAL_HEALTH_RISK'
+              assert a(q={**q,'assets':'40'},m={**m,'liabilities_to_total_equity_pct':''})['health_state']=='REVIEW_FINANCIAL_HEALTH_RISK'
+              assert a(m={**m,'annual_owner_roe_pct':'3'})['health_state']=='REVIEW_FINANCIAL_HEALTH_WARNING'
+              assert a(m={**m,'operating_margin_pct':'-1'})['health_state']=='REVIEW_FINANCIAL_HEALTH_RISK'
+              assert a(q={**q,'owner_equity':'80'})['health_state']=='REVIEW_FINANCIAL_HEALTH_RISK'
+              assert a(m={**m,'owner_profit_yoy_pct':'-1'})['combined_state']=='REVIEW_GROWTH_OR_HEALTH_RISK'
+              assert a(q={**q,'ttm_profit':'9'},m={**m,'ttm_owner_profit_krw':'9'})['performance_decline_flags']==['TTM_BELOW_ANNUAL_NOT_YOY']
+              assert a(g={**g,'quality_state':'HOLD_CLASS_CONFLICT'})['combined_state']=='HOLD_EVIDENCE_REVIEW'
+              assert a(m={**m,'operating_profit_source':'LEGACY','operating_profit_yoy_pct':'-10'})['performance_decline_flags']==[]
+              assert a()['final_grade'] is None and not a()['buy_signal'] and not a()['investment_authorized']
+              for bad in ({**m,'annual_receipt':'20260319000002'},{**m,'investment_authorized':'YES'},{**m,'ttm_owner_profit_krw':'13'}):
+                  try: a(m=bad)
+                  except ValueError: pass
+                  else: raise AssertionError('FAIL_CLOSED')
+              print('STAGE6_2_SELF_TEST_PASS 16')
+
+          def main():
+              self_test()
+              if '--self-test' in sys.argv: return
+              gp=OUT/'quality_report.json'; growth=read(gp)
+              require(growth['state']=='STAGE6_1_GROWTH_EVIDENCE_PROFILE_RESEARCH_ONLY' and growth['financial_api_calls']==0 and growth['investment_decisions_authorized'] is False and growth['final_buy_signals']==0,'GROWTH_REPORT_INVALID')
+              hashes=growth['source_sha256']; require(isinstance(hashes,dict) and hashes,'MISSING_HASHES')
+              for p,h in hashes.items(): checked_path(p,h)
+              sp=BASE/'candidate_regrade/latest_status.json'; mp=BASE/'metrics/latest_status.json'
+              s,m=read(sp),read(mp); day=growth['market_date']
+              require(s['market_date']==m['market_date']==day,'UPSTREAM_DATE_MISMATCH')
+              for p in (sp,mp): require(hashes[str(p.relative_to(ROOT))]==sha(p),'STATUS_NOT_BOUND')
+              qp=checked_path(s['queue_path'],s['queue_sha256']); fp=checked_path(m['csv_path'],m['csv_sha256'])
+              for p in (qp,fp): require(hashes[str(p.relative_to(ROOT))]==sha(p),'INPUT_NOT_BOUND')
+              q,f=rows(qp),rows(fp); gs={}
+              for x in growth['candidates']:
+                  require(x['code'] not in gs,'DUPLICATE_GROWTH_CODE'); gs[x['code']]=x
+              require(len(q)==len(gs)==growth['candidate_rows']==s['research_ab_rows'] and set(q)==set(gs) and set(q)<=set(f),'CANDIDATE_SCOPE_MISMATCH')
+              result=[assess(q[k],f[k],gs[k]) for k in sorted(q)]
+              require(dict(Counter(x['existing_research_grade'] for x in result))==s['grade_counts'],'GRADE_COUNTS_CHANGED')
+              for p,h in hashes.items(): checked_path(p,h)
+              report={'state':'STAGE6_2_COMBINED_QUALITY_RESEARCH_ONLY','market_date':day,'market_rows':growth['market_rows'],'candidate_rows':len(result),'existing_grade_counts':s['grade_counts'],'growth_states':growth['quality_states'],'health_states':dict(Counter(x['health_state'] for x in result)),'combined_states':dict(Counter(x['combined_state'] for x in result)),'review_thresholds':{'total_equity_debt_ratio_pct_gte':str(DEBT_REVIEW),'low_positive_roe_pct_lt':str(ROE_REVIEW),'ratio_check_tolerance_percentage_points':str(RATIO_TOL),'sector_adjusted':False,'validated_predictor':False},'source_sha256':hashes,'growth_report_sha256':sha(gp),'financial_api_calls':0,'investment_decisions_authorized':False,'final_buy_signals':0,'official_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'notes':['Research review only; no grade, price target or buy authorization changes.','Debt ratio uses total equity; owner equity ratio is separate. Recomputed ratio checks consistency only.','Annual versus TTM comparison is not YoY; sector-specific calibration, liquidity and cash-flow coverage remain unverified.','Existing market, financial, and performance archives are read-only. No candidate is removed.'],'candidates':result}
+              (OUT/'financial_health_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print('STAGE6_2_RESULT '+json.dumps({k:v for k,v in report.items() if k not in ('candidates','source_sha256')},ensure_ascii=False))
+          if __name__=='__main__': main()
+          PYTHON
+          python /tmp/krx_stage6_2.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-stage6-2-financial-health
+          path: |
+            /tmp/krx-stage6-quality/quality_report.json
+            /tmp/krx-stage6-quality/financial_health_report.json
+          if-no-files-found: error
