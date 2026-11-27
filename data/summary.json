@@ -1,14 +1,17 @@
 {
-  "latest_trading_date": "20261125",
+  "latest_trading_date": "20261126",
   "sessions_stored": 70,
-  "total_rows_stored": 193587,
+  "total_rows_stored": 193596,
   "kospi_rows_latest": 935,
   "kosdaq_rows_latest": 1837,
-  "marketcap_1000uk_screened": 1243,
+  "marketcap_1000uk_screened": 1244,
   "spac_excluded": 0,
   "ma10_unavailable": 1,
   "golden_cross_eligible": 1242,
   "golden_cross_3d": 117,
   "uptrend_maintained": 178,
-  "note": "Technical observation only; not investment grade S/A/B or buy advice."
+  "note": "Official KRX price source updated; technical indicator metrics retain their own as-of date; no investment authorization.",
+  "technical_indicators_asof": "20261125",
+  "indicator_metrics_asof": "20261125",
+  "technical_indicators_status": "STALE_PENDING_ORIGINAL_V4_G_REBUILD"
 }
