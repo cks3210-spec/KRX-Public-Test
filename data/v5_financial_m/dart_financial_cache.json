@@ -113728,8 +113728,9 @@
       "profit": 56122416147,
       "revenue": 1843539281196
     },
+    "amount_basis": "ANNUAL",
+    "archive_observed_market_date": "20261126",
     "corp_code": "01234507",
-    "fetched_utc": "2026-11-19T03:08:07.823340+00:00",
     "fs_div": "CFS",
     "matched_accounts": {
       "assets": 1,
@@ -113738,8 +113739,14 @@
       "profit": 1,
       "revenue": 1
     },
+    "point_in_time_verified": false,
+    "receipt": "20260319001065",
     "records_seen": 202,
+    "repair_source": "EXACT_RECEIPT_ARCHIVE",
     "report": "annual",
+    "source_archive": "data/v5_financial_m/filing_refresh/raw/20260319001065_CFS.json.gz",
+    "source_archive_sha256": "314e304fc52eb58aaf74cc1595359cdf6a695dacf2020e2af815e4828fe57046",
+    "source_receipt_date": "20260319",
     "status": "000",
     "year": 2025
   },
@@ -119119,8 +119126,9 @@
       "previous_profit": 10805709811,
       "profit": 8582726150
     },
+    "amount_basis": "ANNUAL",
+    "archive_observed_market_date": "20261126",
     "corp_code": "01012640",
-    "fetched_utc": "2026-11-19T03:13:04.465622+00:00",
     "fs_div": "CFS",
     "matched_accounts": {
       "assets": 1,
@@ -119128,8 +119136,14 @@
       "liabilities": 1,
       "profit": 1
     },
+    "point_in_time_verified": false,
+    "receipt": "20260319000594",
     "records_seen": 153,
+    "repair_source": "EXACT_RECEIPT_ARCHIVE",
     "report": "annual",
+    "source_archive": "data/v5_financial_m/filing_refresh/raw/20260319000594_CFS.json.gz",
+    "source_archive_sha256": "b8a6e9c3c80ac404ba4b739adaa2d024e1d9dceb9a4b1535fcf3dfe2fc7b691a",
+    "source_receipt_date": "20260319",
     "status": "000",
     "year": 2025
   },
