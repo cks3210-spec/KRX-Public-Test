@@ -1,0 +1,180 @@
+name: KRX v5 Stage 7 Sector Valuation Research
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: krx-v5-stage7-sector-research
+  cancel-in-progress: false
+jobs:
+  research:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reuse successful Stage 6-2 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID=$(gh run list --workflow v5-stage6-2-financial-health.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$RUN_ID"
+          gh run download "$RUN_ID" --name krx-v5-stage6-2-financial-health --dir /tmp/krx-stage7-input
+          test -s /tmp/krx-stage7-input/financial_health_report.json
+          test -s /tmp/krx-stage7-input/quality_report.json
+      - name: Calculate comparable peer valuation only with reviewed evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage7.py <<'PYTHON'
+          import csv, json, hashlib, re, sys
+          from pathlib import Path
+          from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+          from collections import Counter
+          ROOT=Path.cwd().resolve()
+          OUT=Path('/tmp/krx-stage7')
+          D=Decimal
+          MIN_PEERS=8  # reuse Stage55 minimum comparison sample, provisional
+          MIN_CAP=D('100000000000')
+          MAX_DISAGREE=D('1.5')  # provisional model disagreement guard
+
+          def require(ok,msg):
+              if not ok: raise ValueError(msg)
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def dec(x):
+              try:
+                  z=D(str(x)); return z if z.is_finite() else None
+              except (InvalidOperation,ValueError): return None
+          def pos(x):
+              v=dec(x); return v if v is not None and v>0 else None
+          def checked(p,h):
+              p=(ROOT/p).resolve();require(p.is_relative_to(ROOT) and p.is_file() and sha(p)==h,'SOURCE_HASH_MISMATCH');return p
+          def rows(p,key):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  reader=csv.DictReader(f);out={}
+                  require(reader.fieldnames and len(reader.fieldnames)==len(set(reader.fieldnames)),'INVALID_HEADER')
+                  for r in reader:
+                      require(None not in r and r.get(key) and r[key] not in out,'INVALID_OR_DUPLICATE_ROW');out[r[key]]=r
+                  return out
+          def money(x): return str(x.quantize(D('1'),rounding=ROUND_HALF_UP))
+          def quantile(xs,p):
+              a=sorted(xs);require(bool(a),'EMPTY_SAMPLE');i=D(len(a)-1)*p;j=int(i)
+              return a[j]+(a[min(j+1,len(a)-1)]-a[j])*(i-j)
+          def estimate(target, peers):
+              # Same provider, accounting basis, industry, day and common-share evidence.
+              # Never use the target in its own comparison group.
+              if target['sector_type']!='GENERAL': return {'state':'HOLD_SPECIAL_SECTOR_MODEL_REQUIRED'}
+              if len(peers)<MIN_PEERS: return {'state':'HOLD_INSUFFICIENT_COMPARABLE_PEERS','peer_count':len(peers)}
+              eps,bps=pos(target['eps']),pos(target['bps'])
+              if eps is None or bps is None: return {'state':'HOLD_NONPOSITIVE_EPS_OR_BPS'}
+              pe=[pos(r['per']) for r in peers];pb=[pos(r['pbr']) for r in peers]
+              require(all(v is not None for v in pe+pb),'INVALID_PEER_RATIO')
+              p25,p50,p75=[quantile(pe,D(x))*eps for x in ('.25','.50','.75')]
+              b25,b50,b75=[quantile(pb,D(x))*bps for x in ('.25','.50','.75')]
+              if max(p50,b50)/min(p50,b50)>MAX_DISAGREE:
+                  return {'state':'HOLD_VALUATION_MODEL_DISAGREEMENT','peer_count':len(peers)}
+              # Conservative overlap; no invented growth premium or leverage discount.
+              lo,hi=max(p25,b25),min(p75,b75)
+              if lo>hi:return {'state':'HOLD_NONOVERLAPPING_MODEL_RANGES','peer_count':len(peers)}
+              mid=max(lo,min(hi,min(p50,b50)));close=pos(target['close_krw']);require(close is not None,'INVALID_CLOSE')
+              return {'state':'PEER_RANGE_RESEARCH_ONLY','peer_count':len(peers),'research_low_krw':money(lo),'research_mid_krw':money(mid),'research_high_krw':money(hi),'research_discount_to_mid_pct':str(((1-close/mid)*100).quantize(D('.01'))),'relative_price_state':'BELOW_RANGE' if close<lo else 'ABOVE_RANGE' if close>hi else 'WITHIN_RANGE'}
+          def qualify(r,m,day):
+              # A future reviewed input adapter must supply explicit evidence; these checks do
+              # not independently attest upstream source accuracy or data redistribution rights.
+              if not m or not re.fullmatch(r'[0-9A-Z]{6}',r['code']): return False
+              if r['market_date']!=day or r['market']!=m['MARKET'] or r['share_class']!='COMMON' or r['security_group']!='STOCK':return False
+              if r['sector_type'] not in ('GENERAL','FINANCIAL','REAL_ESTATE','OTHER') or not r['sector_id'].strip():return False
+              if r['source_kind'] not in ('KRX_OFFICIAL','KIS_BROKER','OTHER_REVIEWED') or not r['accounting_basis'].strip():return False
+              if not all(r[k].strip() for k in ('sector_evidence_ref','ratio_evidence_ref','class_evidence_ref')):return False
+              if any(r[k]!='YES' for k in ('sector_date_reviewed','ratio_date_reviewed','class_date_reviewed','basis_reviewed')):return False
+              cap=pos(m['MKTCAP']); close=pos(m['TDD_CLSPRC'])
+              if cap is None or cap<MIN_CAP or close is None or close!=pos(r['close_krw']):return False
+              per,pbr,eps,bps=[pos(r[k]) for k in ('per','pbr','eps','bps')]
+              if any(v is None for v in (per,pbr,eps,bps)):return False
+              # Allow rounding, not an independent verification of the ratio period.
+              return abs(per*eps/close-1)<=D('.05') and abs(pbr*bps/close-1)<=D('.05')
+          def comparable(t,p):
+              return t['code']!=p['code'] and all(t[k]==p[k] for k in ('sector_id','sector_type','source_kind','accounting_basis','market_date'))
+          def self_test():
+              t={'code':'123456','sector_type':'GENERAL','sector_id':'X','source_kind':'KIS_BROKER','accounting_basis':'TTM','market_date':'20261126','eps':'100','bps':'1000','close_krw':'1000'}
+              pp=[{**t,'code':str(i).zfill(6),'per':str(10+i%3),'pbr':str(D('1')+D(i%3)/10)} for i in range(8)]
+              assert estimate(t,pp)['state']=='PEER_RANGE_RESEARCH_ONLY'
+              assert estimate(t,pp[:7])['state']=='HOLD_INSUFFICIENT_COMPARABLE_PEERS'
+              assert estimate({**t,'sector_type':'FINANCIAL'},pp)['state']=='HOLD_SPECIAL_SECTOR_MODEL_REQUIRED'
+              assert estimate({**t,'sector_type':'REAL_ESTATE'},pp)['state']=='HOLD_SPECIAL_SECTOR_MODEL_REQUIRED'
+              assert estimate({**t,'eps':'0'},pp)['state']=='HOLD_NONPOSITIVE_EPS_OR_BPS'
+              assert estimate({**t,'eps':'1000'},pp)['state']=='HOLD_VALUATION_MODEL_DISAGREEMENT'
+              assert estimate({**t,'close_krw':'500'},pp)['relative_price_state']=='BELOW_RANGE'
+              assert estimate({**t,'close_krw':'2000'},pp)['relative_price_state']=='ABOVE_RANGE'
+              assert not comparable(t,t)
+              assert not comparable(t,{**pp[0],'source_kind':'KRX_OFFICIAL'})
+              assert not comparable(t,{**pp[0],'accounting_basis':'ANNUAL'})
+              assert not comparable(t,{**pp[0],'market_date':'20261125'})
+              assert not comparable(t,{**pp[0],'sector_id':'Y'})
+              assert quantile([D(1),D(3)],D('.5'))==D(2)
+              r={**t,'market':'KOSDAQ','share_class':'COMMON','security_group':'STOCK','per':'10','pbr':'1','sector_evidence_ref':'fixture','ratio_evidence_ref':'fixture','class_evidence_ref':'fixture',**{k:'YES' for k in ('sector_date_reviewed','ratio_date_reviewed','class_date_reviewed','basis_reviewed')}}
+              m={'MARKET':'KOSDAQ','MKTCAP':'100000000000','TDD_CLSPRC':'1000'}
+              assert qualify(r,m,t['market_date'])
+              assert not qualify({**r,'share_class':'PREFERRED'},m,t['market_date'])
+              assert not qualify({**r,'ratio_date_reviewed':'NO'},m,t['market_date'])
+              assert not qualify({**r,'close_krw':'999'},m,t['market_date'])
+              assert not qualify({**r,'per':'50'},m,t['market_date'])
+              assert not qualify(r,{**m,'MKTCAP':'99999999999'},t['market_date'])
+              print('STAGE7_SELF_TEST_PASS 20')
+          def main():
+              self_test()
+              if '--self-test' in sys.argv:return
+              gp=Path('/tmp/krx-stage7-input/financial_health_report.json');growth=Path('/tmp/krx-stage7-input/quality_report.json')
+              h=read(gp);g=read(growth);require(h['state']=='STAGE6_2_COMBINED_QUALITY_RESEARCH_ONLY' and h['growth_report_sha256']==sha(growth),'UPSTREAM_ARTIFACT_INVALID')
+              require(h['source_sha256']==g['source_sha256'] and h['market_date']==g['market_date'],'UPSTREAM_ARTIFACT_CONFLICT')
+              require(all(x['final_buy_signals']==0 and x['investment_decisions_authorized'] is False for x in (g,h)),'UNEXPECTED_APPROVAL')
+              # Exact archived evidence must match this checkout. Stale artifact is not silently reused.
+              for p,digest in h['source_sha256'].items():checked(p,digest)
+              day=h['market_date'];summary=read(ROOT/'data/summary.json');require(day==summary['latest_trading_date'],'STALE_STAGE6_ARTIFACT')
+              market=rows(ROOT/'data/latest.csv','ISU_CD');require(len(market)==h['market_rows'] and {r['BAS_DD'] for r in market.values()}=={day},'MARKET_SCOPE_MISMATCH')
+              qstatus=read(ROOT/'data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json');q=rows(checked(qstatus['queue_path'],qstatus['queue_sha256']),'code')
+              cs={r['code']:r for r in h['candidates']};require(len(cs)==len(h['candidates'])==h['candidate_rows']==len(q) and set(cs)==set(q),'CANDIDATE_SCOPE_MISMATCH')
+              require(all(r['market_date']==day and r['existing_research_grade']==q[k]['grade_research_only'] and r['annual_receipt']==q[k]['annual_receipt'] and r['investment_authorized'] is False and r['buy_signal'] is False for k,r in cs.items()),'QUALITY_JOIN_MISMATCH')
+              # Existing broker data is inspected for coverage only. Its dates/rights are not verified.
+              broker=ROOT/'data/v5_kis_valuation/sessions'/day/'observations.json';broker_state='NO_SAVED_KIS_SESSION';broker_count=0
+              if broker.is_file():
+                  b=read(broker);require(b['observation_session']==day and b['source']=='KIS_OPEN_API_INQUIRE_PRICE','BROKER_SOURCE_MISMATCH');broker_state='KIS_OBSERVED_ONLY_NOT_VERIFIED_FOR_VALUATION';broker_count=len(b['observations'])
+              # A separate reviewed adapter is required. Do not upload restricted inputs to a public repo.
+              # On this public workflow the optional adapter is intentionally absent until approved.
+              # The calculator is executable offline on a lawful, reviewed bundle; no API access.
+              inputs=ROOT/'data/v5_stage7_reviewed'/day/'manifest.json';eligible={};input_state='NO_REVIEWED_SECTOR_RATIO_BUNDLE';input_hash=None
+              if inputs.is_file():
+                  manifest=read(inputs)
+                  if manifest.get('market_date')==day and manifest.get('public_derived_output_reviewed') is True and manifest.get('public_input_use_reviewed') is True and manifest.get('review_state')=='MANUALLY_REVIEWED_RESEARCH_INPUT' and manifest.get('review_reference'):
+                      p=checked(manifest['csv_path'],manifest['csv_sha256']);require(p.is_relative_to(inputs.parent.resolve()),'BUNDLE_PATH_INVALID');input_hash=sha(p)
+                      rr=rows(p,'code');eligible={k:r for k,r in rr.items() if qualify(r,market.get(k),day)};input_state='REVIEWED_INPUT_ASSERTIONS_ACCEPTED_RESEARCH_ONLY'
+                  else:input_state='HOLD_BUNDLE_REVIEW_OR_PUBLICATION_PERMISSION_MISSING'
+              results=[]
+              for k,c in sorted(cs.items()):
+                  out={'code':k,'name':c['name'],'existing_research_grade':c['existing_research_grade'],'combined_quality_state':c['combined_state'],'verified_fair_price':None,'final_grade':None,'buy_signal':False,'investment_authorized':False}
+                  if c['combined_state']!='GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY':out['state']='HOLD_QUALITY_REVIEW'
+                  elif k not in eligible:out['state']='HOLD_SECTOR_OR_RATIO_EVIDENCE'
+                  else:
+                      t=eligible[k];peers=[r for r in eligible.values() if comparable(t,r)];out.update(estimate(t,peers))
+                  results.append(out)
+              report={'state':'STAGE7_RESEARCH_EVALUATED' if any(r['state']=='PEER_RANGE_RESEARCH_ONLY' for r in results) else 'STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE','market_date':day,'market_rows':len(market),'candidate_rows':len(results),'existing_grade_counts':h['existing_grade_counts'],'quality_states':h['combined_states'],'valuation_states':dict(Counter(r['state'] for r in results)),'eligible_reviewed_peer_rows':len(eligible),'reviewed_input_state':input_state,'reviewed_input_sha256':input_hash,'kis_state':broker_state,'kis_observation_rows':broker_count,'stage6_report_sha256':sha(gp),'financial_api_calls':0,'verified_fair_prices':0,'final_buy_signals':0,'investment_decisions_authorized':False,'notes':['No official PER/PBR verification or trading approval is inferred.','Peer minimum 8 excluding target; provisional model disagreement guard 1.5x.','Only overlapping PE/PB interquartile ranges, no growth premium. Financial and real-estate models withheld.','Reviewed input assertions are not independent verification; no public KIS raw values included.'],'candidates':results}
+              OUT.mkdir(parents=True,exist_ok=True);(OUT/'valuation_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('STAGE7_RESULT '+json.dumps({k:v for k,v in report.items() if k!='candidates'},ensure_ascii=False))
+          if __name__=='__main__':main()
+          PYTHON
+          python /tmp/krx_stage7.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-stage7-sector-valuation
+          path: /tmp/krx-stage7/valuation_report.json
+          if-no-files-found: error
