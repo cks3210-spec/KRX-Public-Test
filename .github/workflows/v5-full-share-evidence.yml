@@ -1,0 +1,68 @@
+name: KRX v5 Full Scope Share Evidence
+'on':
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan = no API; collect = missing receipt evidence only'
+        type: choice
+        options: [plan, collect]
+        default: plan
+      max_calls:
+        description: 'Maximum API calls this run (1-1000); not a stock limit'
+        type: number
+        default: 200
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-full-share-evidence
+  cancel-in-progress: false
+jobs:
+  shares:
+    if: github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install readers
+        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1'
+      - name: Offline self-tests
+        run: |
+          python scripts/v5_evaluation_scope.py --self-test
+          python scripts/v5_full_financial_evaluation.py --self-test
+          python scripts/v5_full_share_evidence.py --self-test
+      - name: Plan only (no financial API)
+        if: inputs.mode == 'plan'
+        run: python scripts/v5_full_share_evidence.py --out /tmp/v5-full-shares
+      - name: Collect missing evidence only
+        if: inputs.mode == 'collect'
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
+          MAX_CALLS: ${{ inputs.max_calls }}
+        run: python scripts/v5_full_share_evidence.py --collect --max-calls "$MAX_CALLS" --out /tmp/v5-full-shares
+      - name: Persist authenticated encrypted cache only
+        if: ${{ always() && inputs.mode == 'collect' }}
+        run: |
+          set -euo pipefail
+          file=data/v5_share_evidence/cache.aes
+          if [ ! -f "$file" ]; then exit 0; fi
+          git add -- "$file"
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Persist encrypted receipt-bound share evidence'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: krx-v5-full-share-evidence-summary
+          path: /tmp/v5-full-shares/share_summary.json
+          if-no-files-found: warn
