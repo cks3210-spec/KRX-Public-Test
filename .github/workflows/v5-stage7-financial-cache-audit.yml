@@ -1,0 +1,30 @@
+name: KRX v5 Stage 7-2 Financial Cache Audit
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit cached evidence only
+        run: |
+          set -euo pipefail
+          python scripts/v5_stage7_financial_cache_audit.py --self-test
+          python scripts/v5_valuation_crosscheck.py
+          python scripts/v5_stage7_financial_cache_audit.py > /tmp/cache_audit.json
+          cat /tmp/cache_audit.json
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v5-stage7-financial-cache-audit
+          path: /tmp/cache_audit.json
+          if-no-files-found: error
