@@ -1,0 +1,169 @@
+name: KRX v5 Collection Failure Diagnostic
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 KIS Daily Valuation']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: krx-v5-collection-failure-diagnostic
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_branch == 'main')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Diagnose stored market and KIS collection evidence without financial API
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_collection_diag.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, json, os, re, subprocess, sys
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from collections import Counter
+          REPO='cks3210-spec/KRX-Public-Test'
+          KST=ZoneInfo('Asia/Seoul')
+          ROOT=Path.cwd()
+          STORE=Path('data/v5_kis_valuation')
+          OUT=Path('/tmp/krx-collection-diagnostic/status.json')
+
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def need(ok):
+              if not ok: raise ValueError('INVALID_ARCHIVE_METADATA')
+          def index(p):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  rd=csv.DictReader(f); d={}
+                  if not rd.fieldnames or len(rd.fieldnames)!=len(set(rd.fieldnames)): raise ValueError()
+                  for r in rd:
+                      if None in r or not r.get('ISU_CD') or r['ISU_CD'] in d: raise ValueError()
+                      d[r['ISU_CD']]=r
+                  return d
+
+          def market(expected):
+              try:
+                  s=read(Path('data/summary.json'));day=s['latest_trading_date']
+                  if day!=expected: return {'state':'KRX_EXPECTED_SESSION_NOT_AVAILABLE','stored_market_date':day}
+                  p=Path('data/latest.csv'); a=Path('data/v5_official_market_archive')/(day+'.csv')
+                  if not a.is_file(): return {'state':'KRX_OFFICIAL_ARCHIVE_MISSING','stored_market_date':day}
+                  rows=index(p); original=index(a)
+                  if not rows or rows!=original or {r['BAS_DD'] for r in rows.values()}!={day} or len(rows)!=s['kospi_rows_latest']+s['kosdaq_rows_latest']:
+                      return {'state':'KRX_CONTENT_OR_COUNT_MISMATCH','stored_market_date':day}
+                  return {'state':'KRX_ARCHIVE_ROWS_MATCH','stored_market_date':day,'rows':len(rows),'archive_sha256':sha(a)}
+              except (OSError,ValueError,KeyError,TypeError): return {'state':'KRX_INPUT_UNAVAILABLE_OR_INVALID'}
+
+          def count(s,k):
+              v=s[k];need(type(v) is int and v>=0);return v
+
+          def archive(s,p,day):
+              need(s['observation_session']==day and s['source']=='KIS_OPEN_API_INQUIRE_PRICE' and s['archive_format']=='AES_256_GCM_V2')
+              need(s['investment_decisions_authorized'] is False and s['final_buy_signals']==0)
+              need(s['encrypted_observation_sha256']==sha(p))
+              with p.open('rb') as f: need(f.read(6)==b'KISV2\x00' and p.stat().st_size>34)
+              t,e,r,q,n,se,sm,u=[count(s,k) for k in ('market_rows','eligible_code_rows','requested','successful_quotes','numeric_all_four','sector_rows','sector_missing_rows','unassessed_identifier_rows')]
+              need(t==e+u and 0<e<=3500 and 0<=q<=r<=e and n<=q and se+sm==q)
+              state=s['state'];need(state in ('KIS_BROKER_COLLECTION_COMPLETE','KIS_BROKER_PARTIAL_CHECKPOINT'))
+              need((state=='KIS_BROKER_COLLECTION_COMPLETE')==(e==q==r))
+              stop=s.get('stop_reason',''); allowed={'','TIME_BUDGET','HTTP_401','HTTP_403','HTTP_429','HTTP_500','KIS_QUOTE_REJECTED','NETWORK_OR_JSON_ERROR'}
+              return {'state':'KIS_ARCHIVE_COUNTS_COMPLETE' if q==e else 'KIS_PARTIAL_ARCHIVE_PRESERVED','market_rows':t,'eligible':e,'requested':r,'successful':q,'not_requested':e-r,'requested_without_quote':r-q,'eligible_without_quote':e-q,'missing_four_ratios':q-n,'missing_sector':sm,'excluded_identifiers':u,'stop_reason':stop if stop in allowed else 'OTHER','archive_hash_matches':True,'authenticated_decryption_verified':False,'official_ratio_verified':False,'recovery':'NO_AUTOMATIC_RETRY_PRESERVE_ARCHIVE' if q<e else 'WAIT_FOR_SAME_DATE_VALIDATION'}
+
+          MARKERS={'KIS_SKIP_OUTSIDE_POST_CLOSE_WINDOW','KIS_SKIP_TOKEN_INTERVAL','KIS_SKIP_ALREADY_ARCHIVED','KIS_SKIP_NON_TRADING_DAY','KIS_BLOCKED MISSING_OR_INVALID_ARCHIVE_KEY','KIS_BLOCKED MISSING_KIS_SECRETS','KIS_BLOCKED AUTH_RESERVATION_EXPIRED','KIS_BLOCKED TOKEN_NOT_ISSUED','KIS_BLOCKED LOCAL_VALIDATION_ERROR','KIS_BLOCKED UPSTREAM_MARKET_DATE_NOT_CURRENT_OR_PREVIOUS','KIS_BLOCKED GIT_OPERATION_FAILED','KIS_BLOCKED PARTIAL_COLLECTION_RETAINED','KIS_BLOCKED HTTP_401','KIS_BLOCKED HTTP_403','KIS_BLOCKED HTTP_429','KIS_BLOCKED HTTP_500','KIS_BLOCKED NETWORK_OR_JSON_ERROR'}
+          def markers(log):
+              result=set()
+              for line in log.splitlines():
+                  # Actual log lines only, never source echo or arbitrary exception text.
+                  m=re.search(r'\b\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z (.*)$',line)
+                  if m and m[1].strip() in MARKERS:result.add(m[1].strip())
+              return sorted(result)
+          def gh(*args): return subprocess.check_output(['gh',*args],text=True,stderr=subprocess.DEVNULL,timeout=90)
+          def runs(day):
+              r=json.loads(gh('api',f'repos/{REPO}/actions/workflows/v5-kis-valuation-pilot.yml/runs?branch=main&per_page=15'))['workflow_runs'];out=[]
+              for x in r:
+                  if x.get('head_branch')!='main' or (x.get('head_repository') or {}).get('full_name')!=REPO:continue
+                  start=dt.datetime.fromisoformat(x['created_at'].replace('Z','+00:00')).astimezone(KST)
+                  if start.strftime('%Y%m%d')!=day:continue
+                  v={k:x[k] for k in ('id','event','status','conclusion')};v['created_kst']=start.isoformat()
+                  if x['status']=='completed' and (start.hour>=16 or x['event']=='schedule'):
+                      try:v['markers']=markers(gh('run','view',str(x['id']),'--repo',REPO,'--log'))
+                      except (OSError,subprocess.SubprocessError):v['markers_unavailable']=True
+                  out.append(v)
+              return out
+
+          def missing(now,rs,reserved):
+              if now.time()<dt.time(16,50):return 'WAIT_FOR_SCHEDULED_COLLECTION'
+              relevant=[r for r in rs if r['event']=='schedule' or (r['event']=='workflow_dispatch' and dt.datetime.fromisoformat(r['created_kst']).time()>=dt.time(16,45))]
+              if any(r['status']!='completed' for r in relevant):return 'KIS_POSSIBLE_COLLECTION_RUNNING'
+              if any(r.get('markers') for r in relevant):return 'KIS_NO_ARCHIVE_CHECK_RUN_REASON'
+              if reserved:return 'KIS_AUTH_RESERVED_NO_ARCHIVE_NO_RETRY'
+              if relevant:return 'KIS_RUN_WITHOUT_ARCHIVE_MODE_OR_FAILURE_UNCONFIRMED'
+              if now.time()<dt.time(18):return 'KIS_SCHEDULE_NOT_OBSERVED_YET'
+              return 'KIS_COLLECTION_WINDOW_ELAPSED_NO_ARCHIVE'
+
+          def self_test():
+              from tempfile import TemporaryDirectory
+              with TemporaryDirectory() as d:
+                  p=Path(d)/'observations.aes';p.write_bytes(b'KISV2\x00'+b'x'*40)
+                  s=dict(observation_session='20261127',source='KIS_OPEN_API_INQUIRE_PRICE',archive_format='AES_256_GCM_V2',investment_decisions_authorized=False,final_buy_signals=0,encrypted_observation_sha256=sha(p),market_rows=10,eligible_code_rows=8,requested=6,successful_quotes=5,numeric_all_four=4,sector_rows=3,sector_missing_rows=2,unassessed_identifier_rows=2,state='KIS_BROKER_PARTIAL_CHECKPOINT',stop_reason='HTTP_429')
+                  a=archive(s,p,'20261127');assert a['eligible_without_quote']==3 and a['not_requested']==2 and a['requested_without_quote']==1 and a['missing_four_ratios']==1 and a['missing_sector']==2
+                  assert a['state']=='KIS_PARTIAL_ARCHIVE_PRESERVED' and not a['authenticated_decryption_verified']
+                  b={**s,'requested':8,'successful_quotes':8,'sector_missing_rows':5,'state':'KIS_BROKER_COLLECTION_COMPLETE'};assert archive(b,p,'20261127')['state']=='KIS_ARCHIVE_COUNTS_COMPLETE'
+                  for patch in ({'encrypted_observation_sha256':'bad'},{'sector_missing_rows':6},{'requested':9},{'state':'KIS_BROKER_COLLECTION_COMPLETE'},{'observation_session':'20261126'}):
+                      try:archive({**s,**patch},p,'20261127')
+                      except ValueError:pass
+                      else:raise AssertionError('INVALID_ACCEPTED')
+              assert markers('2026-11-27T07:50:00Z KIS_SKIP_TOKEN_INTERVAL\n2026-11-27T07:50:01Z print("KIS_SKIP_TOKEN_INTERVAL")')==['KIS_SKIP_TOKEN_INTERVAL']
+              now=dt.datetime(2026,11,27,15,50,tzinfo=KST);assert missing(now,[],False)=='WAIT_FOR_SCHEDULED_COLLECTION'
+              assert missing(now.replace(hour=17),[],False)=='KIS_SCHEDULE_NOT_OBSERVED_YET'
+              assert missing(now.replace(hour=19),[],False)=='KIS_COLLECTION_WINDOW_ELAPSED_NO_ARCHIVE'
+              assert missing(now.replace(hour=19),[],True)=='KIS_AUTH_RESERVED_NO_ARCHIVE_NO_RETRY'
+              assert missing(now.replace(hour=17),[{'event':'schedule','status':'in_progress'}],False)=='KIS_POSSIBLE_COLLECTION_RUNNING'
+              print('COLLECTION_DIAGNOSTIC_SELF_TEST_PASS')
+
+          def main():
+              self_test()
+              if '--self-test' in sys.argv:return
+              import exchange_calendars as xcals
+              now=dt.datetime.now(KST);day=now.strftime('%Y%m%d');cal=xcals.get_calendar('XKRX')
+              if not cal.is_session(now.date().isoformat()):print('SKIP_NON_KRX_SESSION');return
+              expected=cal.previous_session(now.date().isoformat()).strftime('%Y%m%d')
+              out={'state':'READ_ONLY_COLLECTION_DIAGNOSTIC','generated_kst':now.isoformat(),'session':day,'expected_market_date':expected,'krx':market(expected),'financial_api_calls':0,'automatic_retry':False,'investment_decisions_authorized':False}
+              rs=[]; reserved=False
+              try:rs=runs(day);out['kis_runs']=rs
+              except (OSError,ValueError,KeyError,subprocess.SubprocessError):out['kis_run_metadata_unavailable']=True
+              try:
+                  l=read(STORE/'token_attempt.json');reserved=l.get('session')==day;out['auth_attempt_recorded_today']=reserved
+              except FileNotFoundError:out['auth_attempt_recorded_today']=False
+              except (OSError,ValueError,TypeError):out['auth_attempt_record_unknown']=True
+              d=STORE/'sessions'/day;p=d/'observations.aes';s=d/'status.json'
+              if p.exists() and s.exists():
+                  try:out['kis']=archive(read(s),p,day)
+                  except (OSError,KeyError,TypeError,ValueError):out['kis']={'state':'KIS_ARCHIVE_INTEGRITY_OR_METADATA_INVALID','recovery':'HOLD_NO_RETRY'}
+              elif p.exists() or s.exists() or (d/'observations.json').exists():out['kis']={'state':'KIS_INCOMPLETE_OR_LEGACY_ARCHIVE','recovery':'HOLD_NO_RETRY'}
+              else:out['kis']={'state':missing(now,rs,reserved) if not out.get('kis_run_metadata_unavailable') else 'KIS_RUN_METADATA_UNAVAILABLE','recovery':'NO_AUTOMATIC_RETRY'}
+              OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('COLLECTION_DIAGNOSTIC_RESULT '+json.dumps(out,ensure_ascii=False))
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_collection_diag.py
+          python /tmp/krx_collection_diag.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-collection-failure-diagnostic
+          path: /tmp/krx-collection-diagnostic/status.json
+          if-no-files-found: ignore
