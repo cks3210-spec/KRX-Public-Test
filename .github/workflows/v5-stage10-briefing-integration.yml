@@ -1,0 +1,174 @@
+name: KRX v5 Stage 10 Briefing Integration
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 Stage 9 Performance Research']
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '50 23 * * 0-4' # 08:50 KST Mon-Fri
+    - cron: '45 4 * * 1-5' # 13:45 KST Mon-Fri
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: krx-v5-stage10-briefing
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name != 'workflow_run' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange session calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Verify and integrate existing research outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage10.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, json, os, re, subprocess, sys, tempfile
+          from collections import Counter
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as xcals
+          ROOT=Path.cwd().resolve()
+          OUT=ROOT/'data/v5_stage10/latest_status.json'
+          REPO='cks3210-spec/KRX-Public-Test'
+          SPECS={7:('v5-stage7-sector-valuation.yml','krx-v5-stage7-sector-valuation','valuation_report.json'),8:('v5-stage8-trade-strategy.yml','krx-v5-stage8-strategy-research','strategy_report.json'),9:('v5-stage9-performance-research.yml','krx-v5-stage9-performance-research','performance_report.json')}
+
+          def need(ok,code):
+              if not ok: raise ValueError(code)
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def date8(s):
+              need(isinstance(s,str) and re.fullmatch(r'20\d{6}',s),'INVALID_DATE');dt.datetime.strptime(s,'%Y%m%d');return s
+          def gh(*args): return subprocess.check_output(['gh',*args],text=True,stderr=subprocess.DEVNULL,timeout=120)
+          def api(path): return json.loads(gh('api',f'repos/{REPO}/{path}'))
+          def run_ok(r,filename):
+              return (r.get('path')=='.github/workflows/'+filename and r.get('head_branch')=='main' and (r.get('head_repository') or {}).get('full_name')==REPO and r.get('status')=='completed' and r.get('conclusion')=='success')
+          def run_view(r):
+              return {k:r.get(k) for k in ('id','status','conclusion','event','created_at','updated_at','html_url')}
+          def latest(filename):
+              x=api('actions/workflows/'+filename+'/runs?branch=main&per_page=1')['workflow_runs'];return x[0] if x else {}
+          def artifact(r,stage,folder):
+              filename,name,report=SPECS[stage];need(run_ok(r,filename),f'STAGE{stage}_LATEST_RUN_NOT_SUCCESS')
+              rid=r['id'];need(type(rid)==int and rid>0,'INVALID_RUN_ID')
+              p=folder/str(stage);p.mkdir();gh('run','download',str(rid),'--repo',REPO,'--name',name,'--dir',str(p));f=p/report;return read(f),sha(f)
+          def safe_report(x,day):
+              need(x.get('market_date')==day,'REPORT_DATE_MISMATCH')
+              need(x.get('investment_decisions_authorized') is False and x.get('final_buy_signals')==0 and x.get('financial_api_calls')==0,'UNSAFE_REPORT')
+              need(x.get('final_sell_signals',0)==0 and x.get('verified_fair_prices',0)==0,'UNSUPPORTED_APPROVAL')
+          def verify_hashes(hashes,artifact_hash=None):
+              need(isinstance(hashes,dict) and hashes,'MISSING_SOURCE_HASHES')
+              for s,d in hashes.items():
+                  need(isinstance(d,str) and re.fullmatch('[a-f0-9]{64}',d),'INVALID_SOURCE_HASH')
+                  p=Path(s)
+                  if s=='/tmp/krx-stage9-input/strategy_report.json':
+                      need(d==artifact_hash,'UPSTREAM_ARTIFACT_HASH_MISMATCH');continue
+                  p=(ROOT/p).resolve();need(p.is_relative_to(ROOT) and p.is_file() and sha(p)==d,'SOURCE_HASH_MISMATCH')
+          def chain(a,b,c,ids,ha,hb,day):
+              for x in (a,b,c): safe_report(x,day)
+              need(b['stage7_run_id']==ids[7] and c['stage8_run_id']==ids[8],'RUN_CHAIN_MISMATCH')
+              need(b['stage7_artifact_sha256']==ha,'STAGE7_ARTIFACT_HASH_MISMATCH')
+              need(c['source_sha256'].get('/tmp/krx-stage9-input/strategy_report.json')==hb,'STAGE8_ARTIFACT_HASH_MISMATCH')
+              need(a['candidate_rows']==b['candidate_rows'] and a['existing_grade_counts']==b['existing_grade_counts'],'CANDIDATE_COUNT_MISMATCH')
+              need(a['market_rows']==b['market_rows'],'MARKET_COUNT_MISMATCH')
+              need(a['state']==b['stage7_state'],'STAGE7_STATE_MISMATCH')
+              need(c['state']=='STAGE9_RESEARCH_PERFORMANCE_AUDIT','STAGE9_STATE_INVALID')
+              need(b['state']=='STAGE8_RESEARCH_ENGINE_READY_CANDIDATE_ACTIONS_WITHHELD' and b['candidate_price_plans']==0,'STAGE8_STATE_INVALID')
+              need(a['state'] in ('STAGE7_RESEARCH_EVALUATED','STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE'),'STAGE7_STATE_INVALID')
+              need(set(a['existing_grade_counts'])<= {'A','B'},'UNEXPECTED_GRADE')
+              ar={x['code']:x for x in a['candidates']};br={x['code']:x for x in b['candidates']}
+              need(len(ar)==len(a['candidates'])==a['candidate_rows'] and len(br)==len(b['candidates'])==b['candidate_rows'] and set(ar)==set(br),'CANDIDATE_SCOPE_MISMATCH')
+              result=[]
+              for k,x in sorted(ar.items()):
+                  y=br[k];need(x['name']==y['name'] and x['existing_research_grade']==y['existing_research_grade'] and x['state']==y['stage7_state'],'CANDIDATE_LINK_MISMATCH')
+                  need(all(z.get('investment_authorized') is False and z.get('buy_signal') is False and z.get('final_grade') is None for z in (x,y)) and y.get('sell_signal') is False and x.get('verified_fair_price') is None and y.get('entry_prices') is None and y.get('position_actions') is None,'CANDIDATE_ACTION_NOT_ALLOWED')
+                  result.append({'code':k,'name':x['name'],'research_grade':x['existing_research_grade'],'quality_state':x['combined_quality_state'],'valuation_state':x['state'],'strategy_state':y['strategy_state'],'verified_fair_price':None,'buy_signal':False,'sell_signal':False})
+              need(dict(Counter(x['research_grade'] for x in result))==a['existing_grade_counts'],'GRADE_COUNTS_INVALID')
+              need(sum(c['horizon_counts'].values())==3*c['ledger_events'] and c['horizon_counts'].get('MATURED',0)==c['matured_horizons'],'PERFORMANCE_COUNTS_INVALID')
+              return result
+
+          def market_proof(day):
+              p=ROOT/'data/latest.csv';q=ROOT/'data/v5_official_market_archive'/f'{day}.csv'
+              def rows(path):
+                  with path.open(encoding='utf-8-sig',newline='') as f:
+                      rd=csv.DictReader(f);out={}
+                      need(rd.fieldnames and {'BAS_DD','ISU_CD','TDD_CLSPRC','MKTCAP','MARKET'}<=set(rd.fieldnames),'MARKET_SCHEMA_INVALID')
+                      for r in rd:
+                          need(r['BAS_DD']==day and r['ISU_CD'] and r['ISU_CD'] not in out and None not in r,'MARKET_ROW_INVALID');out[r['ISU_CD']]=r
+                      return out
+              a,b=rows(p),rows(q);need(a and a==b,'MARKET_ARCHIVE_CONTENT_MISMATCH');return len(a)
+          def kis_status(day):
+              base=ROOT/'data/v5_kis_valuation/sessions';p=base/day/'status.json';enc=p.with_name('observations.aes')
+              if not p.is_file(): return {'state':'NO_SAME_DATE_KIS_ARCHIVE'}
+              r=read(p);need(r['observation_session']==day and r.get('encrypted_observation_sha256')==sha(enc),'KIS_ARCHIVE_HASH_MISMATCH')
+              need(r.get('investment_decisions_authorized') is False and r.get('final_buy_signals')==0,'KIS_APPROVAL_UNSAFE')
+              return {k:r.get(k) for k in ('state','observation_session','eligible_code_rows','successful_quotes','sector_rows','sector_missing_rows','sector_groups','official_krx_per_pbr_verified','ratio_effective_date_verified','sector_date_verified')}
+          def tests():
+              import copy
+              day='20261126';base={'market_date':day,'investment_decisions_authorized':False,'final_buy_signals':0,'financial_api_calls':0};row={'code':'000001','name':'fixture','existing_research_grade':'A','combined_quality_state':'HOLD','state':'HOLD_QUALITY_REVIEW','investment_authorized':False,'buy_signal':False,'final_grade':None,'verified_fair_price':None}
+              a={**base,'state':'STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE','candidate_rows':1,'existing_grade_counts':{'A':1},'market_rows':1,'candidates':[row]}
+              b={**base,'state':'STAGE8_RESEARCH_ENGINE_READY_CANDIDATE_ACTIONS_WITHHELD','stage7_run_id':7,'stage7_artifact_sha256':'a','stage7_state':a['state'],'candidate_rows':1,'existing_grade_counts':{'A':1},'market_rows':1,'candidate_price_plans':0,'candidates':[{**row,'stage7_state':row['state'],'strategy_state':'HOLD_QUALITY_REVIEW','sell_signal':False,'entry_prices':None,'position_actions':None}]}
+              c={**base,'state':'STAGE9_RESEARCH_PERFORMANCE_AUDIT','stage8_run_id':8,'source_sha256':{'/tmp/krx-stage9-input/strategy_report.json':'b'},'horizon_counts':{'PENDING_HISTORY':3},'ledger_events':1,'matured_horizons':0}
+              def check(a=a,b=b,c=c):return chain(a,b,c,{7:7,8:8},'a','b',day)
+              assert len(check())==1
+              bad=[lambda:check(a={**a,'market_date':'20261125'}),lambda:check(b={**b,'stage7_run_id':6}),lambda:check(c={**c,'stage8_run_id':6}),lambda:check(b={**b,'stage7_artifact_sha256':'x'}),lambda:check(c={**c,'source_sha256':{}}),lambda:check(a={**a,'final_buy_signals':1}),lambda:check(b={**b,'candidates':[{**b['candidates'][0],'entry_prices':[1]}]}),lambda:check(a={**a,'existing_grade_counts':{'C':1}},b={**b,'existing_grade_counts':{'C':1}}),lambda:check(c={**c,'ledger_events':2}),lambda:check(a={**a,'candidates':[]})]
+              for f in bad:
+                  try:f()
+                  except ValueError:pass
+                  else:raise AssertionError('FAIL_OPEN')
+              assert not run_ok({'status':'completed','conclusion':'failure'},SPECS[7][0]);assert not run_ok({'status':'in_progress'},SPECS[7][0])
+              print('STAGE10_SELF_TEST_PASS 13')
+          def main():
+              tests()
+              if '--self-test' in sys.argv:return
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul'));cal=xcals.get_calendar('XKRX');today=now.date().isoformat()
+              if not cal.is_session(today): print('STAGE10_SKIP_NON_TRADING_DAY');return
+              expected=cal.previous_session(today).strftime('%Y%m%d');day=None
+              out={'schema_version':1,'state':'HOLD_INCOMPLETE_OR_STALE_EVIDENCE','generated_kst':now.isoformat(),'evaluation_date_kst':now.strftime('%Y%m%d'),'expected_market_date':expected,'market_date':None,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'run_id':os.environ.get('GITHUB_RUN_ID'),'runs':{},'blockers':[],'candidates':[],'verified_fair_prices':0,'final_buy_signals':0,'final_sell_signals':0,'investment_decisions_authorized':False,'financial_api_calls':0,'intraday_prices_verified':False,'notes':['Previous KRX session only; not live prices.','Research candidates are not investment grades or trade signals.','No private KIS raw values or decrypted data are published.','Scheduled readers must independently check current date, latest workflow status, and source freshness.']}
+              try:
+                  day=date8(read(ROOT/'data/summary.json')['latest_trading_date']);out['market_date']=day
+                  need(day==expected,'EXPECTED_PREVIOUS_KRX_SESSION_NOT_AVAILABLE');out['market_rows']=market_proof(day);out['kis']=kis_status(day)
+                  out['runs']['kis']=run_view(latest('v5-kis-valuation-pilot.yml'))
+                  for n,(f,_,_) in SPECS.items():
+                      r=latest(f);out['runs'][str(n)]=run_view(r)
+                  for n in SPECS:
+                      r=out['runs'][str(n)];need(r['status']=='completed' and r['conclusion']=='success',f'STAGE{n}_LATEST_RUN_NOT_SUCCESS')
+                  with tempfile.TemporaryDirectory() as tmp:
+                      f=Path(tmp);rs={n:api('actions/runs/'+str(out['runs'][str(n)]['id'])) for n in SPECS};ids={n:r['id'] for n,r in rs.items()}
+                      a,ha=artifact(rs[7],7,f);b,hb=artifact(rs[8],8,f);c,hc=artifact(rs[9],9,f)
+                      candidates=chain(a,b,c,ids,ha,hb,day);need(a['market_rows']==out['market_rows'],'MARKET_ROWS_MISMATCH')
+                      verify_hashes(b['local_source_sha256']);verify_hashes(c['source_sha256'],hb)
+                      # A newer run may have started during downloads: do not present older results as current.
+                      for n,(filename,_,_) in SPECS.items():need(latest(filename).get('id')==ids[n],f'STAGE{n}_RUN_CHANGED')
+                      out.update(state='RESEARCH_BRIEFING_READY_ACTIONS_WITHHELD',candidates=candidates,grade_counts=a['existing_grade_counts'],quality_states=a['quality_states'],valuation_states=a['valuation_states'],strategy_states=b['strategy_states'],kis_link_state=a['kis_state'],performance={k:c[k] for k in ('ledger_events','group_counts','matured_horizons','horizon_counts','r14_strategy_path_states','simulated_strategy_stats','simulated_outcomes')},artifact_sha256={'7':ha,'8':hb,'9':hc})
+              except Exception as exc:
+                  # No exception text from external tools or paths is published.
+                  code=str(exc);out['blockers'].append(code if re.fullmatch('[A-Z0-9_]+',code) else 'INPUT_OR_GITHUB_ARTIFACT_UNAVAILABLE');out['candidates']=[]
+              OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('STAGE10_RESULT '+json.dumps({k:v for k,v in out.items() if k not in ('candidates','notes','performance')},ensure_ascii=False))
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_stage10.py
+          python /tmp/krx_stage10.py
+      - name: Persist briefing status only (no overwrite of concurrent source commits)
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=data/v5_stage10/latest_status.json
+          if [ ! -f "$P" ]; then exit 0; fi
+          git add -- "$P"
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish Stage 10 research briefing status' -- "$P"
+          git push origin HEAD:main
