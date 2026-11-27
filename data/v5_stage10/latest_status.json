@@ -1,48 +1,48 @@
 {
   "schema_version": 1,
   "state": "RESEARCH_BRIEFING_READY_ACTIONS_WITHHELD",
-  "generated_kst": "2026-11-27T15:36:27.068389+09:00",
+  "generated_kst": "2026-11-27T18:08:46.933146+09:00",
   "evaluation_date_kst": "20261127",
   "expected_market_date": "20261126",
   "market_date": "20261126",
-  "source_commit": "0d17c5537a85e1a5989d10b3fadeff2f361d11f5",
-  "run_id": "45952903868",
+  "source_commit": "850be794fb4a4b96577f6574a1ea32c21fdb2596",
+  "run_id": "45971213932",
   "runs": {
     "kis": {
-      "id": 45950338168,
+      "id": 45961227183,
       "status": "completed",
       "conclusion": "success",
       "event": "workflow_dispatch",
-      "created_at": "2026-11-27T06:12:06Z",
-      "updated_at": "2026-11-27T06:12:28Z",
-      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45950338168"
+      "created_at": "2026-11-27T07:50:21Z",
+      "updated_at": "2026-11-27T09:05:05Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45961227183"
     },
     "7": {
-      "id": 45950838734,
+      "id": 45970748862,
       "status": "completed",
       "conclusion": "success",
-      "event": "workflow_dispatch",
-      "created_at": "2026-11-27T06:16:50Z",
-      "updated_at": "2026-11-27T06:17:03Z",
-      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45950838734"
+      "event": "workflow_run",
+      "created_at": "2026-11-27T09:05:08Z",
+      "updated_at": "2026-11-27T09:05:32Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45970748862"
     },
     "8": {
-      "id": 45951599772,
+      "id": 45970811670,
       "status": "completed",
       "conclusion": "success",
-      "event": "workflow_dispatch",
-      "created_at": "2026-11-27T06:23:58Z",
-      "updated_at": "2026-11-27T06:24:14Z",
-      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45951599772"
+      "event": "workflow_run",
+      "created_at": "2026-11-27T09:05:34Z",
+      "updated_at": "2026-11-27T09:05:50Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45970811670"
     },
     "9": {
-      "id": 45952051265,
+      "id": 45970855575,
       "status": "completed",
       "conclusion": "success",
-      "event": "workflow_dispatch",
-      "created_at": "2026-11-27T06:28:13Z",
-      "updated_at": "2026-11-27T06:28:40Z",
-      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45952051265"
+      "event": "workflow_run",
+      "created_at": "2026-11-27T09:05:53Z",
+      "updated_at": "2026-11-27T09:06:21Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45970855575"
     }
   },
   "blockers": [],
@@ -146,7 +146,7 @@
     "HOLD_NO_VERIFIED_FAIR_PRICE": 3,
     "HOLD_QUALITY_REVIEW": 3
   },
-  "kis_link_state": "NO_SAVED_ENCRYPTED_KIS_SESSION",
+  "kis_link_state": "WAIT_FOR_SAME_DATE_KRX_AND_FINANCIAL_DATA",
   "performance": {
     "ledger_events": 302,
     "group_counts": {
@@ -168,8 +168,8 @@
     "simulated_outcomes": {}
   },
   "artifact_sha256": {
-    "7": "d44c65790420b600e400de3999bcf00012c639526f73675a90acc7c6146ea660",
-    "8": "fd76061a0087330b96ba80548b7080acfd1c99fba58ecea0e1e8a75c7f157e52",
-    "9": "87b08a9fef290b8bc2ad52c708a1fa997713bbc011dc42a3ca52e7e147e6475c"
+    "7": "4efdd2ab0c09afa36bbab3eabb3f797f7561b79480698f102f95e5f66bef843c",
+    "8": "8f169ec28be440db31231f74a8d47ade0a81f53c5f0890dc9b4dbb89eb10e356",
+    "9": "35493119e159d216cce4754d4f13f1fd9d13fc724ec474f341ed3cd34efa83d0"
   }
 }
