@@ -25,13 +25,28 @@
       "receipt_count": 8,
       "retry_after_market_date": "20261225"
     },
+    "263860:00962223:[(2025, 'annual'), (2025, 'q3'), (2026, 'q3')]": {
+      "checked_market_date": "20261126",
+      "receipt_count": 9,
+      "retry_after_market_date": "20261226"
+    },
     "264660:00605328:[(2025, 'annual'), (2025, 'q3'), (2026, 'q3')]": {
       "checked_market_date": "20261124",
       "receipt_count": 9,
       "retry_after_market_date": "20261224"
+    },
+    "267980:01234507:[(2025, 'annual'), (2025, 'q3'), (2026, 'q3')]": {
+      "checked_market_date": "20261126",
+      "receipt_count": 8,
+      "retry_after_market_date": "20261226"
+    },
+    "298830:01012640:[(2025, 'annual'), (2025, 'q3'), (2026, 'q3')]": {
+      "checked_market_date": "20261126",
+      "receipt_count": 9,
+      "retry_after_market_date": "20261226"
     }
   },
-  "last_attempt_market_date": "20261125",
+  "last_attempt_market_date": "20261126",
   "last_error": "",
   "receipts": {
     "20250313001159": {
@@ -60,6 +75,36 @@
       "receipt": "20250313001159",
       "remark": "연",
       "sha256": "ac749831c7ef6a54749ff2e4554df7c361b2ab158db3e61bbad85ad018624cf3",
+      "state": "ARCHIVED",
+      "title": "사업보고서 (2024.12)",
+      "year": 2024
+    },
+    "20250314000780": {
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250314000780_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20250314",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "previous_assets",
+        "previous_equity",
+        "previous_liabilities",
+        "previous_profit",
+        "previous_revenue",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "annual",
+      "receipt": "20250314000780",
+      "remark": "연",
+      "sha256": "494a29715b8b16ee6bdc1059d1b9715ba89dd8d7dc23b1d43df752b7e123a949",
       "state": "ARCHIVED",
       "title": "사업보고서 (2024.12)",
       "year": 2024
@@ -103,6 +148,34 @@
       "receipt": "20250318000815",
       "remark": "연",
       "sha256": "ebf630dbd80d1a86a1e01ace83fef5a0ea397c7e6dcf8b3092914a775f23515e",
+      "state": "ARCHIVED",
+      "title": "사업보고서 (2024.12)",
+      "year": 2024
+    },
+    "20250319000430": {
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250319000430_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20250319",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "previous_assets",
+        "previous_equity",
+        "previous_liabilities",
+        "previous_profit",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "annual",
+      "receipt": "20250319000430",
+      "remark": "연",
+      "sha256": "9270f4400d055677c04e3eab4c8a522d01168c6cc82e4d4e5c1e026b6047df02",
       "state": "ARCHIVED",
       "title": "사업보고서 (2024.12)",
       "year": 2024
@@ -167,6 +240,36 @@
       "title": "사업보고서 (2024.12)",
       "year": 2024
     },
+    "20250320001447": {
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250320001447_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20250320",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "previous_assets",
+        "previous_equity",
+        "previous_liabilities",
+        "previous_profit",
+        "previous_revenue",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "annual",
+      "receipt": "20250320001447",
+      "remark": "연",
+      "sha256": "4cac494a4aa0a1302249e5aa4db2096c223a6eca47ed7669df2aa3c4b60d9240",
+      "state": "ARCHIVED",
+      "title": "사업보고서 (2024.12)",
+      "year": 2024
+    },
     "20250321001389": {
       "amount_basis": "ANNUAL",
       "archive": "data/v5_financial_m/filing_refresh/raw/20250321001389_CFS.json.gz",
@@ -196,6 +299,30 @@
       "state": "ARCHIVED",
       "title": "사업보고서 (2024.12)",
       "year": 2024
+    },
+    "20250514000592": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250514000592_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20250514",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20250514000592",
+      "remark": "",
+      "sha256": "8d97d007dfffcb352ff788d506aeafdc501daa23e6236a03e659fd80696a2a1f",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.03)",
+      "year": 2025
     },
     "20250515000047": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
@@ -243,6 +370,31 @@
       "receipt": "20250515000425",
       "remark": "",
       "sha256": "8797b1ae95a9ce566fb441e3eeca7194878e922c6624d5107d28d5ada13a8d9d",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.03)",
+      "year": 2025
+    },
+    "20250515000826": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250515000826_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20250515",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20250515000826",
+      "remark": "",
+      "sha256": "ea505aaa85b26b5a0e408a03028d288716990b4d44da2c95700389a15f501f7d",
       "state": "ARCHIVED",
       "title": "분기보고서 (2025.03)",
       "year": 2025
@@ -297,6 +449,31 @@
       "title": "분기보고서 (2025.03)",
       "year": 2025
     },
+    "20250515002405": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250515002405_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20250515",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20250515002405",
+      "remark": "",
+      "sha256": "03ebe0c32ad73da4e8e1aa6871430d1e17da40728a5d38cb80f280e86de2cde5",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.03)",
+      "year": 2025
+    },
     "20250515003027": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
       "archive": "data/v5_financial_m/filing_refresh/raw/20250515003027_CFS.json.gz",
@@ -345,6 +522,30 @@
       "sha256": "a1283143f80adf4e790de3169506ee0cbf7d433cdd7a285031a68ae960654e72",
       "state": "ARCHIVED",
       "title": "분기보고서 (2025.03)",
+      "year": 2025
+    },
+    "20250812000212": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250812000212_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20250812",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "half",
+      "receipt": "20250812000212",
+      "remark": "",
+      "sha256": "70d2f60bf9f93d584d5b119b251868f3bc86b38e94368a3155b7f7dfbc62c190",
+      "state": "ARCHIVED",
+      "title": "반기보고서 (2025.06)",
       "year": 2025
     },
     "20250813000286": {
@@ -452,6 +653,31 @@
       "title": "반기보고서 (2025.06)",
       "year": 2025
     },
+    "20250814002703": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250814002703_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20250814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "half",
+      "receipt": "20250814002703",
+      "remark": "",
+      "sha256": "df2b016eef9b2f64019492bcc871bbaca6898642a20c56cadcfc83c1bf8e6b7a",
+      "state": "ARCHIVED",
+      "title": "반기보고서 (2025.06)",
+      "year": 2025
+    },
     "20250814003422": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
       "archive": "data/v5_financial_m/filing_refresh/raw/20250814003422_CFS.json.gz",
@@ -473,6 +699,31 @@
       "receipt": "20250814003422",
       "remark": "",
       "sha256": "a4a0ad9f5dc67677413f8e42f3ba7ec33d2aac3c1992eca1c18d6c77b9064e0b",
+      "state": "ARCHIVED",
+      "title": "반기보고서 (2025.06)",
+      "year": 2025
+    },
+    "20250814003491": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20250814003491_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20250814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "half",
+      "receipt": "20250814003491",
+      "remark": "",
+      "sha256": "7922e2415fdeec6bdfb27a877ce5958a0f735827708cb41c66c3c49656be77b5",
       "state": "ARCHIVED",
       "title": "반기보고서 (2025.06)",
       "year": 2025
@@ -525,6 +776,30 @@
       "sha256": "ac2420ed3ed1f07676eced5d8ba7a9f6d582efaeaca0ebeedc1f0992e9cff89d",
       "state": "ARCHIVED",
       "title": "반기보고서 (2025.06)",
+      "year": 2025
+    },
+    "20251112000222": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251112000222_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20251112",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20251112000222",
+      "remark": "",
+      "sha256": "cfa3cd1ce4ecb8792f8465d43dc03e074df39ad2ad42642b9f4922b7ad09c3a0",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.09)",
       "year": 2025
     },
     "20251113000013": {
@@ -602,6 +877,31 @@
       "title": "분기보고서 (2025.09)",
       "year": 2025
     },
+    "20251114001895": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251114001895_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20251114",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20251114001895",
+      "remark": "",
+      "sha256": "51e2ef687297ed5b175507611255b175a846f6ab00006c4cb604d539f8bc10ca",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.09)",
+      "year": 2025
+    },
     "20251114002513": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
       "archive": "data/v5_financial_m/filing_refresh/raw/20251114002513_CFS.json.gz",
@@ -623,6 +923,31 @@
       "receipt": "20251114002513",
       "remark": "",
       "sha256": "2738e2c746181c86eee88649eb917bc02e2e2a345299d71035e9bb8b051d1f09",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2025.09)",
+      "year": 2025
+    },
+    "20251114002551": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20251114002551_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20251114",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20251114002551",
+      "remark": "",
+      "sha256": "e999772639dfcb7bf9d3181d297f01ff9cfef74398d87eadcf01211390633ab5",
       "state": "ARCHIVED",
       "title": "분기보고서 (2025.09)",
       "year": 2025
@@ -677,6 +1002,34 @@
       "title": "분기보고서 (2025.09)",
       "year": 2025
     },
+    "20260316000916": {
+      "attempts": 0,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20260316",
+      "period": "annual",
+      "receipt": "20260316000916",
+      "remark": "정연",
+      "state": "SUPERSEDED_METADATA_ONLY",
+      "title": "사업보고서 (2025.12)",
+      "year": 2025
+    },
+    "20260316001331": {
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20260316",
+      "last_attempt_market_date": "20261126",
+      "period": "annual",
+      "receipt": "20260316001331",
+      "remark": "연",
+      "retry_after_market_date": "20261203",
+      "state": "RECEIPT_MISMATCH",
+      "title": "[첨부정정]사업보고서 (2025.12)",
+      "year": 2025
+    },
     "20260317000021": {
       "amount_basis": "ANNUAL",
       "archive": "data/v5_financial_m/filing_refresh/raw/20260317000021_CFS.json.gz",
@@ -717,6 +1070,64 @@
       "receipt": "20260319000018",
       "remark": "정연",
       "state": "SUPERSEDED_METADATA_ONLY",
+      "title": "사업보고서 (2025.12)",
+      "year": 2025
+    },
+    "20260319000594": {
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260319000594_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20260319",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "previous_assets",
+        "previous_equity",
+        "previous_liabilities",
+        "previous_profit",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "annual",
+      "receipt": "20260319000594",
+      "remark": "연",
+      "sha256": "b8a6e9c3c80ac404ba4b739adaa2d024e1d9dceb9a4b1535fcf3dfe2fc7b691a",
+      "state": "ARCHIVED",
+      "title": "사업보고서 (2025.12)",
+      "year": 2025
+    },
+    "20260319001065": {
+      "amount_basis": "ANNUAL",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260319001065_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20260319",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "previous_assets",
+        "previous_equity",
+        "previous_liabilities",
+        "previous_profit",
+        "previous_revenue",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "annual",
+      "receipt": "20260319001065",
+      "remark": "연",
+      "sha256": "314e304fc52eb58aaf74cc1595359cdf6a695dacf2020e2af815e4828fe57046",
+      "state": "ARCHIVED",
       "title": "사업보고서 (2025.12)",
       "year": 2025
     },
@@ -844,6 +1255,55 @@
       "title": "분기보고서 (2026.03)",
       "year": 2026
     },
+    "20260515000001": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515000001_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20260515",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20260515000001",
+      "remark": "",
+      "sha256": "d51921d7eaa011b1627c12fb9611347f68855135d287c47f2f32fac3c1f202cf",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.03)",
+      "year": 2026
+    },
+    "20260515000936": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515000936_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20260515",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20260515000936",
+      "remark": "",
+      "sha256": "4cd1120c52caf24e2e3352450379a2ce600f7f0b2521d5c2afebca136e37392f",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.03)",
+      "year": 2026
+    },
     "20260515000953": {
       "attempts": 0,
       "code": "240550",
@@ -928,6 +1388,31 @@
       "receipt": "20260515002503",
       "remark": "",
       "sha256": "e4314a6bb10d8ad90dc99df751341c0ad1cc42b42c306d1d4d0779accbacf87a",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.03)",
+      "year": 2026
+    },
+    "20260515002508": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260515002508_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20260515",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q1",
+      "receipt": "20260515002508",
+      "remark": "",
+      "sha256": "2b0af472d11f1cd740fc74ecc8ea1a009a0c7ce7d2ed2793220825b87cfcc098",
       "state": "ARCHIVED",
       "title": "분기보고서 (2026.03)",
       "year": 2026
@@ -1072,6 +1557,19 @@
       "title": "[첨부추가]반기보고서 (2026.06)",
       "year": 2026
     },
+    "20260813000798": {
+      "attempts": 0,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20260813",
+      "period": "half",
+      "receipt": "20260813000798",
+      "remark": "정",
+      "state": "SUPERSEDED_METADATA_ONLY",
+      "title": "[첨부추가]반기보고서 (2026.06)",
+      "year": 2026
+    },
     "20260813000962": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
       "archive": "data/v5_financial_m/filing_refresh/raw/20260813000962_CFS.json.gz",
@@ -1122,40 +1620,114 @@
       "title": "반기보고서 (2026.06)",
       "year": 2026
     },
+    "20260814000732": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260814000732_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20260814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "half",
+      "receipt": "20260814000732",
+      "remark": "",
+      "sha256": "0ead9408fbd292e5a0313d4e14e42a310ad0ccbdcec5e6cb25fb9ad3d05f5661",
+      "state": "ARCHIVED",
+      "title": "반기보고서 (2026.06)",
+      "year": 2026
+    },
     "20260814000820": {
-      "attempts": 0,
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260814000820_CFS.json.gz",
+      "attempts": 1,
       "code": "240550",
       "corp_cls": "K",
       "corp_code": "01073261",
       "filing_date": "20260814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
       "period": "q1",
       "receipt": "20260814000820",
       "remark": "",
-      "state": "PENDING",
+      "sha256": "92b4dd9910d4b767e0d5da1962f2fbc0edb0092ca9d7a053552c353d53fca583",
+      "state": "ARCHIVED",
       "title": "[기재정정]분기보고서 (2026.03)",
       "year": 2026
     },
     "20260814000980": {
-      "attempts": 0,
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260814000980_CFS.json.gz",
+      "attempts": 1,
       "code": "241520",
       "corp_cls": "K",
       "corp_code": "01109715",
       "filing_date": "20260814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
       "period": "half",
       "receipt": "20260814000980",
       "remark": "",
-      "state": "PENDING",
+      "sha256": "a3710bb06c3c24133816529b590ce7dc2cdc50443f2bddcf10b06f5cc1e582ec",
+      "state": "ARCHIVED",
       "title": "반기보고서 (2026.06)",
       "year": 2026
     },
     "20260814002219": {
-      "attempts": 0,
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20260814002219_CFS.json.gz",
+      "attempts": 1,
       "code": "033560",
       "corp_cls": "K",
       "corp_code": "00238001",
       "filing_date": "20260814",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
       "period": "half",
       "receipt": "20260814002219",
+      "remark": "",
+      "sha256": "bd81c40cff5e8cc66bbacd29192ba6f115d49f8e37aad9d82a869fe8ff20fcf2",
+      "state": "ARCHIVED",
+      "title": "반기보고서 (2026.06)",
+      "year": 2026
+    },
+    "20260814003071": {
+      "attempts": 0,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20260814",
+      "period": "half",
+      "receipt": "20260814003071",
       "remark": "",
       "state": "PENDING",
       "title": "반기보고서 (2026.06)",
@@ -1172,6 +1744,19 @@
       "remark": "",
       "state": "PENDING",
       "title": "반기보고서 (2026.06)",
+      "year": 2026
+    },
+    "20261007000029": {
+      "attempts": 0,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20261007",
+      "period": "half",
+      "receipt": "20261007000029",
+      "remark": "",
+      "state": "PENDING",
+      "title": "[기재정정]반기보고서 (2026.06)",
       "year": 2026
     },
     "20261111000034": {
@@ -1199,6 +1784,31 @@
       "title": "분기보고서 (2026.09)",
       "year": 2026
     },
+    "20261112000006": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261112000006_CFS.json.gz",
+      "attempts": 1,
+      "code": "263860",
+      "corp_cls": "K",
+      "corp_code": "00962223",
+      "filing_date": "20261112",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20261112000006",
+      "remark": "",
+      "sha256": "2c3be5ce8cb1f9db51c98334fd2753b1e78cbca5f72dc343b3832a6611807ae9",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.09)",
+      "year": 2026
+    },
     "20261112000542": {
       "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
       "archive": "data/v5_financial_m/filing_refresh/raw/20261112000542_CFS.json.gz",
@@ -1220,6 +1830,30 @@
       "receipt": "20261112000542",
       "remark": "",
       "sha256": "eb54a48c6299022d04bc28711f982e9c1b532f496fc8df2a26ffea0757352be3",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.09)",
+      "year": 2026
+    },
+    "20261113000169": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261113000169_CFS.json.gz",
+      "attempts": 1,
+      "code": "298830",
+      "corp_cls": "K",
+      "corp_code": "01012640",
+      "filing_date": "20261113",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20261113000169",
+      "remark": "",
+      "sha256": "1f5cd6b4df191699046254027054647702fed780d257438951c0f200196740b5",
       "state": "ARCHIVED",
       "title": "분기보고서 (2026.09)",
       "year": 2026
@@ -1295,6 +1929,31 @@
       "receipt": "20261116000987",
       "remark": "",
       "sha256": "1b7b4035b67724aa725a1ab6a1dacdabe9a3efd936ff2425c41efbe35493eef7",
+      "state": "ARCHIVED",
+      "title": "분기보고서 (2026.09)",
+      "year": 2026
+    },
+    "20261116001148": {
+      "amount_basis": "CUMULATIVE_INTERIM_IS_CIS",
+      "archive": "data/v5_financial_m/filing_refresh/raw/20261116001148_CFS.json.gz",
+      "attempts": 1,
+      "code": "267980",
+      "corp_cls": "K",
+      "corp_code": "01234507",
+      "filing_date": "20261116",
+      "last_attempt_market_date": "20261126",
+      "normalized_fields": [
+        "assets",
+        "equity",
+        "liabilities",
+        "profit",
+        "revenue"
+      ],
+      "normalized_status": "000",
+      "period": "q3",
+      "receipt": "20261116001148",
+      "remark": "",
+      "sha256": "8cf2ef0de9dc91bc90ca4fca5daed46910f3f02392e6a22ad041d1f06305cf99",
       "state": "ARCHIVED",
       "title": "분기보고서 (2026.09)",
       "year": 2026
@@ -1687,7 +2346,7 @@
       "period": "q3",
       "receipt": "20261125000219",
       "remark": "",
-      "state": "PENDING",
+      "state": "SUPERSEDED_METADATA_ONLY",
       "title": "분기보고서 (2026.09)",
       "year": 2026
     },
@@ -1716,9 +2375,35 @@
       "state": "PENDING",
       "title": "[첨부정정]사업보고서 (2025.12)",
       "year": 2025
+    },
+    "20261126000247": {
+      "attempts": 0,
+      "code": "389680",
+      "corp_cls": "K",
+      "corp_code": "01498576",
+      "filing_date": "20261126",
+      "period": "half",
+      "receipt": "20261126000247",
+      "remark": "",
+      "state": "PENDING",
+      "title": "[기재정정]반기보고서 (2026.06)",
+      "year": 2026
+    },
+    "20261126000822": {
+      "attempts": 0,
+      "code": "950210",
+      "corp_cls": "Y",
+      "corp_code": "01510489",
+      "filing_date": "20261126",
+      "period": "q3",
+      "receipt": "20261126000822",
+      "remark": "",
+      "state": "PENDING",
+      "title": "[기재정정]분기보고서 (2026.09)",
+      "year": 2026
     }
   },
-  "scanned_through": "20261125",
+  "scanned_through": "20261126",
   "schema": 1,
-  "updated_utc": "2026-11-26T05:17:57.065938+00:00"
+  "updated_utc": "2026-11-27T00:30:06.277594+00:00"
 }
