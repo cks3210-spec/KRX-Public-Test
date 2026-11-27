@@ -222,8 +222,52 @@ jobs:
                   return result
 
 
+          def market_proof(status,day,live_path,live_rows):
+              # Same official provenance fallback used in Stage 6-1. Never accept a
+              # different snapshot just because the date or row counts agree.
+              expected=status['source_sha256']['data/latest.csv']
+              require(isinstance(expected,str) and re.fullmatch(r'[0-9a-f]{64}',expected) is not None,'QUEUE_MARKET_HASH_INVALID')
+              if sha(live_path)==expected:return live_path
+              archive=ROOT/'data/v5_official_market_archive'/f'{day}.csv'
+              require(archive.is_file() and sha(archive)==expected,'QUEUE_MARKET_ARCHIVE_HASH_MISMATCH')
+              require(csv_index(archive,'ISU_CD')==live_rows,'QUEUE_MARKET_ARCHIVE_ROWS_MISMATCH')
+              return archive
+
+
+          def market_proof_self_test():
+              from tempfile import TemporaryDirectory
+              global ROOT
+              original=ROOT
+              try:
+                  with TemporaryDirectory() as d:
+                      ROOT=Path(d); day='20261126'
+                      live=ROOT/'data/latest.csv'; archive=ROOT/'data/v5_official_market_archive'/f'{day}.csv'
+                      archive.parent.mkdir(parents=True)
+                      data='BAS_DD,ISU_CD,TDD_CLSPRC\n20261126,123456,1000\n'
+                      live.write_bytes(data.encode());archive.write_bytes(data.replace('\n','\r\n').encode())
+                      status={'source_sha256':{'data/latest.csv':sha(live)}}
+                      assert market_proof(status,day,live,csv_index(live,'ISU_CD'))==live
+                      status['source_sha256']['data/latest.csv']=sha(archive)
+                      assert market_proof(status,day,live,csv_index(live,'ISU_CD'))==archive
+                      live.write_bytes(data.replace('1000','1001').encode())
+                      try:market_proof(status,day,live,csv_index(live,'ISU_CD'))
+                      except ValueError as e:assert str(e)=='QUEUE_MARKET_ARCHIVE_ROWS_MISMATCH'
+                      else:raise AssertionError('DIFFERENT_MARKET_ROWS_ACCEPTED')
+                      live.write_bytes(data.encode());archive.write_bytes(b'tampered')
+                      try:market_proof(status,day,live,csv_index(live,'ISU_CD'))
+                      except ValueError as e:assert str(e)=='QUEUE_MARKET_ARCHIVE_HASH_MISMATCH'
+                      else:raise AssertionError('TAMPERED_ARCHIVE_ACCEPTED')
+                      archive.unlink()
+                      try:market_proof(status,day,live,csv_index(live,'ISU_CD'))
+                      except ValueError as e:assert str(e)=='QUEUE_MARKET_ARCHIVE_HASH_MISMATCH'
+                      else:raise AssertionError('MISSING_ARCHIVE_ACCEPTED')
+              finally:ROOT=original
+              print('STAGE8_MARKET_PROOF_SELF_TEST_PASS 5')
+
+
           def main():
               self_test()
+              market_proof_self_test()
               if '--self-test' in sys.argv:return
               report=read(STAGE7);day=report['market_date'];dt.datetime.strptime(day,'%Y%m%d')
               require(report['state'] in ('STAGE7_RESEARCH_EVALUATED','STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE'),'INVALID_STAGE7_STATE')
@@ -234,8 +278,9 @@ jobs:
               require(s['state']=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and s['investment_decisions_authorized'] is False and s['final_buy_signals']==0,'BAD_QUEUE_STATE')
               qp=(ROOT/s['queue_path']).resolve();require(qp.is_relative_to(status_p.parent.resolve()) and qp.is_file() and sha(qp)==s['queue_sha256'],'QUEUE_HASH_MISMATCH')
               hashes={str(p.relative_to(ROOT)):sha(p) for p in (summary_p,market_p,status_p,qp)}
-              require(s['source_sha256']['data/latest.csv']==hashes['data/latest.csv'],'QUEUE_MARKET_HASH_MISMATCH')
               market=csv_index(market_p,'ISU_CD');q=csv_index(qp,'code')
+              market_proof_p=market_proof(s,day,market_p,market)
+              hashes[str(market_proof_p.relative_to(ROOT))]=sha(market_proof_p)
               require(len(market)==report['market_rows']==s['market_rows'] and {r['BAS_DD'] for r in market.values()}=={day},'MARKET_SCOPE_MISMATCH')
               rs=report['candidates'];idx={r['code']:r for r in rs}
               require(len(idx)==len(rs)==len(q)==report['candidate_rows']==s['research_ab_rows'] and set(idx)==set(q) and set(q)<=set(market),'CANDIDATE_SCOPE_MISMATCH')
@@ -256,7 +301,7 @@ jobs:
                         'partial_sale_rebuy_scenarios':[rebuy(100,10000,f,m) for f in SALE_FRACTIONS for m in REENTRY_MOVES],
                         'notes':['Illustrative fees and thresholds only; not actual Korean tax rates or brokerage fees.', 'No execution, slippage, liquidity, tick size, dividends or corporate actions modeled.', 'Reentry may never happen; evaluate cash and remaining shares separately. No prediction of a price fall.', 'Additional buys require fresh verified valuation and quality evidence, budget remaining and no newly detected fundamental deterioration. These checks are future inputs, not approved signals.', 'This is arithmetic sensitivity, not a historical backtest; Stage 9 must validate out of sample.']}
               output={'state':'STAGE8_RESEARCH_ENGINE_READY_CANDIDATE_ACTIONS_WITHHELD','market_date':day,'market_rows':len(market),'candidate_rows':len(result),'existing_grade_counts':s['grade_counts'],'strategy_states':dict(Counter(r['strategy_state'] for r in result)),
-                      'stage7_state':report['state'],'stage7_run_id':read(Path('/tmp/krx-stage8-run.json'))['id'],'stage7_artifact_sha256':sha(STAGE7),'local_source_sha256':hashes,'financial_api_calls':0,'verified_fair_prices':0,'candidate_price_plans':0,'final_buy_signals':0,'final_sell_signals':0,'investment_decisions_authorized':False,'synthetic_scenarios':examples,'candidates':result}
+                      'stage7_state':report['state'],'stage7_run_id':read(Path('/tmp/krx-stage8-run.json'))['id'],'stage7_artifact_sha256':sha(STAGE7),'local_source_sha256':hashes,'market_proof_path':str(market_proof_p.relative_to(ROOT)),'financial_api_calls':0,'verified_fair_prices':0,'candidate_price_plans':0,'final_buy_signals':0,'final_sell_signals':0,'investment_decisions_authorized':False,'synthetic_scenarios':examples,'candidates':result}
               OUT.mkdir(parents=True,exist_ok=True);(OUT/'strategy_report.json').write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
               print('STAGE8_RESULT '+json.dumps({k:v for k,v in output.items() if k not in ('candidates','synthetic_scenarios','local_source_sha256')},ensure_ascii=False))
 
