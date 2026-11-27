@@ -1,42 +1,60 @@
 name: KRX v5 Stage 7 Sector Valuation Research
 'on':
   workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 KIS Daily Valuation']
+    types: [completed]
+    branches: [main]
 permissions:
   contents: read
-  actions: read
 concurrency:
   group: krx-v5-stage7-sector-research
   cancel-in-progress: false
 jobs:
   research:
-    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Reuse successful Stage 6-2 artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Install authenticated archive reader
+        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49'
+      - name: Reuse Stage 6-1 and 6-2 on the same checked-out market date (no API)
         shell: bash
         run: |
           set -euo pipefail
-          RUN_ID=$(gh run list --workflow v5-stage6-2-financial-health.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
-          test -n "$RUN_ID"
-          gh run download "$RUN_ID" --name krx-v5-stage6-2-financial-health --dir /tmp/krx-stage7-input
-          test -s /tmp/krx-stage7-input/financial_health_report.json
-          test -s /tmp/krx-stage7-input/quality_report.json
+          python - <<'PYTHON'
+          from pathlib import Path
+          from textwrap import dedent
+          import subprocess, sys, shutil
+          for n, filename in [('1','v5-stage6-1-growth-quality.yml'),('2','v5-stage6-2-financial-health.yml')]:
+              lines=(Path('.github/workflows')/filename).read_text(encoding='utf-8').splitlines()
+              marker=f"cat > /tmp/krx_stage6_{n}.py <<'PYTHON'"
+              starts=[i for i,line in enumerate(lines) if line.strip()==marker]
+              if len(starts)!=1: raise ValueError('STAGE6_SOURCE_LAYOUT_CHANGED')
+              start=starts[0]+1
+              end=next(i for i in range(start,len(lines)) if lines[i].strip()=='PYTHON')
+              p=Path(f'/tmp/krx_stage6_{n}.py')
+              p.write_text(dedent('\n'.join(lines[start:end]) )+'\n',encoding='utf-8')
+              subprocess.run([sys.executable,str(p)],check=True)
+          dest=Path('/tmp/krx-stage7-input');dest.mkdir(exist_ok=True)
+          for name in ('quality_report.json','financial_health_report.json'):
+              shutil.copyfile(Path('/tmp/krx-stage6-quality')/name,dest/name)
+          PYTHON
       - name: Calculate comparable peer valuation only with reviewed evidence
+        env:
+          KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
         shell: bash
         run: |
           set -euo pipefail
           cat > /tmp/krx_stage7.py <<'PYTHON'
-          import csv, json, hashlib, re, sys
+          import csv, json, hashlib, re, sys, os, datetime as dt, unicodedata
           from pathlib import Path
           from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
           from collections import Counter
@@ -131,8 +149,108 @@ jobs:
               assert not qualify({**r,'per':'50'},m,t['market_date'])
               assert not qualify(r,{**m,'MKTCAP':'99999999999'},t['market_date'])
               print('STAGE7_SELF_TEST_PASS 20')
+          def sector_name(v):
+              if not isinstance(v,str):return None
+              v=unicodedata.normalize('NFC',v).strip()
+              if not v or len(v)>120 or v.upper() in ('-','--','N/A','NA','NONE','NULL','0','미분류','기타미분류') or any(unicodedata.category(c).startswith('C') for c in v):return None
+              return v
+
+          def open_broker(p,key):
+              from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+              require(isinstance(key,str) and re.fullmatch(r'[0-9a-fA-F]{64}',key) is not None,'MISSING_OR_INVALID_ARCHIVE_KEY')
+              b=p.read_bytes();require(b.startswith(b'KISV2\x00') and len(b)>34,'INVALID_ENCRYPTED_ARCHIVE')
+              try:return json.loads(AESGCM(bytes.fromhex(key)).decrypt(b[6:18],b[18:],str(p.relative_to(ROOT)).encode()))
+              except Exception:raise ValueError('ARCHIVE_AUTHENTICATION_FAILED') from None
+
+          def load_broker(p,day,key):
+              status=read(p.with_name('status.json'))
+              require(status.get('encrypted_observation_sha256')==sha(p),'BROKER_ARCHIVE_HASH_MISMATCH')
+              b=open_broker(p,key)
+              require(isinstance(b,dict) and b.get('observation_session')==day and b.get('source')=='KIS_OPEN_API_INQUIRE_PRICE' and b.get('archive_format')=='AES_256_GCM_V2','BROKER_SOURCE_MISMATCH')
+              require(b.get('state') in ('KIS_BROKER_COLLECTION_COMPLETE','KIS_BROKER_PARTIAL_CHECKPOINT') and b.get('investment_decisions_authorized') is False and b.get('final_buy_signals')==0,'BROKER_STATE_INVALID')
+              obs=b.get('observations');require(isinstance(obs,dict) and len(obs)==b.get('successful_quotes'),'BROKER_COUNT_MISMATCH')
+              require(all(status.get(k)==v for k,v in b.items() if k!='observations'),'BROKER_STATUS_MISMATCH')
+              require(all(re.fullmatch(r'\d{6}',k) and isinstance(v,dict) for k,v in obs.items()),'BROKER_CODE_INVALID')
+              return b
+
+          def provisional_peers(b,day,market,classes,cs):
+              # Coverage only: dated broker observations, arithmetic, and archived class evidence.
+              # Unknown accounting basis or unverified class/date can NEVER become a reviewed input.
+              obs=b['observations']; counts=Counter(); pool={}; group=Counter()
+              for code,r in obs.items():
+                  s=sector_name(r.get('sector_name_kis'))
+                  if s:counts['sector_rows']+=1
+                  vals=[pos(r.get(k)) for k in ('per','pbr','eps','bps')]
+                  if all(v is not None for v in vals):counts['positive_four_rows']+=1
+                  if not s or any(v is None for v in vals):continue
+                  m=market.get(code);cl=classes.get(code)
+                  if not m or not cl or cl.get('market')!=m['MARKET'] or cl.get('KIND_STKCERT_TP_NM')!='보통주' or cl.get('SECUGRP_NM')!='주권':continue
+                  cap=pos(m['MKTCAP']);close=pos(m['TDD_CLSPRC']);price=pos(r.get('observed_price'))
+                  if cap is None or cap<MIN_CAP or close is None or close!=price:continue
+                  try:
+                      t=dt.datetime.fromisoformat(r['observed_at_kst']);valid=t.tzinfo is not None and t.utcoffset()==dt.timedelta(hours=9) and t.strftime('%Y%m%d')==day
+                  except (ValueError,TypeError,KeyError):valid=False
+                  if not valid:continue
+                  per,pbr,eps,bps=vals
+                  if abs(per*eps/close-1)>D('.05') or abs(pbr*bps/close-1)>D('.05'):continue
+                  pool[code]=s;group[s]+=1
+              ready=[k for k in cs if cs[k]['combined_state']=='GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY']
+              return {'observation_rows':len(obs),'sector_rows':counts['sector_rows'],'positive_four_rows':counts['positive_four_rows'],'provisional_comparable_rows':len(pool),'provisional_sector_groups':len(group),'quality_eligible_candidates':len(ready),'quality_candidates_with_8_provisional_peers':sum(k in pool and group[pool[k]]-1>=MIN_PEERS for k in ready),'reviewed_peer_rows_from_broker':0}
+
+          def broker_coverage(day,market,cs):
+              base=ROOT/'data/v5_kis_valuation/sessions'; paths=sorted(p for p in base.glob('*/observations.aes') if re.fullmatch(r'20\d{6}',p.parent.name))
+              out={'state':'NO_SAVED_ENCRYPTED_KIS_SESSION','market_date':day,'latest_broker_session':None,'observation_rows':0,'same_date_market_join':False,'reviewed_peer_rows_from_broker':0}
+              if not paths:return out
+              p=paths[-1]; session=p.parent.name;out['latest_broker_session']=session
+              b=load_broker(p,session,os.environ.get('KIS_DATA_ARCHIVE_KEY',''));obs=b['observations']
+              out.update(collection_state=b['state'],observation_rows=len(obs),sector_rows=sum(sector_name(r.get('sector_name_kis')) is not None for r in obs.values()),archive_sha256=sha(p))
+              if session!=day:
+                  out['state']='WAIT_FOR_SAME_DATE_KRX_AND_FINANCIAL_DATA';return out
+              out['same_date_market_join']=True
+              if b['state']!='KIS_BROKER_COLLECTION_COMPLETE':out['state']='HOLD_PARTIAL_KIS_COLLECTION';return out
+              archives=sorted(p for p in (ROOT/'data/v5_official_shareclass_archive').glob('*.json') if re.fullmatch(r'20\d{6}',p.stem) and p.stem<=day)
+              classes={};class_day=None
+              if archives:
+                  a=read(archives[-1]);class_day=archives[-1].stem
+                  require(a.get('market_date')==class_day and a.get('row_count')==len(a['rows']),'CLASS_ARCHIVE_INVALID')
+                  for r in a['rows']:
+                      k=r['ISU_SRT_CD'];require(k not in classes,'DUPLICATE_CLASS_CODE');classes[k]=r
+              out.update(provisional_peers(b,day,market,classes,cs),state='KIS_PROVISIONAL_PEER_COVERAGE_ONLY',class_archive_requested_date=class_day,ratio_effective_date_verified=False,sector_date_verified=False,share_class_verified=False,accounting_basis_verified=False)
+              return out
+
+          def link_self_test():
+              from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+              from tempfile import TemporaryDirectory
+              global ROOT
+              original=ROOT; key='01'*32; day='20261126'
+              try:
+                  with TemporaryDirectory() as d:
+                      ROOT=Path(d);p=ROOT/'data/v5_kis_valuation/sessions'/day/'observations.aes';p.parent.mkdir(parents=True)
+                      obs={str(i).zfill(6):{'per':'10','pbr':'1','eps':'100','bps':'1000','observed_price':'1000','sector_name_kis':'테스트','observed_at_kst':'2026-11-26T16:50:00+09:00'} for i in range(9)}
+                      b={'observation_session':day,'source':'KIS_OPEN_API_INQUIRE_PRICE','archive_format':'AES_256_GCM_V2','state':'KIS_BROKER_COLLECTION_COMPLETE','investment_decisions_authorized':False,'final_buy_signals':0,'successful_quotes':9,'observations':obs}
+                      nonce=b'0'*12;p.write_bytes(b'KISV2\x00'+nonce+AESGCM(bytes.fromhex(key)).encrypt(nonce,json.dumps(b).encode(),str(p.relative_to(ROOT)).encode()))
+                      p.with_name('status.json').write_text(json.dumps({**{k:v for k,v in b.items() if k!='observations'},'encrypted_observation_sha256':sha(p)}))
+                      assert load_broker(p,day,key)==b
+                      for bad in ('02'*32,'invalid'):
+                          try:load_broker(p,day,bad)
+                          except ValueError:pass
+                          else:raise AssertionError('INVALID_KEY_ACCEPTED')
+                      m={k:{'MARKET':'KOSDAQ','MKTCAP':'100000000000','TDD_CLSPRC':'1000'} for k in obs};cl={k:{'market':'KOSDAQ','KIND_STKCERT_TP_NM':'보통주','SECUGRP_NM':'주권'} for k in obs};cs={'000000':{'combined_state':'GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY'}}
+                      x=provisional_peers(b,day,m,cl,cs);assert x['quality_candidates_with_8_provisional_peers']==1 and x['reviewed_peer_rows_from_broker']==0
+                      assert provisional_peers(b,day,m,{k:v for k,v in cl.items() if k!='000001'},cs)['quality_candidates_with_8_provisional_peers']==0
+                      assert provisional_peers(b,'20261127',m,cl,cs)['provisional_comparable_rows']==0
+                      assert provisional_peers(b,day,{**m,'000001':{**m['000001'],'TDD_CLSPRC':'1001'}},cl,cs)['quality_candidates_with_8_provisional_peers']==0
+                      assert sector_name('미분류') is None and sector_name('A\nB') is None
+                      p.write_bytes(p.read_bytes()+b'x')
+                      try:load_broker(p,day,key)
+                      except ValueError:pass
+                      else:raise AssertionError('TAMPER_ACCEPTED')
+              finally:ROOT=original
+              print('STAGE7_KIS_LINK_SELF_TEST_PASS')
+
           def main():
               self_test()
+              link_self_test()
               if '--self-test' in sys.argv:return
               gp=Path('/tmp/krx-stage7-input/financial_health_report.json');growth=Path('/tmp/krx-stage7-input/quality_report.json')
               h=read(gp);g=read(growth);require(h['state']=='STAGE6_2_COMBINED_QUALITY_RESEARCH_ONLY' and h['growth_report_sha256']==sha(growth),'UPSTREAM_ARTIFACT_INVALID')
@@ -145,10 +263,8 @@ jobs:
               qstatus=read(ROOT/'data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json');q=rows(checked(qstatus['queue_path'],qstatus['queue_sha256']),'code')
               cs={r['code']:r for r in h['candidates']};require(len(cs)==len(h['candidates'])==h['candidate_rows']==len(q) and set(cs)==set(q),'CANDIDATE_SCOPE_MISMATCH')
               require(all(r['market_date']==day and r['existing_research_grade']==q[k]['grade_research_only'] and r['annual_receipt']==q[k]['annual_receipt'] and r['investment_authorized'] is False and r['buy_signal'] is False for k,r in cs.items()),'QUALITY_JOIN_MISMATCH')
-              # Existing broker data is inspected for coverage only. Its dates/rights are not verified.
-              broker=ROOT/'data/v5_kis_valuation/sessions'/day/'observations.json';broker_state='NO_SAVED_KIS_SESSION';broker_count=0
-              if broker.is_file():
-                  b=read(broker);require(b['observation_session']==day and b['source']=='KIS_OPEN_API_INQUIRE_PRICE','BROKER_SOURCE_MISMATCH');broker_state='KIS_OBSERVED_ONLY_NOT_VERIFIED_FOR_VALUATION';broker_count=len(b['observations'])
+              coverage=broker_coverage(day,market,cs)
+              broker_state=coverage['state'];broker_count=coverage['observation_rows']
               # A separate reviewed adapter is required. Do not upload restricted inputs to a public repo.
               # On this public workflow the optional adapter is intentionally absent until approved.
               # The calculator is executable offline on a lawful, reviewed bundle; no API access.
@@ -167,7 +283,7 @@ jobs:
                   else:
                       t=eligible[k];peers=[r for r in eligible.values() if comparable(t,r)];out.update(estimate(t,peers))
                   results.append(out)
-              report={'state':'STAGE7_RESEARCH_EVALUATED' if any(r['state']=='PEER_RANGE_RESEARCH_ONLY' for r in results) else 'STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE','market_date':day,'market_rows':len(market),'candidate_rows':len(results),'existing_grade_counts':h['existing_grade_counts'],'quality_states':h['combined_states'],'valuation_states':dict(Counter(r['state'] for r in results)),'eligible_reviewed_peer_rows':len(eligible),'reviewed_input_state':input_state,'reviewed_input_sha256':input_hash,'kis_state':broker_state,'kis_observation_rows':broker_count,'stage6_report_sha256':sha(gp),'financial_api_calls':0,'verified_fair_prices':0,'final_buy_signals':0,'investment_decisions_authorized':False,'notes':['No official PER/PBR verification or trading approval is inferred.','Peer minimum 8 excluding target; provisional model disagreement guard 1.5x.','Only overlapping PE/PB interquartile ranges, no growth premium. Financial and real-estate models withheld.','Reviewed input assertions are not independent verification; no public KIS raw values included.'],'candidates':results}
+              report={'state':'STAGE7_RESEARCH_EVALUATED' if any(r['state']=='PEER_RANGE_RESEARCH_ONLY' for r in results) else 'STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE','market_date':day,'market_rows':len(market),'candidate_rows':len(results),'existing_grade_counts':h['existing_grade_counts'],'quality_states':h['combined_states'],'valuation_states':dict(Counter(r['state'] for r in results)),'eligible_reviewed_peer_rows':len(eligible),'reviewed_input_state':input_state,'reviewed_input_sha256':input_hash,'kis_state':broker_state,'kis_observation_rows':broker_count,'kis_link_coverage':coverage,'stage6_report_sha256':sha(gp),'financial_api_calls':0,'verified_fair_prices':0,'final_buy_signals':0,'investment_decisions_authorized':False,'notes':['No official PER/PBR verification or trading approval is inferred.','Peer minimum 8 excluding target; provisional model disagreement guard 1.5x.','Only overlapping PE/PB interquartile ranges, no growth premium. Financial and real-estate models withheld.','Reviewed input assertions are not independent verification; no public KIS raw values included.','KIS encrypted source is decrypted in memory only; only coverage counts are reported. KIS provisional peer counts never enter the reviewed valuation engine.'],'candidates':results}
               OUT.mkdir(parents=True,exist_ok=True);(OUT/'valuation_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('STAGE7_RESULT '+json.dumps({k:v for k,v in report.items() if k!='candidates'},ensure_ascii=False))
           if __name__=='__main__':main()
           PYTHON
