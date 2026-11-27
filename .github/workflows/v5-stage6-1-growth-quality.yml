@@ -1,0 +1,160 @@
+name: KRX v5 Stage 6-1 Growth Quality Research
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-stage6-quality-research
+  cancel-in-progress: false
+jobs:
+  quality:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Profile existing A/B growth evidence without financial API calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage6_1.py <<'PYTHON'
+          import csv, json, hashlib, re, sys, datetime as dt
+          from pathlib import Path
+          from decimal import Decimal, InvalidOperation
+          from collections import Counter
+          
+          ROOT = Path.cwd()
+          BASE = ROOT / 'data/v5_financial_m/filing_refresh'
+          ARCH = ROOT / 'data/v5_official_shareclass_archive'
+          OUT = Path('/tmp/krx-stage6-quality')
+          MIN_CAP = Decimal('100000000000')
+          
+          def require(ok, msg):
+              if not ok: raise ValueError(msg)
+          
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def dec(x):
+              try:
+                  v = Decimal(str(x).strip())
+                  return v if v.is_finite() else None
+              except (InvalidOperation, ValueError): return None
+          
+          def rows(p, key):
+              with p.open(encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  require(reader.fieldnames and len(set(reader.fieldnames)) == len(reader.fieldnames), 'CSV_HEADER_INVALID')
+                  out = {}
+                  for r in reader:
+                      require(None not in r and r.get(key) and r[key] not in out, 'INVALID_OR_DUPLICATE_ROW '+key)
+                      out[r[key]] = r
+                  return out
+          
+          def bound(status, path_key, hash_key, base):
+              p = (ROOT / status[path_key]).resolve()
+              require(p.is_relative_to(base.resolve()) and p.is_file() and sha(p)==status[hash_key], 'SOURCE_HASH_MISMATCH '+path_key)
+              return p
+          
+          def market_proof(s, day, live):
+              expected=s['source_sha256']['data/latest.csv']
+              latest=ROOT/'data/latest.csv'
+              if sha(latest)==expected: return latest
+              p=ROOT/'data/v5_official_market_archive'/f'{day}.csv'
+              require(p.is_file() and sha(p)==expected and rows(p,'ISU_CD')==live,'MARKET_PROVENANCE_MISMATCH')
+              return p
+          
+          def classify(q, m, share, share_day, day):
+              # No final grade changes; use only same-receipt annual metrics, not legacy values.
+              require(q['market_date']==m['market_date']==day and q['code']==m['code'], 'DATE_OR_CODE_MISMATCH')
+              require(q['grade_research_only'] in ('A','B') and q['fs_div']==m['fs_div']=='CFS', 'GRADE_OR_BASIS_MISMATCH')
+              require(q['corp_code']==m['corp_code'] and q['annual_year']==m['year'] and q['annual_receipt']==m['annual_receipt'], 'ANNUAL_RECEIPT_JOIN_MISMATCH')
+              require(all(re.fullmatch(r'\d{14}',q[k]) and q[k][:8]<=day for k in ('annual_receipt','current_period_receipt','prior_period_receipt')), 'INVALID_RECEIPT')
+              require(all(q[k]=='NO' for k in ('official_per_pbr_verified','financial_disclosure_asof_verified','share_class_verified','investment_authorized')) and q['buy_signal']=='NONE' and m['investment_authorized']=='NO' and m['financial_disclosure_asof_verified']=='NO','UNEXPECTED_APPROVAL')
+              require(m['annual_source']=='RECEIPT_BOUND_ARCHIVE_RESEARCH_ONLY' and m['ttm_state']=='RECEIPT_BOUND_CUMULATIVE_RESEARCH_ONLY','UNVERIFIED_FINANCIAL_SOURCE')
+              annual,ttm=dec(q['annual_profit']),dec(q['ttm_profit'])
+              require(annual is not None and annual>0 and ttm is not None and ttm>0 and ttm==dec(m['ttm_owner_profit_krw']), 'PROFIT_EVIDENCE_MISMATCH')
+              values={k:dec(m.get(k)) for k in ('revenue_yoy_pct','owner_profit_yoy_pct','operating_profit_yoy_pct','annual_owner_roe_pct','operating_margin_pct','liabilities_to_total_equity_pct')}
+              if m.get('operating_profit_source')!='RECEIPT_BOUND_ANNUAL': values['operating_profit_yoy_pct']=None
+              require(values['liabilities_to_total_equity_pct'] is None or values['liabilities_to_total_equity_pct']>=0,'NEGATIVE_TOTAL_EQUITY_LEVERAGE')
+              growth={k:values[k] for k in ('revenue_yoy_pct','operating_profit_yoy_pct','owner_profit_yoy_pct')}
+              missing=[k for k,v in growth.items() if v is None]
+              risks=[k.upper()+'_NEGATIVE' for k,v in growth.items() if v is not None and v<0]
+              if ttm<annual: risks.append('TTM_BELOW_ANNUAL_NOT_YOY')
+              if values['operating_margin_pct'] is not None and values['operating_margin_pct']<=0: risks.append('NON_POSITIVE_OPERATING_MARGIN')
+              if values['liabilities_to_total_equity_pct'] is None: missing.append('liabilities_to_total_equity_pct')
+              if share is None: share_state='NO_ARCHIVED_CLASS_EVIDENCE'
+              elif share.get('KIND_STKCERT_TP_NM')=='보통주' and share.get('SECUGRP_NM')=='주권' and share.get('market')==q['market']: share_state='ARCHIVED_COMMON_STOCK_RESEARCH_ONLY'
+              else: share_state='ARCHIVED_NONCOMMON_OR_MARKET_MISMATCH'
+              if share_state=='ARCHIVED_NONCOMMON_OR_MARKET_MISMATCH': state='HOLD_CLASS_CONFLICT'
+              elif share_state=='NO_ARCHIVED_CLASS_EVIDENCE': state='HOLD_CLASS_EVIDENCE_MISSING'
+              elif risks: state='REVIEW_GROWTH_RISK'
+              elif missing: state='REVIEW_MISSING_EVIDENCE'
+              elif all(v>0 for v in growth.values()) and ttm>=annual: state='CONSISTENT_GROWTH_RESEARCH_ONLY'
+              else: state='REVIEW_FLAT_GROWTH'
+              return {'code':q['code'],'name':q['name'],'market_date':day,'existing_research_grade':q['grade_research_only'],'existing_score':q['score'],'quality_state':state,'growth_risk_flags':risks,'missing_metrics':missing,'annual_receipt':q['annual_receipt'],'metrics':{k:str(v) if v is not None else None for k,v in values.items()},'ttm_vs_annual_pct_not_yoy':str(((ttm/annual-1)*100).quantize(Decimal('.01'))),'archived_class_evidence':share_state,'class_archive_requested_date':share_day,'share_class_verified':False,'financial_disclosure_asof_verified':False,'official_per_pbr_verified':False,'final_grade':None,'investment_authorized':False,'buy_signal':False}
+          
+          def self_test():
+              d='20261126';q={'market_date':d,'code':'123456','name':'fixture','market':'KOSDAQ','corp_code':'12345678','annual_year':'2025','annual_receipt':'20260319000001','current_period_receipt':'20261113000001','prior_period_receipt':'20251113000001','grade_research_only':'A','score':'100','fs_div':'CFS','annual_profit':'100','ttm_profit':'120','official_per_pbr_verified':'NO','financial_disclosure_asof_verified':'NO','share_class_verified':'NO','investment_authorized':'NO','buy_signal':'NONE'}
+              m={'market_date':d,'code':'123456','corp_code':'12345678','year':'2025','fs_div':'CFS','annual_receipt':q['annual_receipt'],'annual_source':'RECEIPT_BOUND_ARCHIVE_RESEARCH_ONLY','ttm_state':'RECEIPT_BOUND_CUMULATIVE_RESEARCH_ONLY','ttm_owner_profit_krw':'120','investment_authorized':'NO','financial_disclosure_asof_verified':'NO','revenue_yoy_pct':'12','owner_profit_yoy_pct':'15','operating_profit_yoy_pct':'10','operating_profit_source':'RECEIPT_BOUND_ANNUAL','annual_owner_roe_pct':'12','operating_margin_pct':'9','liabilities_to_total_equity_pct':'50'}
+              s={'KIND_STKCERT_TP_NM':'보통주','SECUGRP_NM':'주권','market':'KOSDAQ'}
+              def c(q=q,m=m,s=s): return classify(q,m,s,'20261120',d)
+              assert c()['quality_state']=='CONSISTENT_GROWTH_RESEARCH_ONLY'
+              assert c(m={**m,'operating_profit_yoy_pct':'-1'})['quality_state']=='REVIEW_GROWTH_RISK'
+              assert c(m={**m,'revenue_yoy_pct':''})['quality_state']=='REVIEW_MISSING_EVIDENCE'
+              assert c(m={**m,'operating_profit_source':'LEGACY'})['quality_state']=='REVIEW_MISSING_EVIDENCE'
+              assert c(q={**q,'ttm_profit':'90'},m={**m,'ttm_owner_profit_krw':'90'})['quality_state']=='REVIEW_GROWTH_RISK'
+              assert c(m={**m,'owner_profit_yoy_pct':'0'})['quality_state']=='REVIEW_FLAT_GROWTH'
+              assert c(s=None)['quality_state']=='HOLD_CLASS_EVIDENCE_MISSING'
+              assert c(s={**s,'KIND_STKCERT_TP_NM':'우선주'})['quality_state']=='HOLD_CLASS_CONFLICT'
+              assert c(m={**m,'liabilities_to_total_equity_pct':''})['quality_state']=='REVIEW_MISSING_EVIDENCE'
+              assert c()['final_grade'] is None and not c()['buy_signal'] and not c()['share_class_verified']
+              for bad in ({**m,'annual_receipt':'20260319000002'},{**m,'ttm_owner_profit_krw':'119'},{**m,'investment_authorized':'YES'}):
+                  try: c(m=bad)
+                  except ValueError: pass
+                  else: raise AssertionError('FAIL_CLOSED')
+              print('STAGE6_1_SELF_TEST_PASS 13')
+          
+          def main():
+              self_test()
+              if '--self-test' in sys.argv: return
+              sp=ROOT/'data/summary.json'; cp=BASE/'candidate_regrade/latest_status.json'; mp=BASE/'metrics/latest_status.json'
+              summary,s,m=map(read,(sp,cp,mp)); day=summary['latest_trading_date'];dt.datetime.strptime(day,'%Y%m%d')
+              require(s['state']=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and m['state']=='FINANCIAL_METRICS_PERSISTED' and s['market_date']==m['market_date']==day,'UPSTREAM_NOT_SYNCHRONIZED')
+              require(all(x['investment_decisions_authorized'] is False and x['final_buy_signals']==0 for x in (s,m)),'UNEXPECTED_UPSTREAM_APPROVAL')
+              qp=bound(s,'queue_path','queue_sha256',BASE/'candidate_regrade'); fp=bound(m,'csv_path','csv_sha256',BASE/'metrics')
+              require(s['source_sha256'][str(fp.relative_to(ROOT))]==sha(fp),'QUEUE_METRICS_HASH_MISMATCH')
+              live=rows(ROOT/'data/latest.csv','ISU_CD'); markets=market_proof(s,day,live); metrics=rows(fp,'code'); queue=rows(qp,'code')
+              require(len(live)==len(metrics)==s['market_rows']==m['market_rows']==summary['kospi_rows_latest']+summary['kosdaq_rows_latest'] and set(live)==set(metrics),'MARKET_SCOPE_MISMATCH')
+              require({r['BAS_DD'] for r in live.values()}=={day} and {r['market_date'] for r in metrics.values()}=={day},'MIXED_DATE')
+              require(len(queue)==s['research_ab_rows'] and dict(Counter(r['grade_research_only'] for r in queue.values()))==s['grade_counts'],'QUEUE_COUNT_MISMATCH')
+              sources=[sp,cp,mp,qp,fp,markets,ROOT/'data/latest.csv']
+              shares={};share_day=None
+              archives=sorted(p for p in ARCH.glob('*.json') if re.fullmatch(r'20\d{6}',p.stem) and p.stem<=day)
+              if archives:
+                  ap=archives[-1];a=read(ap);share_day=a['market_date'];require(share_day==ap.stem and a['row_count']==len(a['rows']),'CLASS_ARCHIVE_INVALID')
+                  for r in a['rows']:
+                      k=r['ISU_SRT_CD'];require(k not in shares,'DUPLICATE_CLASS_CODE');shares[k]=r
+                  sources.append(ap)
+              hashes={str(p.relative_to(ROOT)):sha(p) for p in sources}; results=[]
+              for code,q in sorted(queue.items()):
+                  r=live[code];cap=dec(r['MKTCAP']);close=dec(r['TDD_CLSPRC'])
+                  require(re.fullmatch(r'\d{6}',code) and r['MARKET']==q['market'] and cap is not None and cap>=MIN_CAP and cap==dec(q['market_cap_krw']) and close is not None and close>0 and close==dec(q['close_krw']),'CANDIDATE_MARKET_MISMATCH')
+                  results.append(classify(q,metrics[code],shares.get(code),share_day,day))
+              require(all(sha(ROOT/p)==h for p,h in hashes.items()),'SOURCE_CHANGED')
+              report={'state':'STAGE6_1_GROWTH_EVIDENCE_PROFILE_RESEARCH_ONLY','market_date':day,'market_rows':len(live),'candidate_rows':len(results),'existing_grade_counts':s['grade_counts'],'quality_states':dict(Counter(x['quality_state'] for x in results)),'source_sha256':hashes,'financial_api_calls':0,'investment_decisions_authorized':False,'final_buy_signals':0,'official_per_pbr_verified':False,'financial_disclosure_asof_verified':False,'share_class_verified':False,'notes':['No new grade or score; growth flags are research review criteria, not validated predictors.','TTM vs annual is not year-on-year growth. No sector adjustments in this step.','Class archive is older requested-date evidence, not current-day certification.','All original A/B candidates are preserved; source archives and production data are read-only.'],'candidates':results}
+              OUT.mkdir(parents=True,exist_ok=True);(OUT/'quality_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('STAGE6_1_RESULT '+json.dumps({k:v for k,v in report.items() if k not in ('candidates','source_sha256')},ensure_ascii=False))
+          
+          if __name__=='__main__': main()
+          PYTHON
+          python /tmp/krx_stage6_1.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-stage6-1-growth-quality
+          path: /tmp/krx-stage6-quality/quality_report.json
+          if-no-files-found: error
