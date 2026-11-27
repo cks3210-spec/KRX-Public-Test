@@ -1,0 +1,162 @@
+name: KRX v5 Archive Integrity and Recovery Proof
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 KIS Daily Valuation']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-archive-integrity-proof
+  cancel-in-progress: false
+jobs:
+  audit:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install archive and calendar readers
+        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'exchange-calendars>=4.5,<5'
+      - name: Read only integrity and recovery proof
+        env:
+          KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_archive_integrity.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, io, json, os, re, subprocess, sys
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+          import exchange_calendars as xc
+          ROOT=Path.cwd(); STORE=Path('data/v5_kis_valuation/sessions'); KRX=Path('data/v5_official_market_archive'); OUT=Path('/tmp/krx-archive-integrity/status.json')
+
+          def need(ok,code):
+              if not ok: raise ValueError(code)
+          def digest(b):return hashlib.sha256(b).hexdigest()
+          def read(p):return json.loads(p.read_bytes().decode('utf-8-sig'))
+          def date8(s):
+              need(isinstance(s,str) and re.fullmatch(r'20\d{6}',s),'INVALID_DATE');dt.datetime.strptime(s,'%Y%m%d');return s
+
+          def market_rows(b,day):
+              reader=csv.DictReader(io.StringIO(b.decode('utf-8-sig'),newline=''));rows={}
+              fields={'BAS_DD','ISU_CD','ISU_NM','TDD_CLSPRC','ACC_TRDVOL','MKTCAP','MARKET'}
+              need(reader.fieldnames and fields==set(reader.fieldnames) and len(reader.fieldnames)==len(fields),'MARKET_SCHEMA_INVALID')
+              for r in reader:
+                  code=r.get('ISU_CD');need(None not in r and all(v is not None for v in r.values()) and code and re.fullmatch(r'[0-9A-Z]{6}',code) and code not in rows and r['BAS_DD']==day and r['MARKET'] in ('KOSPI','KOSDAQ'),'MARKET_ROW_INVALID');rows[code]=r
+              need(bool(rows),'MARKET_EMPTY');return rows
+
+          def key_bytes():
+              k=os.environ.get('KIS_DATA_ARCHIVE_KEY','').strip();need(re.fullmatch(r'[0-9a-fA-F]{64}',k) is not None,'KEY_NOT_CONFIGURED');return bytes.fromhex(k)
+
+          def validate_pair(cipher,status,day,key):
+              s=json.loads(status.decode('utf-8-sig'));need(s.get('encrypted_observation_sha256')==digest(cipher),'CIPHER_HASH_MISMATCH')
+              need(cipher.startswith(b'KISV2\x00') and len(cipher)>34,'CIPHER_FORMAT_INVALID')
+              p=STORE/day/'observations.aes'
+              try:b=json.loads(AESGCM(key).decrypt(cipher[6:18],cipher[18:],str(p).encode()))
+              except Exception:raise ValueError('ARCHIVE_AUTHENTICATION_FAILED') from None
+              need(isinstance(b,dict) and b.get('observation_session')==day and b.get('source')=='KIS_OPEN_API_INQUIRE_PRICE' and b.get('archive_format')=='AES_256_GCM_V2','ARCHIVE_SOURCE_INVALID')
+              need(b.get('investment_decisions_authorized') is False and b.get('final_buy_signals')==0,'UNEXPECTED_APPROVAL')
+              need({k:v for k,v in b.items() if k!='observations'}=={k:v for k,v in s.items() if k!='encrypted_observation_sha256'},'STATUS_CONTENT_MISMATCH')
+              obs=b.get('observations');need(isinstance(obs,dict) and all(re.fullmatch(r'\d{6}',k) and isinstance(v,dict) for k,v in obs.items()),'OBSERVATION_SCHEMA_INVALID')
+              counts=[b.get(k) for k in ('market_rows','eligible_code_rows','requested','successful_quotes','numeric_all_four','sector_rows','sector_missing_rows')]
+              need(all(type(x)==int and x>=0 for x in counts),'COUNT_INVALID');total,eligible,requested,success,numeric,sector,missing=counts
+              need(total>=eligible>=requested>=success==len(obs) and numeric<=success and sector+missing==success,'COUNT_MISMATCH')
+              need(b.get('unassessed_identifier_rows')==total-eligible,'UNIVERSE_COUNT_MISMATCH')
+              need(numeric==sum(all(v.get(k) is not None for k in ('per','pbr','eps','bps')) for v in obs.values()) and sector==sum(bool(v.get('sector_name_kis')) for v in obs.values()),'FIELD_COUNT_MISMATCH')
+              state=b.get('state');need(state in ('KIS_BROKER_COLLECTION_COMPLETE','KIS_BROKER_PARTIAL_CHECKPOINT'),'ARCHIVE_STATE_INVALID')
+              if state=='KIS_BROKER_COLLECTION_COMPLETE':need(requested==eligible==success and not b.get('stop_reason'),'COMPLETE_STATE_CONFLICT')
+              return {'collection_state':state,'successful_quotes':success,'eligible_codes':eligible,'missing_quotes':eligible-success,'missing_sector_rows':missing,'cipher_sha256':digest(cipher)}
+
+          def git(*args):
+              r=subprocess.run(['git',*args],capture_output=True,timeout=45,check=False);return r.stdout if r.returncode==0 else None
+
+          def history(paths,validator):
+              # Inspect same-commit versions only; no checkout, overwrite or raw output.
+              raw=git('log','-n','12','--format=%H','HEAD','--',*[str(p) for p in paths])
+              if raw is None:return {'state':'GIT_HISTORY_UNAVAILABLE'}
+              for h in raw.decode().splitlines():
+                  if not re.fullmatch(r'[0-9a-f]{40}',h):continue
+                  versions=[git('show',h+':'+str(p)) for p in paths]
+                  if any(v is None for v in versions):continue
+                  try:result=validator(*versions)
+                  except (ValueError,KeyError,TypeError,UnicodeError,csv.Error):continue
+                  return {'state':'VERIFIED_HISTORICAL_RECOVERY_SOURCE','commit':h,**result}
+              return {'state':'NO_VERIFIED_HISTORICAL_SOURCE_WITHIN_LIMIT'}
+
+          def safe_error(e):
+              s=str(e);return s if re.fullmatch('[A-Z0-9_]+',s) else 'INVALID_OR_UNREADABLE_INPUT'
+
+          def kis_check(day,key):
+              p=STORE/day/'observations.aes';s=p.with_name('status.json')
+              if p.with_name('observations.json').exists():return {'state':'LEGACY_PLAINTEXT_REQUIRES_REVIEW'}
+              if not p.exists() and not s.exists():
+                  return {'state':'NO_CURRENT_ARCHIVE', 'recovery':history([p,s],lambda a,b:validate_pair(a,b,day,key))}
+              try:return {'state':'AUTHENTICATED_ARCHIVE',**validate_pair(p.read_bytes(),s.read_bytes(),day,key)}
+              except (ValueError,KeyError,TypeError,OSError,UnicodeError) as e:
+                  return {'state':'ARCHIVE_HOLD','reason':safe_error(e),'recovery':history([p,s],lambda a,b:validate_pair(a,b,day,key))}
+
+          def market_check(day):
+              p=KRX/(day+'.csv');latest=Path('data/latest.csv');q=read(Path('data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json'))
+              proof=q.get('source_sha256',{}).get('data/latest.csv') if q.get('market_date')==day else None
+              def validate(b):
+                  r=market_rows(b,day);need(proof is not None and digest(b)==proof,'NO_MATCHING_QUEUE_HASH');return {'rows':len(r),'sha256':digest(b)}
+              out={'state':'MARKET_HOLD'}
+              try:
+                  a=p.read_bytes();r=market_rows(a,day);l=market_rows(latest.read_bytes(),day)
+                  need(r==l,'MARKET_ROWS_DIFFER');need(proof is not None and proof in (digest(a),digest(latest.read_bytes())),'NO_MATCHING_QUEUE_HASH')
+                  return {'state':'MARKET_ARCHIVE_AND_LATEST_MATCH','rows':len(r),'archive_sha256':digest(a)}
+              except (ValueError,KeyError,TypeError,OSError,UnicodeError,csv.Error) as e:out['reason']=safe_error(e)
+              # Rehearse recovery from a locally present official snapshot; don't publish automatically.
+              try:out['recovery']={'state':'VERIFIED_LOCAL_ARCHIVE_RECOVERY_SOURCE',**validate(p.read_bytes())}
+              except (ValueError,KeyError,TypeError,OSError,UnicodeError,csv.Error):out['recovery']=history([p],validate)
+              return out
+
+          def tests():
+              day='20261126';key=bytes(32);nonce=bytes(12);path=str(STORE/day/'observations.aes').encode()
+              b={'observation_session':day,'source':'KIS_OPEN_API_INQUIRE_PRICE','archive_format':'AES_256_GCM_V2','state':'KIS_BROKER_COLLECTION_COMPLETE','investment_decisions_authorized':False,'final_buy_signals':0,'market_rows':2,'eligible_code_rows':1,'unassessed_identifier_rows':1,'requested':1,'successful_quotes':1,'numeric_all_four':1,'sector_rows':1,'sector_missing_rows':0,'stop_reason':'','observations':{'005930':{'per':'10','pbr':'1','eps':'100','bps':'1000','sector_name_kis':'test'}}}
+              c=b'KISV2\x00'+nonce+AESGCM(key).encrypt(nonce,json.dumps(b).encode(),path);s={k:v for k,v in b.items() if k!='observations'};s['encrypted_observation_sha256']=digest(c);j=json.dumps(s).encode()
+              assert validate_pair(c,j,day,key)['missing_quotes']==0
+              for args in [(c+b'x',j,day,key),(c,j,day,bytes([1])*32),(c,j,'20261127',key),(c,json.dumps({**s,'requested':2}).encode(),day,key)]:
+                  try:validate_pair(*args)
+                  except ValueError:pass
+                  else:raise AssertionError('BAD_ARCHIVE_ACCEPTED')
+              a=b'BAS_DD,ISU_CD,ISU_NM,TDD_CLSPRC,ACC_TRDVOL,MKTCAP,MARKET\n20261126,005930,test,100,2,100000000000,KOSPI\n';assert market_rows(a,day)==market_rows(a.replace(b'\n',b'\r\n'),day)
+              for z in [a+a.splitlines(keepends=True)[1],a.replace(b'20261126',b'20261125')]:
+                  try:market_rows(z,day)
+                  except ValueError:pass
+                  else:raise AssertionError('BAD_MARKET_ACCEPTED')
+              print('ARCHIVE_INTEGRITY_SELF_TEST_PASS 8')
+
+          def main():
+              tests()
+              if '--self-test' in sys.argv:return
+              now=dt.datetime.now(ZoneInfo('Asia/Seoul'));cal=xc.get_calendar('XKRX');today=now.date().isoformat()
+              if not cal.is_session(today):print('ARCHIVE_INTEGRITY_SKIP_NON_TRADING_DAY');return
+              day=now.strftime('%Y%m%d');prev=cal.previous_session(today).strftime('%Y%m%d');summary=read(Path('data/summary.json'));stored=date8(summary['latest_trading_date'])
+              out={'state':'READ_ONLY_ARCHIVE_INTEGRITY_AND_RECOVERY_PROOF','evaluation_date_kst':day,'expected_market_date':prev,'market_date':stored,'financial_api_calls':0,'repository_data_changed':False,'automatic_restore':False,'investment_decisions_authorized':False,'history_limit_per_path':12,'kis_recent_session_limit':10}
+              out['market']=market_check(prev) if stored==prev else {'state':'MARKET_DATE_NOT_EXPECTED'}
+              try:
+                  key=key_bytes();dates=sorted({p.name for p in STORE.glob('20*') if p.is_dir() and re.fullmatch(r'20\d{6}',p.name)})[-10:];out['kis']={d:kis_check(d,key) for d in sorted(set(dates+[prev,day]))}
+              except ValueError as e:out['kis']={'state':safe_error(e)}
+              out['notes']=['Recovery proof only; no historical archive is restored or republished automatically. Missing observations cannot be reconstructed from future quotes.','Authentication verifies bytes and status, not accuracy or redistribution rights. No decrypted values are logged or stored.','Existing older archives beyond the recent window are not audited by this run.']
+              OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n');print('ARCHIVE_INTEGRITY_RESULT '+json.dumps(out,ensure_ascii=False))
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_archive_integrity.py
+          python /tmp/krx_archive_integrity.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-archive-integrity-proof
+          path: /tmp/krx-archive-integrity/status.json
+          if-no-files-found: ignore
