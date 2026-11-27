@@ -1,0 +1,44 @@
+{
+  "current_grade_revalidated": false,
+  "eligible_at_current_marketcap_100bn": 136,
+  "excluded_current_marketcap": [
+    {
+      "code": "148150",
+      "marketcap_krw": 97565035410,
+      "name": "세경하이테크",
+      "reason": "CURRENT_MARKETCAP_BELOW_100BN_KRW"
+    }
+  ],
+  "final_buy_signals": 0,
+  "investment_decisions_authorized": false,
+  "matched_candidates": 137,
+  "missing_or_ambiguous_candidates": 0,
+  "official_market_date": "20261126",
+  "official_per_pbr_verified": false,
+  "research_candidates": 137,
+  "research_grade_counts_asof_cohort": {
+    "A": 24,
+    "B": 113
+  },
+  "research_market_date": "20261120",
+  "source_sha256": {
+    "latest_market": "5d55f2e295b9ff5b75cb6b7e732bec766b78dac8cc822cf5ef428651663aa1a7",
+    "market_summary": "1b1b1e9ac742c7c5684053d5721ff2ecedd116a2e7c8b8cb49edbc7b154cbda6",
+    "research_candidates": "3070dac2c988c4b890b8b12415b9e189e70e70131c5f5e2aed3ded73aecf43ee"
+  },
+  "state": "RESEARCH_ONLY_FULL_JOIN_VERIFIED",
+  "technical_indicators_asof": "20261125",
+  "total_official_market_rows": 2772,
+  "unadjusted_price_direction": {
+    "down": 79,
+    "flat": 2,
+    "up": 56
+  },
+  "version": "KRX_V5_R14_DAILY_OFFICIAL_PRICE_JOIN_V1",
+  "warnings": [
+    "Research grades/scores are frozen to research_market_date; no daily grade recertification.",
+    "Price change compares raw closes and is not corporate-action adjusted.",
+    "Official PER/PBR is not certified and no executable entry prices are released.",
+    "Marketcap eligibility uses current official close-date marketcap."
+  ]
+}
