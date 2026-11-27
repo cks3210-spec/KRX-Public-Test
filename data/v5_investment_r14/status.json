@@ -1,14 +1,14 @@
 {
   "version": "R14",
-  "generated_kst": "2026-11-27T02:54:39.220388+09:00",
+  "generated_kst": "2026-11-28T02:40:23.704888+09:00",
   "state": "RESEARCH_ONLY_NOT_FINAL",
-  "market_date": "20261125",
+  "market_date": "20261126",
   "market_rows": 2772,
-  "eligible_rows": 1197,
-  "annual_valid": 803,
-  "provisional_ab_count": 567,
+  "eligible_rows": 1196,
+  "annual_valid": 801,
+  "provisional_ab_count": 565,
   "history_source_rows": {
-    "data/daily_indicators.csv": 1243,
+    "data/daily_indicators.csv": 1244,
     "data/market_history.csv": 0,
     "data/history.csv": 0,
     "data/latest.csv": 2772
@@ -20,8 +20,8 @@
   "official_per_pbr_verified": 0,
   "final_grades": 0,
   "buy_signals": 0,
-  "tracking_baselines": 3970,
-  "new_tracking_baselines": 567,
+  "tracking_baselines": 4535,
+  "new_tracking_baselines": 565,
   "tracking_completed": {
     "5": 0,
     "10": 0,
