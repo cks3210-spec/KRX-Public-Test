@@ -1,0 +1,273 @@
+name: KRX v5 Stage 8 Trade Strategy Research
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 Stage 7 Sector Valuation Research']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: krx-v5-stage8-strategy-research
+  cancel-in-progress: false
+jobs:
+  research:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Load exact successful Stage 7 run (no market API calls)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID="$TRIGGER_RUN_ID"
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow v5-stage7-sector-valuation.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          fi
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" > /tmp/krx-stage8-run.json
+          python - "$RUN_ID" <<'PYTHON'
+          import json,sys,os
+          from pathlib import Path
+          r=json.loads(Path('/tmp/krx-stage8-run.json').read_text())
+          if not (str(r['id'])==sys.argv[1] and r['path']=='.github/workflows/v5-stage7-sector-valuation.yml' and r['head_branch']=='main' and r['head_repository']['full_name']==os.environ['GITHUB_REPOSITORY'] and r['status']=='completed' and r['conclusion']=='success'):
+              raise ValueError('UNTRUSTED_STAGE7_RUN')
+          PYTHON
+          mkdir -p /tmp/krx-stage8-input
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name krx-v5-stage7-sector-valuation --dir /tmp/krx-stage8-input
+          test -s /tmp/krx-stage8-input/valuation_report.json
+      - name: Calculate synthetic strategy scenarios and withhold unverified candidate actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage8.py <<'PYTHON'
+          import csv, datetime as dt, hashlib, json, re, sys
+          from collections import Counter
+          from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_UP
+          from pathlib import Path
+
+          D = Decimal
+          ROOT = Path.cwd().resolve()
+          OUT = Path('/tmp/krx-stage8')
+          STAGE7 = Path('/tmp/krx-stage8-input/valuation_report.json')
+          BUDGETS = (1000000, 3000000, 5000000)
+          # Hypothetical research assumptions only; not calibrated or actual brokerage fees.
+          BUY_FEE = D('.001')
+          SELL_FEE_TAX = D('.003')
+          ALLOCATIONS = (D('.4'), D('.3'), D('.3'))
+          DISCOUNTS = (D('.05'), D('.10'), D('.20'))
+          SALE_FRACTIONS = (D('.30'), D('.40'), D('.50'))
+          REENTRY_MOVES = (D('-.15'), D('-.10'), D('-.05'), D('0'), D('.05'), D('.10'), D('.15'))
+
+
+          def require(ok, message):
+              if not ok:
+                  raise ValueError(message)
+
+
+          def read(p):
+              return json.loads(p.read_text(encoding='utf-8-sig'))
+
+
+          def sha(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+          def dec(value):
+              try:
+                  z = D(str(value))
+                  return z if z.is_finite() else None
+              except (InvalidOperation, ValueError):
+                  return None
+
+
+          def positive(value):
+              z = dec(value)
+              require(z is not None and z > 0, 'INVALID_POSITIVE_NUMBER')
+              return z
+
+
+          def whole(z):
+              return int(z.to_integral_value(rounding=ROUND_DOWN))
+
+
+          def ceil(z):
+              return int(z.to_integral_value(rounding=ROUND_UP))
+
+
+          def cash(z):
+              return str(z.quantize(D('.01')))
+
+
+          def rate(z):
+              z = dec(z)
+              require(z is not None and D(0) <= z < D(1), 'INVALID_COST_RATE')
+              return z
+
+
+          def ladder(low, budget, buy_fee=BUY_FEE):
+              low, budget, buy_fee = positive(low), positive(budget), rate(buy_fee)
+              require(budget == whole(budget), 'NONINTEGER_BUDGET')
+              remaining = int(budget)
+              orders = []
+              # Illustrative 40/30/30 budget buckets; unused cash remains uninvested.
+              for allocation, discount in zip(ALLOCATIONS, DISCOUNTS):
+                  price = whole(low * (1-discount))
+                  require(price > 0, 'ILLUSTRATIVE_PRICE_TOO_LOW')
+                  bucket = whole(budget * allocation)
+                  qty = whole(D(bucket) / (D(price)*(1+buy_fee)))
+                  gross = qty*price
+                  cost = gross + ceil(D(gross)*buy_fee)
+                  # Conservative whole-won fee rounding; no overspend even at a boundary.
+                  while qty and cost > bucket:
+                      qty -= 1; gross = qty*price; cost = gross + ceil(D(gross)*buy_fee)
+                  remaining -= cost
+                  orders.append({'discount_from_reference_low_pct':str(discount*100), 'budget_share_pct':str(allocation*100),
+                                 'illustrative_price_krw':price, 'budget_bucket_krw':bucket, 'shares':qty,
+                                 'gross_krw':gross, 'assumed_buy_fee_krw':cost-gross, 'total_cost_krw':cost})
+              require(remaining>=0 and sum(x['total_cost_krw'] for x in orders)+remaining==budget,'BUDGET_CONSERVATION')
+              return {'budget_krw':int(budget),'tranches':orders,'remaining_cash_krw':remaining,
+                      'total_shares_if_all_filled':sum(x['shares'] for x in orders),'order_authorized':False}
+
+
+          def rebuy(shares, sale_price, fraction, move, buy_fee=BUY_FEE, sell_fee_tax=SELL_FEE_TAX):
+              require(isinstance(shares,int) and not isinstance(shares,bool) and shares>0,'INVALID_POSITION_SIZE')
+              sale_price=positive(sale_price); fraction=positive(fraction); move=dec(move)
+              buy_fee, sell_fee_tax=rate(buy_fee),rate(sell_fee_tax)
+              require(fraction<=1 and move is not None and move>-1,'INVALID_SCENARIO')
+              require(sale_price==whole(sale_price),'NONINTEGER_SALE_PRICE')
+              sold=whole(D(shares)*fraction)
+              gross=sold*int(sale_price); fee=ceil(D(gross)*sell_fee_tax)
+              proceeds=gross-fee; require(proceeds>=0,'NEGATIVE_PROCEEDS')
+              entry=whole(sale_price*(1+move)); require(entry>0,'NONPOSITIVE_REENTRY')
+              bought=whole(D(proceeds)/(D(entry)*(1+buy_fee)))
+              cost=bought*entry+ceil(D(bought*entry)*buy_fee)
+              while bought and cost>proceeds:
+                  bought-=1;cost=bought*entry+ceil(D(bought*entry)*buy_fee)
+              leftover=proceeds-cost;after=shares-sold+bought
+              hold=shares*entry;strategy=after*entry+leftover
+              require(leftover>=0 and after>=0,'POSITION_CONSERVATION')
+              return {'sale_fraction_pct':str(fraction*100),'reentry_move_pct':str(move*100),'sold_shares':sold,
+                      'sale_price_krw':int(sale_price),'assumed_sell_fee_tax_krw':fee,'net_proceeds_krw':proceeds,
+                      'reentry_price_krw':entry,'repurchased_shares':bought,'assumed_rebuy_fee_krw':cost-bought*entry,
+                      'remaining_cash_krw':leftover,'shares_after':after,'hold_value_at_reentry_krw':hold,
+                      'strategy_value_at_reentry_krw':strategy,'difference_vs_hold_krw':strategy-hold,
+                      'no_reentry_holdings_shares':shares-sold,'no_reentry_cash_krw':proceeds,
+                      'break_even_reentry_before_rounding_krw':cash(sale_price*(1-sell_fee_tax)/(1+buy_fee)),
+                      'order_authorized':False}
+
+
+          def candidate_gate(r):
+              require(r.get('investment_authorized') is False and r.get('buy_signal') is False and r.get('final_grade') is None,'UNEXPECTED_STAGE7_APPROVAL')
+              require(r.get('verified_fair_price') is None,'UNSUPPORTED_VERIFIED_PRICE_SCHEMA')
+              state=r.get('state'); require(isinstance(state,str) and (state.startswith('HOLD_') or state=='PEER_RANGE_RESEARCH_ONLY'),'UNKNOWN_STAGE7_STATE')
+              if state=='PEER_RANGE_RESEARCH_ONLY':
+                  vals=[positive(r.get(k)) for k in ('research_low_krw','research_mid_krw','research_high_krw')]
+                  require(vals[0]<=vals[1]<=vals[2],'INVALID_RESEARCH_RANGE')
+              # Current Stage 7 always withholds verified fair prices. No real-stock price scenarios until
+              # a separate reviewed verified-price contract and risk policy are developed and tested.
+              return {'code':r['code'],'name':r['name'],'existing_research_grade':r['existing_research_grade'],
+                      'stage7_state':state,'strategy_state':'HOLD_QUALITY_REVIEW' if state=='HOLD_QUALITY_REVIEW' else 'HOLD_NO_VERIFIED_FAIR_PRICE',
+                      'entry_prices':None,'position_actions':None,'final_grade':None,'buy_signal':False,'sell_signal':False,'investment_authorized':False}
+
+
+          def self_test():
+              a=ladder(10000,1000000)
+              assert [r['illustrative_price_krw'] for r in a['tranches']]==[9500,9000,8000]
+              assert sum(r['total_cost_krw'] for r in a['tranches'])+a['remaining_cash_krw']==1000000
+              assert all(r['total_cost_krw']<=r['budget_bucket_krw'] for r in a['tranches'])
+              assert ladder(10000,1)['total_shares_if_all_filled']==0
+              assert ladder(10000,1000000,D('0'))['remaining_cash_krw']>=0
+              assert rebuy(100,10000,D('.3'),D('-.1'))['sold_shares']==30
+              assert rebuy(101,10000,D('.4'),D('-.1'))['sold_shares']==40
+              assert rebuy(100,10000,D('.5'),D('-.1'))['sold_shares']==50
+              assert rebuy(100,10000,D('.5'),D('-.1'))['difference_vs_hold_krw']>0
+              assert rebuy(100,10000,D('.5'),D('.1'))['difference_vs_hold_krw']<0
+              assert rebuy(100,10000,D('.5'),D('0'))['difference_vs_hold_krw']<0
+              assert rebuy(100,10000,D('.5'),D('0'),D(0),D(0))['difference_vs_hold_krw']==0
+              assert rebuy(1,10000,D('.3'),D('-.1'))['sold_shares']==0
+              x=rebuy(100,10000,D('.5'),D('-.1'))
+              assert x['shares_after']==100-x['sold_shares']+x['repurchased_shares']
+              assert x['remaining_cash_krw']>=0
+              assert x['no_reentry_holdings_shares']==50 and x['no_reentry_cash_krw']==x['net_proceeds_krw']
+              r={'code':'123456','name':'fixture','existing_research_grade':'A','state':'HOLD_SECTOR_OR_RATIO_EVIDENCE','investment_authorized':False,'buy_signal':False,'final_grade':None,'verified_fair_price':None}
+              assert candidate_gate(r)['entry_prices'] is None
+              assert candidate_gate({**r,'state':'HOLD_QUALITY_REVIEW'})['strategy_state']=='HOLD_QUALITY_REVIEW'
+              assert candidate_gate({**r,'state':'PEER_RANGE_RESEARCH_ONLY','research_low_krw':'9000','research_mid_krw':'10000','research_high_krw':'11000'})['entry_prices'] is None
+              for fn in (lambda:ladder(0,100),lambda:rebuy(100,10000,D('.5'),D('-1')),lambda:rebuy(100,10000,D('.5'),D(0),D('1')),lambda:candidate_gate({**r,'investment_authorized':True}),lambda:candidate_gate({**r,'verified_fair_price':'10000'}),lambda:candidate_gate({**r,'state':'PEER_RANGE_RESEARCH_ONLY','research_low_krw':'10000','research_mid_krw':'9000','research_high_krw':'11000'})):
+                  try:fn()
+                  except ValueError:pass
+                  else:raise AssertionError('FAIL_CLOSED')
+              print('STAGE8_SELF_TEST_PASS 25')
+
+
+          def csv_index(p,key):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  rd=csv.DictReader(f); result={}
+                  require(rd.fieldnames and len(rd.fieldnames)==len(set(rd.fieldnames)),'BAD_CSV_HEADER')
+                  for r in rd:
+                      require(None not in r and r.get(key) and r[key] not in result,'BAD_OR_DUPLICATE_CSV_ROW')
+                      result[r[key]]=r
+                  return result
+
+
+          def main():
+              self_test()
+              if '--self-test' in sys.argv:return
+              report=read(STAGE7);day=report['market_date'];dt.datetime.strptime(day,'%Y%m%d')
+              require(report['state'] in ('STAGE7_RESEARCH_EVALUATED','STAGE7_WITHHELD_MISSING_OR_UNSUITABLE_EVIDENCE'),'INVALID_STAGE7_STATE')
+              require(report['investment_decisions_authorized'] is False and report['verified_fair_prices']==report['final_buy_signals']==0,'UNSUPPORTED_APPROVAL')
+              summary_p=ROOT/'data/summary.json'; market_p=ROOT/'data/latest.csv'
+              status_p=ROOT/'data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json';s=read(status_p)
+              require(day==read(summary_p)['latest_trading_date']==s['market_date'],'WAIT_FOR_MATCHED_STAGE7_DATE')
+              require(s['state']=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and s['investment_decisions_authorized'] is False and s['final_buy_signals']==0,'BAD_QUEUE_STATE')
+              qp=(ROOT/s['queue_path']).resolve();require(qp.is_relative_to(status_p.parent.resolve()) and qp.is_file() and sha(qp)==s['queue_sha256'],'QUEUE_HASH_MISMATCH')
+              hashes={str(p.relative_to(ROOT)):sha(p) for p in (summary_p,market_p,status_p,qp)}
+              require(s['source_sha256']['data/latest.csv']==hashes['data/latest.csv'],'QUEUE_MARKET_HASH_MISMATCH')
+              market=csv_index(market_p,'ISU_CD');q=csv_index(qp,'code')
+              require(len(market)==report['market_rows']==s['market_rows'] and {r['BAS_DD'] for r in market.values()}=={day},'MARKET_SCOPE_MISMATCH')
+              rs=report['candidates'];idx={r['code']:r for r in rs}
+              require(len(idx)==len(rs)==len(q)==report['candidate_rows']==s['research_ab_rows'] and set(idx)==set(q) and set(q)<=set(market),'CANDIDATE_SCOPE_MISMATCH')
+              require(dict(Counter(r['existing_research_grade'] for r in rs))==s['grade_counts']==report['existing_grade_counts'],'GRADE_COUNT_MISMATCH')
+              require(dict(Counter(r['state'] for r in rs))==report['valuation_states'],'STATE_COUNT_MISMATCH')
+              result=[]
+              for k,r in sorted(idx.items()):
+                  m=market[k];candidate=q[k]
+                  require(candidate['market_date']==day and candidate['grade_research_only'] in ('A','B') and candidate['grade_research_only']==r['existing_research_grade'] and candidate['name']==r['name'],'CANDIDATE_JOIN_MISMATCH')
+                  require(candidate['investment_authorized']=='NO' and candidate['buy_signal']=='NONE' and candidate['official_per_pbr_verified']=='NO','QUEUE_APPROVAL_MISMATCH')
+                  require(m['MARKET']==candidate['market'] and positive(m['MKTCAP'])>=D('100000000000') and positive(m['TDD_CLSPRC'])==positive(candidate['close_krw']),'CANDIDATE_MARKET_MISMATCH')
+                  result.append(candidate_gate(r))
+              require(all(sha(ROOT/p)==h for p,h in hashes.items()),'SOURCE_CHANGED')
+              # Fixtures are not associated with any real security or portfolio. No price/order recommendation.
+              examples={'state':'SYNTHETIC_SCENARIOS_ONLY','hypothetical_reference_low_krw':10000,'hypothetical_position_shares':100,
+                        'hypothetical_sale_price_krw':10000,'assumed_buy_fee_pct':str(BUY_FEE*100),'assumed_sell_fee_and_tax_pct':str(SELL_FEE_TAX*100),
+                        'budget_ladders':[ladder(10000,b) for b in BUDGETS],
+                        'partial_sale_rebuy_scenarios':[rebuy(100,10000,f,m) for f in SALE_FRACTIONS for m in REENTRY_MOVES],
+                        'notes':['Illustrative fees and thresholds only; not actual Korean tax rates or brokerage fees.', 'No execution, slippage, liquidity, tick size, dividends or corporate actions modeled.', 'Reentry may never happen; evaluate cash and remaining shares separately. No prediction of a price fall.', 'Additional buys require fresh verified valuation and quality evidence, budget remaining and no newly detected fundamental deterioration. These checks are future inputs, not approved signals.', 'This is arithmetic sensitivity, not a historical backtest; Stage 9 must validate out of sample.']}
+              output={'state':'STAGE8_RESEARCH_ENGINE_READY_CANDIDATE_ACTIONS_WITHHELD','market_date':day,'market_rows':len(market),'candidate_rows':len(result),'existing_grade_counts':s['grade_counts'],'strategy_states':dict(Counter(r['strategy_state'] for r in result)),
+                      'stage7_state':report['state'],'stage7_run_id':read(Path('/tmp/krx-stage8-run.json'))['id'],'stage7_artifact_sha256':sha(STAGE7),'local_source_sha256':hashes,'financial_api_calls':0,'verified_fair_prices':0,'candidate_price_plans':0,'final_buy_signals':0,'final_sell_signals':0,'investment_decisions_authorized':False,'synthetic_scenarios':examples,'candidates':result}
+              OUT.mkdir(parents=True,exist_ok=True);(OUT/'strategy_report.json').write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print('STAGE8_RESULT '+json.dumps({k:v for k,v in output.items() if k not in ('candidates','synthetic_scenarios','local_source_sha256')},ensure_ascii=False))
+
+
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_stage8.py
+          python /tmp/krx_stage8.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-stage8-strategy-research
+          path: /tmp/krx-stage8/strategy_report.json
+          if-no-files-found: error
