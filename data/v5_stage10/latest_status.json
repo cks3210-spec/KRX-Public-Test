@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "state": "RESEARCH_BRIEFING_READY_ACTIONS_WITHHELD",
+  "generated_kst": "2026-11-27T15:36:27.068389+09:00",
+  "evaluation_date_kst": "20261127",
+  "expected_market_date": "20261126",
+  "market_date": "20261126",
+  "source_commit": "0d17c5537a85e1a5989d10b3fadeff2f361d11f5",
+  "run_id": "45952903868",
+  "runs": {
+    "kis": {
+      "id": 45950338168,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "created_at": "2026-11-27T06:12:06Z",
+      "updated_at": "2026-11-27T06:12:28Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45950338168"
+    },
+    "7": {
+      "id": 45950838734,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "created_at": "2026-11-27T06:16:50Z",
+      "updated_at": "2026-11-27T06:17:03Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45950838734"
+    },
+    "8": {
+      "id": 45951599772,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "created_at": "2026-11-27T06:23:58Z",
+      "updated_at": "2026-11-27T06:24:14Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45951599772"
+    },
+    "9": {
+      "id": 45952051265,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "created_at": "2026-11-27T06:28:13Z",
+      "updated_at": "2026-11-27T06:28:40Z",
+      "html_url": "https://github.com/cks3210-spec/KRX-Public-Test/actions/runs/45952051265"
+    }
+  },
+  "blockers": [],
+  "candidates": [
+    {
+      "code": "240550",
+      "name": "동방메디컬",
+      "research_grade": "A",
+      "quality_state": "GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY",
+      "valuation_state": "HOLD_SECTOR_OR_RATIO_EVIDENCE",
+      "strategy_state": "HOLD_NO_VERIFIED_FAIR_PRICE",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    },
+    {
+      "code": "241520",
+      "name": "DSC인베스트먼트",
+      "research_grade": "A",
+      "quality_state": "GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY",
+      "valuation_state": "HOLD_SECTOR_OR_RATIO_EVIDENCE",
+      "strategy_state": "HOLD_NO_VERIFIED_FAIR_PRICE",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    },
+    {
+      "code": "243070",
+      "name": "휴온스",
+      "research_grade": "B",
+      "quality_state": "REVIEW_GROWTH_OR_HEALTH_RISK",
+      "valuation_state": "HOLD_QUALITY_REVIEW",
+      "strategy_state": "HOLD_QUALITY_REVIEW",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    },
+    {
+      "code": "264660",
+      "name": "씨앤지하이테크",
+      "research_grade": "A",
+      "quality_state": "GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY",
+      "valuation_state": "HOLD_SECTOR_OR_RATIO_EVIDENCE",
+      "strategy_state": "HOLD_NO_VERIFIED_FAIR_PRICE",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    },
+    {
+      "code": "267980",
+      "name": "매일유업",
+      "research_grade": "A",
+      "quality_state": "REVIEW_GROWTH_OR_HEALTH_RISK",
+      "valuation_state": "HOLD_QUALITY_REVIEW",
+      "strategy_state": "HOLD_QUALITY_REVIEW",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    },
+    {
+      "code": "298830",
+      "name": "슈어소프트테크",
+      "research_grade": "B",
+      "quality_state": "REVIEW_GROWTH_OR_HEALTH_RISK",
+      "valuation_state": "HOLD_QUALITY_REVIEW",
+      "strategy_state": "HOLD_QUALITY_REVIEW",
+      "verified_fair_price": null,
+      "buy_signal": false,
+      "sell_signal": false
+    }
+  ],
+  "verified_fair_prices": 0,
+  "final_buy_signals": 0,
+  "final_sell_signals": 0,
+  "investment_decisions_authorized": false,
+  "financial_api_calls": 0,
+  "intraday_prices_verified": false,
+  "notes": [
+    "Previous KRX session only; not live prices.",
+    "Research candidates are not investment grades or trade signals.",
+    "No private KIS raw values or decrypted data are published.",
+    "Scheduled readers must independently check current date, latest workflow status, and source freshness."
+  ],
+  "market_rows": 2772,
+  "kis": {
+    "state": "NO_SAME_DATE_KIS_ARCHIVE"
+  },
+  "grade_counts": {
+    "A": 4,
+    "B": 2
+  },
+  "quality_states": {
+    "GROWTH_AND_HEALTH_CRITERIA_MET_RESEARCH_ONLY": 3,
+    "REVIEW_GROWTH_OR_HEALTH_RISK": 3
+  },
+  "valuation_states": {
+    "HOLD_SECTOR_OR_RATIO_EVIDENCE": 3,
+    "HOLD_QUALITY_REVIEW": 3
+  },
+  "strategy_states": {
+    "HOLD_NO_VERIFIED_FAIR_PRICE": 3,
+    "HOLD_QUALITY_REVIEW": 3
+  },
+  "kis_link_state": "NO_SAVED_ENCRYPTED_KIS_SESSION",
+  "performance": {
+    "ledger_events": 302,
+    "group_counts": {
+      "G": 7,
+      "VG": 5,
+      "V": 13,
+      "R14_B": 226,
+      "R14_A": 51
+    },
+    "matured_horizons": 46,
+    "horizon_counts": {
+      "MATURED": 46,
+      "PENDING_HISTORY": 860
+    },
+    "r14_strategy_path_states": {
+      "PENDING_CALENDAR_HORIZON": 831
+    },
+    "simulated_strategy_stats": {},
+    "simulated_outcomes": {}
+  },
+  "artifact_sha256": {
+    "7": "d44c65790420b600e400de3999bcf00012c639526f73675a90acc7c6146ea660",
+    "8": "fd76061a0087330b96ba80548b7080acfd1c99fba58ecea0e1e8a75c7f157e52",
+    "9": "87b08a9fef290b8bc2ad52c708a1fa997713bbc011dc42a3ca52e7e147e6475c"
+  }
+}
