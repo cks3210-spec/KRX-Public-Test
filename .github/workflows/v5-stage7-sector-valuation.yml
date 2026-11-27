@@ -201,11 +201,13 @@ jobs:
               base=ROOT/'data/v5_kis_valuation/sessions'; paths=sorted(p for p in base.glob('*/observations.aes') if re.fullmatch(r'20\d{6}',p.parent.name))
               out={'state':'NO_SAVED_ENCRYPTED_KIS_SESSION','market_date':day,'latest_broker_session':None,'observation_rows':0,'same_date_market_join':False,'reviewed_peer_rows_from_broker':0}
               if not paths:return out
-              p=paths[-1]; session=p.parent.name;out['latest_broker_session']=session
+              out['latest_broker_session']=paths[-1].parent.name
+              p=base/day/'observations.aes'
+              if p not in paths:
+                  out['state']='WAIT_FOR_SAME_DATE_KRX_AND_FINANCIAL_DATA';return out
+              session=day;out['selected_broker_session']=session
               b=load_broker(p,session,os.environ.get('KIS_DATA_ARCHIVE_KEY',''));obs=b['observations']
               out.update(collection_state=b['state'],observation_rows=len(obs),sector_rows=sum(sector_name(r.get('sector_name_kis')) is not None for r in obs.values()),archive_sha256=sha(p))
-              if session!=day:
-                  out['state']='WAIT_FOR_SAME_DATE_KRX_AND_FINANCIAL_DATA';return out
               out['same_date_market_join']=True
               if b['state']!='KIS_BROKER_COLLECTION_COMPLETE':out['state']='HOLD_PARTIAL_KIS_COLLECTION';return out
               archives=sorted(p for p in (ROOT/'data/v5_official_shareclass_archive').glob('*.json') if re.fullmatch(r'20\d{6}',p.stem) and p.stem<=day)
@@ -241,6 +243,20 @@ jobs:
                       assert provisional_peers(b,'20261127',m,cl,cs)['provisional_comparable_rows']==0
                       assert provisional_peers(b,day,{**m,'000001':{**m['000001'],'TDD_CLSPRC':'1001'}},cl,cs)['quality_candidates_with_8_provisional_peers']==0
                       assert sector_name('미분류') is None and sector_name('A\nB') is None
+                      # Exact-date selection must ignore newer archives and never fall back.
+                      newer=p.parent.parent/'20261127'/'observations.aes';newer.parent.mkdir()
+                      newer.write_bytes(b'not a valid archive')
+                      from unittest.mock import patch
+                      with patch.dict(os.environ,{'KIS_DATA_ARCHIVE_KEY':key}):
+                          x=broker_coverage(day,m,cs)
+                          assert x['same_date_market_join'] and x['selected_broker_session']==day and x['latest_broker_session']=='20261127'
+                          for missing in ('20261125','20261130'):
+                              x=broker_coverage(missing,m,cs)
+                              assert not x['same_date_market_join'] and x['state']=='WAIT_FOR_SAME_DATE_KRX_AND_FINANCIAL_DATA'
+                          try:broker_coverage('20261127',m,cs)
+                          except (ValueError,FileNotFoundError):pass
+                          else:raise AssertionError('INVALID_MATCHED_ARCHIVE_ACCEPTED')
+                      print('STAGE7_EXACT_DATE_SELECTION_PASS')
                       p.write_bytes(p.read_bytes()+b'x')
                       try:load_broker(p,day,key)
                       except ValueError:pass
