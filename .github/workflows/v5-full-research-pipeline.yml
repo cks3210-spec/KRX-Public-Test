@@ -1,0 +1,85 @@
+name: KRX v5 Full Market Research Pipeline
+'on':
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'self-test = synthetic only; evaluate = existing data only'
+        type: choice
+        options: [self-test, evaluate]
+        default: self-test
+  workflow_run:
+    workflows: ['KRX v5 KIS Daily Valuation']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: krx-v5-full-research-pipeline
+  cancel-in-progress: false
+jobs:
+  research:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install readers and KRX calendar
+        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1' 'exchange-calendars>=4.5,<5'
+      - name: Offline integrated self-tests
+        run: |
+          set -euo pipefail
+          python scripts/v5_evaluation_scope.py --self-test
+          python scripts/v5_full_financial_evaluation.py --self-test
+          python scripts/v5_valuation_crosscheck.py
+          python scripts/v5_full_kis_evaluation.py --self-test
+          python scripts/v5_full_share_evidence.py --self-test
+          python scripts/v5_full_sector_valuation.py --self-test
+          python scripts/v5_full_grade_strategy.py --self-test
+          python scripts/v5_full_performance_briefing.py --self-test
+          python scripts/v5_full_pipeline.py --self-test
+      - name: Evaluate existing data only on a KRX session
+        id: evaluate
+        if: ${{ github.event_name == 'workflow_run' || inputs.mode == 'evaluate' }}
+        env:
+          KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
+        run: |
+          set -euo pipefail
+          if ! python - <<'PY'
+          import datetime as dt
+          import exchange_calendars as xc
+          d=dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
+          c=xc.get_calendar('XKRX',start=str(d-dt.timedelta(days=10)),end=str(d+dt.timedelta(days=10)))
+          raise SystemExit(0 if d>=dt.date(2026,11,30) and c.is_session(str(d)) else 1)
+          PY
+          then
+            echo 'NO_LIVE_EVALUATION_BEFORE_20261130_OR_NON_SESSION'
+            exit 0
+          fi
+          python scripts/v5_full_pipeline.py --persist --out /tmp/v5-full-pipeline
+          echo 'evaluated=true' >> "$GITHUB_OUTPUT"
+      - name: Persist only new encrypted research snapshots
+        if: steps.evaluate.outputs.evaluated == 'true'
+        run: |
+          set -euo pipefail
+          folder=data/v5_full_research/snapshots
+          if [ ! -d "$folder" ]; then exit 0; fi
+          git add -- "$folder"/*.aes
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Preserve encrypted full-scope research snapshot'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: steps.evaluate.outputs.evaluated == 'true'
+        with:
+          name: krx-v5-full-market-summary
+          path: /tmp/v5-full-pipeline/summary.json
+          if-no-files-found: error
