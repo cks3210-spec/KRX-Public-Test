@@ -1,15 +1,15 @@
 {
   "candidate_market_source": "data/latest.csv",
-  "candidate_rows": 4,
+  "candidate_rows": 6,
   "candidate_states": {
-    "HOLD_NO_KIS_SNAPSHOT": 4
+    "HOLD_NO_KIS_SNAPSHOT": 6
   },
   "cohort_exists": false,
   "external_financial_api_calls": 0,
   "final_buy_signals": 0,
   "financial_disclosure_asof_verified": false,
   "investment_decisions_authorized": false,
-  "market_date": "20261125",
+  "market_date": "20261126",
   "market_provenance": "EXACT_LATEST_HASH",
   "market_rows": 2772,
   "notes": [
@@ -20,13 +20,13 @@
   "official_krx_per_pbr_verified": false,
   "research_reference_rows": 0,
   "share_class_verified": false,
-  "snapshot_path": "v5_reports/v5_integrated_research/sessions/20261125/70dc42eedc9c3ef1c9b48c2eff2eba4a01db6eef3b60ec7d8d79d72e8ee24e49/research.json",
-  "snapshot_sha256": "70dc42eedc9c3ef1c9b48c2eff2eba4a01db6eef3b60ec7d8d79d72e8ee24e49",
+  "snapshot_path": "v5_reports/v5_integrated_research/sessions/20261126/6c25fdc2abd24ea3922c314a109c96e622192d79fc1612fee1efc72b7ed7d157/research.json",
+  "snapshot_sha256": "6c25fdc2abd24ea3922c314a109c96e622192d79fc1612fee1efc72b7ed7d157",
   "source_sha256": {
-    "data/latest.csv": "07240805c220754b149461f9146520088c3a44d07874291fa26e9f98f0996003",
-    "data/summary.json": "f95f6db7cb327e449a24c64dbffb956776f9084f8abb00399b92c6be5badfe29",
-    "data/v5_financial_m/filing_refresh/candidate_regrade/20261125/81d7eebd93bf882343f4c25a49055febd9a422fce708be0744e56b2e24121e61/official_ratio_review_queue.csv": "7d8d969f2643ccb887acf1ec0bd4d21bd915a3fde1b00b01323f0c2930c8f8a1",
-    "data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json": "2919c0c01b693b2cb30e2b2a0410fe4c0b73de8d4fa71ad7e36430b1c4c7aaa0",
+    "data/latest.csv": "5d55f2e295b9ff5b75cb6b7e732bec766b78dac8cc822cf5ef428651663aa1a7",
+    "data/summary.json": "1b1b1e9ac742c7c5684053d5721ff2ecedd116a2e7c8b8cb49edbc7b154cbda6",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/20261126/a51e01d053af809b9ab075cbfd4ceee6fa59c013cfd6ff0092bf7a705156cfac/official_ratio_review_queue.csv": "14d1b8e040749d23e68ff707938bcdd8b72fc2a18366ed208d3259bdbf67edea",
+    "data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json": "c14088b96c38cf2edaea942374573d97d9dfa6d72ddcdd1289d3dc0d3fd8eeb6",
     "scripts/krx_v5_r14_grade_engine.py": "d56d5c6ae152d085b34e51d1d417a59adce322f548cb75a8e8144aaf14bd3afa"
   },
   "state": "STAGE5_RESEARCH_INTEGRATED",
