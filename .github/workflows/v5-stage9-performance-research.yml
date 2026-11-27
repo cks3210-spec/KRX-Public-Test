@@ -1,0 +1,210 @@
+name: KRX v5 Stage 9 Performance Research
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ['KRX v5 Stage 8 Trade Strategy Research']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: krx-v5-stage9-performance-research
+  cancel-in-progress: false
+jobs:
+  research:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange session calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Reuse exact successful Stage 8 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID="$TRIGGER_RUN_ID"
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow v5-stage8-trade-strategy.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          fi
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" > /tmp/krx-stage9-run.json
+          python - "$RUN_ID" <<'PYTHON'
+          import json,os,sys
+          from pathlib import Path
+          r=json.loads(Path('/tmp/krx-stage9-run.json').read_text())
+          if not (str(r['id'])==sys.argv[1] and r['path']=='.github/workflows/v5-stage8-trade-strategy.yml' and r['head_branch']=='main' and r['head_repository']['full_name']==os.environ['GITHUB_REPOSITORY'] and r['status']=='completed' and r['conclusion']=='success'):
+              raise ValueError('UNTRUSTED_STAGE8_RUN')
+          PYTHON
+          mkdir -p /tmp/krx-stage9-input
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name krx-v5-stage8-strategy-research --dir /tmp/krx-stage9-input
+          test -s /tmp/krx-stage9-input/strategy_report.json
+      - name: Read-only Stage27 performance audit and historical research simulation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_stage9.py <<'PYTHON'
+          import csv, gzip, json, hashlib, datetime as dt, os, sys
+          from collections import Counter, defaultdict
+          from decimal import Decimal, InvalidOperation, ROUND_CEILING
+          from pathlib import Path
+          import exchange_calendars as xc
+          D=Decimal
+          ROOT=Path.cwd()
+          OUT=Path('/tmp/krx-stage9')
+          HORIZONS=(5,10,20)
+          FRACTIONS=(D('.3'),D('.4'),D('.5'))
+          KEY=('signal_date','ISU_CD','signal_group')
+
+          def need(v,msg):
+              if not v: raise ValueError(msg)
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          def n(v):
+              try:
+                  a=D(str(v).replace(',','')); return a if a.is_finite() else None
+              except (InvalidOperation,ValueError): return None
+          def pos(v):
+              a=n(v); return a if a is not None and a>0 else None
+          def money(v):return str(v.quantize(D('.01')))
+          def pct(v):return str(v.quantize(D('.0001')))
+          def fee(g,r):return (g*r).to_integral_value(rounding=ROUND_CEILING)
+          def date(v):return dt.datetime.strptime(v,'%Y%m%d').date()
+          def index(p):
+              with p.open(encoding='utf-8-sig',newline='') as f:
+                  rd=csv.DictReader(f); need(rd.fieldnames and len(rd.fieldnames)==len(set(rd.fieldnames)),'INVALID_HEADER');out={}
+                  for r in rd:
+                      k=tuple(r.get(x,'') for x in KEY);need(None not in r and all(k) and k not in out,'INVALID_OR_DUPLICATE_EVENT');out[k]=r
+                  return out
+
+          def simulate(prices,f,buy,sell):
+              # Fixed ex-ante policy: sell at second future session close, then first 10% decline
+              # signal on subsequent close, execute repurchase on NEXT session close only.
+              # Mark all strategies at same horizon, no hypothetical final liquidation.
+              need(len(prices)>=6 and all(pos(x) for x in prices),'INVALID_PATH')
+              entry=prices[0]; terminal=prices[-1]; qty=100; sold=int(D(qty)*f)
+              sale=prices[2]; gross=sale*sold; proceeds=gross-fee(gross,sell)
+              need(proceeds>=0,'NEGATIVE_PROCEEDS')
+              signal=next((i for i in range(3,len(prices)) if prices[i]<=sale*D('.90')),None)
+              execution=signal+1 if signal is not None and signal+1<len(prices) else None
+              bought=0; balance=proceeds
+              if execution is not None:
+                  p=prices[execution]; bought=int(proceeds/(p*(1+buy)))
+                  while bought and bought*p+fee(bought*p,buy)>proceeds:bought-=1
+                  balance=proceeds-bought*p-fee(bought*p,buy)
+              initial=entry*qty+fee(entry*qty,buy); hold=terminal*qty; value=terminal*(qty-sold+bought)+balance
+              need(balance>=0,'NEGATIVE_CASH')
+              state='REBOUGHT_NEXT_CLOSE' if execution is not None else ('SIGNAL_AT_HORIZON_NO_EXECUTION' if signal is not None else 'NO_REENTRY_SIGNAL')
+              return {'sale_pct':str(f*100),'sale_offset':2,'reentry_signal_offset':signal,'reentry_execution_offset':execution,'reentry_state':state,'sold_shares':sold,'repurchased_shares':bought,'cash_remaining_krw':money(balance),'hold_return_pct':pct((hold/initial-1)*100),'strategy_return_pct':pct((value/initial-1)*100),'excess_return_pp':pct((value-hold)/initial*100),'difference_vs_hold_krw':money(value-hold),'outcome':'OUTPERFORM' if value>hold else 'UNDERPERFORM' if value<hold else 'TIE'}
+
+          def audit_horizon(r,h,base,sessions,prices,asof):
+              # sessions are actual exchange calendar dates, not per-stock observations.
+              idx=sessions.index(base); end=idx+h
+              if end>=len(sessions) or sessions[end]>asof:return 'PENDING_CALENDAR_HORIZON',None,None
+              target=sessions[end]; status=r[f'status_{h}d']; code=r['ISU_CD']
+              if status!='MATURED':return 'STAGE27_PENDING_OR_MISSING',None,None
+              if r[f'date_{h}d']!=target:return 'HOLD_HORIZON_DATE_MISMATCH',None,None
+              entry=pos(r['entry_close_krw']); exit=pos(r[f'close_{h}d']); recorded=n(r[f'return_{h}d'])
+              if entry is None or exit is None or recorded is None or abs((exit/entry-1)*100-recorded)>D('.00011'):return 'HOLD_RETURN_MISMATCH',None,None
+              days=sessions[idx:end+1]; path=[prices.get((code,d)) for d in days]
+              if path[0] is not None and path[0]!=entry or path[-1] is not None and path[-1]!=exit:return 'HOLD_ARCHIVE_PRICE_MISMATCH',None,None
+              if any(x is None for x in path):return 'HOLD_INCOMPLETE_PATH',None,None
+              return 'PATH_RECONCILED_UNADJUSTED',path,target
+
+          def self_test():
+              buy=D('.001');sell=D('.003');f=D('.5')
+              def s(a):return simulate(list(map(D,a)),f,buy,sell)
+              assert s([100,100,100,89,90,100])['reentry_execution_offset']==4
+              assert s([100,100,100,89,110,120])['outcome']=='UNDERPERFORM'
+              assert s([100,100,100,89,80,100])['outcome']=='OUTPERFORM'
+              assert s([100,100,100,100,100,80])['reentry_state']=='SIGNAL_AT_HORIZON_NO_EXECUTION'
+              assert s([100,100,100,100,100,100])['reentry_state']=='NO_REENTRY_SIGNAL'
+              assert s([100,100,100,100,100,100])['outcome']=='UNDERPERFORM'
+              assert s([100,100,100,89,80,100])['sold_shares']==50
+              assert s([100,100,100,89,80,100])['repurchased_shares']>50
+              assert n('nan') is None
+              assert fee(D('1'),buy)==1
+              days=['20261119','20261120','20261123','20261124','20261125','20261126']
+              row={'ISU_CD':'fixture','entry_close_krw':'100','status_5d':'MATURED','date_5d':days[-1],'close_5d':'105','return_5d':'5'}
+              prices={('fixture',d):D(100+i) for i,d in enumerate(days)}
+              def a(r=row,p=prices,asof=days[-1]):return audit_horizon(r,5,days[0],days,p,asof)[0]
+              assert a()=='PATH_RECONCILED_UNADJUSTED'
+              assert a(asof=days[-2])=='PENDING_CALENDAR_HORIZON'
+              assert a(r={**row,'date_5d':days[-2]})=='HOLD_HORIZON_DATE_MISMATCH'
+              assert a(r={**row,'return_5d':'6'})=='HOLD_RETURN_MISMATCH'
+              assert a(p={k:v for k,v in prices.items() if k[1]!=days[2]})=='HOLD_INCOMPLETE_PATH'
+              assert a(p={**prices,('fixture',days[-1]):D(106)})=='HOLD_ARCHIVE_PRICE_MISMATCH'
+              assert a(r={**row,'status_5d':'PENDING_HISTORY'})=='STAGE27_PENDING_OR_MISSING'
+              print('STAGE9_SELF_TEST_PASS 17')
+
+          def main():
+              self_test()
+              if '--self-test' in sys.argv:return
+              s8p=Path('/tmp/krx-stage9-input/strategy_report.json');s8=read(s8p)
+              need(s8['state']=='STAGE8_RESEARCH_ENGINE_READY_CANDIDATE_ACTIONS_WITHHELD' and s8['investment_decisions_authorized'] is False and s8['final_buy_signals']==s8['final_sell_signals']==0,'INVALID_STAGE8')
+              assumptions=s8['synthetic_scenarios'];need(assumptions['state']=='SYNTHETIC_SCENARIOS_ONLY','BAD_ASSUMPTIONS')
+              buy=n(assumptions['assumed_buy_fee_pct']);sell=n(assumptions['assumed_sell_fee_and_tax_pct']);need(buy is not None and sell is not None and 0<=buy<100 and 0<=sell<100,'INVALID_FEE');buy/=100;sell/=100
+              need(buy==D('.001') and sell==D('.003'),'UNREVIEWED_FEE_CHANGE')
+              base=ROOT/'v5_reports/stage27';sp=base/'status.json';lp=base/'signal_ledger.csv';pp=base/'performance_5_10_20.csv';hp=ROOT/'data/daily_70d.csv.gz';mp=ROOT/'data/summary.json'
+              paths=(sp,lp,pp,hp,mp,s8p);hashes={str(p):sha(p) for p in paths};st=read(sp);day=read(mp)['latest_trading_date'];date(day)
+              need(st['market_date']==day==s8['market_date'],'WAIT_FOR_MATCHED_STAGE27_STAGE8_DATE')
+              need(st['research_only'] is True and st['investment_decisions_authorized'] is False and st['final_buy_signals']==0,'UNSAFE_STAGE27')
+              ledger=index(lp);perf=index(pp);need(set(ledger)==set(perf) and len(ledger)==st['ledger_events'],'LEDGER_COUNT_MISMATCH')
+              groups=Counter(k[2] for k in ledger);need(sum(groups.values())==st['ledger_events'] and groups['R14_A']+groups['R14_B']==st['r14_cohorts_total'],'GROUP_COUNT_MISMATCH')
+              maturity=Counter(r[f'status_{h}d'] for r in perf.values() for h in HORIZONS);need(dict(maturity)==st['horizon_status_counts'] and maturity['MATURED']==st['matured_horizon_observations'],'MATURITY_COUNT_MISMATCH')
+              wanted={k[1] for k in ledger if k[2] in ('R14_A','R14_B')};prices={};all_days=set()
+              with gzip.open(hp,'rt',encoding='utf-8-sig',newline='') as f:
+                  rd=csv.DictReader(f);fields=rd.fieldnames or [];df=next((x for x in ('BAS_DD','date','Date') if x in fields),None);cf=next((x for x in ('ISU_CD','code','Code') if x in fields),None);pf=next((x for x in ('TDD_CLSPRC','close','Close') if x in fields),None);need(df and cf and pf,'HISTORY_SCHEMA')
+                  for r in rd:
+                      d=r[df].replace('-','');date(d);need(d<=day,'FUTURE_HISTORY_DATE');all_days.add(d)
+                      if r[cf] not in wanted:continue
+                      p=pos(r[pf]);k=(r[cf],d)
+                      if p is None:continue
+                      need(k not in prices or prices[k]==p,'HISTORY_PRICE_CONFLICT');prices[k]=p
+              need(all_days and max(all_days)==day,'HISTORY_DATE_MISMATCH')
+              earliest=min([min(all_days)]+[k[0] for k in ledger]);cal=xc.get_calendar('XKRX',start=str(date(earliest)-dt.timedelta(days=10)),end=str(date(day)+dt.timedelta(days=90)))
+              sessions=[x.strftime('%Y%m%d') for x in cal.sessions];session_set=set(sessions);need(all_days<=session_set,'NON_SESSION_HISTORY')
+              counters=defaultdict(Counter);hold_stats=defaultdict(list);results=[];strategy_stats=defaultdict(list);risk=Counter()
+              for k,r in sorted(perf.items()):
+                  l=ledger[k];group=k[2];need(group in ('R14_A','R14_B','V','G','VG'),'UNKNOWN_GROUP')
+                  need(r['investment_grade']==l['investment_grade']=='NOT_VERIFIED' and r['buy_decision']==l['buy_decision']=='ON_HOLD','UNSAFE_EVENT')
+                  need(r['entry_close_krw']==l['entry_close_krw'],'LEDGER_ENTRY_PRICE_MISMATCH')
+                  for h in HORIZONS:
+                      status=r[f'status_{h}d'];counters[group][f'{h}d:{status}']+=1
+                      if status=='MATURED':
+                          rr=n(r[f'return_{h}d']);need(rr is not None,'BAD_MATURED_RETURN');hold_stats[(group,h)].append(rr)
+                      if group not in ('R14_A','R14_B'):continue
+                      entry=r.get('entry_session_date','');rec={'signal_date':k[0],'code':k[1],'research_group':group,'horizon':h,'strategy_state':None,'strategies':[]}
+                      if not entry:rec['strategy_state']='PENDING_FROZEN_ENTRY'
+                      elif entry not in session_set or k[0] not in session_set or sessions[sessions.index(k[0])+1]!=entry or r['entry_price_method']!='FROZEN_FIRST_FUTURE_OFFICIAL_CLOSE' or l['entry_session_date']!=entry:rec['strategy_state']='HOLD_ENTRY_PROVENANCE'
+                      else:
+                          state,path,target=audit_horizon(r,h,entry,sessions,prices,day);rec['strategy_state']=state;rec['exit_date']=target
+                          if path is not None:
+                              rec['strategies']=[simulate(path,f,buy,sell) for f in FRACTIONS]
+                              for x in rec['strategies']:
+                                  strategy_stats[(group,h,x['sale_pct'])].append(n(x['excess_return_pp']));risk[(x['outcome'],x['reentry_state'])]+=1
+                      results.append(rec)
+              def stats(vals):return {'n':len(vals),'mean_pct_or_pp':pct(sum(vals)/len(vals)),'positive_count':sum(x>0 for x in vals),'negative_count':sum(x<0 for x in vals),'zero_count':sum(x==0 for x in vals)}
+              need(all(sha(Path(p))==v for p,v in hashes.items()),'SOURCE_CHANGED')
+              report={'state':'STAGE9_RESEARCH_PERFORMANCE_AUDIT','market_date':day,'stage8_run_id':read(Path('/tmp/krx-stage9-run.json'))['id'],'ledger_events':len(ledger),'group_counts':dict(groups),'matured_horizons':maturity['MATURED'],'horizon_counts':dict(maturity),'group_horizon_status':{g:dict(v) for g,v in counters.items()},'observed_stage27_gross_return_stats':{f'{g}:{h}d':stats(v) for (g,h),v in hold_stats.items()},'r14_strategy_path_states':dict(Counter(r['strategy_state'] for r in results)),'simulated_strategy_stats':{f'{g}:{h}d:{f}%':stats(v) for (g,h,f),v in strategy_stats.items()},'simulated_outcomes':{f'{a}:{b}':v for (a,b),v in risk.items()},'assumptions':{'shares':100,'sell_session_offset':2,'reentry_signal_decline_pct':10,'reentry_execution':'NEXT_SESSION_CLOSE','buy_fee_pct':str(buy*100),'sell_fee_tax_pct':str(sell*100)},'source_sha256':hashes,'financial_api_calls':0,'final_buy_signals':0,'final_sell_signals':0,'investment_decisions_authorized':False,'notes':['Stage27 observed unadjusted gross close returns are separate from simulated results. Legacy V/G/VG groups are reported separately and excluded from strategy simulation.','Retrospective fixed rule on historical R14 cohorts; not an out-of-sample or executable strategy test. Corporate actions, dividends, slippage, intraday fills, actual fees and financial failure causes not verified.','Missing entire price path or mismatched calendar date is withheld. No imputation or later-session substitution. Observations may overlap and are not independent.','Loss outcomes and reentry failures are mechanical simulation diagnostics, not evidence of business failure. Existing ledgers untouched.'],'r14_horizon_audit':results}
+              OUT.mkdir(parents=True,exist_ok=True);(OUT/'performance_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print('STAGE9_RESULT '+json.dumps({k:v for k,v in report.items() if k not in ('r14_horizon_audit','source_sha256','group_horizon_status','observed_stage27_gross_return_stats','simulated_strategy_stats')},ensure_ascii=False))
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_stage9.py
+          python /tmp/krx_stage9.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: krx-v5-stage9-performance-research
+          path: /tmp/krx-stage9/performance_report.json
+          if-no-files-found: error
