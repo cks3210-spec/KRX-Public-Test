@@ -1,0 +1,179 @@
+name: KRX v5 Research Chain Recovery
+'on':
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'audit (read only) or reconcile (dispatch missing research stages)'
+        type: choice
+        options: [audit, reconcile]
+        default: audit
+        required: true
+  workflow_run:
+    workflows: ['KRX v5 KIS Daily Valuation']
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '42 23 * * 0-4' # 08:42 KST weekdays
+    - cron: '30 4 * * 1-5' # 13:30 KST weekdays
+    - cron: '40 9 * * 1-5' # 18:40 KST weekdays
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: krx-v5-research-chain-recovery
+  cancel-in-progress: false
+jobs:
+  recover:
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name != 'workflow_run' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exchange calendar
+        run: python -m pip install --disable-pip-version-check 'exchange-calendars>=4.5,<5'
+      - name: Audit or repair existing research chain
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTROL_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'reconcile' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/krx_control.py <<'PYTHON'
+          import base64, datetime as dt, json, os, subprocess, sys, time
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          REPO='cks3210-spec/KRX-Public-Test'
+          KST=ZoneInfo('Asia/Seoul')
+          UTC=dt.timezone.utc
+          STAGES={7:'v5-stage7-sector-valuation.yml',8:'v5-stage8-trade-strategy.yml',9:'v5-stage9-performance-research.yml',10:'v5-stage10-briefing-integration.yml'}
+          UPSTREAM={'r14':'krx-v5-r14-dart-auto-continue.yml','kis':'v5-kis-valuation-pilot.yml','stage27':'v5-stage27-performance.yml'}
+          GRACE=120
+
+          def need(ok,msg):
+              if not ok: raise ValueError(msg)
+          def instant(x): return dt.datetime.fromisoformat(x.replace('Z','+00:00'))
+          def now(): return dt.datetime.now(UTC)
+          def gh(*args):
+              return subprocess.check_output(['gh',*args],text=True,stderr=subprocess.DEVNULL,timeout=60)
+          def api(path): return json.loads(gh('api',f'repos/{REPO}/{path}'))
+          def repo_json(path):
+              x=api('contents/'+path+'?ref=main');need(x.get('encoding')=='base64','BAD_CONTENT_ENCODING')
+              return json.loads(base64.b64decode(x['content'],validate=False).decode('utf-8-sig'))
+          def valid(r,file):
+              return bool(r and r.get('path')=='.github/workflows/'+file and r.get('head_branch')=='main' and (r.get('head_repository') or {}).get('full_name')==REPO)
+          def latest(file):
+              a=api('actions/workflows/'+file+'/runs?branch=main&per_page=1')['workflow_runs']
+              if not a:return None
+              r=a[0];need(valid(r,file),'UNTRUSTED_WORKFLOW_RUN');return r
+          def active(r):return bool(r and r.get('status')!='completed')
+          def good(r):return bool(r and r.get('status')=='completed' and r.get('conclusion')=='success')
+          def fresh(r,floor):return good(r) and instant(r['created_at'])>=floor
+
+          def decision(r,floor,t,already=False):
+              if active(r):return 'WAIT_ACTIVE'
+              if fresh(r,floor):return 'REUSE_SUCCESS'
+              if already:return 'HOLD_AFTER_ONE_DISPATCH'
+              # Give native workflow_run time to appear before repair; don't treat grace as success.
+              if t<floor+dt.timedelta(seconds=GRACE):return 'WAIT_NATIVE_GRACE'
+              return 'DISPATCH_MISSING_OR_FAILED'
+
+          def final_ok(b,ids,day,today):
+              return (b.get('schema_version')==1 and str(b.get('run_id'))==str(ids[10]) and b.get('market_date')==day and b.get('expected_market_date')==day and b.get('evaluation_date_kst')==today and b.get('state')=='RESEARCH_BRIEFING_READY_ACTIONS_WITHHELD' and b.get('blockers')==[] and b.get('investment_decisions_authorized') is False and b.get('final_buy_signals')==b.get('final_sell_signals')==0 and all(b.get('runs',{}).get(str(n),{}).get('id')==ids[n] for n in (7,8,9)))
+
+          def tests():
+              t=instant('2026-11-27T06:00:00Z');old=t-dt.timedelta(minutes=10);recent=t-dt.timedelta(minutes=3)
+              r={'status':'completed','conclusion':'success','created_at':recent.isoformat()}
+              assert decision(r,old,t)=='REUSE_SUCCESS'
+              assert decision(r,t-dt.timedelta(minutes=2),t)=='DISPATCH_MISSING_OR_FAILED'
+              assert decision({'status':'queued'},old,t)=='WAIT_ACTIVE'
+              assert decision({'status':'in_progress'},old,t)=='WAIT_ACTIVE'
+              assert decision(None,t-dt.timedelta(seconds=30),t)=='WAIT_NATIVE_GRACE'
+              assert decision(None,old,t)=='DISPATCH_MISSING_OR_FAILED'
+              assert decision(None,old,t,True)=='HOLD_AFTER_ONE_DISPATCH'
+              assert decision({**r,'conclusion':'failure'},old,t)=='DISPATCH_MISSING_OR_FAILED'
+              ids={7:1,8:2,9:3,10:4};day='20261126';today='20261127'
+              b={'schema_version':1,'run_id':'4','market_date':day,'expected_market_date':day,'evaluation_date_kst':today,'state':'RESEARCH_BRIEFING_READY_ACTIONS_WITHHELD','blockers':[],'investment_decisions_authorized':False,'final_buy_signals':0,'final_sell_signals':0,'runs':{str(i):{'id':ids[i]} for i in (7,8,9)}}
+              assert final_ok(b,ids,day,today)
+              assert not final_ok({**b,'run_id':'3'},ids,day,today)
+              assert not final_ok({**b,'blockers':['STALE']},ids,day,today)
+              assert not final_ok({**b,'market_date':today},ids,day,today)
+              assert not final_ok({**b,'final_buy_signals':1},ids,day,today)
+              assert not final_ok({**b,'runs':{}},ids,day,today)
+              print('CONTROL_SELF_TEST_PASS 14',flush=True)
+
+          def main():
+              tests()
+              if '--self-test' in sys.argv:return
+              import exchange_calendars as xc
+              mode=os.environ.get('CONTROL_MODE','audit');need(mode in ('audit','reconcile'),'BAD_MODE')
+              local=now().astimezone(KST);today=local.strftime('%Y%m%d');cal=xc.get_calendar('XKRX')
+              result={'state':'HOLD_UNVERIFIED','mode':mode,'evaluation_date_kst':today,'generated_kst':local.isoformat(),'financial_api_calls':0,'dispatched':[],'upstream':{},'stages':{},'investment_decisions_authorized':False,'auto_operation_verified':False}
+              def finish(state):
+                  result['state']=state;Path('/tmp/krx-control').mkdir(exist_ok=True);Path('/tmp/krx-control/status.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print('CONTROL_RESULT '+json.dumps(result,ensure_ascii=False),flush=True)
+              if not cal.is_session(local.date().isoformat()):finish('SKIP_NON_TRADING_DAY');return
+              day=cal.previous_session(local.date().isoformat()).strftime('%Y%m%d');result['expected_market_date']=day
+              # Do not repair on stale inputs or while any existing collection/ledger job is active.
+              def input_check():
+                  s=repo_json('data/summary.json');q=repo_json('data/v5_financial_m/filing_refresh/candidate_regrade/latest_status.json');p=repo_json('v5_reports/stage27/status.json')
+                  if not (s.get('latest_trading_date')==q.get('market_date')==p.get('market_date')==day):return False
+                  return q.get('state')=='CANDIDATE_RESEARCH_REGRADE_PERSISTED' and q.get('investment_decisions_authorized') is False and q.get('final_buy_signals')==0 and p.get('research_only') is True and p.get('investment_decisions_authorized') is False and p.get('final_buy_signals')==0
+              def upstream():
+                  return {k:latest(f) for k,f in UPSTREAM.items()}
+              def view(r):return {k:r.get(k) for k in ('id','status','conclusion','event','created_at','updated_at')} if r else None
+              try:
+                  u=upstream();result['upstream']={k:view(r) for k,r in u.items()}
+                  if any(active(r) for r in u.values()):finish('HOLD_UPSTREAM_RUNNING');return
+                  if not input_check():finish('HOLD_MARKET_OR_LEDGER_NOT_CURRENT');return
+                  # KIS audit/compare success is not collection proof; this is only a run-order floor.
+                  floor=dt.datetime.combine(local.date(),dt.time(0),KST).astimezone(UTC)
+                  for r in u.values():
+                      if r and r.get('updated_at'):floor=max(floor,instant(r['updated_at']))
+                  original={k:r.get('id') if r else None for k,r in u.items()}
+                  result['upstream_floor_utc']=floor.isoformat()
+                  ids={};deadline=time.monotonic()+18*60
+                  for n,file in STAGES.items():
+                      sent=False;dispatch_at=None;old_id=None
+                      while True:
+                          r=latest(file);choice=decision(r,floor,now(),sent)
+                          result['stages'][str(n)]={'run':view(r),'decision':choice}
+                          if mode=='audit':
+                              if choice!='REUSE_SUCCESS':finish('AUDIT_REPAIR_OR_WAIT_REQUIRED');return
+                          # An accepted dispatch may not be listed immediately. Do not retry ambiguous requests.
+                          if sent and (r is None or r.get('id')==old_id):
+                              if time.monotonic()-dispatch_at>120:finish('HOLD_DISPATCH_NOT_VISIBLE');return
+                              choice='WAIT_ACTIVE'
+                          if choice=='REUSE_SUCCESS':
+                              ids[n]=r['id'];floor=max(floor,instant(r['updated_at']));break
+                          if mode=='audit':finish('AUDIT_REPAIR_OR_WAIT_REQUIRED');return
+                          if time.monotonic()>=deadline:finish('HOLD_REPAIR_TIME_BUDGET');return
+                          if choice=='HOLD_AFTER_ONE_DISPATCH':finish('HOLD_REPAIR_ATTEMPT_FAILED');return
+                          if choice=='DISPATCH_MISSING_OR_FAILED':
+                              u2=upstream()
+                              if any(active(v) for v in u2.values()) or {k:v.get('id') if v else None for k,v in u2.items()}!=original or not input_check():finish('HOLD_UPSTREAM_CHANGED');return
+                              # Only these four existing research workflows may be dispatched. No KIS, DART or KRX calls.
+                              old_id=r.get('id') if r else None
+                              result['dispatched'].append(n);sent=True;dispatch_at=time.monotonic()
+                              gh('workflow','run',file,'--repo',REPO,'--ref','main')
+                              print('CONTROL_DISPATCH_STAGE',n,flush=True)
+                          time.sleep(15)
+                  u3=upstream()
+                  if any(active(v) for v in u3.values()) or {k:v.get('id') if v else None for k,v in u3.items()}!=original or not input_check():finish('HOLD_UPSTREAM_CHANGED');return
+                  if any((latest(f) or {}).get('id')!=ids[n] for n,f in STAGES.items()):finish('HOLD_DOWNSTREAM_CHANGED');return
+                  b=repo_json('data/v5_stage10/latest_status.json');result['briefing_run_id']=b.get('run_id');result['briefing_state']=b.get('state')
+                  finish('CHAIN_LINK_VERIFIED_RESEARCH_ONLY' if final_ok(b,ids,day,today) else 'HOLD_BRIEFING_NOT_VERIFIED')
+              except Exception as e:
+                  # No raw exception, subprocess output, secrets or market data are published.
+                  result['error_type']=type(e).__name__;finish('HOLD_CONTROLLER_ERROR');raise SystemExit(1)
+
+          if __name__=='__main__':main()
+          PYTHON
+          python -m py_compile /tmp/krx_control.py
+          python /tmp/krx_control.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: krx-v5-research-chain-recovery
+          path: /tmp/krx-control/status.json
+          if-no-files-found: warn
