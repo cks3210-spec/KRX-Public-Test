@@ -98,6 +98,78 @@ def evaluate_sector(scope, financial, kis, market_rows, reviewed_rows, input_sta
     return report
 
 
+def numeric_sensitivity(scope, financial, kis, ratio, market_rows, links, archive, reviewed_rows, model):
+    """Conditional PE/PB ranges, never an independently verified fair price.
+    Only unambiguous numeric EPS hypotheses and identical filing periods are grouped.
+    KIS sector classification and common-share accounting remain unverified.
+    """
+    universe=validate_scope(scope); day=scope['market_date']
+    for report in (financial,kis,ratio):
+        validate_stage(scope,report)
+        require(report.get('investment_decisions_authorized') is False and report.get('final_buy_signals')==0,'UNSAFE_SENSITIVITY_INPUT')
+    require(ratio.get('official_ratios_verified') is False,'UNEXPECTED_RATIO_APPROVAL')
+    fin,broker,rat=(index(x['rows'],'code') for x in (financial,kis,ratio))
+    market=index(market_rows,'ISU_CD'); require(set(market)==set(universe) and all(r['BAS_DD']==day for r in market.values()),'SENSITIVITY_MARKET_SCOPE')
+    review=index(reviewed_rows,'code')
+    if archive is not None: require(archive.get('observation_session')==day,'SENSITIVITY_ARCHIVE_DATE')
+    obs=archive['observations'] if archive and archive.get('state')=='KIS_BROKER_COLLECTION_COMPLETE' else {}
+    inputs=defaultdict(list)
+    for k,x in links['inputs'].items():
+        if links['decisions'].get(k,{}).get('receipt')==x.get('receipt'):
+            inputs[(k.split(':')[0],x.get('receipt'))].append(x)
+    def period(code,rc):
+        hits=inputs.get((code,rc),[])
+        if len(hits)!=1:return None
+        x=hits[0];y=x.get('year');p=x.get('period')
+        if not isinstance(y,int) or p not in ('annual','q1','half','q3') or x.get('fs_div')!='CFS':return None
+        return f'{y}:{p}'
+    def special(name,code):
+        # Conservative exclusion, not a verified industry classification.
+        import re
+        return bool(re.search(r'금융|은행|보험|증권|카드|캐피탈|저축은행|부동산|리츠|투자회사|투자신탁|벤처캐피탈|financial|bank|insurance|reit|real\s*estate',name,re.I)) or review.get(code,{}).get('sector_type') in ('FINANCIAL','REAL_ESTATE','OTHER')
+    rows=[]; qualified={};groups=defaultdict(list)
+    for code,s in sorted(universe.items()):
+        r={'code':code,'market_date':day,'state':s['scope_state'],'peer_count':0,'hypothesis':None,'verified_fair_price':None,'buy_signal':False}
+        rows.append(r)
+        if s['scope_state']!=ELIGIBLE:continue
+        r['state']='HOLD_SENSITIVITY_NUMERIC_EVIDENCE'
+        n=rat[code]; b=broker[code]; f=fin[code]; q=obs.get(code)
+        if not q or b['state']!='KIS_PROVISIONAL_LINK_RESEARCH_ONLY' or not b['arithmetic_consistent'] or n['state']!='NUMERIC_MATCH_BASIS_UNREVIEWED' or n.get('bps_numeric_match') is not True:continue
+        a=n.get('annual_eps_numeric_match') is True;t=n.get('ttm_eps_numeric_match') is True
+        if a==t:r['state']='HOLD_SENSITIVITY_AMBIGUOUS_EPS_BASIS';continue
+        ar=f.get('annual_receipt'); rec=f.get('ttm_receipts',[])
+        annual=period(code,ar); current=period(code,rec[1]) if len(rec)==3 and rec[0]==ar else None
+        prior=period(code,rec[2]) if current else None
+        if not annual or (current and not prior) or (t and not current):r['state']='HOLD_SENSITIVITY_PERIOD_EVIDENCE';continue
+        sector=model['sector_name'](q.get('sector_name_kis'))
+        if not sector:r['state']='HOLD_SENSITIVITY_SECTOR_MISSING';continue
+        if special(sector,code):r['state']='HOLD_SPECIAL_SECTOR_MODEL_REQUIRED';continue
+        basis='ANNUAL_NUMERIC_HYPOTHESIS' if a else 'TTM_NUMERIC_HYPOTHESIS'
+        # Separate latest BPS period even for the annual EPS hypothesis.
+        signature=(sector,basis,annual,current or annual,prior if t else None,day)
+        target={'code':code,'market_date':day,'sector_id':sector,'sector_type':'GENERAL', # hypothetical, not verified
+                'source_kind':'KIS_NUMERIC_SENSITIVITY_ONLY','accounting_basis':basis,'close_krw':market[code]['TDD_CLSPRC'],
+                **{k:q.get(k) for k in ('eps','bps','per','pbr')}}
+        # Defensive repeat of input arithmetic; never use a peer's own price in its peer set.
+        close=model['pos'](target['close_krw']); price=model['pos'](q.get('observed_price'))
+        pe,pb,eps,bps=[model['pos'](target[k]) for k in ('per','pbr','eps','bps')]
+        if None in (close,price,pe,pb,eps,bps) or price!=close or abs(pe*eps/close-1)>D('.05') or abs(pb*bps/close-1)>D('.05'):continue
+        r['hypothesis']=basis;qualified[code]=(signature,target);groups[signature].append(target)
+    for r in rows:
+        if r['code'] not in qualified:continue
+        signature,target=qualified[r['code']];peers=[p for p in groups[signature] if p['code']!=target['code']]
+        estimate=model['estimate'](target,peers); r['peer_count']=len(peers)
+        # Never copy arbitrary model fields into the research report.
+        if estimate['state']=='PEER_RANGE_RESEARCH_ONLY':
+            r['state']='SENSITIVITY_RANGE_RESEARCH_ONLY'
+            r['conditional_range_krw']={k:estimate[f'research_{k}_krw'] for k in ('low','mid','high')}
+        else:r['state']=estimate['state']
+    out={'market_date':day,'scope_sha256':scope['scope_sha256'],'rows':rows,'verified_fair_prices':0,'investment_decisions_authorized':False,'final_buy_signals':0,
+         'eligible_numeric_peer_rows':len(qualified),'numeric_peer_groups':len(groups),'financial_api_calls':0,
+         'notes':['Numeric hypotheses only, including unreviewed sector classification. No independently verified fair price or recommendation.','Existing Stage7 overlap and eight-other-peer model reused; separate EPS and BPS periods.']}
+    out['counts']=validate_stage(scope,out);return out
+
+
 def evaluate_saved_sector(root,scope,financial,kis):
     root=root.resolve()
     for sources in (scope['source_sha256'],financial.get('source_sha256',{})):
