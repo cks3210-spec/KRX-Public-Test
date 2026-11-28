@@ -4,6 +4,8 @@ Caller must persist snapshots and supply verified official price history/calenda
 """
 import argparse
 from collections import Counter, defaultdict
+from bisect import bisect_right
+from v5_full_decision import simulate
 from decimal import Decimal as D, InvalidOperation
 from v5_evaluation_scope import validate_scope, validate_stage, index, require, digest, valid_day
 
@@ -43,6 +45,7 @@ def validate_snapshot(s):
     require(digest({k:v for k,v in s.items() if k!='snapshot_sha256'})==s.get('snapshot_sha256'),'SNAPSHOT_HASH_MISMATCH')
     day=valid_day(s['market_date']); rows=index(s['rows'],'code')
     require(len(rows)==s['market_rows'] and all(r['market_date']==day and r.get('final_grade') is None and r.get('research_grade') in (None,'A','B') and (r['scope_state']==ELIGIBLE or r['research_grade'] is None) for r in rows.values()),'SNAPSHOT_SCOPE_MISMATCH')
+    if 'available_date_kst' in s:require(valid_day(s['available_date_kst'])>=day,'INVALID_AVAILABLE_DATE')
     return rows
 
 
@@ -64,7 +67,7 @@ def track(snapshots, sessions, prices, asof):
     valid_day(asof)
     require(sessions==sorted(set(sessions)) and asof in sessions,'INVALID_SESSION_CALENDAR')
     for d in sessions: valid_day(d)
-    ix={d:i for i,d in enumerate(sessions)}; states=Counter(); results=[]; values=defaultdict(list); seen=set()
+    ix={d:i for i,d in enumerate(sessions)}; states=Counter(); results=[]; values=defaultdict(list); strategy_values=defaultdict(list); seen=set()
     for snap in snapshots:
         rows=validate_snapshot(snap); day=snap['market_date']
         require(day in ix and day<=asof and day not in seen,'INVALID_SNAPSHOT_DATE');seen.add(day)
@@ -72,18 +75,22 @@ def track(snapshots, sessions, prices, asof):
             # Full universe is preserved in snapshots; return cohorts use every scored A/B, not final signals.
             if r['research_grade'] not in ('A','B'): continue
             for h in HORIZONS:
-                start=ix[day]+1; end=start+h
+                available=snap.get('available_date_kst'); start=bisect_right(sessions,available or day); end=start+h
                 rec={'code':code,'signal_date':day,'research_grade':r['research_grade'],'horizon':h,'entry_date':None,'exit_date':None,'return_pct':None,'state':'PENDING_ENTRY'}
-                if start<len(sessions) and sessions[start]<=asof:
+                if not available:rec['state']='HOLD_UNKNOWN_AVAILABILITY'
+                elif start<len(sessions) and sessions[start]<=asof:
                     rec['entry_date']=sessions[start];rec['state']='PENDING_HORIZON'
                     if end<len(sessions) and sessions[end]<=asof:
                         rec['exit_date']=sessions[end];path=[positive(prices.get((code,d))) for d in sessions[start:end+1]]
                         if any(v is None for v in path):rec['state']='HOLD_INCOMPLETE_PRICE_PATH'
                         else:
                             rr=(path[-1]/path[0]-1)*100;rec.update(state='MATURED_UNADJUSTED_RESEARCH_ONLY',return_pct=str(rr.quantize(D('.0001'))));values[(r['research_grade'],h)].append(rr)
+                            rec['strategies']=[simulate(path,frac) for frac in (D('.30'),D('.40'),D('.50'))]
+                            for st in rec['strategies']:strategy_values[(r['research_grade'],h,st['sale_pct'])].append(D(st['difference_vs_hold_pp']))
                 results.append(rec);states[rec['state']]+=1
     stats={f'{g}_{h}d':{'observations':len(v),'mean_pct':str((sum(v)/len(v)).quantize(D('.0001'))),'positive_count':sum(x>0 for x in v)} for (g,h),v in sorted(values.items())}
-    return {'market_date':asof,'snapshot_count':len(seen),'horizon_counts':dict(states),'cohort_stats':stats,'rows':results,'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0,'notes':['New full-scope research cohort; legacy Stage27 ledger stays separate.','Unadjusted close returns exclude dividends, splits, fees and execution effects; not strategy performance.','No missing path or future price is imputed.']}
+    strategy_stats={f'{g}_{h}d_{f}pct':{'observations':len(v),'mean_difference_vs_hold_pp':str((sum(v)/len(v)).quantize(D('.0001'))),'positive_count':sum(x>0 for x in v)} for (g,h,f),v in sorted(strategy_values.items())}
+    return {'market_date':asof,'strategy_stats':strategy_stats,'snapshot_count':len(seen),'horizon_counts':dict(states),'cohort_stats':stats,'rows':results,'research_only':True,'investment_decisions_authorized':False,'final_buy_signals':0,'notes':['New full-scope research cohort; legacy Stage27 ledger stays separate.','Unadjusted close returns exclude dividends, splits, fees and execution effects; not strategy performance.','No missing path or future price is imputed.']}
 
 
 def briefing(scope,snapshot,performance):
@@ -92,7 +99,7 @@ def briefing(scope,snapshot,performance):
     require(performance.get('investment_decisions_authorized') is False and performance.get('final_buy_signals')==0,'UNSAFE_PERFORMANCE')
     # Current upstream cannot issue verified final grades. Never present provisional grades as recommendations.
     research=[r for r in rows.values() if r['research_grade'] in ('A','B')]
-    return {'market_date':scope['market_date'],'scope_sha256':scope['scope_sha256'],'market_rows':len(rows),'scope_counts':scope['counts'],'evaluation_counts':dict(Counter(r['state'] for r in rows.values())),'research_grade_counts':dict(Counter(r['research_grade'] for r in research)),'final_ab_count':0,'final_ab_candidates':[],'performance_counts':performance['horizon_counts'],'research_performance_stats':performance['cohort_stats'],'investment_decisions_authorized':False,'final_buy_signals':0,'state':'HOLD_NO_VERIFIED_FINAL_GRADES','notes':['Only verified final A/B may enter final candidate list; none authorized by current upstream.','Research A/B counts are not buy recommendations.']}
+    return {'market_date':scope['market_date'],'scope_sha256':scope['scope_sha256'],'market_rows':len(rows),'scope_counts':scope['counts'],'evaluation_counts':dict(Counter(r['state'] for r in rows.values())),'research_grade_counts':dict(Counter(r['research_grade'] for r in research)),'final_ab_count':0,'final_ab_candidates':[],'performance_counts':performance['horizon_counts'],'research_performance_stats':performance['cohort_stats'],'strategy_performance_stats':performance.get('strategy_stats',{}),'investment_decisions_authorized':False,'final_buy_signals':0,'state':'HOLD_NO_VERIFIED_FINAL_GRADES','notes':['Only verified final A/B may enter final candidate list; none authorized by current upstream.','Research A/B counts are not buy recommendations.']}
 
 
 def self_test():
@@ -105,7 +112,7 @@ def self_test():
             if kind=='sector':r.update(financial_state='fin' if i<2 else state,kis_state='kis' if i<2 else state)
             if kind=='grade':r.update(financial_state='fin' if i<2 else state,sector_state='sector' if i<2 else state,research_grade='A' if i==0 else 'B' if i==1 else None,final_grade=None,buy_signal=False,sell_signal=False,investment_authorized=False)
         return {'market_date':day,'scope_sha256':scope['scope_sha256'],'rows':rows,'investment_decisions_authorized':False,'final_buy_signals':0,'final_sell_signals':0,'final_grades':0,'verified_fair_prices':0}
-    f,k,s,g=[report(x) for x in ('fin','kis','sector','grade')];snap=make_snapshot(scope,f,k,s,g)
+    f,k,s,g=[report(x) for x in ('fin','kis','sector','grade')];snap=make_snapshot(scope,f,k,s,g);snap['available_date_kst']=day;snap['snapshot_sha256']=digest({k:v for k,v in snap.items() if k!='snapshot_sha256'})
     assert len(validate_snapshot(snap))==3
     assert len(merge_snapshots([snap],snap))==1
     from datetime import date,timedelta
