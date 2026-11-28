@@ -13,6 +13,7 @@ from v5_full_financial_evaluation import load_sources, evaluate, csv_rows
 from v5_full_kis_evaluation import reader, link as link_kis
 from v5_full_share_evidence import plan_scope, load_cache, reusable, CACHE_REL
 from v5_full_sector_valuation import reviewed_bundle, evaluate_sector
+from v5_full_ratio_evidence import diagnose
 from v5_full_grade_strategy import evaluate_grade
 from v5_full_performance_briefing import make_snapshot, validate_snapshot, track, briefing, positive
 
@@ -60,10 +61,11 @@ def run_stages(scope,metrics,links,holds,market,model,archive,reviewed,review_st
     financial['source_sha256']=source_hashes or {}
     kis=link_kis(scope,financial,market,archive,model['sector_name'])
     share=share_coverage(scope,metrics,links,holds,entries)
+    ratio=diagnose(scope,financial,kis,metrics,links,holds,market,archive,entries)
     sector=evaluate_sector(scope,financial,kis,market,reviewed,review_state,model)
     grade=evaluate_grade(scope,financial,sector,market,metrics,links)
     snapshot=make_snapshot(scope,financial,kis,sector,grade)
-    return snapshot,share,{'financial':financial['counts'],'kis':kis['counts'],'sector':sector['counts'],'grade':grade['counts']}
+    return snapshot,share,{'financial':financial['counts'],'kis':kis['counts'],'sector':sector['counts'],'grade':grade['counts'],'ratio_evidence':ratio['counts'],'ratio_numeric_matches':ratio['numeric_match_counts']}
 
 
 def sessions_between(start,end):
@@ -133,7 +135,7 @@ def run(root,out,persist=False):
     report=briefing(scope,snapshot,performance)
     report.update(state='FULL_SCOPE_RESEARCH_ONLY',same_date_complete_kis=complete,share_evidence=share,stage_counts=counts,
                   snapshot_state=persist_state,history=hist,financial_api_calls=0,
-                  blockers=['KIS accounting basis and independent share evidence adapter not approved',
+                  blockers=['KIS accounting basis, common-share amounts and corporate actions remain independently unreviewed',
                             'Final fair price and final grade contracts not implemented'],
                   source_sha256=hashes_)
     require(all(file_sha(root/rel)==h for rel,h in {**hashes_,**hist['source_sha256']}.items()),'SOURCE_CHANGED')
@@ -161,6 +163,7 @@ def self_test(root):
     assert len(validate_snapshot(snap))==10
     assert share['planned_tasks']==36 and share['pending_tasks']==36
     assert counts['kis']['KIS_PROVISIONAL_LINK_RESEARCH_ONLY']==9
+    assert counts['ratio_evidence']['HOLD_SHARE_OR_POSITIVE_FINANCIAL_INPUT_MISSING']==9
     assert counts['sector']['HOLD_SECTOR_OR_RATIO_EVIDENCE']==9
     assert all(r['final_grade'] is None for r in snap['rows'])
     missing,_,ct=run_stages(scope,metrics,links,[],market,model,None,[],'MISSING',{})
@@ -172,6 +175,40 @@ def self_test(root):
         except ValueError:pass
         else:raise AssertionError('WRONG_KEY_ACCEPTED')
     print('FULL_PIPELINE_INTEGRATION_SELF_TEST_PASS 9')
+    from v5_full_ratio_evidence import diagnose
+    from copy import deepcopy
+    model=reader(root); financial=evaluate(scope,metrics,links,[]); kis=link_kis(scope,financial,market,archive,model['sector_name'])
+    plan,tasks=plan_scope(scope,metrics,links,[]); entries={}
+    for tid,t in tasks.items():
+        if t['kind']=='weighted': result={'state':'WEIGHTED_ROWS_UNREVIEWED','receipt':t['receipt'],'xml_parse_errors':0,'rows':[{'receipt':t['receipt'],'numeric_cells':[{'value':1}]}]}
+        else: result={'state':'ENDING_COMMON_SHARE_CANDIDATE','receipt':t['receipt'],'equity_date':'2026-09-30','ending_common_shares':1}
+        entries[tid]={'task':t,'result':result}
+    for c in codes: links['inputs'][f'{c}:2026:q3']['accounts']['equity']=1000
+    def run(e=entries,ar=archive):
+        k=link_kis(scope,financial,market,ar,model['sector_name'])
+        return diagnose(scope,financial,k,metrics,links,[],market,ar,e)
+    r=run(); assert r['counts']['NUMERIC_MATCH_BASIS_UNREVIEWED']==9
+    assert r['numeric_match_counts']=={'annual_eps_numeric_match':9,'ttm_eps_numeric_match':0,'bps_numeric_match':9}
+    assert all(not x['official_ratios_verified'] for x in r['rows'])
+    assert r['counts']['EXCLUDED_MARKET_CAP']==1
+    e=deepcopy(entries)
+    for v in e.values():
+        if v['task']['kind']=='weighted':v['result']['rows'][0]['numeric_cells'].append({'value':2})
+    assert run(e)['counts']['HOLD_SHARE_OR_POSITIVE_FINANCIAL_INPUT_MISSING']==9
+    assert run({})['counts']['HOLD_SHARE_OR_POSITIVE_FINANCIAL_INPUT_MISSING']==9
+    e=deepcopy(entries)
+    for v in e.values():
+        if v['task']['kind']=='ending':v['result']['ending_common_shares']=2
+    assert run(e)['counts']['HOLD_NUMERIC_MISMATCH_OR_UNREVIEWED_BASIS']==9
+    e=deepcopy(entries)
+    for v in e.values():
+        if v['task']['kind']=='ending':v['result']['equity_date']='2025-12-31'
+    assert run(e)['numeric_match_counts']['bps_numeric_match']==0
+    a=deepcopy(archive)
+    for q in a['observations'].values():q['eps']='120';q['per']='8.333333333'
+    assert run(entries,a)['numeric_match_counts']['ttm_eps_numeric_match']==9
+    assert run(entries,a)['numeric_match_counts']['annual_eps_numeric_match']==0
+    print('RATIO_EVIDENCE_FIXTURE_ASSERTIONS_PASS 10')
 
 
 if __name__=='__main__':
