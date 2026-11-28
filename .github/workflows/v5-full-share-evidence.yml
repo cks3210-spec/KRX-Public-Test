@@ -11,6 +11,8 @@ name: KRX v5 Full Scope Share Evidence
         description: 'Maximum API calls this run (1-1000); not a stock limit'
         type: number
         default: 200
+  schedule:
+    - cron: '20 0 * * 1-5' # 09:20 KST; independent of workflow_run depth
 permissions:
   contents: read
 concurrency:
@@ -21,6 +23,7 @@ jobs:
     if: github.repository == 'cks3210-spec/KRX-Public-Test' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
+      actions: read
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -30,25 +33,66 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install readers
-        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1'
-      - name: Offline self-tests
+      - name: Install readers and trading calendar
+        run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1' 'exchange-calendars>=4.5,<5'
+      - name: Check date and upstream evidence before API access
+        id: gate
+        if: github.event_name == 'schedule' || inputs.mode == 'collect'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt, json, os, subprocess
+          from pathlib import Path
+          import exchange_calendars as xc
+          from sys import path
+          path.insert(0, 'scripts')
+          from v5_full_financial_evaluation import load_sources
+          def expected_day(today):
+              if today < dt.date(2026,11,30): return None
+              cal=xc.get_calendar('XKRX',start=str(today-dt.timedelta(days=30)),end=str(today+dt.timedelta(days=10)))
+              if not cal.is_session(str(today)): return None
+              return cal.previous_session(str(today)).strftime('%Y%m%d')
+          def finish(state):
+              print(state)
+              raise SystemExit(0)
+          day=expected_day(dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date())
+          if day is None: finish('SKIP_BEFORE_CUTOVER_OR_NON_SESSION')
+          base=Path('data/v5_financial_m/filing_refresh')
+          def read(p): return json.loads(p.read_text(encoding='utf-8-sig'))
+          s=read(Path('data/summary.json')); m=read(base/'metrics/latest_status.json'); q=read(base/'candidate_regrade/latest_status.json')
+          if not (s['latest_trading_date']==m['market_date']==q['market_date']==day): finish('HOLD_EXPECTED_PREVIOUS_SESSION_NOT_READY '+day)
+          try:
+              raw=subprocess.check_output(['gh','api','repos/cks3210-spec/KRX-Public-Test/actions/workflows/krx-v5-r14-dart-auto-continue.yml/runs?branch=main&per_page=20'],text=True,stderr=subprocess.DEVNULL,timeout=30)
+              runs=json.loads(raw)['workflow_runs']
+          except Exception: finish('HOLD_R14_RUN_STATE_UNAVAILABLE')
+          if any(r['status']!='completed' for r in runs): finish('HOLD_R14_RUNNING')
+          scope,metrics,link,holds,hashes=load_sources(Path.cwd())
+          if scope['market_date']!=day: finish('HOLD_SCOPE_DATE_MISMATCH')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('ready=true\n')
+          print('SHARE_COLLECTION_GATE_READY '+day)
+          PY
+      - name: Offline self-tests
+        if: steps.gate.outputs.ready == 'true' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'plan')
+        run: |
+          set -euo pipefail
           python scripts/v5_evaluation_scope.py --self-test
           python scripts/v5_full_financial_evaluation.py --self-test
           python scripts/v5_full_share_evidence.py --self-test
       - name: Plan only (no financial API)
-        if: inputs.mode == 'plan'
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
         run: python scripts/v5_full_share_evidence.py --out /tmp/v5-full-shares
       - name: Collect missing evidence only
-        if: inputs.mode == 'collect'
+        if: steps.gate.outputs.ready == 'true'
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
           KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
-          MAX_CALLS: ${{ inputs.max_calls }}
+          MAX_CALLS: ${{ github.event_name == 'schedule' && '200' || inputs.max_calls }}
         run: python scripts/v5_full_share_evidence.py --collect --max-calls "$MAX_CALLS" --out /tmp/v5-full-shares
       - name: Persist authenticated encrypted cache only
-        if: ${{ always() && inputs.mode == 'collect' }}
+        if: ${{ always() && steps.gate.outputs.ready == 'true' }}
         run: |
           set -euo pipefail
           file=data/v5_share_evidence/cache.aes
@@ -61,7 +105,7 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && (steps.gate.outputs.ready == 'true' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'plan')) }}
         with:
           name: krx-v5-full-share-evidence-summary
           path: /tmp/v5-full-shares/share_summary.json
