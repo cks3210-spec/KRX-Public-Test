@@ -7,6 +7,9 @@ name: KRX v5 Full Market Research Pipeline
         type: choice
         options: [self-test, evaluate]
         default: self-test
+  schedule:
+    - cron: '50 23 * * 0-4' # 08:50 KST, independent morning evaluation
+    - cron: '40 4 * * 1-5' # 13:40 KST, catch delayed inputs before afternoon briefing
   workflow_run:
     workflows: ['KRX v5 KIS Daily Valuation', 'KRX v5 Full Scope Share Evidence']
     types: [completed]
@@ -18,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   research:
-    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    if: ${{ github.repository == 'cks3210-spec/KRX-Public-Test' && (((github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -34,7 +37,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1' 'exchange-calendars>=4.5,<5'
       - name: Check expected previous trading session and unchanged inputs
         id: gate
-        if: ${{ github.event_name == 'workflow_run' || inputs.mode == 'evaluate' }}
+        if: ${{ github.event_name == 'workflow_run' || github.event_name == 'schedule' || inputs.mode == 'evaluate' }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -64,6 +67,7 @@ jobs:
           paths += [Path('data/daily_70d.csv.gz'),Path('data/v5_share_evidence/cache.aes')]
           paths += [p for p in Path('data/v5_official_market_archive').glob('*.csv') if p.stem<=day]
           paths += [p for p in Path('data/v5_stage7_reviewed',day).rglob('*') if p.is_file()]
+          paths += [Path('data/v5_full_research/reviews')/(day+'.aes')]
           fp=hashlib.sha256(json.dumps({str(p):sha(p) if p.is_file() else None for p in sorted(set(paths))},sort_keys=True).encode()).hexdigest()
           latest=Path('data/v5_full_research/latest_status.json')
           if latest.is_file():
@@ -83,6 +87,7 @@ jobs:
           python scripts/v5_full_sector_valuation.py --self-test
           python scripts/v5_full_grade_strategy.py --self-test
           python scripts/v5_full_performance_briefing.py --self-test
+          python scripts/v5_full_decision.py
           python scripts/v5_full_pipeline.py --self-test
       - name: Evaluate existing matched data only
         if: steps.gate.outputs.ready == 'true'
@@ -97,13 +102,13 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os
+          import datetime as dt, json, os
           from pathlib import Path
           s=json.loads(Path('/tmp/v5-full-pipeline/summary.json').read_text())
           if not (s['market_date']==os.environ['EXPECTED_DAY'] and s['state']=='FULL_SCOPE_RESEARCH_ONLY' and s['same_date_complete_kis'] is True and s['investment_decisions_authorized'] is False and s['final_buy_signals']==0 and s['final_ab_count']==0 and s['final_ab_candidates']==[]):raise ValueError('BRIEFING_CONTRACT_MISMATCH')
           # Explicit allowlist: no individual stock data, prices, ratio values, or research performance values.
-          keys=('market_date','scope_sha256','market_rows','scope_counts','evaluation_counts','research_grade_counts','final_ab_count','performance_counts','investment_decisions_authorized','final_buy_signals','state','same_date_complete_kis','stage_counts','snapshot_state','financial_api_calls','blockers')
-          out={k:s[k] for k in keys};out.update(schema_version=1,input_fingerprint=os.environ['INPUT_FINGERPRINT'],run_id=os.environ['GITHUB_RUN_ID'],source_commit=os.environ['GITHUB_SHA'])
+          keys=('market_date','scope_sha256','market_rows','scope_counts','evaluation_counts','research_grade_counts','final_ab_count','performance_counts','investment_decisions_authorized','final_buy_signals','state','same_date_complete_kis','stage_counts','snapshot_state','financial_api_calls','blockers','review_state','reviewed_screen_count','reviewed_screen_grade_counts','share_evidence')
+          out={k:s[k] for k in keys};out.update(schema_version=1,input_fingerprint=os.environ['INPUT_FINGERPRINT'],run_id=os.environ['GITHUB_RUN_ID'],source_commit=os.environ['GITHUB_SHA'],generated_kst=dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).isoformat())
           p=Path('data/v5_full_research/latest_status.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
           PY
       - name: Persist encrypted snapshots and aggregate-only status
@@ -112,6 +117,7 @@ jobs:
           set -euo pipefail
           folder=data/v5_full_research/snapshots
           if [ -d "$folder" ]; then git add -- "$folder"/*.aes; fi
+          if [ -d data/v5_full_research/revisions ]; then git add -- data/v5_full_research/revisions; fi
           git add -- data/v5_full_research/latest_status.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
