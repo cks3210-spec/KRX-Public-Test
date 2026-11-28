@@ -8,12 +8,13 @@ from tempfile import TemporaryDirectory
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from v5_evaluation_scope import require, file_sha, validate_stage, index, valid_day
+from v5_evaluation_scope import require, file_sha, validate_stage, index, valid_day, digest
 from v5_full_financial_evaluation import load_sources, evaluate, csv_rows
 from v5_full_kis_evaluation import reader, link as link_kis
 from v5_full_share_evidence import plan_scope, load_cache, reusable, CACHE_REL
-from v5_full_sector_valuation import reviewed_bundle, evaluate_sector
+from v5_full_sector_valuation import reviewed_bundle, evaluate_sector, numeric_sensitivity
 from v5_full_ratio_evidence import diagnose
+from v5_full_decision import decide, load_reviews
 from v5_full_grade_strategy import evaluate_grade
 from v5_full_performance_briefing import make_snapshot, validate_snapshot, track, briefing, positive
 
@@ -56,16 +57,31 @@ def share_coverage(scope,metrics,links,holds,entries):
             'share_counts_independently_verified':False,'financial_api_calls':0}
 
 
-def run_stages(scope,metrics,links,holds,market,model,archive,reviewed,review_state,entries,source_hashes=None):
+def run_stages(scope,metrics,links,holds,market,model,archive,reviewed,review_state,entries,source_hashes=None,reviews=None,available_date=None):
     financial=evaluate(scope,metrics,links,holds)
     financial['source_sha256']=source_hashes or {}
     kis=link_kis(scope,financial,market,archive,model['sector_name'])
     share=share_coverage(scope,metrics,links,holds,entries)
     ratio=diagnose(scope,financial,kis,metrics,links,holds,market,archive,entries)
     sector=evaluate_sector(scope,financial,kis,market,reviewed,review_state,model)
+    sensitivity=numeric_sensitivity(scope,financial,kis,ratio,market,links,archive,reviewed,model)
     grade=evaluate_grade(scope,financial,sector,market,metrics,links)
+    decision=decide(scope,financial,kis,ratio,grade,sensitivity,market,links,metrics,holds,archive,entries,reviews or {},model)
     snapshot=make_snapshot(scope,financial,kis,sector,grade)
-    return snapshot,share,{'financial':financial['counts'],'kis':kis['counts'],'sector':sector['counts'],'grade':grade['counts'],'ratio_evidence':ratio['counts'],'ratio_numeric_matches':ratio['numeric_match_counts']}
+    snapshot['available_date_kst']=available_date or scope['market_date']
+    require(valid_day(snapshot['available_date_kst'])>=scope['market_date'],'INVALID_AVAILABILITY_DATE')
+    decisions=index(decision['rows'],'code')
+    # Conditional ranges stay in the authenticated encrypted snapshot only.
+    sens=index(sensitivity['rows'],'code')
+    for row in snapshot['rows']:
+        row['reviewed_screen']=decisions[row['code']]
+        v=sens[row['code']]
+        row['valuation_sensitivity']={k:v[k] for k in ('state','peer_count','hypothesis','conditional_range_krw') if k in v}
+    snapshot['upstream_sha256']['valuation_sensitivity']=digest(sensitivity)
+    snapshot['upstream_sha256']['reviewed_screen']=digest(decision)
+    snapshot['snapshot_sha256']=digest({k:v for k,v in snapshot.items() if k!='snapshot_sha256'})
+    validate_snapshot(snapshot)
+    return snapshot,share,{'financial':financial['counts'],'kis':kis['counts'],'sector':sector['counts'],'grade':grade['counts'],'ratio_evidence':ratio['counts'],'ratio_numeric_matches':ratio['numeric_match_counts'],'valuation_sensitivity':sensitivity['counts'],'reviewed_screen':decision['counts'],'reviewed_screen_grade_counts':decision['reviewed_screen_counts']}
 
 
 def sessions_between(start,end):
@@ -119,7 +135,9 @@ def run(root,out,persist=False):
     if p.is_file():archive=model['load_broker'](p,day,key)
     cache=root/CACHE_REL;entries=load_cache(cache,key) if cache.is_file() else {}
     reviewed,state,_=reviewed_bundle(root,day)
-    snapshot,share,counts=run_stages(scope,metrics,links,holds,market,model,archive,reviewed,state,entries,hashes_)
+    reviews,review_status=load_reviews(root,day,key)
+    available_date=dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).strftime('%Y%m%d')
+    snapshot,share,counts=run_stages(scope,metrics,links,holds,market,model,archive,reviewed,state,entries,hashes_,reviews,available_date)
     folder=root/REL;previous=[]
     for p in sorted(folder.glob('*.aes')):
         require(valid_day(p.stem)<=day,'FUTURE_SNAPSHOT');previous.append(read_snapshot(p,key))
@@ -134,12 +152,19 @@ def run(root,out,persist=False):
     performance=track(previous,sessions,prices,day)
     report=briefing(scope,snapshot,performance)
     report.update(state='FULL_SCOPE_RESEARCH_ONLY',same_date_complete_kis=complete,share_evidence=share,stage_counts=counts,
-                  snapshot_state=persist_state,history=hist,financial_api_calls=0,
+                  snapshot_state=persist_state,history=hist,financial_api_calls=0,review_state=review_status,
+                  reviewed_screen_grade_counts=counts['reviewed_screen_grade_counts'],
+                  reviewed_screen_count=sum(counts['reviewed_screen_grade_counts'].values()),
                   blockers=['KIS accounting basis, common-share amounts and corporate actions remain independently unreviewed',
-                            'Final fair price and final grade contracts not implemented'],
+                            'Reviewed screen requires external independently reviewed evidence; no automated investment authorization'],
                   source_sha256=hashes_)
     require(all(file_sha(root/rel)==h for rel,h in {**hashes_,**hist['source_sha256']}.items()),'SOURCE_CHANGED')
     if save:write_snapshot(folder/f'{day}.aes',snapshot,key);report['snapshot_state']='NEW_SNAPSHOT_ENCRYPTED'
+    # The first cohort is immutable; subsequent research revisions are separately encrypted.
+    if persist and complete:
+        revision=root/'data/v5_full_research/revisions'/snapshot['snapshot_sha256']/f'{day}.aes'
+        if not revision.exists():write_snapshot(revision,snapshot,key)
+        else:require(read_snapshot(revision,key)==snapshot,'REVISION_CONFLICT')
     out.mkdir(parents=True,exist_ok=True);(out/'summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(report,ensure_ascii=False))
 
@@ -209,6 +234,47 @@ def self_test(root):
     assert run(entries,a)['numeric_match_counts']['ttm_eps_numeric_match']==9
     assert run(entries,a)['numeric_match_counts']['annual_eps_numeric_match']==0
     print('RATIO_EVIDENCE_FIXTURE_ASSERTIONS_PASS 10')
+    # Same-period numeric sensitivity: eight *other* companies, not an approval.
+    def sensitivity(rr=r,ar=archive,reviewed=()):
+        kk=link_kis(scope,financial,market,ar,model['sector_name'])
+        return numeric_sensitivity(scope,financial,kk,rr,market,links,ar,list(reviewed),model)
+    v=sensitivity(); assert v['counts']['SENSITIVITY_RANGE_RESEARCH_ONLY']==9
+    assert v['rows'][0]['peer_count']==8 and v['rows'][0]['conditional_range_krw']=={'low':'1000','mid':'1000','high':'1000'}
+    assert v['verified_fair_prices']==0 and all(not x['buy_signal'] for x in v['rows'])
+    r2=deepcopy(r);r2['rows'][0]['ttm_eps_numeric_match']=True
+    assert sensitivity(r2)['counts']['HOLD_SENSITIVITY_AMBIGUOUS_EPS_BASIS']==1
+    assert sensitivity(r2)['counts']['HOLD_INSUFFICIENT_COMPARABLE_PEERS']==8
+    a2=deepcopy(archive);a2['observations'][codes[0]]={**a2['observations'][codes[0]],'sector_name_kis':'은행'}
+    assert sensitivity(ar=a2)['counts']['HOLD_SPECIAL_SECTOR_MODEL_REQUIRED']==1
+    assert sensitivity(reviewed=[{'code':codes[0],'sector_type':'FINANCIAL'}])['counts']['HOLD_SPECIAL_SECTOR_MODEL_REQUIRED']==1
+    assert sensitivity(ar=None)['counts']['HOLD_SENSITIVITY_NUMERIC_EVIDENCE']==9
+    snap2,_,ct2=run_stages(scope,metrics,links,[],market,model,archive,[],'MISSING',entries)
+    assert ct2['valuation_sensitivity']['SENSITIVITY_RANGE_RESEARCH_ONLY']==9 and snap2['rows'][0]['valuation_sensitivity']['conditional_range_krw']['mid']=='1000'
+    assert briefing(scope,snap2,track([snap2],[day],{},day))['final_ab_count']==0
+    print('VALUATION_SENSITIVITY_FIXTURE_ASSERTIONS_PASS 10')
+    # A positive reviewed-screen path is tested only with synthetic evidence, never live attestations.
+    from v5_full_decision import decide, REVIEW_FIELDS
+    from v5_full_grade_strategy import evaluate_grade
+    from v5_full_sector_valuation import evaluate_sector
+    se=evaluate_sector(scope,financial,kis,market,[],'MISSING',model)
+    gr=evaluate_grade(scope,financial,se,market,metrics,links)
+    for row in gr['rows']:
+        if row['code'] in codes[:9]:row['score_parts']={'roe':25,'owner_equity_leverage':25,'ttm_vs_annual':25,'market_cap_ratio_proxy':0}
+    ff=index(financial['rows'],'code');mm=index(metrics,'code');reviews={}
+    for c in codes[:9]:
+        evidence={'inputs':{k:v for k,v in links['inputs'].items() if k.split(':')[0]==c},'decisions':{k:v for k,v in links['decisions'].items() if k.split(':')[0]==c},'strict_ttm':links['strict_ttm'].get(c),'metrics':mm[c],'shares':{k:entries.get(k) for k,t in tasks.items() if t['code']==c}}
+        reviews[c]={'code':c,'market_date':day,'scope_sha256':scope['scope_sha256'],'observation_sha256':digest(archive['observations'][c]),'financial_row_sha256':digest(ff[c]),'input_evidence_sha256':digest(evidence),'reviewer':'synthetic fixture only','source_references':{k:'synthetic fixture only' for k in REVIEW_FIELDS},'eps_basis':'ANNUAL','fs_div':'CFS','equity_date':'20260930','sector_id':'fixture','sector_type':'GENERAL',**{k:True for k in ('common_attribution_reviewed','share_period_units_reviewed','corporate_actions_reviewed','asof_reviewed','class_asof_reviewed','provider_basis_reviewed')}}
+    def reviewed_run(rev):return decide(scope,financial,kis,r,gr,v,market,links,metrics,[],archive,entries,rev,model)
+    good=reviewed_run(reviews);assert good['reviewed_screen_counts']=={'A':9}
+    assert all(not x['buy_signal'] and not x['investment_authorized'] for x in good['rows'])
+    assert reviewed_run({})['reviewed_screen_counts']=={}
+    bad=deepcopy(reviews);bad[codes[0]]['input_evidence_sha256']='0'*64
+    assert reviewed_run(bad)['counts']['HOLD_REVIEW_SOURCE_CHANGED']==1
+    assert reviewed_run(bad)['counts']['HOLD_INSUFFICIENT_COMPARABLE_PEERS']==8
+    bad=deepcopy(reviews);bad[codes[0]]['corporate_actions_reviewed']=False
+    assert reviewed_run(bad)['counts']['HOLD_REVIEW_BINDING_OR_ATTESTATION']==1
+    print('INDEPENDENT_REVIEW_CONTRACT_FIXTURES_PASS 6')
+
 
 
 if __name__=='__main__':
