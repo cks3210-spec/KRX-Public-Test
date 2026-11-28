@@ -8,7 +8,7 @@ name: KRX v5 Full Market Research Pipeline
         options: [self-test, evaluate]
         default: self-test
   workflow_run:
-    workflows: ['KRX v5 KIS Daily Valuation']
+    workflows: ['KRX v5 KIS Daily Valuation', 'KRX v5 Full Scope Share Evidence']
     types: [completed]
     branches: [main]
 permissions:
@@ -32,7 +32,47 @@ jobs:
           python-version: '3.11'
       - name: Install readers and KRX calendar
         run: python -m pip install --disable-pip-version-check 'cryptography>=44,<49' 'defusedxml>=0.7,<1' 'exchange-calendars>=4.5,<5'
+      - name: Check expected previous trading session and unchanged inputs
+        id: gate
+        if: ${{ github.event_name == 'workflow_run' || inputs.mode == 'evaluate' }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt, hashlib, json, os
+          from pathlib import Path
+          import exchange_calendars as xc
+          today=dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
+          cal=xc.get_calendar('XKRX',start=str(today-dt.timedelta(days=20)),end=str(today+dt.timedelta(days=10)))
+          def finish(state):
+              print(state)
+              raise SystemExit(0)
+          if today<dt.date(2026,11,30) or not cal.is_session(str(today)):finish('SKIP_NON_SESSION_OR_BEFORE_CUTOVER')
+          day=cal.previous_session(str(today)).strftime('%Y%m%d')
+          def read(p):return json.loads(p.read_text(encoding='utf-8-sig'))
+          def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+          base=Path('data/v5_financial_m/filing_refresh')
+          s=read(Path('data/summary.json'));m=read(base/'metrics/latest_status.json');q=read(base/'candidate_regrade/latest_status.json')
+          if not (s['latest_trading_date']==m['market_date']==q['market_date']==day):finish('HOLD_EXPECTED_PREVIOUS_SESSION_NOT_READY '+day)
+          broker=Path('data/v5_kis_valuation/sessions')/day
+          if not (broker/'observations.aes').is_file() or not (broker/'status.json').is_file():finish('HOLD_SAME_DATE_KIS_MISSING '+day)
+          b=read(broker/'status.json')
+          if b.get('observation_session')!=day or b.get('state')!='KIS_BROKER_COLLECTION_COMPLETE':finish('HOLD_KIS_INCOMPLETE '+day)
+          if b.get('encrypted_observation_sha256')!=sha(broker/'observations.aes'):raise ValueError('KIS_ARCHIVE_HASH_MISMATCH')
+          paths=[Path('data/summary.json'),Path('data/latest.csv'),base/'metrics/latest_status.json',base/'candidate_regrade/latest_status.json',base/'analysis_link.json',Path(m['csv_path']),Path(q['hold_path']),broker/'status.json',broker/'observations.aes']
+          paths += list(Path('scripts').glob('v5_full_*.py'))+[Path('scripts/v5_evaluation_scope.py'),Path('scripts/v5_valuation_crosscheck.py'),Path('.github/workflows/v5-stage7-sector-valuation.yml'),Path('.github/workflows/v5-full-research-pipeline.yml')]
+          paths += [p for p in Path('data/v5_official_shareclass_archive').glob('*.json') if p.stem<=day]
+          paths += [Path('data/daily_70d.csv.gz'),Path('data/v5_share_evidence/cache.aes')]
+          paths += [p for p in Path('data/v5_official_market_archive').glob('*.csv') if p.stem<=day]
+          paths += [p for p in Path('data/v5_stage7_reviewed',day).rglob('*') if p.is_file()]
+          fp=hashlib.sha256(json.dumps({str(p):sha(p) if p.is_file() else None for p in sorted(set(paths))},sort_keys=True).encode()).hexdigest()
+          latest=Path('data/v5_full_research/latest_status.json')
+          if latest.is_file():
+              old=read(latest)
+              if old.get('market_date')==day and old.get('input_fingerprint')==fp and old.get('state')=='FULL_SCOPE_RESEARCH_ONLY':finish('SKIP_UNCHANGED_INPUTS '+day)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f'ready=true\nday={day}\nfingerprint={fp}\n')
+          PY
       - name: Offline integrated self-tests
+        if: ${{ steps.gate.outputs.ready == 'true' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'self-test') }}
         run: |
           set -euo pipefail
           python scripts/v5_evaluation_scope.py --self-test
@@ -44,42 +84,44 @@ jobs:
           python scripts/v5_full_grade_strategy.py --self-test
           python scripts/v5_full_performance_briefing.py --self-test
           python scripts/v5_full_pipeline.py --self-test
-      - name: Evaluate existing data only on a KRX session
-        id: evaluate
-        if: ${{ github.event_name == 'workflow_run' || inputs.mode == 'evaluate' }}
+      - name: Evaluate existing matched data only
+        if: steps.gate.outputs.ready == 'true'
         env:
           KIS_DATA_ARCHIVE_KEY: ${{ secrets.KIS_DATA_ARCHIVE_KEY }}
+        run: python scripts/v5_full_pipeline.py --persist --out /tmp/v5-full-pipeline
+      - name: Prepare aggregate-only briefing status
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          EXPECTED_DAY: ${{ steps.gate.outputs.day }}
+          INPUT_FINGERPRINT: ${{ steps.gate.outputs.fingerprint }}
         run: |
           set -euo pipefail
-          if ! python - <<'PY'
-          import datetime as dt
-          import exchange_calendars as xc
-          d=dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
-          c=xc.get_calendar('XKRX',start=str(d-dt.timedelta(days=10)),end=str(d+dt.timedelta(days=10)))
-          raise SystemExit(0 if d>=dt.date(2026,11,30) and c.is_session(str(d)) else 1)
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          s=json.loads(Path('/tmp/v5-full-pipeline/summary.json').read_text())
+          if not (s['market_date']==os.environ['EXPECTED_DAY'] and s['state']=='FULL_SCOPE_RESEARCH_ONLY' and s['same_date_complete_kis'] is True and s['investment_decisions_authorized'] is False and s['final_buy_signals']==0 and s['final_ab_count']==0 and s['final_ab_candidates']==[]):raise ValueError('BRIEFING_CONTRACT_MISMATCH')
+          # Explicit allowlist: no individual stock data, prices, ratio values, or research performance values.
+          keys=('market_date','scope_sha256','market_rows','scope_counts','evaluation_counts','research_grade_counts','final_ab_count','performance_counts','investment_decisions_authorized','final_buy_signals','state','same_date_complete_kis','stage_counts','snapshot_state','financial_api_calls','blockers')
+          out={k:s[k] for k in keys};out.update(schema_version=1,input_fingerprint=os.environ['INPUT_FINGERPRINT'],run_id=os.environ['GITHUB_RUN_ID'],source_commit=os.environ['GITHUB_SHA'])
+          p=Path('data/v5_full_research/latest_status.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
           PY
-          then
-            echo 'NO_LIVE_EVALUATION_BEFORE_20261130_OR_NON_SESSION'
-            exit 0
-          fi
-          python scripts/v5_full_pipeline.py --persist --out /tmp/v5-full-pipeline
-          echo 'evaluated=true' >> "$GITHUB_OUTPUT"
-      - name: Persist only new encrypted research snapshots
-        if: steps.evaluate.outputs.evaluated == 'true'
+      - name: Persist encrypted snapshots and aggregate-only status
+        if: steps.gate.outputs.ready == 'true'
         run: |
           set -euo pipefail
           folder=data/v5_full_research/snapshots
-          if [ ! -d "$folder" ]; then exit 0; fi
-          git add -- "$folder"/*.aes
+          if [ -d "$folder" ]; then git add -- "$folder"/*.aes; fi
+          git add -- data/v5_full_research/latest_status.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Preserve encrypted full-scope research snapshot'
-          git pull --rebase origin main
+          git commit -m 'Persist full-scope research status and encrypted snapshot'
+          # No rebase onto changed market inputs. A concurrent main update must cause a safe push failure.
           git push origin HEAD:main
       - uses: actions/upload-artifact@v4
-        if: steps.evaluate.outputs.evaluated == 'true'
+        if: steps.gate.outputs.ready == 'true'
         with:
           name: krx-v5-full-market-summary
-          path: /tmp/v5-full-pipeline/summary.json
+          path: data/v5_full_research/latest_status.json
           if-no-files-found: error
